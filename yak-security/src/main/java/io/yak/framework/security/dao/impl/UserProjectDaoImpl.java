@@ -24,10 +24,10 @@ public class UserProjectDaoImpl
   @Autowired private UserProjectMapper userProjectMapper;
 
   @Override
-  public List<Integer> selectUserIdListByProjectId(Integer projectId,
+  public List<Long> selectUserIdListByProjectId(Long projectId,
                                                    int type) {
     if (projectId == null) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.select(new String[] {"user_id"});
@@ -40,7 +40,7 @@ public class UserProjectDaoImpl
   }
 
   @Override
-  public List<UserProject> selectByProjectIds(List<Integer> projectIds) {
+  public List<UserProject> selectByProjectIds(List<Long> projectIds) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.select(new String[] {"user_id", "project_id", "user_type"});
     return CopyBeanUtil.copyList(
@@ -49,10 +49,10 @@ public class UserProjectDaoImpl
   }
 
   @Override
-  public List<Integer>
-  selectProjectIdListByUserIdList(List<Integer> userIdList) {
+  public List<Long>
+  selectProjectIdListByUserIdList(List<Long> userIdList) {
     if (CollectionUtils.isEmpty(userIdList)) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.select(new String[] {"project_id"})
@@ -66,7 +66,7 @@ public class UserProjectDaoImpl
 
   @Override
   public List<UserProjectPO>
-  selectProjectListByUserIdList(List<Integer> userIdList) {
+  selectProjectListByUserIdList(List<Long> userIdList) {
     if (CollectionUtils.isEmpty(userIdList)) {
       return Collections.emptyList();
     }
@@ -108,14 +108,14 @@ public class UserProjectDaoImpl
   }
 
   @Override
-  public void deleteByProjectId(Integer projectId) {
+  public void deleteByProjectId(Long projectId) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.eq((Object) "project_id", (Object)projectId);
     this.userProjectMapper.delete((Wrapper)queryWrapper);
   }
 
   @Override
-  public void deleteByProjectIdAndUserType(Integer projectId, int userType) {
+  public void deleteByProjectIdAndUserType(Long projectId, int userType) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.eq((Object) "project_id", (Object)projectId);
     queryWrapper.eq((Object) "user_type", (Object)userType);

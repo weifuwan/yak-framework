@@ -48,10 +48,10 @@ public class HttpRequestUtil {
     return operator;
   }
 
-  public static Integer getOperatorId(HttpServletRequest request) {
+  public static Long getOperatorId(HttpServletRequest request) {
     HttpSession session = request.getSession();
     Object userIdStr = session.getAttribute(USER_ID);
-    Integer id = HttpRequestUtil.strConvertInteger(String.valueOf(userIdStr));
+    Long id = HttpRequestUtil.strConvertInteger(String.valueOf(userIdStr));
     if (id == null) {
       return HttpRequestUtil.getOperatorIdFromHeader(request);
     }
@@ -59,14 +59,14 @@ public class HttpRequestUtil {
   }
 
   public static Integer getOperatorIdFromHeader(HttpServletRequest request) {
-    Integer id = HttpRequestUtil.strConvertInteger(request.getHeader(USER_ID));
+    Long id = HttpRequestUtil.strConvertInteger(request.getHeader(USER_ID));
     if (id == null) {
       return -1;
     }
     return id;
   }
 
-  public static Integer getProjectId(HttpServletRequest request,
+  public static Long getProjectId(HttpServletRequest request,
                                      int defaultAppid) {
     String projectIdStr = request.getHeader(PROJECT_ID);
     if (StringUtils.isEmpty((Object)projectIdStr)) {
@@ -75,7 +75,7 @@ public class HttpRequestUtil {
     return HttpRequestUtil.strConvertInteger(projectIdStr);
   }
 
-  public static Integer getProjectId(HttpServletRequest request) {
+  public static Long getProjectId(HttpServletRequest request) {
     String projectIdStr = request.getHeader(PROJECT_ID);
     if (StringUtils.isEmpty((Object)projectIdStr)) {
       return null;

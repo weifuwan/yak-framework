@@ -1,18 +1,26 @@
 package io.yak.framework.security.common.entity;
 
 public class Permission {
-  private Integer id;
+  private Long id;
+  private String permissionCode;
   private String permissionName;
-  private Integer parentId;
+  private Long parentId;
   private Boolean leaf;
   private Integer level;
   private String description;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
+
+
+  public String getPermissionCode() { return this.permissionCode; }
+
+  public void setPermissionCode(String permissionCode) {
+    this.permissionCode = permissionCode;
+  }
 
   public String getPermissionName() { return this.permissionName; }
 
-  public Integer getParentId() { return this.parentId; }
+  public Long getParentId() { return this.parentId; }
 
   public Boolean getLeaf() { return this.leaf; }
 
@@ -20,13 +28,13 @@ public class Permission {
 
   public String getDescription() { return this.description; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setPermissionName(String permissionName) {
     this.permissionName = permissionName;
   }
 
-  public void setParentId(Integer parentId) { this.parentId = parentId; }
+  public void setParentId(Long parentId) { this.parentId = parentId; }
 
   public void setLeaf(Boolean leaf) { this.leaf = leaf; }
 
@@ -47,14 +55,14 @@ public class Permission {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
     }
-    Integer this$parentId = this.getParentId();
-    Integer other$parentId = other.getParentId();
+    Long this$parentId = this.getParentId();
+    Long other$parentId = other.getParentId();
     if (this$parentId == null
             ? other$parentId != null
             : !((Object)this$parentId).equals(other$parentId)) {
@@ -93,9 +101,9 @@ public class Permission {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
-    Integer $parentId = this.getParentId();
+    Long $parentId = this.getParentId();
     result =
         result * 59 + ($parentId == null ? 43 : ((Object)$parentId).hashCode());
     Boolean $leaf = this.getLeaf();

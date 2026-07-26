@@ -58,18 +58,18 @@ public class ProjectServiceImpl implements ProjectService {
   @Autowired private ResourceExtendBeanTool resourceExtendBeanTool;
 
   @Override
-  public ProjectVO getProjectDetailByProjectId(Integer projectId)
+  public ProjectVO getProjectDetailByProjectId(Long projectId)
       throws YakSecurityException {
     Project project = this.projectDao.selectByProjectId(projectId);
     if (project == null) {
       throw new YakSecurityException(ResultCode.PROJECT_NOT_EXISTS);
     }
     ProjectVO projectVO = CopyBeanUtil.copy(project, ProjectVO.class);
-    List<Integer> userIdList = this.userProjectService.getUserIdListByProjectId(
+    List<Long> userIdList = this.userProjectService.getUserIdListByProjectId(
         projectId, ProjectUserCode.NORMAL);
     projectVO.setUserList(
         this.userService.getUserBriefListByUserIdList(userIdList));
-    List<Integer> ownerIdList =
+    List<Long> ownerIdList =
         this.userProjectService.getUserIdListByProjectId(projectId,
                                                          ProjectUserCode.OWNER);
     projectVO.setOwnerList(
@@ -81,7 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public ProjectBriefVO getProjectBriefByProjectId(Integer projectId) {
+  public ProjectBriefVO getProjectBriefByProjectId(Long projectId) {
     if (projectId == null) {
       return null;
     }
@@ -90,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public ProjectVO createProject(ProjectSaveDTO saveVo, String operator)
       throws YakSecurityException {
     this.checkParam(saveVo, false);
@@ -109,9 +109,9 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   public PagingData<ProjectVO> getProjectPage(ProjectQueryDTO queryDTO) {
-    List<Integer> projectIdList = null;
+    List<Long> projectIdList = null;
     if (!StringUtils.isEmpty((Object)queryDTO.getChargeUsername())) {
-      List<Integer> userIdList =
+      List<Long> userIdList =
           this.userService.getUserIdListByUsernameOrRealName(
               queryDTO.getChargeUsername());
       projectIdList =
@@ -129,12 +129,12 @@ public class ProjectServiceImpl implements ProjectService {
     Map<Integer, Dept> deptMap = this.deptService.getAllDeptMap();
     for (Project project : page.getRecords()) {
       ProjectVO projectVO = CopyBeanUtil.copy(project, ProjectVO.class);
-      List<Integer> userIdList =
+      List<Long> userIdList =
           this.userProjectService.getUserIdListByProjectId(
               project.getId(), ProjectUserCode.NORMAL);
       projectVO.setUserList(
           this.userService.getUserBriefListByUserIdList(userIdList));
-      List<Integer> ownerIdList =
+      List<Long> ownerIdList =
           this.userProjectService.getUserIdListByProjectId(
               project.getId(), ProjectUserCode.OWNER);
       projectVO.setOwnerList(
@@ -149,8 +149,8 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
-  public void deleteProjectByProjectId(Integer projectId, String operator) {
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
+  public void deleteProjectByProjectId(Long projectId, String operator) {
     Project project = this.projectDao.selectByProjectId(projectId);
     if (project == null) {
       throw new YakSecurityException(ResultCode.PROJECT_NOT_EXISTS);
@@ -168,7 +168,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public void updateProject(ProjectSaveDTO saveDTO, String operator)
       throws YakSecurityException {
     if (this.projectDao.selectByProjectId(saveDTO.getId()) == null) {
@@ -191,8 +191,8 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
-  public void changeProjectStatus(Integer projectId, String operator) {
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
+  public void changeProjectStatus(Long projectId, String operator) {
     Project project = this.projectDao.selectByProjectId(projectId);
     if (project == null) {
       return;
@@ -208,17 +208,17 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public void addProjectUser(Integer projectId, Integer userId,
+  public void addProjectUser(Long projectId, Long userId,
                              String operator) {
     this.userProjectService.saveUserProject(projectId,
-                                            new ArrayList<Integer>(userId));
+                                            new ArrayList<Long>(userId));
     this.oplogService.saveOplog(
         new OplogDTO(operator, "\u9879\u76ee", "Project", projectId.toString(),
                      "\u589e\u52a0\u9879\u76ee\u7528\u6237\uff1a" + userId));
   }
 
   @Override
-  public void delProjectUser(Integer projectId, Integer userId,
+  public void delProjectUser(Long projectId, Long userId,
                              String operator) {
     this.userProjectService.delUserProject(projectId,
                                            Collections.singletonList(userId));
@@ -228,7 +228,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public void addProjectOwner(Integer projectId, Integer ownerId,
+  public void addProjectOwner(Long projectId, Long ownerId,
                               String operator) {
     this.userProjectService.saveOwnerProject(
         projectId, Collections.singletonList(ownerId));
@@ -238,10 +238,10 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public void delProjectOwner(Integer projectId, Integer ownerId,
+  public void delProjectOwner(Long projectId, Long ownerId,
                               String operator) {
     this.userProjectService.delOwnerProject(projectId,
-                                            new ArrayList<Integer>(ownerId));
+                                            new ArrayList<Long>(ownerId));
     this.oplogService.saveOplog(new OplogDTO(
         operator, "\u5220\u9664", "Project", projectId.toString(),
         "\u5220\u9664\u9879\u76ee\u8d1f\u8d23\u4eba\uff1a" + ownerId));
@@ -254,7 +254,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public ProjectDeleteCheckVO checkBeforeDelete(Integer projectId) {
+  public ProjectDeleteCheckVO checkBeforeDelete(Long projectId) {
     return new ProjectDeleteCheckVO(projectId,
                                     this.listResourceOfProject(projectId));
   }
@@ -269,12 +269,12 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public boolean checkProjectExist(Integer projectId) {
+  public boolean checkProjectExist(Long projectId) {
     return null != this.projectDao.selectByProjectId(projectId);
   }
 
   @Override
-  public Result<List<UserBriefVO>> unassignedByProjectId(Integer projectId)
+  public Result<List<UserBriefVO>> unassignedByProjectId(Long projectId)
       throws YakSecurityException {
     if (!this.checkProjectExist(projectId)) {
       throw new YakSecurityException(ResultCode.PROJECT_NOT_EXISTS);
@@ -301,8 +301,8 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   @Override
-  public Result<List<ProjectBriefVO>> getProjectBriefByUserId(Integer userId) {
-    List<Integer> projectIds =
+  public Result<List<ProjectBriefVO>> getProjectBriefByUserId(Long userId) {
+    List<Long> projectIds =
         this.userProjectService.getProjectIdListByUserIdList(
             Collections.singletonList(userId));
     if (CollectionUtils.isEmpty(projectIds)) {
@@ -316,17 +316,17 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   public PagingData<ProjectVO> getProjectPage(ProjectQueryDTO queryDTO,
-                                              List<Integer> ids) {
+                                              List<Long> ids) {
     List<Object> projectIdList = Lists.newArrayList();
     if (!StringUtils.isEmpty((Object)queryDTO.getChargeUsername())) {
-      List<Integer> userIdList =
+      List<Long> userIdList =
           this.userService.getUserIdListByUsernameOrRealName(
               queryDTO.getChargeUsername());
       projectIdList =
           this.userProjectService.getProjectIdListByUserIdList(userIdList);
     }
     if (!CollectionUtils.isEmpty(ids)) {
-      for (Integer id : ids) {
+      for (Long id : ids) {
         if (projectIdList.contains(id))
           continue;
         projectIdList.add(id);
@@ -344,12 +344,12 @@ public class ProjectServiceImpl implements ProjectService {
     Map<Integer, Dept> deptMap = this.deptService.getAllDeptMap();
     for (Project project : page.getRecords()) {
       ProjectVO projectVO = CopyBeanUtil.copy(project, ProjectVO.class);
-      List<Integer> userIdList =
+      List<Long> userIdList =
           this.userProjectService.getUserIdListByProjectId(
               project.getId(), ProjectUserCode.NORMAL);
       projectVO.setUserList(
           this.userService.getUserBriefListByUserIdList(userIdList));
-      List<Integer> ownerIdList =
+      List<Long> ownerIdList =
           this.userProjectService.getUserIdListByProjectId(
               project.getId(), ProjectUserCode.OWNER);
       projectVO.setOwnerList(
@@ -368,7 +368,7 @@ public class ProjectServiceImpl implements ProjectService {
     if (StringUtils.isEmpty((Object)saveVo.getProjectName())) {
       throw new YakSecurityException(ResultCode.PROJECT_NAME_CANNOT_BE_BLANK);
     }
-    Integer projectId = isUpdate ? saveVo.getId() : null;
+    Long projectId = isUpdate ? saveVo.getId() : null;
     int count = this.projectDao.selectCountByProjectNameAndNotProjectId(
         saveVo.getProjectName(), projectId);
     if (count > 0) {
@@ -376,7 +376,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
   }
 
-  private List<String> listResourceOfProject(Integer projectId) {
+  private List<String> listResourceOfProject(Long projectId) {
     ArrayList<String> resources = new ArrayList<String>();
     Project project = this.projectDao.selectByProjectId(projectId);
     if (null == project) {
@@ -399,7 +399,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   public List<ProjectBriefVOWithUser>
-  listProjectBriefVOWithUserByProjectIds(List<Integer> projectIds) {
+  listProjectBriefVOWithUserByProjectIds(List<Long> projectIds) {
     List<Project> projects =
         this.projectDao.selectProjectBriefByProjectIds(projectIds);
     List<UserProject> userProjects =
@@ -410,7 +410,7 @@ public class ProjectServiceImpl implements ProjectService {
             Collectors.groupingBy(UserProject::getUserType,
                                   Collectors.mapping(UserProject::getUserId,
                                                      Collectors.toSet()))));
-    List<Integer> userIds = userProjects.stream()
+    List<Long> userIds = userProjects.stream()
                                 .map(UserProject::getUserId)
                                 .distinct()
                                 .collect(Collectors.toList());
@@ -421,7 +421,7 @@ public class ProjectServiceImpl implements ProjectService {
             Collectors.toMap(UserBasicVO::getId, i -> i));
     Consumer<ProjectBriefVOWithUser> projectBriefVOWithUserConsumer =
         projectBriefVOWithUser -> {
-      Integer projectId = projectBriefVOWithUser.getId();
+      Long projectId = projectBriefVOWithUser.getId();
       Optional.ofNullable(projectId2UserProjectListMap.get(projectId))
           .ifPresent(userType2UserIdsMaps -> {
             if (userType2UserIdsMaps.containsKey(

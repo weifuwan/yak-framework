@@ -1,21 +1,21 @@
 package io.yak.framework.security.common.entity;
 
 public class UserProject {
-  private Integer userId;
+  private Long userId;
   private Integer userType;
-  private Integer projectId;
+  private Long projectId;
 
-  public Integer getUserId() { return this.userId; }
+  public Long getUserId() { return this.userId; }
 
   public Integer getUserType() { return this.userType; }
 
-  public Integer getProjectId() { return this.projectId; }
+  public Long getProjectId() { return this.projectId; }
 
-  public void setUserId(Integer userId) { this.userId = userId; }
+  public void setUserId(Long userId) { this.userId = userId; }
 
   public void setUserType(Integer userType) { this.userType = userType; }
 
-  public void setProjectId(Integer projectId) { this.projectId = projectId; }
+  public void setProjectId(Long projectId) { this.projectId = projectId; }
 
   public boolean equals(Object o) {
     if (o == this) {
@@ -28,8 +28,8 @@ public class UserProject {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$userId = this.getUserId();
-    Integer other$userId = other.getUserId();
+    Long this$userId = this.getUserId();
+    Long other$userId = other.getUserId();
     if (this$userId == null ? other$userId != null
                             : !((Object)this$userId).equals(other$userId)) {
       return false;
@@ -41,8 +41,8 @@ public class UserProject {
             : !((Object)this$userType).equals(other$userType)) {
       return false;
     }
-    Integer this$projectId = this.getProjectId();
-    Integer other$projectId = other.getProjectId();
+    Long this$projectId = this.getProjectId();
+    Long other$projectId = other.getProjectId();
     return !(this$projectId == null
                  ? other$projectId != null
                  : !((Object)this$projectId).equals(other$projectId));
@@ -55,13 +55,13 @@ public class UserProject {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $userId = this.getUserId();
+    Long $userId = this.getUserId();
     result =
         result * 59 + ($userId == null ? 43 : ((Object)$userId).hashCode());
     Integer $userType = this.getUserType();
     result =
         result * 59 + ($userType == null ? 43 : ((Object)$userType).hashCode());
-    Integer $projectId = this.getProjectId();
+    Long $projectId = this.getProjectId();
     result = result * 59 +
              ($projectId == null ? 43 : ((Object)$projectId).hashCode());
     return result;

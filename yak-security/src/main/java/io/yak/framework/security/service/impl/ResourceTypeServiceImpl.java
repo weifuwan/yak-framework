@@ -24,9 +24,9 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
   }
 
   @Override
-  public List<Integer> getAllResourceTypeIdList() {
+  public List<Long> getAllResourceTypeIdList() {
     List<ResourceType> resourceTypeList = this.resourceTypeDao.selectAll();
-    ArrayList<Integer> result = new ArrayList<Integer>();
+    ArrayList<Long> result = new ArrayList<Long>();
     for (ResourceType resourceType : resourceTypeList) {
       result.add(resourceType.getId());
     }
@@ -44,7 +44,7 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
 
   @Override
   public ResourceTypeVO
-  getResourceTypeByResourceTypeId(Integer resourceTypeId) {
+  getResourceTypeByResourceTypeId(Long resourceTypeId) {
     if (resourceTypeId == null) {
       return null;
     }

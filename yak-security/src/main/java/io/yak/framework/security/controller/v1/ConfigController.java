@@ -49,7 +49,7 @@ public class ConfigController {
   @GetMapping(value = {"/get"})
   @ResponseBody
   public Result<ConfigVO>
-  get(@RequestParam(value = "configId") Integer configId) {
+  get(@RequestParam(value = "configId") Long configId) {
     return Result.buildSucc(CopyBeanUtil.copy(
         this.configService.getConfigById(configId), ConfigVO.class));
   }
@@ -65,7 +65,7 @@ public class ConfigController {
   @DeleteMapping(value = {"/del"})
   @ResponseBody
   public Result<Void> delete(HttpServletRequest request,
-                             @RequestParam(value = "id") Integer id) {
+                             @RequestParam(value = "id") Long id) {
     return this.configService.delConfig(id,
                                         HttpRequestUtil.getOperator(request));
   }

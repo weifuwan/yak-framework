@@ -1,17 +1,17 @@
 package io.yak.framework.security.common.entity;
 
 public class OplogExtra {
-  private Integer id;
+  private Long id;
   private String info;
   private Integer type;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getInfo() { return this.info; }
 
   public Integer getType() { return this.type; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setInfo(String info) { this.info = info; }
 
@@ -28,8 +28,8 @@ public class OplogExtra {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -53,7 +53,7 @@ public class OplogExtra {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Integer $type = this.getType();
     result = result * 59 + ($type == null ? 43 : ((Object)$type).hashCode());

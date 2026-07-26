@@ -2,8 +2,8 @@ package io.yak.framework.security.common.dto.user;
 
 import io.yak.framework.security.common.dto.PageParamDTO;
 public class UserQueryDTO extends PageParamDTO {
-  private Integer id;
-  private Integer roleId;
+  private Long id;
+  private Long roleId;
   private String userName;
   private String realName;
 
@@ -22,14 +22,14 @@ public class UserQueryDTO extends PageParamDTO {
     if (!super.equals(o)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
     }
-    Integer this$roleId = this.getRoleId();
-    Integer other$roleId = other.getRoleId();
+    Long this$roleId = this.getRoleId();
+    Long other$roleId = other.getRoleId();
     if (this$roleId == null ? other$roleId != null
                             : !((Object)this$roleId).equals(other$roleId)) {
       return false;
@@ -55,9 +55,9 @@ public class UserQueryDTO extends PageParamDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = super.hashCode();
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
-    Integer $roleId = this.getRoleId();
+    Long $roleId = this.getRoleId();
     result =
         result * 59 + ($roleId == null ? 43 : ((Object)$roleId).hashCode());
     String $userName = this.getUserName();
@@ -67,17 +67,17 @@ public class UserQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
-  public Integer getRoleId() { return this.roleId; }
+  public Long getRoleId() { return this.roleId; }
 
   public String getUserName() { return this.userName; }
 
   public String getRealName() { return this.realName; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
-  public void setRoleId(Integer roleId) { this.roleId = roleId; }
+  public void setRoleId(Long roleId) { this.roleId = roleId; }
 
   public void setUserName(String userName) { this.userName = userName; }
 

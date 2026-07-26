@@ -31,7 +31,7 @@ public class ConfigServiceImpl implements ConfigService {
   @Autowired private ConfigDao configDao;
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public Result<Integer> addConfig(ConfigDTO configInfoDTO, String user) {
     Result<Void> checkResult = this.checkParam(configInfoDTO);
     if (checkResult.failed()) {
@@ -64,8 +64,8 @@ public class ConfigServiceImpl implements ConfigService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
-  public Result<Void> delConfig(Integer configId, String user) {
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
+  public Result<Void> delConfig(Long configId, String user) {
     ConfigPO configInfoPO = this.configDao.getbyId(configId);
     if (configInfoPO == null) {
       return Result.buildNotExist(NOT_EXIST);
@@ -74,7 +74,7 @@ public class ConfigServiceImpl implements ConfigService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public Result<Void> editConfig(ConfigDTO configInfoDTO, String user) {
     if (StringUtils.isBlank((CharSequence)configInfoDTO.getValueGroup()) ||
         StringUtils.isBlank((CharSequence)configInfoDTO.getValueName())) {
@@ -101,8 +101,8 @@ public class ConfigServiceImpl implements ConfigService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
-  public Result<Void> switchConfig(Integer configId, Integer status,
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
+  public Result<Void> switchConfig(Long configId, Integer status,
                                    String user) {
     ConfigPO configInfoPO = this.configDao.getbyId(configId);
     if (configInfoPO == null) {
@@ -144,7 +144,7 @@ public class ConfigServiceImpl implements ConfigService {
   }
 
   @Override
-  public ConfigVO getConfigById(Integer configId) {
+  public ConfigVO getConfigById(Long configId) {
     return CopyBeanUtil.copy(this.configDao.getbyId(configId), ConfigVO.class);
   }
 

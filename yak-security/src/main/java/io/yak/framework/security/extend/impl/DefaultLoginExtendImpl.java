@@ -89,7 +89,7 @@ public class DefaultLoginExtendImpl implements LoginExtend {
 
   private void initLoginContext(HttpServletRequest request,
                                 HttpServletResponse response, String userName,
-                                Integer userId) {
+                                Long userId) {
     HttpSession session = request.getSession(true);
     session.setMaxInactiveInterval(
         HttpRequestUtil.COOKIE_OR_SESSION_MAX_AGE_UNIT_SEC.intValue());

@@ -2,36 +2,36 @@ package io.yak.framework.security.common.dto.resource;
 
 import java.util.List;
 public class BatchAssignDTO {
-  private List<Integer> userIdList;
-  private Integer projectId;
-  private Integer resourceTypeId;
-  private List<Integer> idList;
+  private List<Long> userIdList;
+  private Long projectId;
+  private Long resourceTypeId;
+  private List<Long> idList;
   private Integer controlLevel;
   private Boolean assignFlag;
 
-  public List<Integer> getUserIdList() { return this.userIdList; }
+  public List<Long> getUserIdList() { return this.userIdList; }
 
-  public Integer getProjectId() { return this.projectId; }
+  public Long getProjectId() { return this.projectId; }
 
-  public Integer getResourceTypeId() { return this.resourceTypeId; }
+  public Long getResourceTypeId() { return this.resourceTypeId; }
 
-  public List<Integer> getIdList() { return this.idList; }
+  public List<Long> getIdList() { return this.idList; }
 
   public Integer getControlLevel() { return this.controlLevel; }
 
   public Boolean getAssignFlag() { return this.assignFlag; }
 
-  public void setUserIdList(List<Integer> userIdList) {
+  public void setUserIdList(List<Long> userIdList) {
     this.userIdList = userIdList;
   }
 
-  public void setProjectId(Integer projectId) { this.projectId = projectId; }
+  public void setProjectId(Long projectId) { this.projectId = projectId; }
 
-  public void setResourceTypeId(Integer resourceTypeId) {
+  public void setResourceTypeId(Long resourceTypeId) {
     this.resourceTypeId = resourceTypeId;
   }
 
-  public void setIdList(List<Integer> idList) { this.idList = idList; }
+  public void setIdList(List<Long> idList) { this.idList = idList; }
 
   public void setControlLevel(Integer controlLevel) {
     this.controlLevel = controlLevel;
@@ -52,15 +52,15 @@ public class BatchAssignDTO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$projectId = this.getProjectId();
-    Integer other$projectId = other.getProjectId();
+    Long this$projectId = this.getProjectId();
+    Long other$projectId = other.getProjectId();
     if (this$projectId == null
             ? other$projectId != null
             : !((Object)this$projectId).equals(other$projectId)) {
       return false;
     }
-    Integer this$resourceTypeId = this.getResourceTypeId();
-    Integer other$resourceTypeId = other.getResourceTypeId();
+    Long this$resourceTypeId = this.getResourceTypeId();
+    Long other$resourceTypeId = other.getResourceTypeId();
     if (this$resourceTypeId == null
             ? other$resourceTypeId != null
             : !((Object)this$resourceTypeId).equals(other$resourceTypeId)) {
@@ -80,15 +80,15 @@ public class BatchAssignDTO {
             : !((Object)this$assignFlag).equals(other$assignFlag)) {
       return false;
     }
-    List<Integer> this$userIdList = this.getUserIdList();
-    List<Integer> other$userIdList = other.getUserIdList();
+    List<Long> this$userIdList = this.getUserIdList();
+    List<Long> other$userIdList = other.getUserIdList();
     if (this$userIdList == null
             ? other$userIdList != null
             : !((Object)this$userIdList).equals(other$userIdList)) {
       return false;
     }
-    List<Integer> this$idList = this.getIdList();
-    List<Integer> other$idList = other.getIdList();
+    List<Long> this$idList = this.getIdList();
+    List<Long> other$idList = other.getIdList();
     return !(this$idList == null ? other$idList != null
                                  : !((Object)this$idList).equals(other$idList));
   }
@@ -100,10 +100,10 @@ public class BatchAssignDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $projectId = this.getProjectId();
+    Long $projectId = this.getProjectId();
     result = result * 59 +
              ($projectId == null ? 43 : ((Object)$projectId).hashCode());
-    Integer $resourceTypeId = this.getResourceTypeId();
+    Long $resourceTypeId = this.getResourceTypeId();
     result =
         result * 59 +
         ($resourceTypeId == null ? 43 : ((Object)$resourceTypeId).hashCode());
@@ -113,10 +113,10 @@ public class BatchAssignDTO {
     Boolean $assignFlag = this.getAssignFlag();
     result = result * 59 +
              ($assignFlag == null ? 43 : ((Object)$assignFlag).hashCode());
-    List<Integer> $userIdList = this.getUserIdList();
+    List<Long> $userIdList = this.getUserIdList();
     result = result * 59 +
              ($userIdList == null ? 43 : ((Object)$userIdList).hashCode());
-    List<Integer> $idList = this.getIdList();
+    List<Long> $idList = this.getIdList();
     result =
         result * 59 + ($idList == null ? 43 : ((Object)$idList).hashCode());
     return result;

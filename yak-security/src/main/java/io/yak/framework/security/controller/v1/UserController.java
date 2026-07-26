@@ -52,7 +52,7 @@ public class UserController {
   }
 
   @GetMapping(value = {"/{id}"})
-  public Result<UserVO> detail(@PathVariable Integer id) {
+  public Result<UserVO> detail(@PathVariable Long id) {
     try {
       UserVO userVo = this.userService.getUserDetailByUserId(id);
       return Result.success(userVo);
@@ -68,21 +68,21 @@ public class UserController {
   }
 
   @GetMapping(value = {"/list/dept/{deptId}"})
-  public Result<List<UserBriefVO>> listByDeptId(@PathVariable Integer deptId) {
+  public Result<List<UserBriefVO>> listByDeptId(@PathVariable Long deptId) {
     List<UserBriefVO> userBriefVOList =
         this.userService.getUserBriefListByDeptId(deptId);
     return Result.success(userBriefVOList);
   }
 
   @GetMapping(value = {"/list/role/{roleId}"})
-  public Result<List<UserBriefVO>> listByRoleId(@PathVariable Integer roleId) {
+  public Result<List<UserBriefVO>> listByRoleId(@PathVariable Long roleId) {
     List<UserBriefVO> userBriefVOList =
         this.userService.getUserBriefListByRoleId(roleId);
     return Result.success(userBriefVOList);
   }
 
   @GetMapping(value = {"/assign/list/{userId}"})
-  public Result<List<AssignInfoVO>> assignList(@PathVariable Integer userId) {
+  public Result<List<AssignInfoVO>> assignList(@PathVariable Long userId) {
     try {
       List<AssignInfoVO> assignInfoVOList =
           this.userService.getAssignDataByUserId(userId);
@@ -118,7 +118,7 @@ public class UserController {
   }
 
   @DeleteMapping(value = {"/{id}"})
-  public Result<Void> del(@PathVariable Integer id) {
+  public Result<Void> del(@PathVariable Long id) {
     return this.userService.deleteByUserId(id);
   }
 }

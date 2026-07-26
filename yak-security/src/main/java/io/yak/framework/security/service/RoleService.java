@@ -47,5 +47,5 @@ public interface RoleService {
   public List<RoleBriefVO> getRoleBriefListByUserId(Integer var1);
 
   public Map<Integer, List<RoleBriefVO>>
-  getRoleBriefListByUserIds(List<Integer> var1);
+  getRoleBriefListByUserIds(List<Long> var1);
 }

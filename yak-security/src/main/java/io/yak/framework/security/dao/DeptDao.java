@@ -7,13 +7,13 @@ import java.util.List;
 public interface DeptDao {
   public List<Dept> selectAllAndAscOrderByLevel();
 
-  public List<Integer> selectIdListByLikeDeptName(String var1);
+  public List<Long> selectIdListByLikeDeptName(String var1);
 
   public DeptBrief selectBriefByDeptId(Integer var1);
 
-  public List<Integer> selectAllDeptIdList();
+  public List<Long> selectAllDeptIdList();
 
-  public List<Integer> selectIdListByParentId(Integer var1);
+  public List<Long> selectIdListByParentId(Integer var1);
 
   public void insertBatch(List<Dept> var1);
 

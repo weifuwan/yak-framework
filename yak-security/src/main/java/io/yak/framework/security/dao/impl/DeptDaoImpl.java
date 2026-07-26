@@ -36,7 +36,7 @@ public class DeptDaoImpl extends BaseDaoImpl<DeptPO> implements DeptDao {
   }
 
   @Override
-  public List<Integer> selectIdListByLikeDeptName(String deptName) {
+  public List<Long> selectIdListByLikeDeptName(String deptName) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.select(new String[] {"id"})
         .like(!StringUtils.isEmpty((Object)deptName), (Object) "dept_name",
@@ -48,7 +48,7 @@ public class DeptDaoImpl extends BaseDaoImpl<DeptPO> implements DeptDao {
   }
 
   @Override
-  public DeptBrief selectBriefByDeptId(Integer deptId) {
+  public DeptBrief selectBriefByDeptId(Long deptId) {
     QueryWrapper<DeptPO> queryWrapper = this.wrapBriefQuery();
     queryWrapper.eq((Object) "id", (Object)deptId);
     return CopyBeanUtil.copy(this.deptMapper.selectOne((Wrapper)queryWrapper),
@@ -56,7 +56,7 @@ public class DeptDaoImpl extends BaseDaoImpl<DeptPO> implements DeptDao {
   }
 
   @Override
-  public List<Integer> selectAllDeptIdList() {
+  public List<Long> selectAllDeptIdList() {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.select(new String[] {"id"});
     List deptIdList = this.deptMapper.selectObjs((Wrapper)queryWrapper);
@@ -66,7 +66,7 @@ public class DeptDaoImpl extends BaseDaoImpl<DeptPO> implements DeptDao {
   }
 
   @Override
-  public List<Integer> selectIdListByParentId(Integer deptId) {
+  public List<Long> selectIdListByParentId(Long deptId) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.select(new String[] {"id"})
         .eq((Object) "parent_id", (Object)deptId);

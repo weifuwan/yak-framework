@@ -13,7 +13,7 @@ public interface ProjectDao {
   public void insert(Project var1);
 
   public IPage<Project> selectPageByDeptIdListAndProjectIdList(
-      ProjectQueryDTO var1, List<Integer> var2, List<Integer> var3);
+      ProjectQueryDTO var1, List<Long> var2, List<Long> var3);
 
   public void deleteByProjectId(Integer var1);
 
@@ -25,5 +25,5 @@ public interface ProjectDao {
 
   public void update(Project var1);
 
-  public List<Project> selectProjectBriefByProjectIds(List<Integer> var1);
+  public List<Project> selectProjectBriefByProjectIds(List<Long> var1);
 }

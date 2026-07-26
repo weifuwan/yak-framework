@@ -1,16 +1,16 @@
 package io.yak.framework.security.common.vo.project;
 public class ProjectBriefVO {
-  private Integer id;
+  private Long id;
   private String projectCode;
   private String projectName;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getProjectCode() { return this.projectCode; }
 
   public String getProjectName() { return this.projectName; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setProjectCode(String projectCode) {
     this.projectCode = projectCode;
@@ -31,8 +31,8 @@ public class ProjectBriefVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -58,7 +58,7 @@ public class ProjectBriefVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     String $projectCode = this.getProjectCode();
     result =

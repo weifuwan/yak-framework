@@ -6,8 +6,8 @@ public class Message extends BaseEntity {
   private String title;
   private String content;
   private Boolean readTag;
-  private Integer userId;
-  private Integer oplogId;
+  private Long userId;
+  private Long oplogId;
 
   @Override
   public boolean equals(Object o) {
@@ -30,14 +30,14 @@ public class Message extends BaseEntity {
                              : !((Object)this$readTag).equals(other$readTag)) {
       return false;
     }
-    Integer this$userId = this.getUserId();
-    Integer other$userId = other.getUserId();
+    Long this$userId = this.getUserId();
+    Long other$userId = other.getUserId();
     if (this$userId == null ? other$userId != null
                             : !((Object)this$userId).equals(other$userId)) {
       return false;
     }
-    Integer this$oplogId = this.getOplogId();
-    Integer other$oplogId = other.getOplogId();
+    Long this$oplogId = this.getOplogId();
+    Long other$oplogId = other.getOplogId();
     if (this$oplogId == null ? other$oplogId != null
                              : !((Object)this$oplogId).equals(other$oplogId)) {
       return false;
@@ -66,10 +66,10 @@ public class Message extends BaseEntity {
     Boolean $readTag = this.getReadTag();
     result =
         result * 59 + ($readTag == null ? 43 : ((Object)$readTag).hashCode());
-    Integer $userId = this.getUserId();
+    Long $userId = this.getUserId();
     result =
         result * 59 + ($userId == null ? 43 : ((Object)$userId).hashCode());
-    Integer $oplogId = this.getOplogId();
+    Long $oplogId = this.getOplogId();
     result =
         result * 59 + ($oplogId == null ? 43 : ((Object)$oplogId).hashCode());
     String $title = this.getTitle();
@@ -85,9 +85,9 @@ public class Message extends BaseEntity {
 
   public Boolean getReadTag() { return this.readTag; }
 
-  public Integer getUserId() { return this.userId; }
+  public Long getUserId() { return this.userId; }
 
-  public Integer getOplogId() { return this.oplogId; }
+  public Long getOplogId() { return this.oplogId; }
 
   public void setTitle(String title) { this.title = title; }
 
@@ -95,9 +95,9 @@ public class Message extends BaseEntity {
 
   public void setReadTag(Boolean readTag) { this.readTag = readTag; }
 
-  public void setUserId(Integer userId) { this.userId = userId; }
+  public void setUserId(Long userId) { this.userId = userId; }
 
-  public void setOplogId(Integer oplogId) { this.oplogId = oplogId; }
+  public void setOplogId(Long oplogId) { this.oplogId = oplogId; }
 
   @Override
   public String toString() {

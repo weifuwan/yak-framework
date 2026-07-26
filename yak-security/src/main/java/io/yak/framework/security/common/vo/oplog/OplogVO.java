@@ -2,7 +2,7 @@ package io.yak.framework.security.common.vo.oplog;
 
 import java.util.Date;
 public class OplogVO {
-  private Integer id;
+  private Long id;
   private String operatorIp;
   private String operator;
   private String operateType;
@@ -12,7 +12,7 @@ public class OplogVO {
   private Date createTime;
   private Date updateTime;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getOperatorIp() { return this.operatorIp; }
 
@@ -30,7 +30,7 @@ public class OplogVO {
 
   public Date getUpdateTime() { return this.updateTime; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setOperatorIp(String operatorIp) { this.operatorIp = operatorIp; }
 
@@ -61,8 +61,8 @@ public class OplogVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -123,7 +123,7 @@ public class OplogVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     String $operatorIp = this.getOperatorIp();
     result = result * 59 + ($operatorIp == null ? 43 : $operatorIp.hashCode());

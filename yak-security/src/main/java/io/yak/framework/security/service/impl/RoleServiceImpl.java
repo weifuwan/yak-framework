@@ -63,13 +63,13 @@ public class RoleServiceImpl implements RoleService {
   @Autowired private UserRoleService userRoleService;
 
   @Override
-  public RoleBriefVO getRoleBriefByRoleId(Integer roleId) {
+  public RoleBriefVO getRoleBriefByRoleId(Long roleId) {
     Role role = this.roleDao.selectByRoleId(roleId);
     return CopyBeanUtil.copy(role, RoleBriefVO.class);
   }
 
   @Override
-  public RoleVO getRoleDetailByRoleId(Integer roleId) {
+  public RoleVO getRoleDetailByRoleId(Long roleId) {
     Role role = this.roleDao.selectByRoleId(roleId);
     if (role == null) {
       return null;
@@ -80,7 +80,7 @@ public class RoleServiceImpl implements RoleService {
     roleVo.setPermissionTreeVO(permissionTreeVO);
     roleVo.setCreateTime(role.getCreateTime());
     roleVo.setUpdateTime(role.getUpdateTime());
-    List<Integer> userIdList =
+    List<Long> userIdList =
         this.userRoleService.getUserIdListByRoleId(roleId);
     List<UserBriefVO> userBriefVOList =
         this.userService.getUserBriefListByUserIdList(userIdList);
@@ -97,12 +97,12 @@ public class RoleServiceImpl implements RoleService {
   @Override
   public PagingData<RoleVO> getRolePage(RoleQueryDTO queryDTO) {
     IPage<Role> pageInfo = this.roleDao.selectPage(queryDTO);
-    List<Integer> roleIds = pageInfo.getRecords()
+    List<Long> roleIds = pageInfo.getRecords()
                                 .stream()
                                 .map(BaseEntity::getId)
                                 .collect(Collectors.toList());
     List<UserRole> userRoles = this.userRoleService.getByRoleIds(roleIds);
-    List<Integer> userIds = userRoles.stream()
+    List<Long> userIds = userRoles.stream()
                                 .map(UserRole::getUserId)
                                 .distinct()
                                 .collect(Collectors.toList());
@@ -135,7 +135,7 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public void createRole(RoleSaveDTO roleSaveDTO, HttpServletRequest request)
       throws YakSecurityException {
     this.checkParam(roleSaveDTO, false);
@@ -155,14 +155,14 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
-  public void deleteRoleByRoleId(Integer roleId, HttpServletRequest request)
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
+  public void deleteRoleByRoleId(Long roleId, HttpServletRequest request)
       throws YakSecurityException {
     Role role = this.roleDao.selectByRoleId(roleId);
     if (role == null) {
       return;
     }
-    List<Integer> userIdList =
+    List<Long> userIdList =
         this.userRoleService.getUserIdListByRoleId(roleId);
     if (!userIdList.isEmpty()) {
       throw new YakSecurityException(ResultCode.ROLE_USER_AUTHED);
@@ -176,7 +176,7 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public void deleteUserFromRole(Integer roleId, Integer userId,
+  public void deleteUserFromRole(Long roleId, Long userId,
                                  HttpServletRequest request)
       throws YakSecurityException {
     Role role = this.roleDao.selectByRoleId(roleId);
@@ -195,7 +195,7 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public void updateRole(RoleSaveDTO saveDTO, HttpServletRequest request)
       throws YakSecurityException {
     if (this.roleDao.selectByRoleId(saveDTO.getId()) == null) {
@@ -217,7 +217,7 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public void assignRoles(RoleAssignDTO assignDTO, HttpServletRequest request)
       throws YakSecurityException {
     String operator = HttpRequestUtil.getOperator(request);
@@ -225,21 +225,21 @@ public class RoleServiceImpl implements RoleService {
       throw new YakSecurityException(ResultCode.ROLE_ASSIGN_FLAG_IS_NULL);
     }
     if (Boolean.TRUE.equals(assignDTO.getFlag())) {
-      Integer userId = assignDTO.getId();
-      List<Integer> oldRoleIdList =
+      Long userId = assignDTO.getId();
+      List<Long> oldRoleIdList =
           this.userRoleService.getRoleIdListByUserId(userId);
       this.userRoleService.updateUserRoleByUserId(userId,
                                                   assignDTO.getIdList());
       UserBriefVO userBriefVO =
           this.userService.getUserBriefByUserName(operator);
-      Integer oplogId = this.oplogService.saveOplog(new OplogDTO(
+      Long oplogId = this.oplogService.saveOplog(new OplogDTO(
           operator, "\u7f16\u8f91", "Role", userBriefVO.getUserName(),
           "\u7ed9\u7528\u6237\u5206\u914d\u89d2\u8272\uff0c" +
               JsonUtils.toJson(assignDTO)));
       this.packAndSaveMessage(oplogId, oldRoleIdList, assignDTO);
     } else {
-      Integer roleId = assignDTO.getId();
-      List<Integer> oldUserIdList =
+      Long roleId = assignDTO.getId();
+      List<Long> oldUserIdList =
           this.userRoleService.getUserIdListByRoleId(roleId);
       this.userRoleService.updateUserRoleByRoleId(roleId,
                                                   assignDTO.getIdList());
@@ -252,7 +252,7 @@ public class RoleServiceImpl implements RoleService {
       }
       this.roleDao.update(updateLastReviserById);
       Role role = this.roleDao.selectByRoleId(assignDTO.getId());
-      Integer oplogId = this.oplogService.saveOplog(
+      Long oplogId = this.oplogService.saveOplog(
           new OplogDTO(operator, "\u7f16\u8f91", "Role", role.getRoleName(),
                        "\u7ed9\u89d2\u8272\u5206\u914d\u7528\u6237\uff0c" +
                            JsonUtils.toJson(assignDTO)));
@@ -269,13 +269,13 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public RoleDeleteCheckVO checkBeforeDelete(Integer roleId) {
+  public RoleDeleteCheckVO checkBeforeDelete(Long roleId) {
     if (roleId == null) {
       return null;
     }
     RoleDeleteCheckVO roleDeleteCheckVO = new RoleDeleteCheckVO();
     roleDeleteCheckVO.setRoleId(roleId);
-    List<Integer> userIdList =
+    List<Long> userIdList =
         this.userRoleService.getUserIdListByRoleId(roleId);
     if (!CollectionUtils.isEmpty(userIdList)) {
       List<UserBriefVO> list =
@@ -295,8 +295,8 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public List<RoleBriefVO> getRoleBriefListByUserId(Integer userId) {
-    List<Integer> roleIdList =
+  public List<RoleBriefVO> getRoleBriefListByUserId(Long userId) {
+    List<Long> roleIdList =
         this.userRoleService.getRoleIdListByUserId(userId);
     if (CollectionUtils.isEmpty(roleIdList)) {
       return new ArrayList<RoleBriefVO>();
@@ -308,10 +308,10 @@ public class RoleServiceImpl implements RoleService {
 
   @Override
   public Map<Integer, List<RoleBriefVO>>
-  getRoleBriefListByUserIds(List<Integer> userId) {
+  getRoleBriefListByUserIds(List<Long> userId) {
     List<UserRole> userRoleList =
         this.userRoleService.getRoleIdListByUserIds(userId);
-    List<Integer> roleIds = userRoleList.stream()
+    List<Long> roleIds = userRoleList.stream()
                                 .map(UserRole::getRoleId)
                                 .collect(Collectors.toList());
     List<RoleBriefVO> roleBriefs = CopyBeanUtil.copyList(
@@ -326,14 +326,14 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public List<AssignInfoVO> getAssignInfoByRoleId(Integer roleId) {
+  public List<AssignInfoVO> getAssignInfoByRoleId(Long roleId) {
     if (roleId == null) {
       return new ArrayList<AssignInfoVO>();
     }
     List<UserBriefVO> userBriefVOList = this.userService.getAllUserBriefList();
-    List<Integer> userIdList =
+    List<Long> userIdList =
         this.userRoleService.getUserIdListByRoleId(roleId);
-    HashSet<Integer> hasRoleUserIdSet = new HashSet<Integer>(userIdList);
+    HashSet<Long> hasRoleUserIdSet = new HashSet<Long>(userIdList);
     ArrayList<AssignInfoVO> result = new ArrayList<AssignInfoVO>();
     for (UserBriefVO userBriefVO : userBriefVOList) {
       AssignInfoVO assignInfoVO = new AssignInfoVO();
@@ -345,40 +345,40 @@ public class RoleServiceImpl implements RoleService {
     return result;
   }
 
-  private void packAndSaveMessage(Integer oplogId, List<Integer> oldIdList,
+  private void packAndSaveMessage(Long oplogId, List<Long> oldIdList,
                                   RoleAssignDTO roleAssignDTO) {
-    List<Integer> newIdList = roleAssignDTO.getIdList();
-    ArrayList<Integer> removeIdList = new ArrayList<Integer>();
-    ArrayList<Integer> addIdList = new ArrayList<Integer>();
-    Set<Integer> set = MathUtil.getIntersection(oldIdList, newIdList);
-    for (Integer oldId : oldIdList) {
+    List<Long> newIdList = roleAssignDTO.getIdList();
+    ArrayList<Long> removeIdList = new ArrayList<Long>();
+    ArrayList<Long> addIdList = new ArrayList<Long>();
+    Set<Long> set = MathUtil.getIntersection(oldIdList, newIdList);
+    for (Long oldId : oldIdList) {
       if (set.contains(oldId))
         continue;
       removeIdList.add(oldId);
     }
-    for (Integer newId : newIdList) {
+    for (Long newId : newIdList) {
       if (set.contains(newId))
         continue;
       addIdList.add(newId);
     }
     if (Boolean.TRUE.equals(roleAssignDTO.getFlag())) {
-      ArrayList<Integer> userIdList = new ArrayList<Integer>();
+      ArrayList<Long> userIdList = new ArrayList<Long>();
       userIdList.add(roleAssignDTO.getId());
       this.saveRoleAssignMessage(oplogId, userIdList, removeIdList, userIdList,
                                  addIdList);
     } else {
-      ArrayList<Integer> roleIdList = new ArrayList<Integer>();
+      ArrayList<Long> roleIdList = new ArrayList<Long>();
       roleIdList.add(roleAssignDTO.getId());
       this.saveRoleAssignMessage(oplogId, removeIdList, roleIdList, addIdList,
                                  roleIdList);
     }
   }
 
-  private void saveRoleAssignMessage(Integer oplogId,
-                                     List<Integer> removeUserIdList,
-                                     List<Integer> removeRoleIdList,
-                                     List<Integer> addUserIdList,
-                                     List<Integer> addRoleIdList) {
+  private void saveRoleAssignMessage(Long oplogId,
+                                     List<Long> removeUserIdList,
+                                     List<Long> removeRoleIdList,
+                                     List<Long> addUserIdList,
+                                     List<Long> addRoleIdList) {
     String content;
     MessageDTO messageDTO;
     SimpleDateFormat formatter = new SimpleDateFormat("MM-dd HH:mm");
@@ -388,7 +388,7 @@ public class RoleServiceImpl implements RoleService {
     String removeRoleInfo = this.spliceRoleNameByRoleIdList(removeRoleIdList);
     ArrayList<MessageDTO> messageDTOList = new ArrayList<MessageDTO>();
     if (!StringUtils.isEmpty((Object)addRoleInfo)) {
-      for (Integer userId : addUserIdList) {
+      for (Long userId : addUserIdList) {
         messageDTO = new MessageDTO(userId, oplogId);
         content = String.format(MessageCode.ROLE_ADD_MESSAGE.getContent(), time,
                                 addRoleInfo);
@@ -398,7 +398,7 @@ public class RoleServiceImpl implements RoleService {
       }
     }
     if (!StringUtils.isEmpty((Object)removeRoleInfo)) {
-      for (Integer userId : removeUserIdList) {
+      for (Long userId : removeUserIdList) {
         messageDTO = new MessageDTO(userId, oplogId);
         content = String.format(MessageCode.ROLE_REMOVE_MESSAGE.getContent(),
                                 time, removeRoleInfo);
@@ -410,7 +410,7 @@ public class RoleServiceImpl implements RoleService {
     this.messageService.saveMessages(messageDTOList);
   }
 
-  private String spliceRoleNameByRoleIdList(List<Integer> roleIdList) {
+  private String spliceRoleNameByRoleIdList(List<Long> roleIdList) {
     List<RoleBrief> roleBriefList =
         this.roleDao.selectBriefListByRoleIdList(roleIdList);
     if (roleBriefList.isEmpty()) {
@@ -432,7 +432,7 @@ public class RoleServiceImpl implements RoleService {
     if (CollectionUtils.isEmpty(saveDTO.getPermissionIdList())) {
       throw new YakSecurityException(ResultCode.ROLE_PERMISSION_CANNOT_BE_NULL);
     }
-    Integer roleId = isUpdate ? saveDTO.getId() : null;
+    Long roleId = isUpdate ? saveDTO.getId() : null;
     int count = this.roleDao.selectCountByRoleNameAndNotRoleId(
         saveDTO.getRoleName(), roleId);
     if (count > 0) {

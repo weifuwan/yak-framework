@@ -30,7 +30,7 @@ public class RoleController {
   @Autowired private RoleService roleService;
 
   @GetMapping(value = {"/{id}"})
-  public Result<RoleVO> detail(@PathVariable Integer id) {
+  public Result<RoleVO> detail(@PathVariable Long id) {
     RoleVO roleVo = this.roleService.getRoleDetailByRoleId(id);
     return Result.success(roleVo);
   }
@@ -58,13 +58,13 @@ public class RoleController {
   }
 
   @DeleteMapping(value = {"/delete/check/{id}"})
-  public Result<RoleDeleteCheckVO> check(@PathVariable Integer id) {
+  public Result<RoleDeleteCheckVO> check(@PathVariable Long id) {
     return Result.success(this.roleService.checkBeforeDelete(id));
   }
 
   @DeleteMapping(value = {"/{id}/user/{userId}"})
-  public Result<String> deleteUser(@PathVariable Integer id,
-                                   @PathVariable Integer userId,
+  public Result<String> deleteUser(@PathVariable Long id,
+                                   @PathVariable Long userId,
                                    HttpServletRequest request) {
     try {
       this.roleService.deleteUserFromRole(id, userId, request);
@@ -75,7 +75,7 @@ public class RoleController {
   }
 
   @DeleteMapping(value = {"/{id}"})
-  public Result<String> delete(@PathVariable Integer id,
+  public Result<String> delete(@PathVariable Long id,
                                HttpServletRequest request) {
     try {
       this.roleService.deleteRoleByRoleId(id, request);
@@ -103,7 +103,7 @@ public class RoleController {
   }
 
   @GetMapping(value = {"/assign/list/{roleId}"})
-  public Result<List<AssignInfoVO>> assignList(@PathVariable Integer roleId) {
+  public Result<List<AssignInfoVO>> assignList(@PathVariable Long roleId) {
     List<AssignInfoVO> assignInfoVOList =
         this.roleService.getAssignInfoByRoleId(roleId);
     return Result.success(assignInfoVOList);

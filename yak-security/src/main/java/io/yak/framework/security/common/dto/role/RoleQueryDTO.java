@@ -3,7 +3,7 @@ package io.yak.framework.security.common.dto.role;
 import io.yak.framework.security.common.dto.PageParamDTO;
 public class RoleQueryDTO extends PageParamDTO {
   private String roleCode;
-  private Integer id;
+  private Long id;
   private String roleName;
   private String description;
 
@@ -22,8 +22,8 @@ public class RoleQueryDTO extends PageParamDTO {
     if (!super.equals(o)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -56,7 +56,7 @@ public class RoleQueryDTO extends PageParamDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = super.hashCode();
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     String $roleCode = this.getRoleCode();
     result = result * 59 + ($roleCode == null ? 43 : $roleCode.hashCode());
@@ -70,7 +70,7 @@ public class RoleQueryDTO extends PageParamDTO {
 
   public String getRoleCode() { return this.roleCode; }
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getRoleName() { return this.roleName; }
 
@@ -78,7 +78,7 @@ public class RoleQueryDTO extends PageParamDTO {
 
   public void setRoleCode(String roleCode) { this.roleCode = roleCode; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setRoleName(String roleName) { this.roleName = roleName; }
 

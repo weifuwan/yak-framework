@@ -7,7 +7,7 @@ public class UserDTO {
   private String realName;
   private String phone;
   private String email;
-  private List<Integer> roleIds;
+  private List<Long> roleIds;
 
   public boolean equals(Object o) {
     if (o == this) {
@@ -49,8 +49,8 @@ public class UserDTO {
                            : !this$email.equals(other$email)) {
       return false;
     }
-    List<Integer> this$roleIds = this.getRoleIds();
-    List<Integer> other$roleIds = other.getRoleIds();
+    List<Long> this$roleIds = this.getRoleIds();
+    List<Long> other$roleIds = other.getRoleIds();
     return !(this$roleIds == null
                  ? other$roleIds != null
                  : !((Object)this$roleIds).equals(other$roleIds));
@@ -71,7 +71,7 @@ public class UserDTO {
     result = result * 59 + ($phone == null ? 43 : $phone.hashCode());
     String $email = this.getEmail();
     result = result * 59 + ($email == null ? 43 : $email.hashCode());
-    List<Integer> $roleIds = this.getRoleIds();
+    List<Long> $roleIds = this.getRoleIds();
     result =
         result * 59 + ($roleIds == null ? 43 : ((Object)$roleIds).hashCode());
     return result;
@@ -87,7 +87,7 @@ public class UserDTO {
 
   public String getEmail() { return this.email; }
 
-  public List<Integer> getRoleIds() { return this.roleIds; }
+  public List<Long> getRoleIds() { return this.roleIds; }
 
   public void setUserName(String userName) { this.userName = userName; }
 
@@ -99,7 +99,7 @@ public class UserDTO {
 
   public void setEmail(String email) { this.email = email; }
 
-  public void setRoleIds(List<Integer> roleIds) { this.roleIds = roleIds; }
+  public void setRoleIds(List<Long> roleIds) { this.roleIds = roleIds; }
 
   public String toString() {
     return "UserDTO(userName=" + this.getUserName() + ", realName=" + this.getRealName() + ", phone=" + this.getPhone() +

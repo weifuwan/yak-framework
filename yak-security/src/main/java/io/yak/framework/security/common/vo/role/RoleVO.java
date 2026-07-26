@@ -5,7 +5,7 @@ import io.yak.framework.security.common.vo.permission.PermissionTreeVO;
 import java.util.Date;
 import java.util.List;
 public class RoleVO {
-  private Integer id;
+  private Long id;
   private String roleName;
   private String roleCode;
   private String description;
@@ -17,7 +17,7 @@ public class RoleVO {
   @JsonInclude(value = JsonInclude.Include.NON_NULL)
   private PermissionTreeVO permissionTreeVO;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getRoleName() { return this.roleName; }
 
@@ -39,7 +39,7 @@ public class RoleVO {
     return this.permissionTreeVO;
   }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setRoleName(String roleName) { this.roleName = roleName; }
 
@@ -80,8 +80,8 @@ public class RoleVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -153,7 +153,7 @@ public class RoleVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Integer $authedUserCnt = this.getAuthedUserCnt();
     result =

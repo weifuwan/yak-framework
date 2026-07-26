@@ -2,14 +2,14 @@ package io.yak.framework.security.common.vo.role;
 
 import java.util.List;
 public class RoleDeleteCheckVO {
-  private Integer roleId;
+  private Long roleId;
   private List<String> userNameList;
 
-  public Integer getRoleId() { return this.roleId; }
+  public Long getRoleId() { return this.roleId; }
 
   public List<String> getUserNameList() { return this.userNameList; }
 
-  public void setRoleId(Integer roleId) { this.roleId = roleId; }
+  public void setRoleId(Long roleId) { this.roleId = roleId; }
 
   public void setUserNameList(List<String> userNameList) {
     this.userNameList = userNameList;
@@ -26,8 +26,8 @@ public class RoleDeleteCheckVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$roleId = this.getRoleId();
-    Integer other$roleId = other.getRoleId();
+    Long this$roleId = this.getRoleId();
+    Long other$roleId = other.getRoleId();
     if (this$roleId == null ? other$roleId != null
                             : !((Object)this$roleId).equals(other$roleId)) {
       return false;
@@ -46,7 +46,7 @@ public class RoleDeleteCheckVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $roleId = this.getRoleId();
+    Long $roleId = this.getRoleId();
     result =
         result * 59 + ($roleId == null ? 43 : ((Object)$roleId).hashCode());
     List<String> $userNameList = this.getUserNameList();

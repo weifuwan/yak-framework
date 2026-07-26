@@ -2,7 +2,7 @@ package io.yak.framework.security.common.dto.resource;
 
 import io.yak.framework.security.common.dto.PageParamDTO;
 public class MByUQueryDTO extends PageParamDTO {
-  private Integer deptId;
+  private Long deptId;
   private String deptName;
   private String userName;
   private String realName;
@@ -22,8 +22,8 @@ public class MByUQueryDTO extends PageParamDTO {
     if (!super.equals(o)) {
       return false;
     }
-    Integer this$deptId = this.getDeptId();
-    Integer other$deptId = other.getDeptId();
+    Long this$deptId = this.getDeptId();
+    Long other$deptId = other.getDeptId();
     if (this$deptId == null ? other$deptId != null
                             : !((Object)this$deptId).equals(other$deptId)) {
       return false;
@@ -55,7 +55,7 @@ public class MByUQueryDTO extends PageParamDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = super.hashCode();
-    Integer $deptId = this.getDeptId();
+    Long $deptId = this.getDeptId();
     result =
         result * 59 + ($deptId == null ? 43 : ((Object)$deptId).hashCode());
     String $deptName = this.getDeptName();
@@ -67,7 +67,7 @@ public class MByUQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public Integer getDeptId() { return this.deptId; }
+  public Long getDeptId() { return this.deptId; }
 
   public String getDeptName() { return this.deptName; }
 
@@ -75,7 +75,7 @@ public class MByUQueryDTO extends PageParamDTO {
 
   public String getRealName() { return this.realName; }
 
-  public void setDeptId(Integer deptId) { this.deptId = deptId; }
+  public void setDeptId(Long deptId) { this.deptId = deptId; }
 
   public void setDeptName(String deptName) { this.deptName = deptName; }
 

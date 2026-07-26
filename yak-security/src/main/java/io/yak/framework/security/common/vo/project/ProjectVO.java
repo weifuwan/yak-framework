@@ -5,7 +5,7 @@ import io.yak.framework.security.common.vo.user.UserBriefVO;
 import java.util.Date;
 import java.util.List;
 public class ProjectVO {
-  private Integer id;
+  private Long id;
   private String projectCode;
   private String projectName;
   private List<UserBriefVO> userList;
@@ -13,10 +13,10 @@ public class ProjectVO {
   private String description;
   private Boolean running;
   private List<DeptBriefVO> deptList;
-  private Integer deptId;
+  private Long deptId;
   private Date createTime;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getProjectCode() { return this.projectCode; }
 
@@ -32,11 +32,11 @@ public class ProjectVO {
 
   public List<DeptBriefVO> getDeptList() { return this.deptList; }
 
-  public Integer getDeptId() { return this.deptId; }
+  public Long getDeptId() { return this.deptId; }
 
   public Date getCreateTime() { return this.createTime; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setProjectCode(String projectCode) {
     this.projectCode = projectCode;
@@ -64,7 +64,7 @@ public class ProjectVO {
     this.deptList = deptList;
   }
 
-  public void setDeptId(Integer deptId) { this.deptId = deptId; }
+  public void setDeptId(Long deptId) { this.deptId = deptId; }
 
   public void setCreateTime(Date createTime) { this.createTime = createTime; }
 
@@ -79,8 +79,8 @@ public class ProjectVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -91,8 +91,8 @@ public class ProjectVO {
                              : !((Object)this$running).equals(other$running)) {
       return false;
     }
-    Integer this$deptId = this.getDeptId();
-    Integer other$deptId = other.getDeptId();
+    Long this$deptId = this.getDeptId();
+    Long other$deptId = other.getDeptId();
     if (this$deptId == null ? other$deptId != null
                             : !((Object)this$deptId).equals(other$deptId)) {
       return false;
@@ -153,12 +153,12 @@ public class ProjectVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Boolean $running = this.getRunning();
     result =
         result * 59 + ($running == null ? 43 : ((Object)$running).hashCode());
-    Integer $deptId = this.getDeptId();
+    Long $deptId = this.getDeptId();
     result =
         result * 59 + ($deptId == null ? 43 : ((Object)$deptId).hashCode());
     String $projectCode = this.getProjectCode();

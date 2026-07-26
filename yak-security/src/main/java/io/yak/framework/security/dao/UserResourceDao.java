@@ -17,15 +17,15 @@ public interface UserResourceDao {
 
   public void insertBatch(List<UserResource> var1);
 
-  public void deleteByUserIdList(List<Integer> var1, UserResourceQueryDTO var2);
+  public void deleteByUserIdList(List<Long> var1, UserResourceQueryDTO var2);
 
-  public void deleteByProjectIdList(List<Integer> var1,
+  public void deleteByProjectIdList(List<Long> var1,
                                     UserResourceQueryDTO var2);
 
-  public void deleteByResourceTypeIdList(List<Integer> var1,
+  public void deleteByResourceTypeIdList(List<Long> var1,
                                          UserResourceQueryDTO var2);
 
-  public void deleteByResourceIdList(List<Integer> var1,
+  public void deleteByResourceIdList(List<Long> var1,
                                      UserResourceQueryDTO var2);
 
   public int selectCountByUserIdAndControlLevel(Integer var1,
@@ -33,23 +33,23 @@ public interface UserResourceDao {
 
   public int selectCount(UserResourceQueryDTO var1);
 
-  public List<Integer> selectResourceIdListByUserId(Integer var1,
+  public List<Long> selectResourceIdListByUserId(Integer var1,
                                                     UserResourceQueryDTO var2);
 
   public void deleteWithoutUserIdList(UserResourceQueryDTO var1,
-                                      List<Integer> var2);
+                                      List<Long> var2);
 
   public void deleteByUserIdWithoutProjectIdList(Integer var1,
                                                  UserResourceQueryDTO var2,
-                                                 List<Integer> var3);
+                                                 List<Long> var3);
 
   public void deleteByUserIdWithoutResourceTypeIdList(Integer var1,
                                                       UserResourceQueryDTO var2,
-                                                      List<Integer> var3);
+                                                      List<Long> var3);
 
   public int selectCountGroupByUserId(UserResourceQueryDTO var1);
 
-  public List<Integer> selectUserIdListGroupByUserId(UserResourceQueryDTO var1);
+  public List<Long> selectUserIdListGroupByUserId(UserResourceQueryDTO var1);
 
   public Integer selectControlLevel(ControlLevelQueryDTO var1);
 }

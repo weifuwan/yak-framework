@@ -5,8 +5,9 @@ import io.yak.framework.security.common.po.BasePO;
 
 @TableName(value = "yak_security_permission")
 public class PermissionPO extends BasePO {
+  private String permissionCode;
   private String permissionName;
-  private Integer parentId;
+  private Long parentId;
   private Boolean leaf;
   private Integer level;
   private String description;
@@ -26,8 +27,8 @@ public class PermissionPO extends BasePO {
     if (!super.equals(o)) {
       return false;
     }
-    Integer this$parentId = this.getParentId();
-    Integer other$parentId = other.getParentId();
+    Long this$parentId = this.getParentId();
+    Long other$parentId = other.getParentId();
     if (this$parentId == null
             ? other$parentId != null
             : !((Object)this$parentId).equals(other$parentId)) {
@@ -68,7 +69,7 @@ public class PermissionPO extends BasePO {
   public int hashCode() {
     int PRIME = 59;
     int result = super.hashCode();
-    Integer $parentId = this.getParentId();
+    Long $parentId = this.getParentId();
     result =
         result * 59 + ($parentId == null ? 43 : ((Object)$parentId).hashCode());
     Boolean $leaf = this.getLeaf();
@@ -84,9 +85,16 @@ public class PermissionPO extends BasePO {
     return result;
   }
 
+
+  public String getPermissionCode() { return this.permissionCode; }
+
+  public void setPermissionCode(String permissionCode) {
+    this.permissionCode = permissionCode;
+  }
+
   public String getPermissionName() { return this.permissionName; }
 
-  public Integer getParentId() { return this.parentId; }
+  public Long getParentId() { return this.parentId; }
 
   public Boolean getLeaf() { return this.leaf; }
 
@@ -98,7 +106,7 @@ public class PermissionPO extends BasePO {
     this.permissionName = permissionName;
   }
 
-  public void setParentId(Integer parentId) { this.parentId = parentId; }
+  public void setParentId(Long parentId) { this.parentId = parentId; }
 
   public void setLeaf(Boolean leaf) { this.leaf = leaf; }
 

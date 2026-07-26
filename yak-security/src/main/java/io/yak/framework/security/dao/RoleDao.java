@@ -24,7 +24,7 @@ public interface RoleDao {
 
   public List<RoleBrief> selectAllBrief();
 
-  public List<RoleBrief> selectBriefListByRoleIdList(List<Integer> var1);
+  public List<RoleBrief> selectBriefListByRoleIdList(List<Long> var1);
 
   public int selectCountByRoleNameAndNotRoleId(String var1, Integer var2);
 }

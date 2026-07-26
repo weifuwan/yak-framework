@@ -26,7 +26,7 @@ public class ProjectDaoImpl
   @Autowired private ProjectMapper projectMapper;
 
   @Override
-  public Project selectByProjectId(Integer projectId) {
+  public Project selectByProjectId(Long projectId) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.eq((Object) "id", (Object)projectId);
     return CopyBeanUtil.copy(
@@ -42,7 +42,7 @@ public class ProjectDaoImpl
   }
 
   @Override
-  public void deleteByProjectId(Integer projectId) {
+  public void deleteByProjectId(Long projectId) {
     this.projectMapper.deleteById(projectId);
   }
 
@@ -53,7 +53,7 @@ public class ProjectDaoImpl
 
   @Override
   public int selectCountByProjectNameAndNotProjectId(String projectName,
-                                                     Integer projectId) {
+                                                     Long projectId) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     ((QueryWrapper)queryWrapper.eq((Object) "project_name",
                                    (Object)projectName))
@@ -89,8 +89,8 @@ public class ProjectDaoImpl
   @Override
   public IPage<Project>
   selectPageByDeptIdListAndProjectIdList(ProjectQueryDTO queryDTO,
-                                         List<Integer> deptIdList,
-                                         List<Integer> projectIdList) {
+                                         List<Long> deptIdList,
+                                         List<Long> projectIdList) {
     Page page = new Page((long)queryDTO.getPage(), (long)queryDTO.getSize());
     QueryWrapper projectWrapper = this.getQueryWrapperWithAppName();
     String projectCode = queryDTO.getProjectCode();
@@ -118,7 +118,7 @@ public class ProjectDaoImpl
 
   @Override
   public List<Project>
-  selectProjectBriefByProjectIds(List<Integer> projectIds) {
+  selectProjectBriefByProjectIds(List<Long> projectIds) {
     if (CollectionUtils.isEmpty(projectIds)) {
       return Collections.emptyList();
     }

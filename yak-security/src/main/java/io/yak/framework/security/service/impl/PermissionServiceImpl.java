@@ -25,7 +25,7 @@ public class PermissionServiceImpl implements PermissionService {
   @Autowired private PermissionDao permissionDao;
   @Autowired private RolePermissionService rolePermissionService;
 
-  private PermissionTreeVO buildPermissionTree(Set<Integer> permissionHasSet)
+  private PermissionTreeVO buildPermissionTree(Set<Long> permissionHasSet)
       throws YakSecurityException {
     List<Permission> permissionList =
         this.permissionDao.selectAllAndAscOrderByLevel();
@@ -60,11 +60,11 @@ public class PermissionServiceImpl implements PermissionService {
 
   @Override
   public PermissionTreeVO
-  buildPermissionTreeWithHas(List<Integer> permissionHasList) {
+  buildPermissionTreeWithHas(List<Long> permissionHasList) {
     PermissionTreeVO permissionTreeVO = null;
     try {
       permissionTreeVO =
-          this.buildPermissionTree(new HashSet<Integer>(permissionHasList));
+          this.buildPermissionTree(new HashSet<Long>(permissionHasList));
     } catch (YakSecurityException e) {
       e.printStackTrace();
     }
@@ -73,12 +73,12 @@ public class PermissionServiceImpl implements PermissionService {
 
   @Override
   public PermissionTreeVO buildPermissionTree() {
-    return this.buildPermissionTreeWithHas(new ArrayList<Integer>());
+    return this.buildPermissionTreeWithHas(new ArrayList<Long>());
   }
 
   @Override
-  public PermissionTreeVO buildPermissionTreeByRoleId(Integer roleId) {
-    List<Integer> permissionIdList =
+  public PermissionTreeVO buildPermissionTreeByRoleId(Long roleId) {
+    List<Long> permissionIdList =
         this.rolePermissionService.getPermissionIdListByRoleId(roleId);
     return this.buildPermissionTreeWithHas(permissionIdList);
   }

@@ -25,7 +25,7 @@ public interface ProjectService {
   public PagingData<ProjectVO> getProjectPage(ProjectQueryDTO var1);
 
   public PagingData<ProjectVO> getProjectPage(ProjectQueryDTO var1,
-                                              List<Integer> var2);
+                                              List<Long> var2);
 
   public void deleteProjectByProjectId(Integer var1, String var2);
 
@@ -57,5 +57,5 @@ public interface ProjectService {
   public Result<List<ProjectBriefVO>> getProjectBriefByUserId(Integer var1);
 
   public List<ProjectBriefVOWithUser>
-  listProjectBriefVOWithUserByProjectIds(List<Integer> var1);
+  listProjectBriefVOWithUserByProjectIds(List<Long> var1);
 }

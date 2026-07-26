@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
+import net.sf.jsqlparser.expression.StringValue;
+import org.flywaydb.core.Flyway;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -61,10 +64,23 @@ public class DataSourceConfig {
   }
 
   @Bean("yakSecurityMybatisPlusInterceptor")
-  public MybatisPlusInterceptor yakSecurityMybatisPlusInterceptor() {
+  public MybatisPlusInterceptor yakSecurityMybatisPlusInterceptor(
+      YakSecurityProperties properties) {
+    requireText(properties.getApplicationName(), "yak.security.application-name");
     MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+    // Every ORM SELECT/UPDATE/DELETE and INSERT is constrained to the configured app.
+    interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(
+        () -> new StringValue(properties.getApplicationName())));
     interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MARIADB));
     return interceptor;
+  }
+
+  /** Runs versioned migrations on the dedicated security datasource. */
+  @Bean(initMethod = "migrate", name = "yakSecurityFlyway")
+  public Flyway yakSecurityFlyway(
+      @Qualifier("yakSecurityDataSource") DataSource dataSource) {
+    return Flyway.configure().dataSource(dataSource)
+        .locations("classpath:db/migration").load();
   }
 
   @Bean("yakSecuritySqlSessionFactory")

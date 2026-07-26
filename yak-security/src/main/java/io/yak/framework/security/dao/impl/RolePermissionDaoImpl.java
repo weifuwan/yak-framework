@@ -34,7 +34,7 @@ public class RolePermissionDaoImpl
   }
 
   @Override
-  public void deleteByRoleId(Integer roleId) {
+  public void deleteByRoleId(Long roleId) {
     if (roleId == null) {
       return;
     }
@@ -44,20 +44,20 @@ public class RolePermissionDaoImpl
   }
 
   @Override
-  public List<Integer> selectPermissionIdListByRoleId(Integer roleId) {
+  public List<Long> selectPermissionIdListByRoleId(Long roleId) {
     if (roleId == null) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
-    ArrayList<Integer> roleIdList = new ArrayList<Integer>();
+    ArrayList<Long> roleIdList = new ArrayList<Long>();
     roleIdList.add(roleId);
     return this.selectPermissionIdListByRoleIdList(roleIdList);
   }
 
   @Override
-  public List<Integer>
-  selectPermissionIdListByRoleIdList(List<Integer> roleIdList) {
+  public List<Long>
+  selectPermissionIdListByRoleIdList(List<Long> roleIdList) {
     if (CollectionUtils.isEmpty(roleIdList)) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.select(new String[] {"permission_id"})

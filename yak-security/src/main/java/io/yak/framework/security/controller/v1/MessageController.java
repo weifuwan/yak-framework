@@ -31,7 +31,7 @@ public class MessageController {
 
   @PutMapping(value = {"/switch"})
   public Result<String> switched(@RequestBody @ApiParam(
-      name = "idList", value = "\u6d88\u606fidList") List<Integer> idList) {
+      name = "idList", value = "\u6d88\u606fidList") List<Long> idList) {
     this.messageService.changeMessageStatus(idList);
     return Result.success();
   }

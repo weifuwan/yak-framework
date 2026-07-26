@@ -5,9 +5,9 @@ import io.yak.framework.security.common.po.UserRolePO;
 import java.util.List;
 
 public interface UserRoleDao {
-  public List<Integer> selectUserIdListByRoleId(Integer var1);
+  public List<Long> selectUserIdListByRoleId(Integer var1);
 
-  public List<Integer> selectRoleIdListByUserId(Integer var1);
+  public List<Long> selectRoleIdListByUserId(Integer var1);
 
   public void insertBatch(List<UserRole> var1);
 
@@ -15,7 +15,7 @@ public interface UserRoleDao {
 
   public int selectCountByRoleId(Integer var1);
 
-  public List<UserRolePO> selectByRoleIds(List<Integer> var1);
+  public List<UserRolePO> selectByRoleIds(List<Long> var1);
 
-  public List<UserRolePO> getRoleIdListByUserIds(List<Integer> var1);
+  public List<UserRolePO> getRoleIdListByUserIds(List<Long> var1);
 }
