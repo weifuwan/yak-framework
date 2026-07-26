@@ -19,8 +19,8 @@
 
 
     <modules>
+        <module>yak-job</module>
         <module>yak-security</module>
-        <module>yak-common</module>
     </modules>
 
     <repositories>

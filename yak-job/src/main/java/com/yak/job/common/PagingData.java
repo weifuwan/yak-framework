@@ -1,0 +1,197 @@
+/*
+ * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
+ * 
+ * Could not load the following classes:
+ *  io.swagger.annotations.ApiModel
+ *  io.swagger.annotations.ApiModelProperty
+ */
+package com.yak.job.common;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
+
+@ApiModel
+public class PagingData<T> {
+    @ApiModelProperty(value="\u8fd4\u56de\u6570\u636e")
+    private List<T> bizData;
+    @ApiModelProperty(value="\u5206\u9875\u4fe1\u606f")
+    private Pagination pagination;
+
+    public PagingData(List<T> bizData, long total, long pageNo, long pageSize) {
+        this.bizData = bizData;
+        this.pagination = new Pagination(total, pageNo, pageSize);
+    }
+
+    public List<T> getBizData() {
+        return this.bizData;
+    }
+
+    public Pagination getPagination() {
+        return this.pagination;
+    }
+
+    public void setBizData(List<T> bizData) {
+        this.bizData = bizData;
+    }
+
+    public void setPagination(Pagination pagination) {
+        this.pagination = pagination;
+    }
+
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof PagingData)) {
+            return false;
+        }
+        PagingData other = (PagingData)o;
+        if (!other.canEqual(this)) {
+            return false;
+        }
+        List<T> this$bizData = this.getBizData();
+        List<T> other$bizData = other.getBizData();
+        if (this$bizData == null ? other$bizData != null : !((Object)this$bizData).equals(other$bizData)) {
+            return false;
+        }
+        Pagination this$pagination = this.getPagination();
+        Pagination other$pagination = other.getPagination();
+        return !(this$pagination == null ? other$pagination != null : !((Object)this$pagination).equals(other$pagination));
+    }
+
+    protected boolean canEqual(Object other) {
+        return other instanceof PagingData;
+    }
+
+    public int hashCode() {
+        int PRIME = 59;
+        int result = 1;
+        List<T> $bizData = this.getBizData();
+        result = result * 59 + ($bizData == null ? 43 : ((Object)$bizData).hashCode());
+        Pagination $pagination = this.getPagination();
+        result = result * 59 + ($pagination == null ? 43 : ((Object)$pagination).hashCode());
+        return result;
+    }
+
+    public String toString() {
+        return "PagingData(bizData=" + this.getBizData() + ", pagination=" + this.getPagination() + ")";
+    }
+
+    @ApiModel(description="\u5206\u9875\u57fa\u672c\u4fe1\u606f")
+    protected static class Pagination {
+        @ApiModelProperty(value="\u603b\u8bb0\u5f55\u6570")
+        private long total;
+        @ApiModelProperty(value="\u5f53\u524d\u9875\u7801")
+        private long pageNo;
+        @ApiModelProperty(value="\u5355\u9875\u5927\u5c0f")
+        private long pageSize;
+
+        Pagination(long total, long pageNo, long pageSize) {
+            this.total = total;
+            this.pageNo = pageNo;
+            this.pageSize = pageSize;
+        }
+
+        public static PaginationBuilder builder() {
+            return new PaginationBuilder();
+        }
+
+        public long getTotal() {
+            return this.total;
+        }
+
+        public long getPageNo() {
+            return this.pageNo;
+        }
+
+        public long getPageSize() {
+            return this.pageSize;
+        }
+
+        public void setTotal(long total) {
+            this.total = total;
+        }
+
+        public void setPageNo(long pageNo) {
+            this.pageNo = pageNo;
+        }
+
+        public void setPageSize(long pageSize) {
+            this.pageSize = pageSize;
+        }
+
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof Pagination)) {
+                return false;
+            }
+            Pagination other = (Pagination)o;
+            if (!other.canEqual(this)) {
+                return false;
+            }
+            if (this.getTotal() != other.getTotal()) {
+                return false;
+            }
+            if (this.getPageNo() != other.getPageNo()) {
+                return false;
+            }
+            return this.getPageSize() == other.getPageSize();
+        }
+
+        protected boolean canEqual(Object other) {
+            return other instanceof Pagination;
+        }
+
+        public int hashCode() {
+            int PRIME = 59;
+            int result = 1;
+            long $total = this.getTotal();
+            result = result * 59 + (int)($total >>> 32 ^ $total);
+            long $pageNo = this.getPageNo();
+            result = result * 59 + (int)($pageNo >>> 32 ^ $pageNo);
+            long $pageSize = this.getPageSize();
+            result = result * 59 + (int)($pageSize >>> 32 ^ $pageSize);
+            return result;
+        }
+
+        public String toString() {
+            return "PagingData.Pagination(total=" + this.getTotal() + ", pageNo=" + this.getPageNo() + ", pageSize=" + this.getPageSize() + ")";
+        }
+
+        public static class PaginationBuilder {
+            private long total;
+            private long pageNo;
+            private long pageSize;
+
+            PaginationBuilder() {
+            }
+
+            public PaginationBuilder total(long total) {
+                this.total = total;
+                return this;
+            }
+
+            public PaginationBuilder pageNo(long pageNo) {
+                this.pageNo = pageNo;
+                return this;
+            }
+
+            public PaginationBuilder pageSize(long pageSize) {
+                this.pageSize = pageSize;
+                return this;
+            }
+
+            public Pagination build() {
+                return new Pagination(this.total, this.pageNo, this.pageSize);
+            }
+
+            public String toString() {
+                return "PagingData.Pagination.PaginationBuilder(total=" + this.total + ", pageNo=" + this.pageNo + ", pageSize=" + this.pageSize + ")";
+            }
+        }
+    }
+}
+
