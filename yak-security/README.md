@@ -47,6 +47,33 @@ yak:
 HTTP 接口统一位于 `/yak-security/api/v1`，项目隔离标识通过
 `X-YAK-SECURITY-PROJECT-ID` 请求头传递。
 
+## 声明式权限注册
+
+业务接口可以把鉴权和权限元数据放在一起；启动时会自动新增权限、同步名称和描述，并把已从
+代码中移除的声明标记为无效。失效不会物理删除权限或角色授权关系，因此重新声明同一编码后
+原有授权会恢复生效。
+
+```java
+@RequiresPermission("job:create")
+@YakPermission(code = "job:create", name = "创建作业", group = "作业管理")
+@PostMapping("/jobs")
+public void createJob() { }
+```
+
+非接口权限也可以集中声明；仅提供编码时，权限显示名称默认使用编码：
+
+```java
+@Bean
+PermissionDefinitionProvider yakOpsPermissions() {
+  return PermissionDefinitionProvider.of(
+      PermissionDefinition.of("job", "作业管理",
+          "job:list", "job:create", "job:update", "job:delete"));
+}
+```
+
+同一编码的声明若名称或分组冲突，应用会快速启动失败，避免静默写入错误元数据。可通过
+`yak.security.permission-registration.enabled=false` 关闭同步。
+
 ## OpenAPI 3 / Swagger UI
 
 Starter 默认生成 OpenAPI 3 接口文档。应用启动后可访问 `/swagger-ui.html` 查看 Swagger UI，

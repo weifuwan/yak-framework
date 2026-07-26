@@ -34,6 +34,7 @@ public class PermissionDaoImpl
                 permissionMapper.selectList(
                         Wrappers.<PermissionPO>lambdaQuery()
                                 .orderByAsc(PermissionPO::getLevel)
+                                .eq(PermissionPO::getActive, true)
                                 .orderByAsc(PermissionPO::getId)
                 );
 
@@ -70,5 +71,46 @@ public class PermissionDaoImpl
             return 0;
         }
         return permissionMapper.deleteById(permissionId);
+    }
+
+    @Override
+    public void synchronizeDeclared(List<Permission> permissions) {
+        List<PermissionPO> existing = permissionMapper.selectList(
+                Wrappers.<PermissionPO>lambdaQuery());
+        java.util.Map<String, PermissionPO> byCode = new java.util.HashMap<>();
+        existing.forEach(item -> byCode.put(item.getPermissionCode(), item));
+        java.util.Set<String> desiredCodes = new java.util.HashSet<>();
+
+        // Groups first so generated database identifiers are available to leaves.
+        permissions.stream().sorted(java.util.Comparator.comparing(Permission::getLevel)).forEach(item -> {
+            desiredCodes.add(item.getPermissionCode());
+            PermissionPO row = byCode.get(item.getPermissionCode());
+            if (row == null) {
+                row = CopyBeanUtil.copy(item, PermissionPO.class);
+                permissionMapper.insert(row);
+                byCode.put(row.getPermissionCode(), row);
+            } else {
+                row.setPermissionName(item.getPermissionName());
+                row.setDescription(item.getDescription());
+                row.setLeaf(item.getLeaf());
+                row.setLevel(item.getLevel());
+                row.setActive(true);
+            }
+            if (item.getParentCode() != null) {
+                PermissionPO parent = byCode.get(item.getParentCode());
+                if (parent == null) throw new IllegalStateException("Missing permission group: " + item.getParentCode());
+                row.setParentId(parent.getId());
+            } else {
+                row.setParentId(0L);
+            }
+            row.setDeclared(true);
+            permissionMapper.updateById(row);
+        });
+        existing.stream().filter(item -> Boolean.TRUE.equals(item.getDeclared()))
+                .filter(item -> !desiredCodes.contains(item.getPermissionCode()))
+                .filter(item -> Boolean.TRUE.equals(item.getActive())).forEach(item -> {
+                    item.setActive(false);
+                    permissionMapper.updateById(item);
+                });
     }
 }

@@ -12,4 +12,7 @@ public interface PermissionDao {
   void insertBatch(List<Permission> var1);
 
   int deleteById(Long permissionId);
+
+  /** Adds, updates, reactivates and disables declaratively managed permissions. */
+  void synchronizeDeclared(List<Permission> permissions);
 }

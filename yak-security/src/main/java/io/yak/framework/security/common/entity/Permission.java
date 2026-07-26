@@ -24,4 +24,11 @@ public class Permission {
   /** 描述。 */
   private String description;
 
+  /** Parent permission code, used only while synchronizing declarations. */
+  private transient String parentCode;
+  /** Whether this permission can currently grant access. */
+  private Boolean active;
+  /** Whether this row is managed by declarative registration. */
+  private Boolean declared;
+
 }

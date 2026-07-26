@@ -78,6 +78,18 @@ public class YakSecurityProperties {
   private final BootstrapProperties bootstrap =
           new BootstrapProperties();
 
+  /** Declarative permission synchronization settings. */
+  private final PermissionRegistrationProperties permissionRegistration =
+          new PermissionRegistrationProperties();
+
+  @Getter
+  @Setter
+  @ToString
+  public static class PermissionRegistrationProperties {
+    /** Whether declarations are synchronized to the permission table at startup. */
+    private boolean enabled = true;
+  }
+
   @Getter
   @Setter
   @ToString
