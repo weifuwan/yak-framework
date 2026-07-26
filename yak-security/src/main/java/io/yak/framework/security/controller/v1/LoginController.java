@@ -5,8 +5,9 @@ import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.LoginService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import io.yak.framework.security.web.PublicEndpoint;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +45,7 @@ public class LoginController {
    * @return 当前登录用户
    */
   @PostMapping("/login")
+  @PublicEndpoint
   public Result<UserBriefVO> login(
           HttpServletRequest request,
           HttpServletResponse response,

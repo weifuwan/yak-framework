@@ -113,7 +113,7 @@ public class MessageDaoImpl
             List<Long> messageIdList) {
 
         if (messageIdList == null || messageIdList.isEmpty()) {
-            return List.of();
+            return java.util.Collections.emptyList();
         }
 
         List<MessagePO> messagePOList =

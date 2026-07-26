@@ -17,7 +17,7 @@ import org.flywaydb.core.Flyway;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -32,7 +32,7 @@ import javax.sql.DataSource;
 /**
  * 安全模块独立数据源与 MyBatis 配置。
  */
-@AutoConfiguration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(YakSecurityProperties.class)
 @ConditionalOnClass({
         DataSource.class,

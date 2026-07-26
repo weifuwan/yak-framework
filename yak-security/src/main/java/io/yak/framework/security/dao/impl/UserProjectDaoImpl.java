@@ -40,7 +40,7 @@ public class UserProjectDaoImpl
             int userType) {
 
         if (projectId == null) {
-            return List.of();
+            return java.util.Collections.emptyList();
         }
 
         return userProjectMapper.selectObjs(
@@ -57,7 +57,7 @@ public class UserProjectDaoImpl
         )
                 .stream()
                 .map(DatabaseNumberUtils::toLong)
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**
@@ -71,7 +71,7 @@ public class UserProjectDaoImpl
             List<Long> projectIds) {
 
         if (isEmpty(projectIds)) {
-            return List.of();
+            return java.util.Collections.emptyList();
         }
 
         List<UserProjectPO> records =
@@ -100,7 +100,7 @@ public class UserProjectDaoImpl
             List<Long> userIdList) {
 
         if (isEmpty(userIdList)) {
-            return List.of();
+            return java.util.Collections.emptyList();
         }
 
         return userProjectMapper.selectObjs(
@@ -116,7 +116,7 @@ public class UserProjectDaoImpl
                 .stream()
                 .map(DatabaseNumberUtils::toLong)
                 .distinct()
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**
@@ -130,7 +130,7 @@ public class UserProjectDaoImpl
             List<Long> userIdList) {
 
         if (isEmpty(userIdList)) {
-            return List.of();
+            return java.util.Collections.emptyList();
         }
 
         return userProjectMapper.selectList(

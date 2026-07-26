@@ -212,7 +212,7 @@ public class RoleDaoImpl
             List<Long> roleIdList) {
 
         if (roleIdList == null || roleIdList.isEmpty()) {
-            return List.of();
+            return java.util.Collections.emptyList();
         }
 
         List<RolePO> rolePOList = roleMapper.selectList(

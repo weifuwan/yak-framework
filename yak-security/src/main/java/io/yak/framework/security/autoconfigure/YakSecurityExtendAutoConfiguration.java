@@ -17,7 +17,7 @@ import io.yak.framework.security.extend.impl.DefaultResourceExtendImpl;
 import io.yak.framework.security.extend.impl.InMemoryTokenSessionStore;
 import io.yak.framework.security.extend.impl.NoOpOperationLogExtend;
 import io.yak.framework.security.service.UserService;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Bean;
  *
  * @author weifuwan
  */
-@AutoConfiguration
+@Configuration(proxyBeanMethods = false)
 public class YakSecurityExtendAutoConfiguration {
 
     /**

@@ -128,6 +128,6 @@ public class DeptDaoImpl
         return deptMapper.selectObjs(wrapper)
                 .stream()
                 .map(DatabaseNumberUtils::toLong)
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 }
