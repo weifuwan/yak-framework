@@ -3,95 +3,35 @@ package io.yak.framework.security.common.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import io.yak.framework.security.common.po.AppBasePO;
 import java.util.Date;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+/**
+ * 通用持久化基类。
+ *
+ * @author weifuwan
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class BasePO extends AppBasePO {
-  @TableId(type = IdType.AUTO) private Long id;
+  /** 主键标识。 */
+  @TableId(type = IdType.AUTO)
+  private Long id;
+
+  /** 创建时间。 */
   private Date createTime;
+
+  /** 最后更新时间。 */
   private Date updateTime;
-  @TableLogic(value = "0", delval = "1") private int isDelete = 0;
 
-  @Override
-  public boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (!(o instanceof BasePO)) {
-      return false;
-    }
-    BasePO other = (BasePO)o;
-    if (!other.canEqual(this)) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    if (this.getIsDelete() != other.getIsDelete()) {
-      return false;
-    }
-    Long this$id = this.getId();
-    Long other$id = other.getId();
-    if (this$id == null ? other$id != null
-                        : !((Object)this$id).equals(other$id)) {
-      return false;
-    }
-    Date this$createTime = this.getCreateTime();
-    Date other$createTime = other.getCreateTime();
-    if (this$createTime == null
-            ? other$createTime != null
-            : !((Object)this$createTime).equals(other$createTime)) {
-      return false;
-    }
-    Date this$updateTime = this.getUpdateTime();
-    Date other$updateTime = other.getUpdateTime();
-    return !(this$updateTime == null
-                 ? other$updateTime != null
-                 : !((Object)this$updateTime).equals(other$updateTime));
-  }
-
-  @Override
-  protected boolean canEqual(Object other) {
-    return other instanceof BasePO;
-  }
-
-  @Override
-  public int hashCode() {
-    int PRIME = 59;
-    int result = super.hashCode();
-    result = result * 59 + this.getIsDelete();
-    Long $id = this.getId();
-    result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
-    Date $createTime = this.getCreateTime();
-    result = result * 59 +
-             ($createTime == null ? 43 : ((Object)$createTime).hashCode());
-    Date $updateTime = this.getUpdateTime();
-    result = result * 59 +
-             ($updateTime == null ? 43 : ((Object)$updateTime).hashCode());
-    return result;
-  }
-
-  public Long getId() { return this.id; }
-
-  public Date getCreateTime() { return this.createTime; }
-
-  public Date getUpdateTime() { return this.updateTime; }
-
-  public int getIsDelete() { return this.isDelete; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setCreateTime(Date createTime) { this.createTime = createTime; }
-
-  public void setUpdateTime(Date updateTime) { this.updateTime = updateTime; }
-
-  public void setIsDelete(int isDelete) { this.isDelete = isDelete; }
-
-  @Override
-  public String toString() {
-    return "BasePO(id=" + this.getId() +
-        ", createTime=" + this.getCreateTime() +
-        ", updateTime=" + this.getUpdateTime() +
-        ", isDelete=" + this.getIsDelete() + ")";
-  }
+  /** 逻辑删除标记：0 未删除，1 已删除。 */
+  @TableLogic(value = "0", delval = "1")
+  private int isDelete = 0;
 }

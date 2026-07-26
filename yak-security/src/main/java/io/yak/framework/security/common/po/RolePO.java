@@ -1,103 +1,33 @@
 package io.yak.framework.security.common.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.yak.framework.security.common.po.BasePO;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+/**
+ * 角色持久化对象。
+ *
+ * @author weifuwan
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString
 @TableName(value = "yak_security_role")
 public class RolePO extends BasePO {
+  /** 角色编码。 */
   private String roleCode;
+
+  /** 角色名称。 */
   private String roleName;
+
+  /** 角色描述。 */
   private String description;
+
+  /** 最后修改人。 */
   private String lastReviser;
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (!(o instanceof RolePO)) {
-      return false;
-    }
-    RolePO other = (RolePO)o;
-    if (!other.canEqual(this)) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    String this$roleCode = this.getRoleCode();
-    String other$roleCode = other.getRoleCode();
-    if (this$roleCode == null ? other$roleCode != null
-                              : !this$roleCode.equals(other$roleCode)) {
-      return false;
-    }
-    String this$roleName = this.getRoleName();
-    String other$roleName = other.getRoleName();
-    if (this$roleName == null ? other$roleName != null
-                              : !this$roleName.equals(other$roleName)) {
-      return false;
-    }
-    String this$description = this.getDescription();
-    String other$description = other.getDescription();
-    if (this$description == null
-            ? other$description != null
-            : !this$description.equals(other$description)) {
-      return false;
-    }
-    String this$lastReviser = this.getLastReviser();
-    String other$lastReviser = other.getLastReviser();
-    return !(this$lastReviser == null
-                 ? other$lastReviser != null
-                 : !this$lastReviser.equals(other$lastReviser));
-  }
-
-  @Override
-  protected boolean canEqual(Object other) {
-    return other instanceof RolePO;
-  }
-
-  @Override
-  public int hashCode() {
-    int PRIME = 59;
-    int result = super.hashCode();
-    String $roleCode = this.getRoleCode();
-    result = result * 59 + ($roleCode == null ? 43 : $roleCode.hashCode());
-    String $roleName = this.getRoleName();
-    result = result * 59 + ($roleName == null ? 43 : $roleName.hashCode());
-    String $description = this.getDescription();
-    result =
-        result * 59 + ($description == null ? 43 : $description.hashCode());
-    String $lastReviser = this.getLastReviser();
-    result =
-        result * 59 + ($lastReviser == null ? 43 : $lastReviser.hashCode());
-    return result;
-  }
-
-  public String getRoleCode() { return this.roleCode; }
-
-  public String getRoleName() { return this.roleName; }
-
-  public String getDescription() { return this.description; }
-
-  public String getLastReviser() { return this.lastReviser; }
-
-  public void setRoleCode(String roleCode) { this.roleCode = roleCode; }
-
-  public void setRoleName(String roleName) { this.roleName = roleName; }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setLastReviser(String lastReviser) {
-    this.lastReviser = lastReviser;
-  }
-
-  @Override
-  public String toString() {
-    return "RolePO(roleCode=" + this.getRoleCode() +
-        ", roleName=" + this.getRoleName() +
-        ", description=" + this.getDescription() +
-        ", lastReviser=" + this.getLastReviser() + ")";
-  }
 }
