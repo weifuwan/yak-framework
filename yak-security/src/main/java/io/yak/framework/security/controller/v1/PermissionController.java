@@ -1,5 +1,8 @@
 package io.yak.framework.security.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.Result;
 import io.yak.framework.security.common.dto.permission.PermissionDTO;
 import io.yak.framework.security.common.vo.permission.PermissionTreeVO;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author weifuwan
  */
+@Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "权限管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/permission")
 public class PermissionController {
@@ -42,6 +46,7 @@ public class PermissionController {
    *
    * @return 权限树
    */
+  @Operation(summary = "查询完整权限树")
   @GetMapping("/tree")
   public Result<PermissionTreeVO> tree() {
     return Result.buildSucc(
@@ -55,6 +60,7 @@ public class PermissionController {
    * @param permissionDTOList 权限信息列表
    * @return 导入结果
    */
+  @Operation(summary = "导入权限树")
   @PostMapping("/import")
   public Result<Void> importPermission(
           @RequestBody
@@ -67,6 +73,7 @@ public class PermissionController {
   }
 
   /** 删除权限及其角色关联。 */
+  @Operation(summary = "删除权限及其角色关联")
   @DeleteMapping("/{permissionId}")
   public Result<Void> deletePermission(
           @PathVariable Long permissionId) {

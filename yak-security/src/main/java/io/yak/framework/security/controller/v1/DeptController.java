@@ -1,5 +1,8 @@
 package io.yak.framework.security.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.Result;
 import io.yak.framework.security.common.dto.dept.DeptDTO;
 import io.yak.framework.security.common.vo.dept.DeptTreeVO;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author weifuwan
  */
+@Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "部门管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/dept")
 public class DeptController {
@@ -38,6 +42,7 @@ public class DeptController {
    *
    * @return 部门树
    */
+  @Operation(summary = "查询完整部门树")
   @GetMapping("/tree")
   public Result<DeptTreeVO> tree() {
     return Result.buildSucc(
@@ -50,6 +55,7 @@ public class DeptController {
    * @param deptDTOList 部门信息列表
    * @return 导入结果
    */
+  @Operation(summary = "导入部门树")
   @PostMapping("/import")
   public Result<Void> importDept(
           @RequestBody

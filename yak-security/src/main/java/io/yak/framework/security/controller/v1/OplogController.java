@@ -1,5 +1,8 @@
 package io.yak.framework.security.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.PagingData;
 import io.yak.framework.security.common.PagingResult;
 import io.yak.framework.security.common.Result;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author weifuwan
  */
+@Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "操作日志管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/oplog")
 public class OplogController {
@@ -44,6 +48,7 @@ public class OplogController {
    * @param queryDTO 查询条件
    * @return 操作日志分页结果
    */
+  @Operation(summary = "分页查询操作日志")
   @PostMapping("/page")
   public PagingResult<OplogVO> page(
           @RequestBody OplogQueryDTO queryDTO) {
@@ -62,6 +67,7 @@ public class OplogController {
    * @param oplogId 操作日志 ID
    * @return 操作日志详情
    */
+  @Operation(summary = "根据操作日志 ID 查询日志详情")
   @GetMapping("/{id}")
   public Result<OplogVO> detail(
           @PathVariable("id") Long oplogId) {
@@ -77,6 +83,7 @@ public class OplogController {
    *
    * @return 操作目标类型列表
    */
+  @Operation(summary = "查询全部操作目标类型")
   @GetMapping("/type/list")
   public Result<List<String>> targetTypeList() {
     return Result.buildSucc(

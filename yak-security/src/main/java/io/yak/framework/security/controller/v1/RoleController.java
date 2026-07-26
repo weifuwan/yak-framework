@@ -1,5 +1,8 @@
 package io.yak.framework.security.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.PagingData;
 import io.yak.framework.security.common.PagingResult;
 import io.yak.framework.security.common.Result;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author weifuwan
  */
+@Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "角色管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/role")
 public class RoleController {
@@ -52,6 +56,7 @@ public class RoleController {
    * @param roleId 角色 ID
    * @return 角色详情
    */
+  @Operation(summary = "根据角色 ID 查询角色详情")
   @GetMapping("/{id}")
   public Result<RoleVO> detail(
           @PathVariable("id") Long roleId) {
@@ -68,6 +73,7 @@ public class RoleController {
    * @param roleSaveDTO 角色信息
    * @return 更新结果
    */
+  @Operation(summary = "更新角色")
   @PutMapping
   public Result<Void> update(
           HttpServletRequest request,
@@ -91,6 +97,7 @@ public class RoleController {
    * @param roleSaveDTO 角色信息
    * @return 创建结果
    */
+  @Operation(summary = "创建角色")
   @PostMapping
   public Result<Void> create(
           HttpServletRequest request,
@@ -115,6 +122,7 @@ public class RoleController {
    * @param roleId 角色 ID
    * @return 删除校验结果
    */
+  @Operation(summary = "执行角色删除前校验")
   @DeleteMapping("/delete/check/{id}")
   public Result<RoleDeleteCheckVO> check(
           @PathVariable("id") Long roleId) {
@@ -132,6 +140,7 @@ public class RoleController {
    * @param userId 用户 ID
    * @return 删除结果
    */
+  @Operation(summary = "从角色中删除用户")
   @DeleteMapping("/{id}/user/{userId}")
   public Result<Void> deleteUser(
           HttpServletRequest request,
@@ -157,6 +166,7 @@ public class RoleController {
    * @param roleId 角色 ID
    * @return 删除结果
    */
+  @Operation(summary = "根据角色 ID 删除角色")
   @DeleteMapping("/{id}")
   public Result<Void> delete(
           HttpServletRequest request,
@@ -179,6 +189,7 @@ public class RoleController {
    * @param queryDTO 查询条件
    * @return 角色分页结果
    */
+  @Operation(summary = "分页查询角色")
   @PostMapping("/page")
   public PagingResult<RoleVO> page(
           @RequestBody RoleQueryDTO queryDTO) {
@@ -196,6 +207,7 @@ public class RoleController {
    * @param assignDTO 分配参数
    * @return 分配结果
    */
+  @Operation(summary = "分配角色或为角色分配用户")
   @PostMapping("/assign")
   public Result<Void> assign(
           HttpServletRequest request,
@@ -218,6 +230,7 @@ public class RoleController {
    * @param roleId 角色 ID
    * @return 用户分配信息列表
    */
+  @Operation(summary = "根据角色 ID 查询用户分配信息")
   @GetMapping("/assign/list/{roleId}")
   public Result<List<AssignInfoVO>> assignList(
           @PathVariable Long roleId) {
@@ -233,6 +246,7 @@ public class RoleController {
    * @param roleName 角色名称
    * @return 角色简要信息列表
    */
+  @Operation(summary = "根据角色名称查询角色")
   @GetMapping({"/list/{roleName}", "/list"})
   public Result<List<RoleBriefVO>> list(
           @PathVariable(required = false)
