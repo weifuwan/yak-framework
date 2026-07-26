@@ -6,9 +6,9 @@ import io.yak.framework.security.common.entity.user.User;
 import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.vo.message.MessageVO;
 import io.yak.framework.security.dao.MessageDao;
+import io.yak.framework.security.dao.UserDao;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.MessageService;
-import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.util.CopyBeanUtil;
 
 import java.util.ArrayList;
@@ -31,20 +31,20 @@ public class MessageServiceImpl implements MessageService {
 
   private final MessageDao messageDao;
 
-  private final UserService userService;
+  private final UserDao userDao;
 
   /**
    * 创建消息服务。
    *
    * @param messageDao 消息数据访问对象
-   * @param userService 用户服务
+   * @param userDao 用户数据访问对象
    */
   public MessageServiceImpl(
           MessageDao messageDao,
-          UserService userService) {
+          UserDao userDao) {
 
     this.messageDao = messageDao;
-    this.userService = userService;
+    this.userDao = userDao;
   }
 
   /**
@@ -86,7 +86,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     User user =
-            userService.getUserByUsername(
+            userDao.selectByUsername(
                     username.trim());
 
     if (user == null) {

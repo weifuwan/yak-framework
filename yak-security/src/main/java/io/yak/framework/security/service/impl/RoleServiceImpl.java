@@ -11,6 +11,7 @@ import io.yak.framework.security.common.entity.BaseEntity;
 import io.yak.framework.security.common.entity.UserRole;
 import io.yak.framework.security.common.entity.role.Role;
 import io.yak.framework.security.common.entity.role.RoleBrief;
+import io.yak.framework.security.common.entity.user.UserBrief;
 import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.enums.message.MessageCode;
 import io.yak.framework.security.common.vo.permission.PermissionTreeVO;
@@ -21,6 +22,7 @@ import io.yak.framework.security.common.vo.role.RoleVO;
 import io.yak.framework.security.common.vo.user.UserBasicVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.dao.RoleDao;
+import io.yak.framework.security.dao.UserDao;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.MessageService;
 import io.yak.framework.security.service.OplogService;
@@ -28,7 +30,6 @@ import io.yak.framework.security.service.PermissionService;
 import io.yak.framework.security.service.RolePermissionService;
 import io.yak.framework.security.service.RoleService;
 import io.yak.framework.security.service.UserRoleService;
-import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.util.CopyBeanUtil;
 import io.yak.framework.security.util.JsonUtils;
 import io.yak.framework.security.util.MathUtil;
@@ -85,7 +86,7 @@ public class RoleServiceImpl implements RoleService {
 
   private final OplogService oplogService;
 
-  private final UserService userService;
+  private final UserDao userDao;
 
   private final RolePermissionService rolePermissionService;
 
@@ -98,7 +99,7 @@ public class RoleServiceImpl implements RoleService {
    * @param permissionService 权限服务
    * @param messageService 消息服务
    * @param oplogService 操作日志服务
-   * @param userService 用户服务
+   * @param userDao 用户数据访问对象
    * @param rolePermissionService 角色权限服务
    * @param userRoleService 用户角色服务
    */
@@ -107,7 +108,7 @@ public class RoleServiceImpl implements RoleService {
           PermissionService permissionService,
           MessageService messageService,
           OplogService oplogService,
-          UserService userService,
+          UserDao userDao,
           RolePermissionService rolePermissionService,
           UserRoleService userRoleService) {
 
@@ -115,7 +116,7 @@ public class RoleServiceImpl implements RoleService {
     this.permissionService = permissionService;
     this.messageService = messageService;
     this.oplogService = oplogService;
-    this.userService = userService;
+    this.userDao = userDao;
     this.rolePermissionService = rolePermissionService;
     this.userRoleService = userRoleService;
   }
@@ -193,9 +194,8 @@ public class RoleServiceImpl implements RoleService {
                             roleId);
 
     List<UserBriefVO> userList =
-            userService
-                    .getUserBriefListByUserIds(
-                            userIdList);
+            getUserBriefListByUserIds(
+                    userIdList);
 
     List<String> userNameList =
             CollectionUtils.isEmpty(userList)
@@ -263,7 +263,7 @@ public class RoleServiceImpl implements RoleService {
                     .collect(Collectors.toList());
 
     List<UserBasicVO> userList =
-            userService.getUserBasicListByUserIds(
+            getUserBasicListByUserIds(
                     userIdList);
 
     Map<Long, String> userNameMap =
@@ -739,9 +739,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     List<UserBriefVO> userList =
-            userService
-                    .getUserBriefListByUserIds(
-                            userIdList);
+            getUserBriefListByUserIds(
+                    userIdList);
 
     List<String> userNameList =
             userList.stream()
@@ -906,7 +905,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     List<UserBriefVO> userList =
-            userService.getAllUserBriefList();
+            getAllUserBriefList();
 
     if (CollectionUtils.isEmpty(userList)) {
       return new ArrayList<>();
@@ -1206,6 +1205,65 @@ public class RoleServiceImpl implements RoleService {
   }
 
   /**
+   * 根据用户 ID 集合查询用户基础信息。
+   */
+  private List<UserBasicVO> getUserBasicListByUserIds(
+          List<Long> userIds) {
+
+    if (CollectionUtils.isEmpty(userIds)) {
+      return new ArrayList<>();
+    }
+
+    List<UserBasicVO> users =
+            CopyBeanUtil.copyList(
+                    userDao.selectBriefListByUserIdList(
+                            userIds),
+                    UserBasicVO.class);
+
+    return users == null
+            ? new ArrayList<>()
+            : users;
+  }
+
+  /**
+   * 根据用户 ID 集合查询用户简要信息。
+   */
+  private List<UserBriefVO> getUserBriefListByUserIds(
+          List<Long> userIds) {
+
+    if (CollectionUtils.isEmpty(userIds)) {
+      return new ArrayList<>();
+    }
+
+    List<UserBriefVO> users =
+            CopyBeanUtil.copyList(
+                    userDao.selectBriefListByUserIdList(
+                            userIds),
+                    UserBriefVO.class);
+
+    return users == null
+            ? new ArrayList<>()
+            : users;
+  }
+
+  /**
+   * 查询全部用户简要信息。
+   */
+  private List<UserBriefVO> getAllUserBriefList() {
+    List<UserBrief> users =
+            userDao.selectAllBriefList();
+
+    List<UserBriefVO> result =
+            CopyBeanUtil.copyList(
+                    users,
+                    UserBriefVO.class);
+
+    return result == null
+            ? new ArrayList<>()
+            : result;
+  }
+
+  /**
    * 构建用户 ID 与用户名映射。
    */
   private Map<Long, String> buildUserNameMap(
@@ -1240,10 +1298,9 @@ public class RoleServiceImpl implements RoleService {
           Long userId) {
 
     List<UserBriefVO> userList =
-            userService
-                    .getUserBriefListByUserIds(
-                            Collections.singletonList(
-                                    userId));
+            getUserBriefListByUserIds(
+                    Collections.singletonList(
+                            userId));
 
     if (CollectionUtils.isEmpty(userList)) {
       return String.valueOf(userId);
