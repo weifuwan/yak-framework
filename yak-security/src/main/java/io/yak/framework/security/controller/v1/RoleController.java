@@ -13,7 +13,6 @@ import io.yak.framework.security.common.vo.role.AssignInfoVO;
 import io.yak.framework.security.common.vo.role.RoleBriefVO;
 import io.yak.framework.security.common.vo.role.RoleDeleteCheckVO;
 import io.yak.framework.security.common.vo.role.RoleVO;
-import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.RoleService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -79,15 +78,12 @@ public class RoleController {
           HttpServletRequest request,
           @RequestBody RoleSaveDTO roleSaveDTO) {
 
-    try {
-      roleService.updateRole(
-              roleSaveDTO,
-              HttpRequestUtil.getOperator(request));
+    roleService.updateRole(
+            roleSaveDTO,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -103,15 +99,12 @@ public class RoleController {
           HttpServletRequest request,
           @RequestBody RoleSaveDTO roleSaveDTO) {
 
-    try {
-      roleService.createRole(
-              roleSaveDTO,
-              HttpRequestUtil.getOperator(request));
+    roleService.createRole(
+            roleSaveDTO,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -147,16 +140,13 @@ public class RoleController {
           @PathVariable("id") Long roleId,
           @PathVariable Long userId) {
 
-    try {
-      roleService.deleteUserFromRole(
-              roleId,
-              userId,
-              HttpRequestUtil.getOperator(request));
+    roleService.deleteUserFromRole(
+            roleId,
+            userId,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -172,15 +162,12 @@ public class RoleController {
           HttpServletRequest request,
           @PathVariable("id") Long roleId) {
 
-    try {
-      roleService.deleteRoleByRoleId(
-              roleId,
-              HttpRequestUtil.getOperator(request));
+    roleService.deleteRoleByRoleId(
+            roleId,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -213,15 +200,12 @@ public class RoleController {
           HttpServletRequest request,
           @RequestBody RoleAssignDTO assignDTO) {
 
-    try {
-      roleService.assignRoles(
-              assignDTO,
-              HttpRequestUtil.getOperator(request));
+    roleService.assignRoles(
+            assignDTO,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**

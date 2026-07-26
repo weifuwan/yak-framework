@@ -6,12 +6,12 @@ import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.PagingData;
 import io.yak.framework.security.common.PagingResult;
 import io.yak.framework.security.common.Result;
+import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.dto.user.UserDTO;
 import io.yak.framework.security.common.dto.user.UserQueryDTO;
 import io.yak.framework.security.common.vo.role.AssignInfoVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.common.vo.user.UserVO;
-import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import io.yak.framework.security.util.JsonUtils;
@@ -89,8 +89,9 @@ public class UserController {
       return userService.getUserDetailsByUserIds(
               userIds);
     } catch (Exception exception) {
-      return Result.buildParamIllegal(
-              "传入的参数不是合法的 JSON 数组");
+      throw new YakSecurityException(
+              ResultCode.PARAM_NOT_VALID,
+              exception);
     }
   }
 
@@ -105,13 +106,10 @@ public class UserController {
   public Result<UserVO> detail(
           @PathVariable("id") Long userId) {
 
-    try {
-      return Result.success(
-              userService.getUserDetailByUserId(
-                      userId));
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(
+            userService.getUserDetailByUserId(
+                    userId));
+
   }
 
   /**
@@ -174,13 +172,10 @@ public class UserController {
   public Result<List<AssignInfoVO>> assignList(
           @PathVariable Long userId) {
 
-    try {
-      return Result.success(
-              userService.getAssignInfoListByUserId(
-                      userId));
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(
+            userService.getAssignInfoListByUserId(
+                    userId));
+
   }
 
   /**

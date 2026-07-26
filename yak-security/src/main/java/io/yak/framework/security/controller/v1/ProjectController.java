@@ -12,7 +12,6 @@ import io.yak.framework.security.common.vo.project.ProjectBriefVO;
 import io.yak.framework.security.common.vo.project.ProjectDeleteCheckVO;
 import io.yak.framework.security.common.vo.project.ProjectVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
-import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.ProjectService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,14 +62,11 @@ public class ProjectController {
   public Result<ProjectVO> detail(
           @PathVariable("id") Long projectId) {
 
-    try {
-      return Result.success(
-              projectService
-                      .getProjectDetailByProjectId(
-                              projectId));
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(
+            projectService
+                    .getProjectDetailByProjectId(
+                            projectId));
+
   }
 
   /**
@@ -102,15 +98,12 @@ public class ProjectController {
           HttpServletRequest request,
           @PathVariable("id") Long projectId) {
 
-    try {
-      projectService.changeProjectStatus(
-              projectId,
-              HttpRequestUtil.getOperator(request));
+    projectService.changeProjectStatus(
+            projectId,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -127,15 +120,12 @@ public class ProjectController {
           @RequestBody
                   ProjectSaveDTO projectSaveDTO) {
 
-    try {
-      projectService.updateProject(
-              projectSaveDTO,
-              HttpRequestUtil.getOperator(request));
+    projectService.updateProject(
+            projectSaveDTO,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -152,15 +142,12 @@ public class ProjectController {
           @RequestBody
                   ProjectSaveDTO projectSaveDTO) {
 
-    try {
-      return Result.success(
-              projectService.createProject(
-                      projectSaveDTO,
-                      HttpRequestUtil.getOperator(
-                              request)));
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(
+            projectService.createProject(
+                    projectSaveDTO,
+                    HttpRequestUtil.getOperator(
+                            request)));
+
   }
 
   /**
@@ -192,15 +179,12 @@ public class ProjectController {
           HttpServletRequest request,
           @PathVariable("id") Long projectId) {
 
-    try {
-      projectService.deleteProjectByProjectId(
-              projectId,
-              HttpRequestUtil.getOperator(request));
+    projectService.deleteProjectByProjectId(
+            projectId,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -248,16 +232,13 @@ public class ProjectController {
           @PathVariable("id") Long projectId,
           @PathVariable Long ownerId) {
 
-    try {
-      projectService.addProjectOwner(
-              projectId,
-              ownerId,
-              HttpRequestUtil.getOperator(request));
+    projectService.addProjectOwner(
+            projectId,
+            ownerId,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -275,16 +256,13 @@ public class ProjectController {
           @PathVariable("id") Long projectId,
           @PathVariable Long ownerId) {
 
-    try {
-      projectService.delProjectOwner(
-              projectId,
-              ownerId,
-              HttpRequestUtil.getOperator(request));
+    projectService.delProjectOwner(
+            projectId,
+            ownerId,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -302,16 +280,13 @@ public class ProjectController {
           @PathVariable("id") Long projectId,
           @PathVariable Long userId) {
 
-    try {
-      projectService.addProjectUser(
-              projectId,
-              userId,
-              HttpRequestUtil.getOperator(request));
+    projectService.addProjectUser(
+            projectId,
+            userId,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -329,16 +304,13 @@ public class ProjectController {
           @PathVariable("id") Long projectId,
           @PathVariable Long userId) {
 
-    try {
-      projectService.delProjectUser(
-              projectId,
-              userId,
-              HttpRequestUtil.getOperator(request));
+    projectService.delProjectUser(
+            projectId,
+            userId,
+            HttpRequestUtil.getOperator(request));
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -352,13 +324,10 @@ public class ProjectController {
   public Result<List<UserBriefVO>> unassigned(
           @RequestParam("id") Long projectId) {
 
-    try {
-      return projectService
-              .unassignedByProjectId(
-                      projectId);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return projectService
+            .unassignedByProjectId(
+                    projectId);
+
   }
 
   /**

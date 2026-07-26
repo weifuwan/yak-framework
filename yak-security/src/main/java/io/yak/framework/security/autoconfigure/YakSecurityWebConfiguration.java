@@ -15,6 +15,7 @@ import io.yak.framework.security.service.LoginService;
 import io.yak.framework.security.service.RbacPermissionService;
 import io.yak.framework.security.extend.CurrentUserProvider;
 import io.yak.framework.security.web.YakAuthenticationInterceptor;
+import io.yak.framework.security.web.YakSecurityExceptionHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -41,7 +42,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         ProjectController.class,
         ResourceController.class,
         RoleController.class,
-        UserController.class
+        UserController.class,
+        YakSecurityExceptionHandler.class
 })
 public class YakSecurityWebConfiguration implements WebMvcConfigurer {
 

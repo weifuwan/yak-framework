@@ -11,6 +11,7 @@ import io.yak.framework.security.extend.LoginExtend;
 import io.yak.framework.security.extend.PasswordEncoder;
 import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.util.CopyBeanUtil;
+import io.yak.framework.security.util.JsonUtils;
 import io.yak.framework.security.util.SecuritySessionAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -359,12 +360,16 @@ public class DefaultLoginExtendImpl
    */
   private void handleUnauthorized(
           HttpServletRequest request,
-          HttpServletResponse response) {
+          HttpServletResponse response) throws IOException {
 
     clearLoginContext(request);
 
     response.setStatus(
             HttpServletResponse.SC_UNAUTHORIZED);
+    response.setCharacterEncoding("UTF-8");
+    response.setContentType("application/json");
+    response.getWriter().write(JsonUtils.toJson(
+            Result.fail(ResultCode.USER_NOT_LOGIN)));
   }
 
   /**

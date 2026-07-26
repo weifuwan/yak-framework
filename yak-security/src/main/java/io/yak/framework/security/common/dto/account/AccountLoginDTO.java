@@ -1,5 +1,6 @@
 package io.yak.framework.security.common.dto.account;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 /**
  * 账号登录数据传输对象。
@@ -9,8 +10,10 @@ import lombok.Data;
 @Data
 public class AccountLoginDTO {
   /** 用户名。 */
+  @NotBlank
   private String userName;
   /** 密码。 */
+  @NotBlank
   private String pw;
 
 }
