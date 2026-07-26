@@ -28,7 +28,7 @@ public class RolePermissionDaoImpl
     List<RolePermissionPO> rolePermissionPOList =
         CopyBeanUtil.copyList(rolePermissionList, RolePermissionPO.class);
     for (RolePermissionPO rolePermissionPO : rolePermissionPOList) {
-      rolePermissionPO.setAppName(this.yakSecurityProperties.getAppName());
+      rolePermissionPO.setAppName(this.yakSecurityProperties.getApplicationName());
       this.rolePermissionMapper.insert(rolePermissionPO);
     }
   }

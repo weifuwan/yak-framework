@@ -66,7 +66,7 @@ public class RoleDaoImpl extends BaseDaoImpl<RolePO> implements RoleDao {
   @Override
   public void insert(Role role) {
     RolePO rolePO = CopyBeanUtil.copy(role, RolePO.class);
-    rolePO.setAppName(this.yakSecurityProperties.getAppName());
+    rolePO.setAppName(this.yakSecurityProperties.getApplicationName());
     this.roleMapper.insert(rolePO);
     role.setId(rolePO.getId());
   }

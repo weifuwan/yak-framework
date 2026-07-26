@@ -33,7 +33,7 @@ public class ConfigDaoImpl extends BaseDaoImpl<ConfigPO> implements ConfigDao {
 
   @Override
   public int insert(ConfigPO param) {
-    param.setAppName(this.yakSecurityProperties.getAppName());
+    param.setAppName(this.yakSecurityProperties.getApplicationName());
     return this.configMapper.insert(param);
   }
 

@@ -1,19 +1,27 @@
 {
-  "groups": [{
-    "name": "yak.security",
-    "type": "io.yak.framework.security.properties.YakSecurityProperties",
-    "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
-  }],
+  "groups": [
+    {"name":"yak.security","type":"io.yak.framework.security.config.YakSecurityProperties","sourceType":"io.yak.framework.security.config.YakSecurityProperties"},
+    {"name":"yak.security.datasource","type":"io.yak.framework.security.config.YakSecurityProperties$DataSourceProperties","sourceType":"io.yak.framework.security.config.YakSecurityProperties"}
+  ],
   "properties": [
-    {"name":"yak.security.enabled","type":"java.lang.Boolean","defaultValue":true,"description":"Enable Yak Security auto-configuration."},
-    {"name":"yak.security.database-enabled","type":"java.lang.Boolean","defaultValue":true,"description":"Enable database, mapper, DAO, service, and database-backed controller beans."},
-    {"name":"yak.security.web-enabled","type":"java.lang.Boolean","defaultValue":true,"description":"Enable Yak Security MVC controllers."},
-    {"name":"yak.security.audit-enabled","type":"java.lang.Boolean","defaultValue":true,"description":"Enable operation audit web support."},
-    {"name":"yak.security.app-name","type":"java.lang.String","defaultValue":"default","description":"Application name used to isolate security data."},
-    {"name":"yak.security.username","type":"java.lang.String","description":"Security database username."},
-    {"name":"yak.security.password","type":"java.lang.String","description":"Security database password."},
-    {"name":"yak.security.jdbc-url","type":"java.lang.String","description":"Security database JDBC URL."},
-    {"name":"yak.security.driver-class-name","type":"java.lang.String","description":"Security database driver class."}
+    {"name":"yak.security.enabled","type":"java.lang.Boolean","defaultValue":true,"description":"是否启用 Yak Security。"},
+    {"name":"yak.security.database-enabled","type":"java.lang.Boolean","defaultValue":true,"description":"是否启用数据库相关功能。"},
+    {"name":"yak.security.web-enabled","type":"java.lang.Boolean","defaultValue":true,"description":"是否启用 Web 接口。"},
+    {"name":"yak.security.audit-enabled","type":"java.lang.Boolean","defaultValue":true,"description":"是否启用审计功能。"},
+    {"name":"yak.security.application-name","type":"java.lang.String","defaultValue":"default","description":"用于隔离安全数据的应用名称。"},
+    {"name":"yak.security.datasource.enabled","type":"java.lang.Boolean","defaultValue":true,"description":"是否启用 Yak Security 独立数据源。"},
+    {"name":"yak.security.datasource.url","type":"java.lang.String","description":"数据库 JDBC 连接地址。"},
+    {"name":"yak.security.datasource.username","type":"java.lang.String","description":"数据库登录用户名。"},
+    {"name":"yak.security.datasource.password","type":"java.lang.String","description":"数据库登录密码。"},
+    {"name":"yak.security.datasource.driver-class-name","type":"java.lang.String","description":"JDBC 驱动类名。"},
+    {"name":"yak.security.datasource.initial-size","type":"java.lang.Integer","defaultValue":0,"description":"连接池初始化连接数。"},
+    {"name":"yak.security.datasource.min-idle","type":"java.lang.Integer","defaultValue":0,"description":"连接池最小空闲连接数。"},
+    {"name":"yak.security.datasource.max-active","type":"java.lang.Integer","defaultValue":8,"description":"连接池最大活跃连接数。"},
+    {"name":"yak.security.datasource.max-wait","type":"java.lang.Long","defaultValue":-1,"description":"获取连接的最大等待毫秒数。"},
+    {"name":"yak.security.datasource.validation-query","type":"java.lang.String","description":"检测连接有效性的 SQL。"},
+    {"name":"yak.security.datasource.test-while-idle","type":"java.lang.Boolean","defaultValue":true,"description":"是否在空闲连接检测时验证连接。"},
+    {"name":"yak.security.datasource.test-on-borrow","type":"java.lang.Boolean","defaultValue":false,"description":"是否在借出连接时验证连接。"},
+    {"name":"yak.security.datasource.test-on-return","type":"java.lang.Boolean","defaultValue":false,"description":"是否在归还连接时验证连接。"}
   ],
   "hints": []
 }

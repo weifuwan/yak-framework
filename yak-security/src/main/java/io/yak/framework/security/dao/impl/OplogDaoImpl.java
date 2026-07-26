@@ -88,7 +88,7 @@ public class OplogDaoImpl extends BaseDaoImpl<OplogPO> implements OplogDao {
   @Override
   public void insert(Oplog oplog) {
     OplogPO oplogPO = CopyBeanUtil.copy(oplog, OplogPO.class);
-    oplogPO.setAppName(this.yakSecurityProperties.getAppName());
+    oplogPO.setAppName(this.yakSecurityProperties.getApplicationName());
     this.oplogMapper.insert(oplogPO);
     oplog.setId(oplogPO.getId());
   }

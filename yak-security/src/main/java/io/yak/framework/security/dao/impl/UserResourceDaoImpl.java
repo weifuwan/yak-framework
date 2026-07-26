@@ -67,7 +67,7 @@ public class UserResourceDaoImpl
   public void insert(UserResource userResource) {
     UserResourcePO userResourcePO =
         CopyBeanUtil.copy(userResource, UserResourcePO.class);
-    userResourcePO.setAppName(this.yakSecurityProperties.getAppName());
+    userResourcePO.setAppName(this.yakSecurityProperties.getApplicationName());
     this.userResourceMapper.insert(userResourcePO);
   }
 
@@ -79,7 +79,7 @@ public class UserResourceDaoImpl
     List<UserResourcePO> userResourcePOList =
         CopyBeanUtil.copyList(userResourceList, UserResourcePO.class);
     for (UserResourcePO userResourcePO : userResourcePOList) {
-      userResourcePO.setAppName(this.yakSecurityProperties.getAppName());
+      userResourcePO.setAppName(this.yakSecurityProperties.getApplicationName());
       this.userResourceMapper.insert(userResourcePO);
     }
   }

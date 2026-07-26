@@ -83,7 +83,7 @@ public class DeptDaoImpl extends BaseDaoImpl<DeptPO> implements DeptDao {
     }
     List<DeptPO> deptPOList = CopyBeanUtil.copyList(deptList, DeptPO.class);
     for (DeptPO deptPO : deptPOList) {
-      deptPO.setAppName(this.yakSecurityProperties.getAppName());
+      deptPO.setAppName(this.yakSecurityProperties.getApplicationName());
       this.deptMapper.insert(deptPO);
     }
   }

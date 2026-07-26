@@ -29,7 +29,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
   @Override
   public int addUser(UserPO userPO) throws Exception {
     userPO.setPw(PWEncryptUtil.encode(userPO.getPw()));
-    userPO.setAppName(this.yakSecurityProperties.getAppName());
+    userPO.setAppName(this.yakSecurityProperties.getApplicationName());
     return this.userMapper.insert(userPO);
   }
 
