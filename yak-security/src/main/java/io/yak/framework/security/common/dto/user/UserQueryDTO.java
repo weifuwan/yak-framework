@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.dto.user;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.dto.PageParamDTO;
 /**
  * 用户查询数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class UserQueryDTO extends PageParamDTO {
   /** 标识。 */
   private Long id;

@@ -1,5 +1,7 @@
 package io.yak.framework.security.common.vo.user;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.vo.permission.PermissionTreeVO;
 import io.yak.framework.security.common.vo.project.ProjectBriefVO;
 import io.yak.framework.security.common.vo.role.RoleBriefVO;
@@ -10,6 +12,7 @@ import java.util.List;
  *
  * @author weifuwan
  */
+@Data
 public class UserVO {
   /** 主键标识。 */
   private Long id;

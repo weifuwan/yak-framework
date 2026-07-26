@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.dto.oplog;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.dto.PageParamDTO;
 /**
  * 操作日志查询数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class OplogQueryDTO extends PageParamDTO {
   /** 操作类型。 */
   private String operateType;

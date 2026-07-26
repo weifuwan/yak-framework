@@ -1,9 +1,12 @@
 package io.yak.framework.security.common.vo.resource;
+
+import lombok.Data;
 /**
  * 按用户查询的资源授权数据视图对象。
  *
  * @author weifuwan
  */
+@Data
 public class MByUDataVO {
   /** 主键标识。 */
   private Long id;

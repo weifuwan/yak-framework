@@ -7,6 +7,8 @@
  */
 package com.yak.job.common.dto;
 
+import lombok.Data;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,6 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
  *
  * @author weifuwan
  */
+@Data
 @ApiModel(description = "\u4efb\u52a1\u65e5\u5fd7\u5206\u9875\u67e5\u627e\u6761\u4ef6\u4fe1\u606f")
 public class TaskLogPageQueryDTO {
     /** 当前页码。 */

@@ -1,5 +1,7 @@
 package io.yak.framework.security.common.dto.user;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.dto.PageParamDTO;
 import io.yak.framework.security.common.dto.resource.MByUQueryDTO;
 
@@ -8,6 +10,7 @@ import io.yak.framework.security.common.dto.resource.MByUQueryDTO;
  *
  * @author weifuwan
  */
+@Data
 public class UserBriefQueryDTO extends PageParamDTO {
   /** 用户名。 */
   private String userName;

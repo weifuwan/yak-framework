@@ -1,10 +1,13 @@
 package io.yak.framework.security.common.dto.resource;
 
+import lombok.Data;
+
 /**
  * 用户资源查询数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class UserResourceQueryDTO {
   /** 管控级别。 */
   private int controlLevel;

@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.vo.permission;
 
+import lombok.Data;
+
 import java.util.List;
 /**
  * 权限树节点视图对象。
  *
  * @author weifuwan
  */
+@Data
 public class PermissionTreeVO {
   /** 主键标识。 */
   private Long id;

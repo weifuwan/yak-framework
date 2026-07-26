@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.vo.config;
 
+import lombok.Data;
+
 import java.util.Date;
 /**
  * 系统配置视图对象。
  *
  * @author weifuwan
  */
+@Data
 public class ConfigVO {
   /** 主键标识。 */
   private Long id;

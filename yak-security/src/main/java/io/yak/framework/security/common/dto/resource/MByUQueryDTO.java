@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.dto.resource;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.dto.PageParamDTO;
 /**
  * 按用户查询授权的数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class MByUQueryDTO extends PageParamDTO {
   /** 所属部门标识。 */
   private Long deptId;

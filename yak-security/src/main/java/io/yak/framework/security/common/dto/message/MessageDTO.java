@@ -1,10 +1,13 @@
 package io.yak.framework.security.common.dto.message;
 
+import lombok.Data;
+
 /**
  * 消息数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class MessageDTO {
   /** 消息标题。 */
   private String title;

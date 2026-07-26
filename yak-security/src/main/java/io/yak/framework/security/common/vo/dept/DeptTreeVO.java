@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.vo.dept;
 
+import lombok.Data;
+
 import java.util.List;
 /**
  * 部门树节点视图对象。
  *
  * @author weifuwan
  */
+@Data
 public class DeptTreeVO {
   /** 主键标识。 */
   private Long id;

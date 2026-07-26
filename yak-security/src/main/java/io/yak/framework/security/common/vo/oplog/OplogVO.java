@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.vo.oplog;
 
+import lombok.Data;
+
 import java.util.Date;
 /**
  * 操作日志视图对象。
  *
  * @author weifuwan
  */
+@Data
 public class OplogVO {
   /** 主键标识。 */
   private Long id;

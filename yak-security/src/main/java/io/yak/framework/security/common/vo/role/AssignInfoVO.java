@@ -1,9 +1,12 @@
 package io.yak.framework.security.common.vo.role;
+
+import lombok.Data;
 /**
  * 分配信息视图对象。
  *
  * @author weifuwan
  */
+@Data
 public class AssignInfoVO {
   /** 主键标识。 */
   private Long id;

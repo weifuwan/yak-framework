@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.dto.config;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.dto.PageParamDTO;
 /**
  * 配置查询数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class ConfigQueryDTO extends PageParamDTO {
   /** 配置分组。 */
   private String valueGroup;

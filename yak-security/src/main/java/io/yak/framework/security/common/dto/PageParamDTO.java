@@ -1,9 +1,12 @@
 package io.yak.framework.security.common.dto;
+
+import lombok.Data;
 /**
  * 分页参数数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class PageParamDTO {
   /** 当前页码。 */
   private int page = 1;

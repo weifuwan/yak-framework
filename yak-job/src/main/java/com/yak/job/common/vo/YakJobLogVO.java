@@ -7,6 +7,8 @@
  */
 package com.yak.job.common.vo;
 
+import lombok.Data;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -18,6 +20,7 @@ import java.util.List;
  *
  * @author weifuwan
  */
+@Data
 @ApiModel(description = "YakJobLogVO \u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1\u8be6\u60c5")
 public class YakJobLogVO {
     /** 主键标识。 */

@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.dto.project;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.dto.PageParamDTO;
 /**
  * 项目查询数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class ProjectQueryDTO extends PageParamDTO {
   /** 项目名称。 */
   private String projectName;

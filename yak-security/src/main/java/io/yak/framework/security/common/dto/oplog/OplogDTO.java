@@ -1,10 +1,13 @@
 package io.yak.framework.security.common.dto.oplog;
 
+import lombok.Data;
+
 /**
  * 操作日志数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class OplogDTO {
   /** 操作人。 */
   private String operator;

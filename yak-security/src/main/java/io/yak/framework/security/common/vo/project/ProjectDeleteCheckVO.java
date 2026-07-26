@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.vo.project;
 
+import lombok.Data;
+
 import java.util.List;
 /**
  * 项目删除检查结果视图对象。
  *
  * @author weifuwan
  */
+@Data
 public class ProjectDeleteCheckVO {
   /** 项目标识。 */
   private Long projectId;

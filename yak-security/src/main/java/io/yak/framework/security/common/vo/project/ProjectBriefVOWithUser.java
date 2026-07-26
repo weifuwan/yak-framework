@@ -1,5 +1,7 @@
 package io.yak.framework.security.common.vo.project;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.vo.user.UserBasicVO;
 import java.util.List;
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  *
  * @author weifuwan
  */
+@Data
 public class ProjectBriefVOWithUser {
   /** 主键标识。 */
   private Long id;

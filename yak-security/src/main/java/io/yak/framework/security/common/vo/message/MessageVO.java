@@ -1,9 +1,12 @@
 package io.yak.framework.security.common.vo.message;
+
+import lombok.Data;
 /**
  * 消息视图对象。
  *
  * @author weifuwan
  */
+@Data
 public class MessageVO {
   /** 主键标识。 */
   private Long id;
