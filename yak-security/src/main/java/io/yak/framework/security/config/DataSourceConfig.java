@@ -28,6 +28,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 
 /**
  * 安全模块独立数据源与 MyBatis 配置。
@@ -203,12 +204,21 @@ public class DataSourceConfig {
     )
     public Flyway yakSecurityFlyway(
             @Qualifier("yakSecurityDataSource")
-                    DataSource dataSource) {
+                    DataSource dataSource,
+            YakSecurityProperties properties) {
+
+        requireText(
+                properties.getApplicationName(),
+                "yak.security.application-name"
+        );
 
         return Flyway.configure()
                 .dataSource(dataSource)
                 .locations(
                         "classpath:db/migration")
+                .placeholders(Collections.singletonMap(
+                        "appName",
+                        properties.getApplicationName()))
                 .baselineOnMigrate(true)
                 .load();
     }
