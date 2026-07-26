@@ -16,12 +16,27 @@ import org.springframework.beans.BeanUtils;
  * @author weifuwan
  */
 public final class CopyBeanUtil {
-  private CopyBeanUtil() { throw new IllegalStateException("Utility class"); }
 
+  /**
+   * 禁止实例化工具类。
+   */
+  private CopyBeanUtil() {
+    throw new IllegalStateException("Utility class");
+  }
+
+  /**
+   * 将源对象的同名属性复制到指定类型的新对象中。
+   *
+   * @param source 源对象
+   * @param target 目标类型
+   * @param <T> 目标对象类型
+   * @return 属性复制后的目标对象，复制失败时返回 null
+   */
   public static <T> T copy(Object source, Class<T> target) {
     if (source == null || target == null) {
       return null;
     }
+
     try {
       T newInstance = target.getDeclaredConstructor().newInstance();
       BeanUtils.copyProperties(source, newInstance);
@@ -32,41 +47,93 @@ public final class CopyBeanUtil {
     }
   }
 
-  public static <T, K> List<K> copyList(List<T> source, Class<K> target) {
-    if (null == source || source.isEmpty()) {
+  /**
+   * 将源对象集合复制为指定类型的目标对象集合。
+   *
+   * @param source 源对象集合
+   * @param target 目标类型
+   * @param <T> 源对象类型
+   * @param <K> 目标对象类型
+   * @return 属性复制后的目标对象集合
+   */
+  public static <T, K> List<K> copyList(
+          List<T> source,
+          Class<K> target) {
+
+    if (source == null || source.isEmpty()) {
       return Collections.emptyList();
     }
+
     return source.stream()
-        .map(e -> CopyBeanUtil.copy(e, target))
-        .collect(Collectors.toList());
+            .map(element -> CopyBeanUtil.copy(element, target))
+            .collect(Collectors.toList());
   }
 
-  public static <T, K> List<K> copyList(List<T> source, Class<K> target,
-                                        Consumer<K> consumer) {
-    if (null == source || source.isEmpty()) {
+  /**
+   * 将源对象集合复制为目标对象集合，并对每个目标对象执行自定义处理。
+   *
+   * @param source 源对象集合
+   * @param target 目标类型
+   * @param consumer 目标对象处理逻辑
+   * @param <T> 源对象类型
+   * @param <K> 目标对象类型
+   * @return 处理后的目标对象集合
+   */
+  public static <T, K> List<K> copyList(
+          List<T> source,
+          Class<K> target,
+          Consumer<K> consumer) {
+
+    if (source == null || source.isEmpty()) {
       return Collections.emptyList();
     }
+
     return source.stream()
-        .map(e -> CopyBeanUtil.copy(e, target))
-        .peek(consumer)
-        .collect(Collectors.toList());
+            .map(element -> CopyBeanUtil.copy(element, target))
+            .peek(consumer)
+            .collect(Collectors.toList());
   }
 
-  public static <T, K> IPage<K> copyPage(IPage<T> source, Class<K> target) {
+  /**
+   * 将源分页对象复制为指定记录类型的目标分页对象。
+   *
+   * @param source 源分页对象
+   * @param target 目标记录类型
+   * @param <T> 源记录类型
+   * @param <K> 目标记录类型
+   * @return 属性复制后的目标分页对象
+   */
+  public static <T, K> IPage<K> copyPage(
+          IPage<T> source,
+          Class<K> target) {
+
     if (source == null || target == null) {
       return null;
     }
+
     Page<K> targetPage = new Page<>();
     BeanUtils.copyProperties(source, targetPage);
     targetPage.setTotal(source.getTotal());
-    targetPage.setRecords(CopyBeanUtil.copyList(source.getRecords(), target));
+    targetPage.setRecords(
+            CopyBeanUtil.copyList(source.getRecords(), target));
+
     return targetPage;
   }
 
+  /**
+   * 复制分页信息，但不复制分页中的记录集合。
+   *
+   * @param source 源分页对象
+   * @param <T> 源记录类型
+   * @param <K> 目标记录类型
+   * @return 不包含记录数据的目标分页对象
+   */
+  @SuppressWarnings("unchecked")
   public static <T, K> IPage<K> copyPageExcludeList(IPage<T> source) {
     if (source == null) {
       return null;
     }
-    return (IPage)CopyBeanUtil.copy(source, Page.class);
+
+    return (IPage<K>) CopyBeanUtil.copy(source, Page.class);
   }
 }

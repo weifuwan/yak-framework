@@ -7,51 +7,165 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-public class NetworkUtil {
+/**
+ * 网络请求工具类。
+ *
+ * <p>用于获取当前 HTTP 请求及客户端的真实 IP 地址。
+ *
+ * @author weifuwan
+ */
+public final class NetworkUtil {
+
+  /**
+   * 未知 IP 标识。
+   */
   private static final String UNKNOWN = "unknown";
 
+  /**
+   * 本机 IPv4 回环地址。
+   */
+  private static final String LOCAL_IPV4 = "127.0.0.1";
+
+  /**
+   * 本机 IPv6 完整回环地址。
+   */
+  private static final String LOCAL_IPV6 = "0:0:0:0:0:0:0:1";
+
+  /**
+   * 本机 IPv6 简写回环地址。
+   */
+  private static final String LOCAL_IPV6_SHORT = "::1";
+
+  /**
+   * 多级代理 IP 分隔符。
+   */
+  private static final String IP_SEPARATOR = ",";
+
+  /**
+   * 从当前请求上下文中获取客户端真实 IP 地址。
+   *
+   * @return 客户端真实 IP 地址
+   * @throws IllegalStateException 当前线程不存在 HTTP 请求上下文时抛出
+   */
   public static String getRealIpAddress() {
-    RequestAttributes ra = RequestContextHolder.currentRequestAttributes();
-    ServletRequestAttributes sra = (ServletRequestAttributes)ra;
-    HttpServletRequest request = sra.getRequest();
-    return NetworkUtil.getRealIpAddress(request);
+    RequestAttributes requestAttributes =
+            RequestContextHolder.getRequestAttributes();
+
+    if (!(requestAttributes instanceof ServletRequestAttributes)) {
+      throw new IllegalStateException("当前线程不存在 HTTP 请求上下文");
+    }
+
+    ServletRequestAttributes servletRequestAttributes =
+            (ServletRequestAttributes) requestAttributes;
+
+    return NetworkUtil.getRealIpAddress(
+            servletRequestAttributes.getRequest());
   }
 
+  /**
+   * 判断 IP 地址是否无效。
+   *
+   * @param ipAddress IP 地址
+   * @return IP 地址为空或为 unknown 时返回 true
+   */
   private static boolean isNotOk(String ipAddress) {
-    return ipAddress == null || ipAddress.length() == 0 ||
-        UNKNOWN.equalsIgnoreCase(ipAddress);
+    return ipAddress == null
+            || ipAddress.trim().isEmpty()
+            || UNKNOWN.equalsIgnoreCase(ipAddress.trim());
   }
 
+  /**
+   * 从指定 HTTP 请求中获取客户端真实 IP 地址。
+   *
+   * <p>优先从代理请求头中获取，无法获取时使用请求的远程地址。
+   *
+   * @param request HTTP 请求对象
+   * @return 客户端真实 IP 地址
+   */
   public static String getRealIpAddress(HttpServletRequest request) {
-    String ipAddress = request.getHeader("x-forwarded-for");
+    if (request == null) {
+      return null;
+    }
+
+    String ipAddress = request.getHeader("X-Forwarded-For");
+
     if (NetworkUtil.isNotOk(ipAddress)) {
       ipAddress = request.getHeader("Proxy-Client-IP");
     }
+
     if (NetworkUtil.isNotOk(ipAddress)) {
       ipAddress = request.getHeader("WL-Proxy-Client-IP");
     }
+
     if (NetworkUtil.isNotOk(ipAddress)) {
       ipAddress = request.getRemoteAddr();
-      String localIp = "127.0.0.1";
-      String localIpv6 = "0:0:0:0:0:0:0:1";
-      if (ipAddress.equals(localIp) || ipAddress.equals(localIpv6)) {
-        InetAddress inet = null;
-        try {
-          inet = InetAddress.getLocalHost();
-          ipAddress = inet.getHostAddress();
-        } catch (UnknownHostException e) {
-          e.printStackTrace();
-        }
-      }
     }
-    String ipSeparate = ",";
-    int ipLength = 15;
-    if (ipAddress != null && ipAddress.length() > ipLength &&
-        ipAddress.contains(ipSeparate)) {
-      ipAddress = ipAddress.substring(0, ipAddress.indexOf(ipSeparate));
+
+    ipAddress = NetworkUtil.getFirstValidIpAddress(ipAddress);
+
+    if (NetworkUtil.isLocalIpAddress(ipAddress)) {
+      ipAddress = NetworkUtil.getLocalHostAddress(ipAddress);
     }
+
     return ipAddress;
   }
 
-  private NetworkUtil() {}
+  /**
+   * 从多级代理 IP 地址中获取第一个有效地址。
+   *
+   * @param ipAddress 原始 IP 地址
+   * @return 第一个有效 IP 地址，不存在时返回原始值
+   */
+  private static String getFirstValidIpAddress(String ipAddress) {
+    if (NetworkUtil.isNotOk(ipAddress)) {
+      return ipAddress;
+    }
+
+    if (!ipAddress.contains(IP_SEPARATOR)) {
+      return ipAddress.trim();
+    }
+
+    String[] ipAddressArray = ipAddress.split(IP_SEPARATOR);
+    for (String currentIpAddress : ipAddressArray) {
+      if (!NetworkUtil.isNotOk(currentIpAddress)) {
+        return currentIpAddress.trim();
+      }
+    }
+
+    return ipAddress.trim();
+  }
+
+  /**
+   * 判断是否为本机回环地址。
+   *
+   * @param ipAddress IP 地址
+   * @return 是本机回环地址时返回 true
+   */
+  private static boolean isLocalIpAddress(String ipAddress) {
+    return LOCAL_IPV4.equals(ipAddress)
+            || LOCAL_IPV6.equals(ipAddress)
+            || LOCAL_IPV6_SHORT.equals(ipAddress);
+  }
+
+  /**
+   * 获取本机实际网络地址。
+   *
+   * @param defaultIpAddress 获取失败时使用的默认地址
+   * @return 本机网络地址
+   */
+  private static String getLocalHostAddress(String defaultIpAddress) {
+    try {
+      InetAddress localHost = InetAddress.getLocalHost();
+      return localHost.getHostAddress();
+    } catch (UnknownHostException exception) {
+      return defaultIpAddress;
+    }
+  }
+
+  /**
+   * 禁止实例化工具类。
+   */
+  private NetworkUtil() {
+    throw new IllegalStateException("Utility class");
+  }
 }

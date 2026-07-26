@@ -7,82 +7,155 @@ import io.yak.framework.security.common.dto.config.ConfigDTO;
 import io.yak.framework.security.common.dto.config.ConfigQueryDTO;
 import io.yak.framework.security.common.vo.config.ConfigVO;
 import io.yak.framework.security.service.ConfigService;
-import io.yak.framework.security.util.CopyBeanUtil;
 import io.yak.framework.security.util.HttpRequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 配置管理接口。
+ *
+ * @author weifuwan
+ */
 @RestController
-@RequestMapping(value = {"/yak-security/api/v1/config"})
+@RequestMapping("/yak-security/api/v1/config")
 public class ConfigController {
-  @Autowired private ConfigService configService;
 
-  @PostMapping(value = {"/list"})
-  @ResponseBody
-  public Result<List<ConfigVO>> list(@RequestBody ConfigDTO param) {
-    return Result.buildSucc(CopyBeanUtil.copyList(
-        this.configService.queryByCondt(param), ConfigVO.class));
-  }
+    private final ConfigService configService;
 
-  @PostMapping(value = {"/page"})
-  public PagingResult<ConfigVO> page(@RequestBody ConfigQueryDTO queryDTO) {
-    PagingData<ConfigVO> configVO = this.configService.pagingConfig(queryDTO);
-    return PagingResult.success(configVO);
-  }
+    /**
+     * 创建配置管理接口。
+     *
+     * @param configService 配置服务
+     */
+    public ConfigController(ConfigService configService) {
+        this.configService = configService;
+    }
 
-  @GetMapping(value = {"/group/list"})
-  @ResponseBody
-  public Result<List<String>> groups() {
-    return Result.buildSucc(this.configService.listGroups());
-  }
+    /**
+     * 根据条件查询配置列表。
+     *
+     * @param condition 查询条件
+     * @return 配置列表
+     */
+    @PostMapping("/list")
+    public Result<List<ConfigVO>> list(
+            @RequestBody ConfigDTO condition) {
 
-  @GetMapping(value = {"/get"})
-  @ResponseBody
-  public Result<ConfigVO>
-  get(@RequestParam(value = "configId") Long configId) {
-    return Result.buildSucc(CopyBeanUtil.copy(
-        this.configService.getConfigById(configId), ConfigVO.class));
-  }
+        return Result.buildSucc(
+                configService.queryByCondt(condition));
+    }
 
-  @PostMapping(value = {"/switch"})
-  @ResponseBody
-  public Result<Void> switchConfig(HttpServletRequest request,
-                                   @RequestBody ConfigDTO param) {
-    return this.configService.switchConfig(
-        param.getId(), param.getStatus(), HttpRequestUtil.getOperator(request));
-  }
+    /**
+     * 分页查询配置。
+     *
+     * @param queryDTO 分页查询条件
+     * @return 配置分页结果
+     */
+    @PostMapping("/page")
+    public PagingResult<ConfigVO> page(
+            @RequestBody ConfigQueryDTO queryDTO) {
 
-  @DeleteMapping(value = {"/del"})
-  @ResponseBody
-  public Result<Void> delete(HttpServletRequest request,
-                             @RequestParam(value = "id") Long id) {
-    return this.configService.delConfig(id,
-                                        HttpRequestUtil.getOperator(request));
-  }
+        PagingData<ConfigVO> pagingData =
+                configService.pagingConfig(queryDTO);
 
-  @PutMapping(value = {"/add"})
-  @ResponseBody
-  public Result<Integer> add(HttpServletRequest request,
-                             @RequestBody ConfigDTO param) {
-    return this.configService.addConfig(param,
-                                        HttpRequestUtil.getOperator(request));
-  }
+        return PagingResult.success(pagingData);
+    }
 
-  @PostMapping(value = {"/edit"})
-  @ResponseBody
-  public Result<Void> edit(HttpServletRequest request,
-                           @RequestBody ConfigDTO param) {
-    return this.configService.editConfig(param,
-                                         HttpRequestUtil.getOperator(request));
-  }
+    /**
+     * 查询全部配置分组。
+     *
+     * @return 配置分组列表
+     */
+    @GetMapping("/group/list")
+    public Result<List<String>> groups() {
+        return Result.buildSucc(
+                configService.listGroups());
+    }
+
+    /**
+     * 根据配置 ID 查询配置详情。
+     *
+     * @param configId 配置 ID
+     * @return 配置详情
+     */
+    @GetMapping("/get")
+    public Result<ConfigVO> get(
+            @RequestParam("configId") Long configId) {
+
+        return Result.buildSucc(
+                configService.getConfigById(configId));
+    }
+
+    /**
+     * 切换配置状态。
+     *
+     * @param request   HTTP 请求
+     * @param configDTO 配置信息
+     * @return 状态切换结果
+     */
+    @PostMapping("/switch")
+    public Result<Void> switchConfig(
+            HttpServletRequest request,
+            @RequestBody ConfigDTO configDTO) {
+
+        return configService.switchConfig(
+                configDTO.getId(),
+                configDTO.getStatus(),
+                HttpRequestUtil.getOperator(request));
+    }
+
+    /**
+     * 删除配置。
+     *
+     * @param request  HTTP 请求
+     * @param configId 配置 ID
+     * @return 删除结果
+     */
+    @DeleteMapping("/del")
+    public Result<Void> delete(
+            HttpServletRequest request,
+            @RequestParam("id") Long configId) {
+
+        return configService.delConfig(
+                configId,
+                HttpRequestUtil.getOperator(request));
+    }
+
+    /**
+     * 新增配置。
+     *
+     * <p>保留原有 PUT 请求方式，避免影响现有前端调用。
+     *
+     * @param request   HTTP 请求
+     * @param configDTO 配置信息
+     * @return 新增结果及配置 ID
+     */
+    @PutMapping("/add")
+    public Result<Long> add(
+            HttpServletRequest request,
+            @RequestBody ConfigDTO configDTO) {
+
+        return configService.addConfig(
+                configDTO,
+                HttpRequestUtil.getOperator(request));
+    }
+
+    /**
+     * 编辑配置。
+     *
+     * @param request   HTTP 请求
+     * @param configDTO 配置信息
+     * @return 编辑结果
+     */
+    @PostMapping("/edit")
+    public Result<Void> edit(
+            HttpServletRequest request,
+            @RequestBody ConfigDTO configDTO) {
+
+        return configService.editConfig(
+                configDTO,
+                HttpRequestUtil.getOperator(request));
+    }
 }
