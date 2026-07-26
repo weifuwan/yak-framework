@@ -29,8 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value={"v1/logi-job/job"})
-@Api(tags={"logi-job \u6267\u884c\u751f\u6210\u7684\u4f5c\u4e1a\u76f8\u5173\u63a5\u53e3"})
+@RequestMapping(value={"v1/yak-job/job"})
+@Api(tags={"yak-job \u6267\u884c\u751f\u6210\u7684\u4f5c\u4e1a\u76f8\u5173\u63a5\u53e3"})
 public class JobController {
     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
     @Autowired

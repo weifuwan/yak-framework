@@ -11,11 +11,11 @@
  */
 package com.yak.job.core.consensual;
 
-import com.yak.job.common.domain.LogITask;
-import com.yak.job.common.domain.LogIWorker;
-import com.yak.job.common.po.LogIWorkerBlacklistPO;
+import com.yak.job.common.domain.YakTask;
+import com.yak.job.common.domain.YakWorker;
+import com.yak.job.common.po.YakWorkerBlacklistPO;
 import com.yak.job.core.WorkerSingleton;
-import com.yak.job.mapper.LogIWorkerBlacklistMapper;
+import com.yak.job.mapper.YakWorkerBlacklistMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.HashSet;
@@ -34,32 +34,32 @@ public abstract class AbstractConsensual
 implements Consensual {
     private static final Logger logger = LoggerFactory.getLogger(AbstractConsensual.class);
     @Autowired
-    private LogIWorkerBlacklistMapper logIWorkerBlacklistMapper;
+    private YakWorkerBlacklistMapper yakWorkerBlacklistMapper;
     private static final String BLACKLIST_KEY = "BlacklistKey";
     private Cache<Object, Set<String>> blacklistCache = CacheBuilder.newBuilder().expireAfterWrite(2L, TimeUnit.MINUTES).build();
 
     @Override
-    public boolean canClaim(LogITask logITask) {
+    public boolean canClaim(YakTask yakTask) {
         if (this.inBlacklist()) {
             return false;
         }
-        return this.tryClaim(logITask);
+        return this.tryClaim(yakTask);
     }
 
-    public abstract boolean tryClaim(LogITask var1);
+    public abstract boolean tryClaim(YakTask var1);
 
     private boolean inBlacklist() {
         Set<String> blacklist = this.blacklist();
-        LogIWorker logIWorker = WorkerSingleton.getInstance().getLogIWorker();
-        return blacklist.contains(logIWorker.getWorkerCode());
+        YakWorker yakWorker = WorkerSingleton.getInstance().getYakWorker();
+        return blacklist.contains(yakWorker.getWorkerCode());
     }
 
     private Set<String> blacklist() {
         Set<String> blacklist = new HashSet<String>();
         try {
             blacklist = (Set)this.blacklistCache.get((Object)BLACKLIST_KEY, () -> {
-                List<LogIWorkerBlacklistPO> logIWorkerBlacklistPOS = this.logIWorkerBlacklistMapper.selectAll();
-                return logIWorkerBlacklistPOS.stream().map(LogIWorkerBlacklistPO::getWorkerCode).collect(Collectors.toSet());
+                List<YakWorkerBlacklistPO> yakWorkerBlacklistPOS = this.yakWorkerBlacklistMapper.selectAll();
+                return yakWorkerBlacklistPOS.stream().map(YakWorkerBlacklistPO::getWorkerCode).collect(Collectors.toSet());
             });
         } catch (ExecutionException e) {
             logger.error("class=AbstractConsensual||method=blacklist||url=||msg=", (Throwable)e);

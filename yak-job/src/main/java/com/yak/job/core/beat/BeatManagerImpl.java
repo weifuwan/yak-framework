@@ -10,16 +10,16 @@
  */
 package com.yak.job.core.beat;
 
-import com.yak.job.LogIJobProperties;
-import com.yak.job.common.domain.LogITask;
-import com.yak.job.common.domain.LogIWorker;
-import com.yak.job.common.po.LogITaskPO;
-import com.yak.job.common.po.LogIWorkerPO;
+import com.yak.job.YakJobProperties;
+import com.yak.job.common.domain.YakTask;
+import com.yak.job.common.domain.YakWorker;
+import com.yak.job.common.po.YakTaskPO;
+import com.yak.job.common.po.YakWorkerPO;
 import com.yak.job.core.WorkerSingleton;
 import com.yak.job.core.job.JobManager;
-import com.yak.job.mapper.LogITaskLockMapper;
-import com.yak.job.mapper.LogITaskMapper;
-import com.yak.job.mapper.LogIWorkerMapper;
+import com.yak.job.mapper.YakTaskLockMapper;
+import com.yak.job.mapper.YakTaskMapper;
+import com.yak.job.mapper.YakWorkerMapper;
 import com.yak.job.utils.BeanUtil;
 import java.util.Iterator;
 import java.util.List;
@@ -35,18 +35,18 @@ public class BeatManagerImpl
 implements BeatManager {
     private static final Logger logger = LoggerFactory.getLogger(BeatManagerImpl.class);
     private JobManager jobManager;
-    private LogIWorkerMapper logIWorkerMapper;
-    private LogITaskLockMapper logITaskLockMapper;
-    private LogITaskMapper logITaskMapper;
-    private LogIJobProperties logIJobProperties;
+    private YakWorkerMapper yakWorkerMapper;
+    private YakTaskLockMapper yakTaskLockMapper;
+    private YakTaskMapper yakTaskMapper;
+    private YakJobProperties yakJobProperties;
 
     @Autowired
-    public BeatManagerImpl(JobManager jobManager, LogIWorkerMapper logIWorkerMapper, LogITaskLockMapper logITaskLockMapper, LogITaskMapper logITaskMapper, LogIJobProperties logIJobProperties) {
+    public BeatManagerImpl(JobManager jobManager, YakWorkerMapper yakWorkerMapper, YakTaskLockMapper yakTaskLockMapper, YakTaskMapper yakTaskMapper, YakJobProperties yakJobProperties) {
         this.jobManager = jobManager;
-        this.logIWorkerMapper = logIWorkerMapper;
-        this.logITaskLockMapper = logITaskLockMapper;
-        this.logITaskMapper = logITaskMapper;
-        this.logIJobProperties = logIJobProperties;
+        this.yakWorkerMapper = yakWorkerMapper;
+        this.yakTaskLockMapper = yakTaskLockMapper;
+        this.yakTaskMapper = yakTaskMapper;
+        this.yakJobProperties = yakJobProperties;
     }
 
     @Override
@@ -55,40 +55,40 @@ implements BeatManager {
         this.cleanWorker();
         WorkerSingleton workerSingleton = WorkerSingleton.getInstance();
         workerSingleton.updateInstanceMetrics();
-        LogIWorker logIWorker = workerSingleton.getLogIWorker();
-        logIWorker.setJobNum(this.jobManager.runningJobSize());
-        logIWorker.setAppName(this.logIJobProperties.getAppName());
-        int ret = null == this.logIWorkerMapper.selectByCode(logIWorker.getWorkerCode(), logIWorker.getAppName()) ? this.logIWorkerMapper.insert(logIWorker.getWorker()) : this.logIWorkerMapper.updateByCode(logIWorker.getWorker());
+        YakWorker yakWorker = workerSingleton.getYakWorker();
+        yakWorker.setJobNum(this.jobManager.runningJobSize());
+        yakWorker.setAppName(this.yakJobProperties.getAppName());
+        int ret = null == this.yakWorkerMapper.selectByCode(yakWorker.getWorkerCode(), yakWorker.getAppName()) ? this.yakWorkerMapper.insert(yakWorker.getWorker()) : this.yakWorkerMapper.updateByCode(yakWorker.getWorker());
         return ret > 0;
     }
 
     @Override
     public boolean stop() {
         WorkerSingleton workerSingleton = WorkerSingleton.getInstance();
-        LogIWorker logIWorker = workerSingleton.getLogIWorker();
-        this.logIWorkerMapper.deleteByCode(logIWorker.getWorkerCode());
-        this.logITaskLockMapper.deleteByWorkerCodeAndAppName(logIWorker.getWorkerCode(), this.logIJobProperties.getAppName());
+        YakWorker yakWorker = workerSingleton.getYakWorker();
+        this.yakWorkerMapper.deleteByCode(yakWorker.getWorkerCode());
+        this.yakTaskLockMapper.deleteByWorkerCodeAndAppName(yakWorker.getWorkerCode(), this.yakJobProperties.getAppName());
         return true;
     }
 
     private void cleanTask(String appName, String workCode) {
-        List<LogITaskPO> logITaskPOS = this.logITaskMapper.selectByAppName(appName);
-        if (!CollectionUtils.isEmpty(logITaskPOS)) {
-            for (LogITaskPO logITaskPO : logITaskPOS) {
+        List<YakTaskPO> yakTaskPOS = this.yakTaskMapper.selectByAppName(appName);
+        if (!CollectionUtils.isEmpty(yakTaskPOS)) {
+            for (YakTaskPO yakTaskPO : yakTaskPOS) {
                 try {
-                    List<LogITask.TaskWorker> taskWorkers = BeanUtil.convertToList(logITaskPO.getTaskWorkerStr(), LogITask.TaskWorker.class);
+                    List<YakTask.TaskWorker> taskWorkers = BeanUtil.convertToList(yakTaskPO.getTaskWorkerStr(), YakTask.TaskWorker.class);
                     if (CollectionUtils.isEmpty(taskWorkers)) continue;
                     boolean needUpdate = false;
-                    Iterator<LogITask.TaskWorker> iter = taskWorkers.iterator();
+                    Iterator<YakTask.TaskWorker> iter = taskWorkers.iterator();
                     while (iter.hasNext()) {
-                        LogITask.TaskWorker taskWorker = iter.next();
+                        YakTask.TaskWorker taskWorker = iter.next();
                         if (!workCode.equals(taskWorker.getWorkerCode())) continue;
                         iter.remove();
                         needUpdate = true;
                     }
                     if (!needUpdate) continue;
-                    logITaskPO.setTaskWorkerStr(BeanUtil.convertToJson(taskWorkers));
-                    this.logITaskMapper.updateTaskWorkStrByCode(logITaskPO);
+                    yakTaskPO.setTaskWorkerStr(BeanUtil.convertToJson(taskWorkers));
+                    this.yakTaskMapper.updateTaskWorkStrByCode(yakTaskPO);
                 } catch (Exception e) {
                     logger.info("class=BeatManagerImpl||method=cleanTask||msg=clean task worker error!", (Throwable)e);
                 }
@@ -98,16 +98,16 @@ implements BeatManager {
 
     private void cleanWorker() {
         long currentTime = System.currentTimeMillis();
-        String appName = this.logIJobProperties.getAppName();
-        List<LogIWorkerPO> logIWorkerPOS = this.logIWorkerMapper.selectByAppName(appName);
-        if (CollectionUtils.isEmpty(logIWorkerPOS)) {
+        String appName = this.yakJobProperties.getAppName();
+        List<YakWorkerPO> yakWorkerPOS = this.yakWorkerMapper.selectByAppName(appName);
+        if (CollectionUtils.isEmpty(yakWorkerPOS)) {
             return;
         }
-        for (LogIWorkerPO logIWorkerPO : logIWorkerPOS) {
-            if (logIWorkerPO.getHeartbeat().getTime() + 30000L >= currentTime) continue;
-            this.logIWorkerMapper.deleteByCode(logIWorkerPO.getWorkerCode());
-            this.logITaskLockMapper.deleteByWorkerCodeAndAppName(logIWorkerPO.getWorkerCode(), appName);
-            this.cleanTask(appName, logIWorkerPO.getWorkerCode());
+        for (YakWorkerPO yakWorkerPO : yakWorkerPOS) {
+            if (yakWorkerPO.getHeartbeat().getTime() + 30000L >= currentTime) continue;
+            this.yakWorkerMapper.deleteByCode(yakWorkerPO.getWorkerCode());
+            this.yakTaskLockMapper.deleteByWorkerCodeAndAppName(yakWorkerPO.getWorkerCode(), appName);
+            this.cleanTask(appName, yakWorkerPO.getWorkerCode());
         }
     }
 }

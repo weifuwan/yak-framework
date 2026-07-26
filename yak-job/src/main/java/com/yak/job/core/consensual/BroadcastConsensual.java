@@ -6,7 +6,7 @@
  */
 package com.yak.job.core.consensual;
 
-import com.yak.job.common.domain.LogITask;
+import com.yak.job.common.domain.YakTask;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +18,7 @@ extends AbstractConsensual {
     }
 
     @Override
-    public boolean tryClaim(LogITask logITask) {
+    public boolean tryClaim(YakTask yakTask) {
         return true;
     }
 }

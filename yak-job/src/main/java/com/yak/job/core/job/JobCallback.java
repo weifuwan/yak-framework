@@ -3,9 +3,9 @@
  */
 package com.yak.job.core.job;
 
-import com.yak.job.common.domain.LogIJob;
+import com.yak.job.common.domain.YakJob;
 
 public interface JobCallback {
-    public void callback(LogIJob var1);
+    public void callback(YakJob var1);
 }
 
