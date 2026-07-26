@@ -1,54 +1,19 @@
 {
-  "groups": [
-    {
-      "name": "spring.yak-security",
-      "type": "io.yak.framework.security.properties.YakSecurityProperties",
-      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
-    }
-  ],
+  "groups": [{
+    "name": "yak.security",
+    "type": "io.yak.framework.security.properties.YakSecurityProperties",
+    "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
+  }],
   "properties": [
-    {
-      "name": "spring.yak-security.app-name",
-      "type": "java.lang.String",
-      "description": "应用名称",
-      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
-    },
-    {
-      "name": "spring.yak-security.driver-class-name",
-      "type": "java.lang.String",
-      "description": "数据库信息",
-      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
-    },
-    {
-      "name": "spring.yak-security.jdbc-url",
-      "type": "java.lang.String",
-      "description": "数据库信息",
-      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
-    },
-    {
-      "name": "spring.yak-security.login-extend-bean-name",
-      "type": "java.lang.String",
-      "description": "用户需要实现loginExtend接口，并在spring容器中的bean name 对应 配置文件[yak.security.login-extend-bean-name] 配置 项",
-      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
-    },
-    {
-      "name": "spring.yak-security.password",
-      "type": "java.lang.String",
-      "description": "数据库信息",
-      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
-    },
-    {
-      "name": "spring.yak-security.resource-extend-bean-name",
-      "type": "java.lang.String",
-      "description": "用户需要实现resourceExtend接口，并在spring容器中的bean name",
-      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
-    },
-    {
-      "name": "spring.yak-security.username",
-      "type": "java.lang.String",
-      "description": "数据库信息",
-      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
-    }
+    {"name":"yak.security.enabled","type":"java.lang.Boolean","defaultValue":true,"description":"Enable Yak Security auto-configuration."},
+    {"name":"yak.security.database-enabled","type":"java.lang.Boolean","defaultValue":true,"description":"Enable database, mapper, DAO, service, and database-backed controller beans."},
+    {"name":"yak.security.web-enabled","type":"java.lang.Boolean","defaultValue":true,"description":"Enable Yak Security MVC controllers."},
+    {"name":"yak.security.audit-enabled","type":"java.lang.Boolean","defaultValue":true,"description":"Enable operation audit web support."},
+    {"name":"yak.security.app-name","type":"java.lang.String","defaultValue":"default","description":"Application name used to isolate security data."},
+    {"name":"yak.security.username","type":"java.lang.String","description":"Security database username."},
+    {"name":"yak.security.password","type":"java.lang.String","description":"Security database password."},
+    {"name":"yak.security.jdbc-url","type":"java.lang.String","description":"Security database JDBC URL."},
+    {"name":"yak.security.driver-class-name","type":"java.lang.String","description":"Security database driver class."}
   ],
   "hints": []
 }

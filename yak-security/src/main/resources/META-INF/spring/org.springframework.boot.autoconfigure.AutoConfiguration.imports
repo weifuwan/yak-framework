@@ -1,1 +1,1 @@
-io.yak.framework.security.config.AutoConfiguration
+io.yak.framework.security.autoconfigure.YakSecurityAutoConfiguration
