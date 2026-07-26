@@ -15,17 +15,22 @@ import io.yak.framework.security.util.CopyBeanUtil;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+/**
+ * 用户数据访问实现。
+ *
+ * <p>负责用户信息的增删改查，并通过 MyBatis-Plus 保持既有逻辑删除语义。
+ *
+ * @author weifuwan
+ */
 @Component
+@RequiredArgsConstructor
 public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
   private final UserMapper userMapper;
-
-  public UserDaoImpl(UserMapper userMapper) {
-    this.userMapper = userMapper;
-  }
 
   @Override
   public int addUser(UserPO userPO) { return userMapper.insert(userPO); }

@@ -8,37 +8,49 @@ import io.yak.framework.security.common.entity.user.UserBrief;
 import io.yak.framework.security.common.po.UserPO;
 import java.util.List;
 
+/**
+ * 用户数据访问接口。
+ *
+ * <p>提供用户持久化、逻辑删除及用户简要信息查询能力。
+ *
+ * @author weifuwan
+ */
 public interface UserDao {
-  public int addUser(UserPO userPO);
+  int addUser(UserPO userPO);
 
-  public int editUser(UserPO userPO);
+  int editUser(UserPO userPO);
 
-  public IPage<User> selectPageByUserIdList(UserQueryDTO var1,
-                                            List<Long> var2);
+  IPage<User> selectPageByUserIdList(UserQueryDTO queryDTO,
+                                     List<Long> userIdList);
 
-  public IPage<UserBrief> selectBriefPageByDeptIdList(UserBriefQueryDTO var1,
-                                                      List<Long> var2);
+  IPage<UserBrief> selectBriefPageByDeptIdList(UserBriefQueryDTO queryDTO,
+                                               List<Long> deptIdList);
 
-  public User selectByUserId(Long userId);
+  User selectByUserId(Long userId);
 
-  public User selectByUserMail(String var1);
+  User selectByUserMail(String email);
 
-  public User selectByUserPhone(String var1);
+  User selectByUserPhone(String phone);
 
-  public boolean deleteByUserId(Long userId);
+  boolean deleteByUserId(Long userId);
 
-  public List<UserBrief> selectBriefListByUserIdList(List<Long> var1);
+  List<UserBrief> selectBriefListByUserIdList(List<Long> userIdList);
 
-  public List<UserBrief>
-  selectBriefListByNameAndDescOrderByCreateTime(String var1);
+  List<UserBrief> selectBriefListByNameAndDescOrderByCreateTime(String name);
 
-  public List<UserBrief> selectBriefListByDeptIdList(List<Long> var1);
+  List<UserBrief> selectBriefListByDeptIdList(List<Long> deptIdList);
 
-  public List<UserBrief> selectBriefListOrderByCreateTime(boolean var1);
+  List<UserBrief> selectBriefListOrderByCreateTime(boolean ascending);
 
-  public List<UserBrief> selectAllBriefList();
+  List<UserBrief> selectAllBriefList();
 
-  public List<Long> selectUserIdListByUsernameOrRealName(String var1);
+  /**
+   * 根据用户名或真实姓名模糊查询用户 ID。
+   *
+   * @param name 用户名或真实姓名关键字
+   * @return 匹配的用户 ID 列表，关键字为空时返回空列表
+   */
+  List<Long> selectUserIdListByUsernameOrRealName(String name);
 
-  public User selectByUsername(String var1);
+  User selectByUsername(String username);
 }

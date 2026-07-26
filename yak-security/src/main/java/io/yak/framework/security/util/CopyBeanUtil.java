@@ -8,7 +8,14 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 
-public class CopyBeanUtil {
+/**
+ * Bean 属性复制工具。
+ *
+ * <p>统一处理单个对象、集合及分页对象之间的同名属性转换。
+ *
+ * @author weifuwan
+ */
+public final class CopyBeanUtil {
   private CopyBeanUtil() { throw new IllegalStateException("Utility class"); }
 
   public static <T> T copy(Object source, Class<T> target) {
@@ -16,8 +23,8 @@ public class CopyBeanUtil {
       return null;
     }
     try {
-      T newInstance = target.newInstance();
-      BeanUtils.copyProperties((Object)source, newInstance);
+      T newInstance = target.getDeclaredConstructor().newInstance();
+      BeanUtils.copyProperties(source, newInstance);
       return newInstance;
     } catch (Exception e) {
       e.printStackTrace();
@@ -49,13 +56,11 @@ public class CopyBeanUtil {
     if (source == null || target == null) {
       return null;
     }
-    IPage newInstance = (IPage)CopyBeanUtil.copy(source, Page.class);
-    if (newInstance != null) {
-      newInstance.setTotal(source.getTotal());
-      newInstance.setRecords(
-          CopyBeanUtil.copyList(source.getRecords(), target));
-    }
-    return newInstance;
+    Page<K> targetPage = new Page<>();
+    BeanUtils.copyProperties(source, targetPage);
+    targetPage.setTotal(source.getTotal());
+    targetPage.setRecords(CopyBeanUtil.copyList(source.getRecords(), target));
+    return targetPage;
   }
 
   public static <T, K> IPage<K> copyPageExcludeList(IPage<T> source) {
