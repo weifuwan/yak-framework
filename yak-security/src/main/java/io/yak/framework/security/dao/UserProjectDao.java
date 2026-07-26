@@ -6,7 +6,7 @@ import io.yak.framework.security.common.po.UserProjectPO;
 import java.util.List;
 
 public interface UserProjectDao {
-  public List<Long> selectUserIdListByProjectId(Integer var1, int var2);
+  public List<Long> selectUserIdListByProjectId(Long projectId, int userType);
 
   public List<Long> selectProjectIdListByUserIdList(List<Long> var1);
 
@@ -16,9 +16,9 @@ public interface UserProjectDao {
 
   public int deleteUserProject(List<UserProject> var1);
 
-  public void deleteByProjectId(Integer var1);
+  public void deleteByProjectId(Long projectId);
 
-  public void deleteByProjectIdAndUserType(Integer var1, int var2);
+  public void deleteByProjectIdAndUserType(Long projectId, int userType);
 
   public List<UserProject> selectByProjectIds(List<Long> var1);
 

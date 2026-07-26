@@ -10,7 +10,7 @@ public interface MessageDao {
 
   public void insertBatch(List<Message> var1);
 
-  public List<Message> selectListByUserIdAndReadTag(Integer var1, Boolean var2);
+  public List<Message> selectListByUserIdAndReadTag(Long userId, Boolean readTag);
 
   public List<Message> selectListByMessageIdList(List<Long> var1);
 }

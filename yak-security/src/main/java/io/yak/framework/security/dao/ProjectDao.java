@@ -8,16 +8,16 @@ import io.yak.framework.security.common.entity.project.ProjectBrief;
 import java.util.List;
 
 public interface ProjectDao {
-  public Project selectByProjectId(Integer var1);
+  public Project selectByProjectId(Long projectId);
 
   public void insert(Project var1);
 
   public IPage<Project> selectPageByDeptIdListAndProjectIdList(
       ProjectQueryDTO var1, List<Long> var2, List<Long> var3);
 
-  public void deleteByProjectId(Integer var1);
+  public void deleteByProjectId(Long projectId);
 
-  public int selectCountByProjectNameAndNotProjectId(String var1, Integer var2);
+  public int selectCountByProjectNameAndNotProjectId(String projectName, Long projectId);
 
   public IPage<ProjectBrief> selectBriefPage(ProjectBriefQueryDTO var1);
 

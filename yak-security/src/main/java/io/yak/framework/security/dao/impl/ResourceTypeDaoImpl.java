@@ -58,7 +58,6 @@ public class ResourceTypeDaoImpl
         List<ResourceTypePO> resourceTypePOList =
                 CopyBeanUtil.copyList(resourceTypeList, ResourceTypePO.class);
         for (ResourceTypePO resourceTypePO : resourceTypePOList) {
-            resourceTypePO.setAppName(this.yakSecurityProperties.getApplicationName());
             this.resourceTypeMapper.insert(resourceTypePO);
         }
     }

@@ -7,9 +7,9 @@ import io.yak.framework.security.common.enums.resource.ControlLevelCode;
 import java.util.List;
 
 public interface UserResourceDao {
-  public int selectCountByUserId(Integer var1, UserResourceQueryDTO var2);
+  public int selectCountByUserId(Long userId, UserResourceQueryDTO queryDTO);
 
-  public void deleteByUserId(Integer var1, UserResourceQueryDTO var2);
+  public void deleteByUserId(Long userId, UserResourceQueryDTO queryDTO);
 
   public void deleteByControlLevel(ControlLevelCode var1);
 
@@ -28,22 +28,22 @@ public interface UserResourceDao {
   public void deleteByResourceIdList(List<Long> var1,
                                      UserResourceQueryDTO var2);
 
-  public int selectCountByUserIdAndControlLevel(Integer var1,
+  public int selectCountByUserIdAndControlLevel(Long userId,
                                                 ControlLevelCode var2);
 
   public int selectCount(UserResourceQueryDTO var1);
 
-  public List<Long> selectResourceIdListByUserId(Integer var1,
+  public List<Long> selectResourceIdListByUserId(Long userId,
                                                     UserResourceQueryDTO var2);
 
   public void deleteWithoutUserIdList(UserResourceQueryDTO var1,
                                       List<Long> var2);
 
-  public void deleteByUserIdWithoutProjectIdList(Integer var1,
+  public void deleteByUserIdWithoutProjectIdList(Long userId,
                                                  UserResourceQueryDTO var2,
                                                  List<Long> var3);
 
-  public void deleteByUserIdWithoutResourceTypeIdList(Integer var1,
+  public void deleteByUserIdWithoutResourceTypeIdList(Long userId,
                                                       UserResourceQueryDTO var2,
                                                       List<Long> var3);
 
