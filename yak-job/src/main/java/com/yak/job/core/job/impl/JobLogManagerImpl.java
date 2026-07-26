@@ -8,14 +8,14 @@
  */
 package com.yak.job.core.job.impl;
 
-import com.yak.job.LogIJobProperties;
-import com.yak.job.common.domain.LogITask;
+import com.yak.job.YakJobProperties;
+import com.yak.job.common.domain.YakTask;
 import com.yak.job.common.dto.TaskLogPageQueryDTO;
-import com.yak.job.common.po.LogIJobLogPO;
-import com.yak.job.common.vo.LogIJobLogVO;
+import com.yak.job.common.po.YakJobLogPO;
+import com.yak.job.common.vo.YakJobLogVO;
 import com.yak.job.core.job.JobLogManager;
 import com.yak.job.core.task.TaskManager;
-import com.yak.job.mapper.LogIJobLogMapper;
+import com.yak.job.mapper.YakJobLogMapper;
 import com.yak.job.utils.BeanUtil;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -30,8 +30,8 @@ import org.springframework.util.CollectionUtils;
 public class JobLogManagerImpl
 implements JobLogManager {
     private TaskManager taskManager;
-    private LogIJobLogMapper logIJobLogMapper;
-    private LogIJobProperties logIJobProperties;
+    private YakJobLogMapper yakJobLogMapper;
+    private YakJobProperties yakJobProperties;
     private static final String SORT_DESC = "desc";
     private static final String SORT_ASC = "asc";
     private static final String SORT_ID = "id";
@@ -42,16 +42,16 @@ implements JobLogManager {
     private static final String SORT_END_TIME = "end_time";
 
     @Autowired
-    public JobLogManagerImpl(TaskManager taskManager, LogIJobLogMapper logIJobLogMapper, LogIJobProperties logIJobProperties) {
+    public JobLogManagerImpl(TaskManager taskManager, YakJobLogMapper yakJobLogMapper, YakJobProperties yakJobProperties) {
         this.taskManager = taskManager;
-        this.logIJobLogMapper = logIJobLogMapper;
-        this.logIJobProperties = logIJobProperties;
+        this.yakJobLogMapper = yakJobLogMapper;
+        this.yakJobProperties = yakJobProperties;
     }
 
     @Override
-    public List<LogIJobLogVO> pageJobLogs(TaskLogPageQueryDTO dto) {
-        List<LogIJobLogPO> logIJobLogPOS;
-        HashMap longLogITaskMap = new HashMap();
+    public List<YakJobLogVO> pageJobLogs(TaskLogPageQueryDTO dto) {
+        List<YakJobLogPO> yakJobLogPOS;
+        HashMap longYakTaskMap = new HashMap();
         Timestamp beginTimestamp = null;
         Timestamp endTimestamp = null;
         if (null != dto.getBeginTime()) {
@@ -60,20 +60,20 @@ implements JobLogManager {
         if (null != dto.getEndTime()) {
             endTimestamp = new Timestamp(dto.getEndTime());
         }
-        if (CollectionUtils.isEmpty(logIJobLogPOS = this.logIJobLogMapper.pagineListByCondition(this.logIJobProperties.getAppName(), dto.getTaskId(), dto.getTaskDesc(), dto.getTaskStatus(), (dto.getPage() - 1) * dto.getSize(), dto.getSize(), this.genSortName(dto.getSortName()), this.genSort(dto.getSortAsc()), beginTimestamp, endTimestamp))) {
+        if (CollectionUtils.isEmpty(yakJobLogPOS = this.yakJobLogMapper.pagineListByCondition(this.yakJobProperties.getAppName(), dto.getTaskId(), dto.getTaskDesc(), dto.getTaskStatus(), (dto.getPage() - 1) * dto.getSize(), dto.getSize(), this.genSortName(dto.getSortName()), this.genSort(dto.getSortAsc()), beginTimestamp, endTimestamp))) {
             return null;
         }
-        return logIJobLogPOS.stream().map(logIJobLogPO -> {
-            LogIJobLogVO logIJobLogVO = BeanUtil.convertTo(logIJobLogPO, LogIJobLogVO.class);
-            LogITask logITask = (LogITask)longLogITaskMap.get(logIJobLogPO.getTaskId());
-            if (null == logITask) {
-                logITask = this.taskManager.getByCode(logIJobLogPO.getTaskCode());
-                longLogITaskMap.put(logIJobLogPO.getTaskId(), logITask);
+        return yakJobLogPOS.stream().map(yakJobLogPO -> {
+            YakJobLogVO yakJobLogVO = BeanUtil.convertTo(yakJobLogPO, YakJobLogVO.class);
+            YakTask yakTask = (YakTask)longYakTaskMap.get(yakJobLogPO.getTaskId());
+            if (null == yakTask) {
+                yakTask = this.taskManager.getByCode(yakJobLogPO.getTaskCode());
+                longYakTaskMap.put(yakJobLogPO.getTaskId(), yakTask);
             }
-            List<String> ips = logITask.getTaskWorkers().stream().map(w -> w.getIp()).collect(Collectors.toList());
-            logIJobLogVO.setAllWorkerIps(ips);
-            logIJobLogVO.setTaskName(logITask.getTaskName());
-            return logIJobLogVO;
+            List<String> ips = yakTask.getTaskWorkers().stream().map(w -> w.getIp()).collect(Collectors.toList());
+            yakJobLogVO.setAllWorkerIps(ips);
+            yakJobLogVO.setTaskName(yakTask.getTaskName());
+            return yakJobLogVO;
         }).collect(Collectors.toList());
     }
 
@@ -87,7 +87,7 @@ implements JobLogManager {
         if (null != dto.getEndTime()) {
             endTimestamp = new Timestamp(dto.getEndTime());
         }
-        return this.logIJobLogMapper.pagineCountByCondition(this.logIJobProperties.getAppName(), dto.getTaskId(), dto.getTaskDesc(), dto.getTaskStatus(), beginTimestamp, endTimestamp);
+        return this.yakJobLogMapper.pagineCountByCondition(this.yakJobProperties.getAppName(), dto.getTaskId(), dto.getTaskDesc(), dto.getTaskStatus(), beginTimestamp, endTimestamp);
     }
 
     private String genSortName(String sortName) {

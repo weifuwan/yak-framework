@@ -14,7 +14,7 @@
 package com.yak.job.rest;
 
 import com.yak.job.common.Result;
-import com.yak.job.common.vo.LogITaskLockVO;
+import com.yak.job.common.vo.YakTaskLockVO;
 import com.yak.job.core.task.TaskLockService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value={"v1/logi-job/taskLock"})
-@Api(tags={"logi-job \u7684\u4efb\u52a1\u9501\u76f8\u5173\u63a5\u53e3"})
+@RequestMapping(value={"v1/yak-job/taskLock"})
+@Api(tags={"yak-job \u7684\u4efb\u52a1\u9501\u76f8\u5173\u63a5\u53e3"})
 public class TaskLockController {
     @Autowired
     private TaskLockService taskLockService;
@@ -41,7 +41,7 @@ public class TaskLockController {
 
     @GetMapping(value={"/getAll"})
     @ApiOperation(value="\u83b7\u53d6\u6240\u6709\u9501\u4f4f\u7684\u4efb\u52a1", notes="")
-    public Result<List<LogITaskLockVO>> getAll() {
+    public Result<List<YakTaskLockVO>> getAll() {
         return Result.buildSucc(this.taskLockService.getAll());
     }
 }

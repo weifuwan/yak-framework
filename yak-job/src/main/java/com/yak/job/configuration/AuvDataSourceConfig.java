@@ -16,7 +16,7 @@
  */
 package com.yak.job.configuration;
 
-import com.yak.job.LogIJobProperties;
+import com.yak.job.YakJobProperties;
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -31,16 +31,16 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableTransactionManagement
 @Configuration
-@MapperScan(value={"com.didiglobal.logi.job.mapper"}, sqlSessionFactoryRef="auvSqlSessionFactory")
+@MapperScan(value={"com.yak.job.mapper"}, sqlSessionFactoryRef="auvSqlSessionFactory")
 public class AuvDataSourceConfig {
     @Bean(value={"auvDataSource"})
-    public DataSource dataSource(LogIJobProperties logIJobProperties) {
+    public DataSource dataSource(YakJobProperties yakJobProperties) {
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setUsername(logIJobProperties.getUsername());
-        dataSource.setPassword(logIJobProperties.getPassword());
-        dataSource.setJdbcUrl(logIJobProperties.getJdbcUrl());
-        dataSource.setDriverClassName(logIJobProperties.getDriverClassName());
-        dataSource.setMaxLifetime(logIJobProperties.getMaxLifetime().longValue());
+        dataSource.setUsername(yakJobProperties.getUsername());
+        dataSource.setPassword(yakJobProperties.getPassword());
+        dataSource.setJdbcUrl(yakJobProperties.getJdbcUrl());
+        dataSource.setDriverClassName(yakJobProperties.getDriverClassName());
+        dataSource.setMaxLifetime(yakJobProperties.getMaxLifetime().longValue());
         return dataSource;
     }
 
@@ -48,7 +48,7 @@ public class AuvDataSourceConfig {
     public SqlSessionFactory sqlSessionFactory(@Qualifier(value="auvDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/logi-job/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/yak-job/*.xml"));
         org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
         configuration.setMapUnderscoreToCamelCase(true);
         bean.setConfiguration(configuration);

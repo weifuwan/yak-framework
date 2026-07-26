@@ -11,7 +11,7 @@
  */
 package com.yak.job.core;
 
-import com.yak.job.common.domain.LogIWorker;
+import com.yak.job.common.domain.YakWorker;
 import com.yak.job.utils.ThreadUtil;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -28,7 +28,7 @@ import oshi.hardware.GlobalMemory;
 public class WorkerSingleton {
     private static final int CPU_INTERVAL = 1;
     private static final Logger logger = LoggerFactory.getLogger(WorkerSingleton.class);
-    private volatile LogIWorker logIWorker;
+    private volatile YakWorker yakWorker;
 
     private WorkerSingleton() {
     }
@@ -42,12 +42,12 @@ public class WorkerSingleton {
         return Singleton.singleton;
     }
 
-    public LogIWorker getLogIWorker() {
-        return this.logIWorker;
+    public YakWorker getYakWorker() {
+        return this.yakWorker;
     }
 
-    public void setLogIWorker(LogIWorker logIWorker) {
-        this.logIWorker = logIWorker;
+    public void setYakWorker(YakWorker yakWorker) {
+        this.yakWorker = yakWorker;
     }
 
     private static class Singleton {
@@ -57,7 +57,7 @@ public class WorkerSingleton {
         }
 
         public static WorkerSingleton updateWorkerMetrics() {
-            LogIWorker logIWorker = singleton.getLogIWorker();
+            YakWorker yakWorker = singleton.getYakWorker();
             SystemInfo systemInfo = new SystemInfo();
             CentralProcessor processor = systemInfo.getHardware().getProcessor();
             long[] prevTicks = processor.getSystemCpuLoadTicks();
@@ -72,36 +72,36 @@ public class WorkerSingleton {
             long ioWait = ticks[CentralProcessor.TickType.IOWAIT.getIndex()] - prevTicks[CentralProcessor.TickType.IOWAIT.getIndex()];
             long idle = ticks[CentralProcessor.TickType.IDLE.getIndex()] - prevTicks[CentralProcessor.TickType.IDLE.getIndex()];
             long totalCpu = user + nice + csys + idle + ioWait + irq + softIrq + steal;
-            logIWorker.setCpu(processor.getLogicalProcessorCount());
-            logIWorker.setCpuUsed(totalCpu == 0L ? null : Double.valueOf(1.0 - (double)idle * 1.0 / (double)totalCpu));
+            yakWorker.setCpu(processor.getLogicalProcessorCount());
+            yakWorker.setCpuUsed(totalCpu == 0L ? null : Double.valueOf(1.0 - (double)idle * 1.0 / (double)totalCpu));
             GlobalMemory memory = systemInfo.getHardware().getMemory();
             Double totalMemory = (double)memory.getTotal() * 1.0 / 1024.0 / 1024.0;
             DecimalFormat df = new DecimalFormat("#.000");
-            logIWorker.setMemory(Double.valueOf(df.format(totalMemory)));
+            yakWorker.setMemory(Double.valueOf(df.format(totalMemory)));
             Double memoryUsed = (double)(memory.getTotal() - memory.getAvailable()) * 1.0 / (double)memory.getTotal();
-            logIWorker.setMemoryUsed(Double.valueOf(df.format(memoryUsed)));
+            yakWorker.setMemoryUsed(Double.valueOf(df.format(memoryUsed)));
             Runtime runtime = Runtime.getRuntime();
             Double jvmMemory = (double)runtime.totalMemory() * 1.0 / 1024.0 / 1024.0;
-            logIWorker.setJvmMemory(Double.valueOf(df.format(jvmMemory)));
+            yakWorker.setJvmMemory(Double.valueOf(df.format(jvmMemory)));
             Double jvmMemoryUsed = (double)(runtime.totalMemory() - runtime.freeMemory()) * 1.0 / (double)runtime.totalMemory();
-            logIWorker.setJvmMemoryUsed(Double.valueOf(df.format(jvmMemoryUsed)));
-            logIWorker.setHeartbeat(new Timestamp(System.currentTimeMillis()));
-            singleton.setLogIWorker(logIWorker);
+            yakWorker.setJvmMemoryUsed(Double.valueOf(df.format(jvmMemoryUsed)));
+            yakWorker.setHeartbeat(new Timestamp(System.currentTimeMillis()));
+            singleton.setYakWorker(yakWorker);
             return singleton;
         }
 
         static {
-            LogIWorker logIWorker = new LogIWorker();
+            YakWorker yakWorker = new YakWorker();
             InetAddress inetAddress = null;
             try {
                 inetAddress = InetAddress.getLocalHost();
             } catch (UnknownHostException e) {
                 logger.error("class=SimpleWorkerFactory||method=||url=||msg=", (Throwable)e);
             }
-            logIWorker.setWorkerCode(inetAddress == null ? "INVALID_CODE" : inetAddress.getHostAddress() + "_" + inetAddress.getHostName());
-            logIWorker.setWorkerName(inetAddress == null ? "INVALID_NAME" : inetAddress.getHostName());
-            logIWorker.setIp(inetAddress.getHostAddress());
-            singleton.setLogIWorker(logIWorker);
+            yakWorker.setWorkerCode(inetAddress == null ? "INVALID_CODE" : inetAddress.getHostAddress() + "_" + inetAddress.getHostName());
+            yakWorker.setWorkerName(inetAddress == null ? "INVALID_NAME" : inetAddress.getHostName());
+            yakWorker.setIp(inetAddress.getHostAddress());
+            singleton.setYakWorker(yakWorker);
         }
     }
 }

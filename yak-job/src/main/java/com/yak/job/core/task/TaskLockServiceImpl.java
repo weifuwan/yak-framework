@@ -10,11 +10,11 @@
  */
 package com.yak.job.core.task;
 
-import com.yak.job.LogIJobProperties;
-import com.yak.job.common.po.LogITaskLockPO;
-import com.yak.job.common.vo.LogITaskLockVO;
+import com.yak.job.YakJobProperties;
+import com.yak.job.common.po.YakTaskLockPO;
+import com.yak.job.common.vo.YakTaskLockVO;
 import com.yak.job.core.WorkerSingleton;
-import com.yak.job.mapper.LogITaskLockMapper;
+import com.yak.job.mapper.YakTaskLockMapper;
 import com.yak.job.utils.BeanUtil;
 import java.sql.Timestamp;
 import java.util.List;
@@ -30,52 +30,52 @@ public class TaskLockServiceImpl
 implements TaskLockService {
     private static final Logger logger = LoggerFactory.getLogger(TaskLockServiceImpl.class);
     private static final Long EXPIRE_TIME_SECONDS = 300L;
-    private LogITaskLockMapper logITaskLockMapper;
-    private LogIJobProperties logIJobProperties;
+    private YakTaskLockMapper yakTaskLockMapper;
+    private YakJobProperties yakJobProperties;
 
     @Autowired
-    public TaskLockServiceImpl(LogITaskLockMapper logITaskLockMapper, LogIJobProperties logIJobProperties) {
-        this.logITaskLockMapper = logITaskLockMapper;
-        this.logIJobProperties = logIJobProperties;
+    public TaskLockServiceImpl(YakTaskLockMapper yakTaskLockMapper, YakJobProperties yakJobProperties) {
+        this.yakTaskLockMapper = yakTaskLockMapper;
+        this.yakJobProperties = yakJobProperties;
     }
 
     @Override
     public Boolean tryAcquire(String taskCode) {
-        return this.tryAcquire(taskCode, WorkerSingleton.getInstance().getLogIWorker().getWorkerCode(), EXPIRE_TIME_SECONDS);
+        return this.tryAcquire(taskCode, WorkerSingleton.getInstance().getYakWorker().getWorkerCode(), EXPIRE_TIME_SECONDS);
     }
 
     @Override
     public Boolean tryAcquire(String taskCode, String workerCode, Long expireTime) {
-        List<LogITaskLockPO> logITaskLockPOList = this.logITaskLockMapper.selectByTaskCode(taskCode, this.logIJobProperties.getAppName());
+        List<YakTaskLockPO> yakTaskLockPOList = this.yakTaskLockMapper.selectByTaskCode(taskCode, this.yakJobProperties.getAppName());
         boolean hasLock = false;
-        if (CollectionUtils.isEmpty(logITaskLockPOList)) {
+        if (CollectionUtils.isEmpty(yakTaskLockPOList)) {
             hasLock = false;
         } else {
             List expireTaskLock;
             long current = System.currentTimeMillis() / 1000L;
-            List noExpireTaskLock = logITaskLockPOList.stream().filter(logITaskLockPO -> logITaskLockPO.getCreateTime().getTime() / 1000L + logITaskLockPO.getExpireTime() >= current).collect(Collectors.toList());
+            List noExpireTaskLock = yakTaskLockPOList.stream().filter(yakTaskLockPO -> yakTaskLockPO.getCreateTime().getTime() / 1000L + yakTaskLockPO.getExpireTime() >= current).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(noExpireTaskLock)) {
-                for (LogITaskLockPO logITaskLockPO2 : noExpireTaskLock) {
-                    if (!workerCode.equals(logITaskLockPO2.getWorkerCode())) continue;
+                for (YakTaskLockPO yakTaskLockPO2 : noExpireTaskLock) {
+                    if (!workerCode.equals(yakTaskLockPO2.getWorkerCode())) continue;
                     hasLock = true;
                 }
             }
-            if (!CollectionUtils.isEmpty(expireTaskLock = logITaskLockPOList.stream().filter(logITaskLockPO -> logITaskLockPO.getCreateTime().getTime() / 1000L + logITaskLockPO.getExpireTime() < current).collect(Collectors.toList()))) {
-                for (LogITaskLockPO logITaskLockPO3 : expireTaskLock) {
-                    this.logITaskLockMapper.deleteByWorkerCodeAndAppName(logITaskLockPO3.getWorkerCode(), this.logIJobProperties.getAppName());
+            if (!CollectionUtils.isEmpty(expireTaskLock = yakTaskLockPOList.stream().filter(yakTaskLockPO -> yakTaskLockPO.getCreateTime().getTime() / 1000L + yakTaskLockPO.getExpireTime() < current).collect(Collectors.toList()))) {
+                for (YakTaskLockPO yakTaskLockPO3 : expireTaskLock) {
+                    this.yakTaskLockMapper.deleteByWorkerCodeAndAppName(yakTaskLockPO3.getWorkerCode(), this.yakJobProperties.getAppName());
                 }
             }
         }
         if (!hasLock) {
-            LogITaskLockPO taskLock = new LogITaskLockPO();
+            YakTaskLockPO taskLock = new YakTaskLockPO();
             taskLock.setTaskCode(taskCode);
             taskLock.setWorkerCode(workerCode);
             taskLock.setExpireTime(expireTime);
             taskLock.setCreateTime(new Timestamp(System.currentTimeMillis()));
             taskLock.setUpdateTime(new Timestamp(System.currentTimeMillis()));
-            taskLock.setAppName(this.logIJobProperties.getAppName());
+            taskLock.setAppName(this.yakJobProperties.getAppName());
             try {
-                return this.logITaskLockMapper.insert(taskLock) > 0;
+                return this.yakTaskLockMapper.insert(taskLock) > 0;
             } catch (Exception e) {
                 if (e.getMessage().contains("Duplicate")) {
                     logger.info("class=TaskLockServiceImpl||method=tryAcquire||taskCode={}||msg=duplicate key", (Object)taskCode);
@@ -90,32 +90,32 @@ implements TaskLockService {
 
     @Override
     public Boolean tryRelease(String taskCode) {
-        return this.tryRelease(taskCode, WorkerSingleton.getInstance().getLogIWorker().getWorkerCode());
+        return this.tryRelease(taskCode, WorkerSingleton.getInstance().getYakWorker().getWorkerCode());
     }
 
     @Override
     public Boolean tryRelease(String taskCode, String workerCode) {
-        List<LogITaskLockPO> logITaskLockPOList = this.logITaskLockMapper.selectByTaskCodeAndWorkerCode(taskCode, workerCode, this.logIJobProperties.getAppName());
-        if (CollectionUtils.isEmpty(logITaskLockPOList)) {
+        List<YakTaskLockPO> yakTaskLockPOList = this.yakTaskLockMapper.selectByTaskCodeAndWorkerCode(taskCode, workerCode, this.yakJobProperties.getAppName());
+        if (CollectionUtils.isEmpty(yakTaskLockPOList)) {
             logger.error("class=TaskLockServiceImpl||method=tryRelease||msg=taskCode={}, workerCode={}", (Object)taskCode, (Object)workerCode);
             return false;
         }
         long current = System.currentTimeMillis() / 1000L;
-        List<Long> taskLockIdList = logITaskLockPOList.stream().filter(logITaskLockPO -> logITaskLockPO.getCreateTime().getTime() / 1000L + logITaskLockPO.getExpireTime() < current).map(LogITaskLockPO::getId).collect(Collectors.toList());
+        List<Long> taskLockIdList = yakTaskLockPOList.stream().filter(yakTaskLockPO -> yakTaskLockPO.getCreateTime().getTime() / 1000L + yakTaskLockPO.getExpireTime() < current).map(YakTaskLockPO::getId).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(taskLockIdList)) {
             return true;
         }
-        int result = this.logITaskLockMapper.deleteByIds(taskLockIdList);
+        int result = this.yakTaskLockMapper.deleteByIds(taskLockIdList);
         return result > 0;
     }
 
     @Override
-    public List<LogITaskLockVO> getAll() {
-        List<LogITaskLockPO> logITaskLockPOS = this.logITaskLockMapper.selectByAppName(this.logIJobProperties.getAppName());
-        if (CollectionUtils.isEmpty(logITaskLockPOS)) {
+    public List<YakTaskLockVO> getAll() {
+        List<YakTaskLockPO> yakTaskLockPOS = this.yakTaskLockMapper.selectByAppName(this.yakJobProperties.getAppName());
+        if (CollectionUtils.isEmpty(yakTaskLockPOS)) {
             return null;
         }
-        return logITaskLockPOS.stream().map(logITaskLockPO -> BeanUtil.convertTo(logITaskLockPO, LogITaskLockVO.class)).collect(Collectors.toList());
+        return yakTaskLockPOS.stream().map(yakTaskLockPO -> BeanUtil.convertTo(yakTaskLockPO, YakTaskLockVO.class)).collect(Collectors.toList());
     }
 
     @Override

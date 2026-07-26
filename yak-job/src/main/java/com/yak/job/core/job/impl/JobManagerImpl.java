@@ -13,28 +13,28 @@
  */
 package com.yak.job.core.job.impl;
 
-import com.yak.job.LogIJobProperties;
+import com.yak.job.YakJobProperties;
 import com.yak.job.common.TaskResult;
-import com.yak.job.common.domain.LogIJob;
-import com.yak.job.common.domain.LogITask;
+import com.yak.job.common.domain.YakJob;
+import com.yak.job.common.domain.YakTask;
 import com.yak.job.common.enums.JobStatusEnum;
 import com.yak.job.common.enums.TaskWorkerStatusEnum;
-import com.yak.job.common.po.LogIJobLogPO;
-import com.yak.job.common.po.LogIJobPO;
-import com.yak.job.common.po.LogITaskLockPO;
-import com.yak.job.common.po.LogITaskPO;
-import com.yak.job.common.po.LogIWorkerPO;
+import com.yak.job.common.po.YakJobLogPO;
+import com.yak.job.common.po.YakJobPO;
+import com.yak.job.common.po.YakTaskLockPO;
+import com.yak.job.common.po.YakTaskPO;
+import com.yak.job.common.po.YakWorkerPO;
 import com.yak.job.core.WorkerSingleton;
 import com.yak.job.core.job.JobContext;
 import com.yak.job.core.job.JobExecutor;
 import com.yak.job.core.job.JobFactory;
 import com.yak.job.core.job.JobManager;
 import com.yak.job.core.task.TaskLockService;
-import com.yak.job.mapper.LogIJobLogMapper;
-import com.yak.job.mapper.LogIJobMapper;
-import com.yak.job.mapper.LogITaskLockMapper;
-import com.yak.job.mapper.LogITaskMapper;
-import com.yak.job.mapper.LogIWorkerMapper;
+import com.yak.job.mapper.YakJobLogMapper;
+import com.yak.job.mapper.YakJobMapper;
+import com.yak.job.mapper.YakTaskLockMapper;
+import com.yak.job.mapper.YakTaskMapper;
+import com.yak.job.mapper.YakWorkerMapper;
 import com.yak.job.utils.BeanUtil;
 import com.yak.job.utils.ThreadUtil;
 import com.google.common.cache.Cache;
@@ -71,50 +71,50 @@ implements JobManager {
     private static final Long RENEW_INTERVAL = 60L;
     private static final Long ONE_HOUR = 3600L;
     private JobFactory jobFactory;
-    private LogIJobMapper logIJobMapper;
-    private LogIJobLogMapper logIJobLogMapper;
-    private LogITaskMapper logITaskMapper;
-    private LogIWorkerMapper logIWorkerMapper;
+    private YakJobMapper yakJobMapper;
+    private YakJobLogMapper yakJobLogMapper;
+    private YakTaskMapper yakTaskMapper;
+    private YakWorkerMapper yakWorkerMapper;
     private JobExecutor jobExecutor;
     private TaskLockService taskLockService;
-    private LogITaskLockMapper logITaskLockMapper;
-    private LogIJobProperties logIJobProperties;
-    private ConcurrentHashMap<LogIJob, Future> jobFutureMap = new ConcurrentHashMap();
+    private YakTaskLockMapper yakTaskLockMapper;
+    private YakJobProperties yakJobProperties;
+    private ConcurrentHashMap<YakJob, Future> jobFutureMap = new ConcurrentHashMap();
     private final Cache<String, String> execuedJob = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(1000L).build();
 
     @Autowired
-    public JobManagerImpl(JobFactory jobFactory, LogIJobMapper logIJobMapper, LogIJobLogMapper logIJobLogMapper, LogITaskMapper logITaskMapper, LogIWorkerMapper logIWorkerMapper, JobExecutor jobExecutor, TaskLockService taskLockService, LogITaskLockMapper logITaskLockMapper, LogIJobProperties logIJobProperties) {
+    public JobManagerImpl(JobFactory jobFactory, YakJobMapper yakJobMapper, YakJobLogMapper yakJobLogMapper, YakTaskMapper yakTaskMapper, YakWorkerMapper yakWorkerMapper, JobExecutor jobExecutor, TaskLockService taskLockService, YakTaskLockMapper yakTaskLockMapper, YakJobProperties yakJobProperties) {
         this.jobFactory = jobFactory;
-        this.logIJobMapper = logIJobMapper;
-        this.logIJobLogMapper = logIJobLogMapper;
-        this.logITaskMapper = logITaskMapper;
-        this.logIWorkerMapper = logIWorkerMapper;
+        this.yakJobMapper = yakJobMapper;
+        this.yakJobLogMapper = yakJobLogMapper;
+        this.yakTaskMapper = yakTaskMapper;
+        this.yakWorkerMapper = yakWorkerMapper;
         this.jobExecutor = jobExecutor;
         this.taskLockService = taskLockService;
-        this.logITaskLockMapper = logITaskLockMapper;
-        this.logIJobProperties = logIJobProperties;
+        this.yakTaskLockMapper = yakTaskLockMapper;
+        this.yakJobProperties = yakJobProperties;
         this.initialize();
     }
 
     private void initialize() {
         new Thread((Runnable)new JobFutureHandler(), "JobFutureHandler Thread").start();
         new Thread((Runnable)new LockRenewHandler(), "LockRenewHandler Thread").start();
-        new Thread((Runnable)new LogCleanHandler(this.logIJobProperties.getLogExpire()), "LogCleanHandler Thread").start();
+        new Thread((Runnable)new LogCleanHandler(this.yakJobProperties.getLogExpire()), "LogCleanHandler Thread").start();
     }
 
     @Override
-    public Future<Object> start(LogITask logITask) {
-        LogIJob logIJob = this.jobFactory.newJob(logITask);
-        if (null == logIJob) {
-            logger.error("class=JobHandler||method=start||classname={}||msg=logIJob is null", (Object)logITask.getClassName());
+    public Future<Object> start(YakTask yakTask) {
+        YakJob yakJob = this.jobFactory.newJob(yakTask);
+        if (null == yakJob) {
+            logger.error("class=JobHandler||method=start||classname={}||msg=yakJob is null", (Object)yakTask.getClassName());
             return null;
         }
-        LogIJobPO job = logIJob.getAuvJob();
-        this.logIJobMapper.insert(job);
-        Future<Object> jobFuture = this.jobExecutor.submit(new JobHandler(logIJob, logITask));
-        this.jobFutureMap.put(logIJob, jobFuture);
-        LogIJobLogPO logIJobLogPO = logIJob.getAuvJobLog();
-        this.logIJobLogMapper.insert(logIJobLogPO);
+        YakJobPO job = yakJob.getAuvJob();
+        this.yakJobMapper.insert(job);
+        Future<Object> jobFuture = this.jobExecutor.submit(new JobHandler(yakJob, yakTask));
+        this.jobFutureMap.put(yakJob, jobFuture);
+        YakJobLogPO yakJobLogPO = yakJob.getAuvJobLog();
+        this.yakJobLogMapper.insert(yakJobLogPO);
         return jobFuture;
     }
 
@@ -125,20 +125,20 @@ implements JobManager {
 
     @Override
     public boolean stopByTaskCode(String taskCode) {
-        for (Map.Entry<LogIJob, Future> jobFuture : this.jobFutureMap.entrySet()) {
-            LogIJob logIJob = jobFuture.getKey();
-            if (!Objects.equals(taskCode, logIJob.getTaskCode())) continue;
-            return this.stopJob(logIJob, jobFuture.getValue());
+        for (Map.Entry<YakJob, Future> jobFuture : this.jobFutureMap.entrySet()) {
+            YakJob yakJob = jobFuture.getKey();
+            if (!Objects.equals(taskCode, yakJob.getTaskCode())) continue;
+            return this.stopJob(yakJob, jobFuture.getValue());
         }
         return true;
     }
 
     @Override
     public boolean stopByJobCode(String jobCode) {
-        for (Map.Entry<LogIJob, Future> jobFuture : this.jobFutureMap.entrySet()) {
-            LogIJob logIJob = jobFuture.getKey();
-            if (!Objects.equals(jobCode, logIJob.getJobCode())) continue;
-            return this.stopJob(logIJob, jobFuture.getValue());
+        for (Map.Entry<YakJob, Future> jobFuture : this.jobFutureMap.entrySet()) {
+            YakJob yakJob = jobFuture.getKey();
+            if (!Objects.equals(jobCode, yakJob.getJobCode())) continue;
+            return this.stopJob(yakJob, jobFuture.getValue());
         }
         return true;
     }
@@ -146,62 +146,62 @@ implements JobManager {
     @Override
     public int stopAll() {
         AtomicInteger succeedNum = new AtomicInteger();
-        for (Map.Entry<LogIJob, Future> jobFuture : this.jobFutureMap.entrySet()) {
-            LogIJob logIJob = jobFuture.getKey();
-            if (!this.stopJob(logIJob, jobFuture.getValue())) continue;
+        for (Map.Entry<YakJob, Future> jobFuture : this.jobFutureMap.entrySet()) {
+            YakJob yakJob = jobFuture.getKey();
+            if (!this.stopJob(yakJob, jobFuture.getValue())) continue;
             succeedNum.addAndGet(1);
         }
         return succeedNum.get();
     }
 
     @Override
-    public List<LogIJob> getJobs() {
-        List<LogIJobPO> logIJobPOS = this.logIJobMapper.selectByAppName(this.logIJobProperties.getAppName());
-        if (CollectionUtils.isEmpty(logIJobPOS)) {
+    public List<YakJob> getJobs() {
+        List<YakJobPO> yakJobPOS = this.yakJobMapper.selectByAppName(this.yakJobProperties.getAppName());
+        if (CollectionUtils.isEmpty(yakJobPOS)) {
             return null;
         }
-        List<LogIJob> logIJobDTOS = logIJobPOS.stream().map(logIJobPO -> BeanUtil.convertTo(logIJobPO, LogIJob.class)).collect(Collectors.toList());
-        return logIJobDTOS;
+        List<YakJob> yakJobDTOS = yakJobPOS.stream().map(yakJobPO -> BeanUtil.convertTo(yakJobPO, YakJob.class)).collect(Collectors.toList());
+        return yakJobDTOS;
     }
 
     @Transactional(rollbackFor={Exception.class})
-    public void reorganizeFinishedJob(LogIJob logIJob) {
-        this.jobFutureMap.remove(logIJob);
-        this.execuedJob.put((Object)logIJob.getTaskCode(), (Object)logIJob.getTaskCode());
-        if (JobStatusEnum.CANCELED.getValue().equals(logIJob.getStatus())) {
-            logIJob.setResult(new TaskResult(-1, "task job be canceld!"));
-            logIJob.setError("task job be canceld!");
-            LogIJobLogPO logIJobLogPO = logIJob.getAuvJobLog();
-            this.logIJobLogMapper.updateByCode(logIJobLogPO);
+    public void reorganizeFinishedJob(YakJob yakJob) {
+        this.jobFutureMap.remove(yakJob);
+        this.execuedJob.put((Object)yakJob.getTaskCode(), (Object)yakJob.getTaskCode());
+        if (JobStatusEnum.CANCELED.getValue().equals(yakJob.getStatus())) {
+            yakJob.setResult(new TaskResult(-1, "task job be canceld!"));
+            yakJob.setError("task job be canceld!");
+            YakJobLogPO yakJobLogPO = yakJob.getAuvJobLog();
+            this.yakJobLogMapper.updateByCode(yakJobLogPO);
         }
-        this.logIJobMapper.deleteByCode(logIJob.getJobCode());
-        LogITaskPO logITaskPO = this.logITaskMapper.selectByCode(logIJob.getTaskCode(), this.logIJobProperties.getAppName());
-        List<LogITask.TaskWorker> taskWorkers = BeanUtil.convertToList(logITaskPO.getTaskWorkerStr(), LogITask.TaskWorker.class);
+        this.yakJobMapper.deleteByCode(yakJob.getJobCode());
+        YakTaskPO yakTaskPO = this.yakTaskMapper.selectByCode(yakJob.getTaskCode(), this.yakJobProperties.getAppName());
+        List<YakTask.TaskWorker> taskWorkers = BeanUtil.convertToList(yakTaskPO.getTaskWorkerStr(), YakTask.TaskWorker.class);
         long currentTime = System.currentTimeMillis();
         if (!CollectionUtils.isEmpty(taskWorkers)) {
             taskWorkers.sort((o1, o2) -> o1.getLastFireTime().after(o2.getLastFireTime()) ? 1 : -1);
-            Iterator<LogITask.TaskWorker> iter = taskWorkers.iterator();
+            Iterator<YakTask.TaskWorker> iter = taskWorkers.iterator();
             while (iter.hasNext()) {
-                LogITask.TaskWorker taskWorker = iter.next();
+                YakTask.TaskWorker taskWorker = iter.next();
                 if (TaskWorkerStatusEnum.WAITING.getValue().equals(taskWorker.getStatus()) && taskWorker.getLastFireTime().getTime() + 12L * ONE_HOUR * 1000L < currentTime) {
                     iter.remove();
                 }
-                if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getLogIWorker().getWorkerCode())) continue;
+                if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getYakWorker().getWorkerCode())) continue;
                 taskWorker.setStatus(TaskWorkerStatusEnum.WAITING.getValue());
             }
         }
-        logITaskPO.setTaskWorkerStr(BeanUtil.convertToJson(taskWorkers));
-        this.logITaskMapper.updateTaskWorkStrByCode(logITaskPO);
+        yakTaskPO.setTaskWorkerStr(BeanUtil.convertToJson(taskWorkers));
+        this.yakTaskMapper.updateTaskWorkStrByCode(yakTaskPO);
     }
 
-    private boolean stopJob(LogIJob logIJob, Future future) {
+    private boolean stopJob(YakJob yakJob, Future future) {
         for (int tryTime = 0; tryTime < 3; ++tryTime) {
             if (future.isDone()) {
-                logIJob.setStatus(JobStatusEnum.CANCELED.getValue());
-                if (logIJob.getTaskCallback() != null) {
-                    logIJob.getTaskCallback().callback(logIJob.getTaskCode());
+                yakJob.setStatus(JobStatusEnum.CANCELED.getValue());
+                if (yakJob.getTaskCallback() != null) {
+                    yakJob.getTaskCallback().callback(yakJob.getTaskCode());
                 }
-                this.reorganizeFinishedJob(logIJob);
+                this.reorganizeFinishedJob(yakJob);
                 return true;
             }
             future.cancel(true);
@@ -237,13 +237,13 @@ implements JobManager {
                     while (true) {
                         ThreadUtil.sleep(3600L, TimeUnit.SECONDS);
                         logger.info("class=LogCleanHandler||method=run||msg=clean auv_job_log regular time {}", (Object)3600L);
-                        String appName = JobManagerImpl.this.logIJobProperties.getAppName();
+                        String appName = JobManagerImpl.this.yakJobProperties.getAppName();
                         Timestamp deleteTime = new Timestamp(System.currentTimeMillis() - (long)(this.logExpire * 24 * 3600 * 1000));
-                        int deleteRowTotal = JobManagerImpl.this.logIJobLogMapper.selectCountByAppNameAndCreateTime(appName, deleteTime);
+                        int deleteRowTotal = JobManagerImpl.this.yakJobLogMapper.selectCountByAppNameAndCreateTime(appName, deleteTime);
                         int deleteRowPerTimes = deleteRowTotal / 60;
                         int deleteRowReal = 0;
                         for (int i = 0; i < 60; ++i) {
-                            int count = JobManagerImpl.this.logIJobLogMapper.deleteByCreateTime(deleteTime, appName, deleteRowPerTimes);
+                            int count = JobManagerImpl.this.yakJobLogMapper.deleteByCreateTime(deleteTime, appName, deleteRowPerTimes);
                             deleteRowReal += count;
                         }
                         logger.info("class=LogCleanHandler||method=run||msg=clean log deleteRowTotal={}, deleteRowReal={}", (Object)deleteRowTotal, (Object)deleteRowReal);
@@ -266,33 +266,33 @@ implements JobManager {
             while (true) {
                 try {
                     logger.info("class=LockRenewHandler||method=run||msg=check need renew lock at regular time {}", (Object)10L);
-                    List<LogITaskLockPO> logITaskLockPOS = JobManagerImpl.this.logITaskLockMapper.selectByWorkerCode(WorkerSingleton.getInstance().getLogIWorker().getWorkerCode(), JobManagerImpl.this.logIJobProperties.getAppName());
-                    if (!CollectionUtils.isEmpty(logITaskLockPOS)) {
+                    List<YakTaskLockPO> yakTaskLockPOS = JobManagerImpl.this.yakTaskLockMapper.selectByWorkerCode(WorkerSingleton.getInstance().getYakWorker().getWorkerCode(), JobManagerImpl.this.yakJobProperties.getAppName());
+                    if (!CollectionUtils.isEmpty(yakTaskLockPOS)) {
                         long current = System.currentTimeMillis() / 1000L;
-                        for (LogITaskLockPO logITaskLockPO : logITaskLockPOS) {
-                            LogITaskPO logITaskPO;
-                            long exTime = logITaskLockPO.getCreateTime().getTime() / 1000L + logITaskLockPO.getExpireTime();
-                            if (null != JobManagerImpl.this.execuedJob.getIfPresent((Object)logITaskLockPO.getTaskCode())) {
+                        for (YakTaskLockPO yakTaskLockPO : yakTaskLockPOS) {
+                            YakTaskPO yakTaskPO;
+                            long exTime = yakTaskLockPO.getCreateTime().getTime() / 1000L + yakTaskLockPO.getExpireTime();
+                            if (null != JobManagerImpl.this.execuedJob.getIfPresent((Object)yakTaskLockPO.getTaskCode())) {
                                 if (current >= exTime || current <= exTime - CHECK_BEFORE_INTERVAL) continue;
-                                logger.info("class=TaskLockServiceImpl||method=run||msg=update lock expireTime id={}, expireTime={}", (Object)logITaskLockPO.getId(), (Object)logITaskLockPO.getExpireTime());
-                                JobManagerImpl.this.logITaskLockMapper.update(logITaskLockPO.getId(), logITaskLockPO.getExpireTime() + RENEW_INTERVAL);
+                                logger.info("class=TaskLockServiceImpl||method=run||msg=update lock expireTime id={}, expireTime={}", (Object)yakTaskLockPO.getId(), (Object)yakTaskLockPO.getExpireTime());
+                                JobManagerImpl.this.yakTaskLockMapper.update(yakTaskLockPO.getId(), yakTaskLockPO.getExpireTime() + RENEW_INTERVAL);
                                 continue;
                             }
                             if (current > exTime) {
-                                logger.info("class=TaskLockServiceImpl||method=run||msg=lock clean lockInfo={}", (Object)BeanUtil.convertToJson(logITaskLockPO));
-                                JobManagerImpl.this.logITaskLockMapper.deleteById(logITaskLockPO.getId());
+                                logger.info("class=TaskLockServiceImpl||method=run||msg=lock clean lockInfo={}", (Object)BeanUtil.convertToJson(yakTaskLockPO));
+                                JobManagerImpl.this.yakTaskLockMapper.deleteById(yakTaskLockPO.getId());
                             }
-                            if ((logITaskPO = JobManagerImpl.this.logITaskMapper.selectByCode(logITaskLockPO.getTaskCode(), JobManagerImpl.this.logIJobProperties.getAppName())) == null) continue;
-                            List<LogITask.TaskWorker> taskWorkers = BeanUtil.convertToList(logITaskPO.getTaskWorkerStr(), LogITask.TaskWorker.class);
+                            if ((yakTaskPO = JobManagerImpl.this.yakTaskMapper.selectByCode(yakTaskLockPO.getTaskCode(), JobManagerImpl.this.yakJobProperties.getAppName())) == null) continue;
+                            List<YakTask.TaskWorker> taskWorkers = BeanUtil.convertToList(yakTaskPO.getTaskWorkerStr(), YakTask.TaskWorker.class);
                             if (!CollectionUtils.isEmpty(taskWorkers)) {
-                                for (LogITask.TaskWorker taskWorker : taskWorkers) {
-                                    if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getLogIWorker().getWorkerCode())) continue;
+                                for (YakTask.TaskWorker taskWorker : taskWorkers) {
+                                    if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getYakWorker().getWorkerCode())) continue;
                                     taskWorker.setStatus(TaskWorkerStatusEnum.WAITING.getValue());
                                 }
                             }
-                            logITaskPO.setTaskWorkerStr(BeanUtil.convertToJson(taskWorkers));
-                            logger.info("class=TaskLockServiceImpl||method=run||msg=update task workers status taskInfo={}", (Object)BeanUtil.convertToJson(logITaskPO));
-                            JobManagerImpl.this.logITaskMapper.updateTaskWorkStrByCode(logITaskPO);
+                            yakTaskPO.setTaskWorkerStr(BeanUtil.convertToJson(taskWorkers));
+                            logger.info("class=TaskLockServiceImpl||method=run||msg=update task workers status taskInfo={}", (Object)BeanUtil.convertToJson(yakTaskPO));
+                            JobManagerImpl.this.yakTaskMapper.updateTaskWorkStrByCode(yakTaskPO);
                         }
                     }
                 } catch (Exception e) {
@@ -316,7 +316,7 @@ implements JobManager {
                         logger.info("class=JobFutureHandler||method=run||msg=check running jobs at regular time {}", (Object)10L);
                         JobManagerImpl.this.jobFutureMap.forEach((jobInfo, future) -> {
                             if (future.isDone()) {
-                                JobManagerImpl.this.reorganizeFinishedJob((LogIJob)jobInfo);
+                                JobManagerImpl.this.reorganizeFinishedJob((YakJob)jobInfo);
                                 return;
                             }
                             Long timeout = jobInfo.getTimeout();
@@ -343,12 +343,12 @@ implements JobManager {
 
     class JobHandler
     implements Callable {
-        private LogIJob logIJob;
-        private LogITask logITask;
+        private YakJob yakJob;
+        private YakTask yakTask;
 
-        public JobHandler(LogIJob logIJob, LogITask logITask) {
-            this.logIJob = logIJob;
-            this.logITask = logITask;
+        public JobHandler(YakJob yakJob, YakTask yakTask) {
+            this.yakJob = yakJob;
+            this.yakTask = yakTask;
         }
 
         /*
@@ -356,42 +356,42 @@ implements JobManager {
          */
         public Object call() {
             TaskResult object = null;
-            logger.info("class=JobHandler||method=call||msg=start job {} with classname {}", (Object)this.logIJob.getJobCode(), (Object)this.logIJob.getClassName());
+            logger.info("class=JobHandler||method=call||msg=start job {} with classname {}", (Object)this.yakJob.getJobCode(), (Object)this.yakJob.getClassName());
             try {
-                this.logIJob.setStartTime(new Timestamp(System.currentTimeMillis()));
-                this.logIJob.setStatus(JobStatusEnum.SUCCEED.getValue());
-                this.logIJob.setResult(new TaskResult(0, "task job is running!"));
-                this.logIJob.setError("");
-                LogIJobLogPO logIJobLogPO = this.logIJob.getAuvJobLog();
-                JobManagerImpl.this.logIJobLogMapper.updateByCode(logIJobLogPO);
-                List<LogIWorkerPO> logIWorkerPOS = JobManagerImpl.this.logIWorkerMapper.selectByAppName(JobManagerImpl.this.logIJobProperties.getAppName());
+                this.yakJob.setStartTime(new Timestamp(System.currentTimeMillis()));
+                this.yakJob.setStatus(JobStatusEnum.SUCCEED.getValue());
+                this.yakJob.setResult(new TaskResult(0, "task job is running!"));
+                this.yakJob.setError("");
+                YakJobLogPO yakJobLogPO = this.yakJob.getAuvJobLog();
+                JobManagerImpl.this.yakJobLogMapper.updateByCode(yakJobLogPO);
+                List<YakWorkerPO> yakWorkerPOS = JobManagerImpl.this.yakWorkerMapper.selectByAppName(JobManagerImpl.this.yakJobProperties.getAppName());
                 ArrayList<String> workCodes = new ArrayList<String>();
-                if (CollectionUtils.isEmpty(logIWorkerPOS)) {
-                    workCodes.add(this.logIJob.getWorkerIp());
+                if (CollectionUtils.isEmpty(yakWorkerPOS)) {
+                    workCodes.add(this.yakJob.getWorkerIp());
                 } else {
-                    workCodes.addAll(logIWorkerPOS.stream().map(LogIWorkerPO::getWorkerCode).collect(Collectors.toList()));
+                    workCodes.addAll(yakWorkerPOS.stream().map(YakWorkerPO::getWorkerCode).collect(Collectors.toList()));
                 }
-                JobContext jobContext = new JobContext(this.logITask.getParams(), workCodes, this.logIJob.getWorkerCode());
-                object = this.logIJob.getJob().execute(jobContext);
-                this.logIJob.setResult(object);
-                this.logIJob.setEndTime(new Timestamp(System.currentTimeMillis()));
+                JobContext jobContext = new JobContext(this.yakTask.getParams(), workCodes, this.yakJob.getWorkerCode());
+                object = this.yakJob.getJob().execute(jobContext);
+                this.yakJob.setResult(object);
+                this.yakJob.setEndTime(new Timestamp(System.currentTimeMillis()));
             } catch (InterruptedException e) {
-                this.logIJob.setStatus(JobStatusEnum.CANCELED.getValue());
-                this.logIJob.setResult(new TaskResult(-1, "task job be canceld!"));
+                this.yakJob.setStatus(JobStatusEnum.CANCELED.getValue());
+                this.yakJob.setResult(new TaskResult(-1, "task job be canceld!"));
                 String error = JobManagerImpl.this.printStackTraceAsString(e);
-                this.logIJob.setError(JobManagerImpl.this.printStackTraceAsString(e));
-                logger.error("class=JobHandler||method=call||classname={}||msg={}", (Object)this.logIJob.getClassName(), (Object)error);
+                this.yakJob.setError(JobManagerImpl.this.printStackTraceAsString(e));
+                logger.error("class=JobHandler||method=call||classname={}||msg={}", (Object)this.yakJob.getClassName(), (Object)error);
             } catch (Exception e) {
-                this.logIJob.setStatus(JobStatusEnum.FAILED.getValue());
-                this.logIJob.setResult(new TaskResult(-1, "task job has exception when running!" + e));
+                this.yakJob.setStatus(JobStatusEnum.FAILED.getValue());
+                this.yakJob.setResult(new TaskResult(-1, "task job has exception when running!" + e));
                 String error = JobManagerImpl.this.printStackTraceAsString(e);
-                this.logIJob.setError(JobManagerImpl.this.printStackTraceAsString(e));
-                logger.error("class=JobHandler||method=call||classname=||msg={}", (Object)this.logIJob.getClassName(), (Object)error);
+                this.yakJob.setError(JobManagerImpl.this.printStackTraceAsString(e));
+                logger.error("class=JobHandler||method=call||classname=||msg={}", (Object)this.yakJob.getClassName(), (Object)error);
             } finally {
-                LogIJobLogPO logIJobLogPO = this.logIJob.getAuvJobLog();
-                JobManagerImpl.this.logIJobLogMapper.updateByCode(logIJobLogPO);
-                if (this.logIJob.getTaskCallback() != null) {
-                    this.logIJob.getTaskCallback().callback(this.logIJob.getTaskCode());
+                YakJobLogPO yakJobLogPO = this.yakJob.getAuvJobLog();
+                JobManagerImpl.this.yakJobLogMapper.updateByCode(yakJobLogPO);
+                if (this.yakJob.getTaskCallback() != null) {
+                    this.yakJob.getTaskCallback().callback(this.yakJob.getTaskCode());
                 }
             }
             return object;

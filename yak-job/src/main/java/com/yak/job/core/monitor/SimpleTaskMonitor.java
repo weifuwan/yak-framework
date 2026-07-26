@@ -9,7 +9,7 @@
  */
 package com.yak.job.core.monitor;
 
-import com.yak.job.common.domain.LogITask;
+import com.yak.job.common.domain.YakTask;
 import com.yak.job.core.task.TaskManager;
 import com.yak.job.utils.ThreadUtil;
 import java.util.List;
@@ -63,23 +63,23 @@ implements TaskMonitor {
         public void run() {
             while (true) {
                 try {
-                    List<LogITask> logITaskList;
+                    List<YakTask> yakTaskList;
                     while (true) {
                         logger.info("class=TaskMonitorExecutor||method=run||msg=fetch tasks at regular {}", (Object)10L);
-                        logITaskList = SimpleTaskMonitor.this.taskManager.nextTriggers(1L);
-                        if (logITaskList != null && logITaskList.size() != 0) break;
+                        yakTaskList = SimpleTaskMonitor.this.taskManager.nextTriggers(1L);
+                        if (yakTaskList != null && yakTaskList.size() != 0) break;
                         logger.info("class=TaskMonitorExecutor||method=run||msg=no tasks need run!");
                         ThreadUtil.sleep(1L, TimeUnit.SECONDS);
                     }
-                    logger.info("class=TaskMonitorExecutor||method=run||msg=fetch tasks {}", logITaskList.stream().map(LogITask::getTaskName).collect(Collectors.toList()));
-                    Long firstFireTime = ((LogITask)logITaskList.stream().findFirst().get()).getNextFireTime().getTime();
+                    logger.info("class=TaskMonitorExecutor||method=run||msg=fetch tasks {}", yakTaskList.stream().map(YakTask::getTaskName).collect(Collectors.toList()));
+                    Long firstFireTime = ((YakTask)yakTaskList.stream().findFirst().get()).getNextFireTime().getTime();
                     Long nowTime = System.currentTimeMillis();
                     if (nowTime < firstFireTime) {
                         Long between = firstFireTime - nowTime;
                         ThreadUtil.sleep(between + 1L, TimeUnit.MILLISECONDS);
                     }
-                    logger.info("class=TaskMonitorExecutor||method=run||msg=start tasks={}, firstFireTime={}, nowTime={}", new Object[]{logITaskList.stream().map(LogITask::getTaskName).collect(Collectors.toList()), firstFireTime, nowTime});
-                    SimpleTaskMonitor.this.taskManager.submit(logITaskList);
+                    logger.info("class=TaskMonitorExecutor||method=run||msg=start tasks={}, firstFireTime={}, nowTime={}", new Object[]{yakTaskList.stream().map(YakTask::getTaskName).collect(Collectors.toList()), firstFireTime, nowTime});
+                    SimpleTaskMonitor.this.taskManager.submit(yakTaskList);
                 } catch (Exception e) {
                     logger.error("class=TaskMonitorExecutor||method=run||msg=exception!", (Throwable)e);
                 }

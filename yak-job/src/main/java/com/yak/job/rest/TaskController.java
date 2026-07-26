@@ -20,11 +20,11 @@ package com.yak.job.rest;
 import com.yak.job.common.CommonUtil;
 import com.yak.job.common.PagingResult;
 import com.yak.job.common.Result;
-import com.yak.job.common.domain.LogITask;
-import com.yak.job.common.dto.LogITaskCopyDTO;
-import com.yak.job.common.dto.LogITaskUpdateDTO;
+import com.yak.job.common.domain.YakTask;
+import com.yak.job.common.dto.YakTaskCopyDTO;
+import com.yak.job.common.dto.YakTaskUpdateDTO;
 import com.yak.job.common.dto.TaskPageQueryDTO;
-import com.yak.job.common.vo.LogITaskVO;
+import com.yak.job.common.vo.YakTaskVO;
 import com.yak.job.core.consensual.ConsensualEnum;
 import com.yak.job.core.task.TaskManager;
 import com.yak.job.utils.BeanUtil;
@@ -45,8 +45,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value={"v1/logi-job/task"})
-@Api(tags={"logi-job \u7684\u4efb\u52a1\u76f8\u5173\u63a5\u53e3"})
+@RequestMapping(value={"v1/yak-job/task"})
+@Api(tags={"yak-job \u7684\u4efb\u52a1\u76f8\u5173\u63a5\u53e3"})
 public class TaskController {
     @Autowired
     private TaskManager taskManager;
@@ -59,12 +59,12 @@ public class TaskController {
 
     @PostMapping(value={"/list"})
     @ApiOperation(value="\u83b7\u53d6\u6240\u6709\u7684\u8c03\u5ea6\u4efb\u52a1", notes="")
-    public PagingResult<LogITaskVO> getAll(@RequestBody TaskPageQueryDTO taskPageQueryDTO) {
+    public PagingResult<YakTaskVO> getAll(@RequestBody TaskPageQueryDTO taskPageQueryDTO) {
         taskPageQueryDTO.setTaskDesc(CommonUtil.sqlFuzzyQueryTransfer(taskPageQueryDTO.getTaskDesc()));
         taskPageQueryDTO.setClassName(CommonUtil.sqlFuzzyQueryTransfer(taskPageQueryDTO.getClassName()));
-        List<LogITask> logITasks = this.taskManager.getPagineList(taskPageQueryDTO);
+        List<YakTask> yakTasks = this.taskManager.getPagineList(taskPageQueryDTO);
         int count = this.taskManager.pagineTaskConut(taskPageQueryDTO);
-        return PagingResult.buildSucc(this.logITask2LogITaskVO(logITasks), count, taskPageQueryDTO.getPage().intValue(), taskPageQueryDTO.getSize().intValue());
+        return PagingResult.buildSucc(this.yakTask2YakTaskVO(yakTasks), count, taskPageQueryDTO.getPage().intValue(), taskPageQueryDTO.getSize().intValue());
     }
 
     @PostMapping(value={"/{taskCode}/{status}"})
@@ -75,8 +75,8 @@ public class TaskController {
 
     @GetMapping(value={"/{taskCode}/detail"})
     @ApiOperation(value="\u8c03\u5ea6\u4efb\u52a1\u8be6\u60c5", notes="")
-    public Result<LogITaskVO> detail(@PathVariable String taskCode) {
-        return Result.buildSucc(this.logITask2LogITaskVO(this.taskManager.getByCode(taskCode)));
+    public Result<YakTaskVO> detail(@PathVariable String taskCode) {
+        return Result.buildSucc(this.yakTask2YakTaskVO(this.taskManager.getByCode(taskCode)));
     }
 
     @PostMapping(value={"/{taskCode}/{workerCode}/release"})
@@ -93,35 +93,35 @@ public class TaskController {
 
     @PostMapping(value={"/{taskCode}/copy"})
     @ApiOperation(value="\u590d\u5236\u8c03\u5ea6\u4efb\u52a1", notes="")
-    public Result<Boolean> copy(@PathVariable String taskCode, @RequestBody LogITaskCopyDTO logITaskCopyDTO) {
-        return this.taskManager.copy(taskCode, logITaskCopyDTO.getTaskDesc(), logITaskCopyDTO.getWorkerIps(), logITaskCopyDTO.getParam());
+    public Result<Boolean> copy(@PathVariable String taskCode, @RequestBody YakTaskCopyDTO yakTaskCopyDTO) {
+        return this.taskManager.copy(taskCode, yakTaskCopyDTO.getTaskDesc(), yakTaskCopyDTO.getWorkerIps(), yakTaskCopyDTO.getParam());
     }
 
     @PostMapping(value={"/{taskCode}/update"})
     @ApiOperation(value="\u7f16\u8f91\u8c03\u5ea6\u4efb\u52a1", notes="")
-    public Result<Boolean> update(@PathVariable String taskCode, @RequestBody LogITaskUpdateDTO logITaskUpdateDTO) {
-        return this.taskManager.updateWorkIpsParam(taskCode, logITaskUpdateDTO.getWorkerIps(), logITaskUpdateDTO.getParam());
+    public Result<Boolean> update(@PathVariable String taskCode, @RequestBody YakTaskUpdateDTO yakTaskUpdateDTO) {
+        return this.taskManager.updateWorkIpsParam(taskCode, yakTaskUpdateDTO.getWorkerIps(), yakTaskUpdateDTO.getParam());
     }
 
-    private List<LogITaskVO> logITask2LogITaskVO(List<LogITask> logITasks) {
-        if (CollectionUtils.isEmpty(logITasks)) {
-            return new ArrayList<LogITaskVO>();
+    private List<YakTaskVO> yakTask2YakTaskVO(List<YakTask> yakTasks) {
+        if (CollectionUtils.isEmpty(yakTasks)) {
+            return new ArrayList<YakTaskVO>();
         }
-        return logITasks.stream().map(l -> this.logITask2LogITaskVO((LogITask)l)).collect(Collectors.toList());
+        return yakTasks.stream().map(l -> this.yakTask2YakTaskVO((YakTask)l)).collect(Collectors.toList());
     }
 
-    private LogITaskVO logITask2LogITaskVO(LogITask logITask) {
-        LogITaskVO logITaskVO = BeanUtil.convertTo(logITask, LogITaskVO.class);
-        logITaskVO.setDel(0);
-        if (!StringUtils.isEmpty((Object)logITask.getTaskCode()) && CommonUtil.isCopyTask(logITask.getTaskCode())) {
-            logITaskVO.setDel(1);
+    private YakTaskVO yakTask2YakTaskVO(YakTask yakTask) {
+        YakTaskVO yakTaskVO = BeanUtil.convertTo(yakTask, YakTaskVO.class);
+        yakTaskVO.setDel(0);
+        if (!StringUtils.isEmpty((Object)yakTask.getTaskCode()) && CommonUtil.isCopyTask(yakTask.getTaskCode())) {
+            yakTaskVO.setDel(1);
         }
-        if (!CollectionUtils.isEmpty(logITask.getTaskWorkers())) {
-            List<String> ips = logITask.getTaskWorkers().stream().map(w -> w.getIp()).collect(Collectors.toList());
-            logITaskVO.setRouting(ConsensualEnum.getByName(logITask.getConsensual()).getDesc());
-            logITaskVO.setWorkerIps(ips);
+        if (!CollectionUtils.isEmpty(yakTask.getTaskWorkers())) {
+            List<String> ips = yakTask.getTaskWorkers().stream().map(w -> w.getIp()).collect(Collectors.toList());
+            yakTaskVO.setRouting(ConsensualEnum.getByName(yakTask.getConsensual()).getDesc());
+            yakTaskVO.setWorkerIps(ips);
         }
-        return logITaskVO;
+        return yakTaskVO;
     }
 }
 

@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value={"v1/logi-job/worker"})
-@Api(tags={"logi-job \u7684\u8c03\u5ea6\u673a\u5668\u76f8\u5173\u63a5\u53e3"})
+@RequestMapping(value={"v1/yak-job/worker"})
+@Api(tags={"yak-job \u7684\u8c03\u5ea6\u673a\u5668\u76f8\u5173\u63a5\u53e3"})
 public class WorkerController {
     @Autowired
     private WorkerManager workerManager;

@@ -3,11 +3,11 @@
  */
 package com.yak.job.core.consensual;
 
-import com.yak.job.common.domain.LogITask;
+import com.yak.job.common.domain.YakTask;
 
 public interface Consensual {
     public String getName();
 
-    public boolean canClaim(LogITask var1);
+    public boolean canClaim(YakTask var1);
 }
 

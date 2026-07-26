@@ -1,8 +1,8 @@
 src/main/resources/META-INF/spring.factories
-src/main/resources/logi-job.sql
-src/main/resources/mapper/logi-job/LogIJobLogMapper.xml
-src/main/resources/mapper/logi-job/LogIJobMapper.xml
-src/main/resources/mapper/logi-job/LogITaskLockMapper.xml
-src/main/resources/mapper/logi-job/LogITaskMapper.xml
-src/main/resources/mapper/logi-job/LogIWorkerBlacklistMapper.xml
-src/main/resources/mapper/logi-job/LogIWorkerMapper.xml
+src/main/resources/yak-job.sql
+src/main/resources/mapper/yak-job/YakJobLogMapper.xml
+src/main/resources/mapper/yak-job/YakJobMapper.xml
+src/main/resources/mapper/yak-job/YakTaskLockMapper.xml
+src/main/resources/mapper/yak-job/YakTaskMapper.xml
+src/main/resources/mapper/yak-job/YakWorkerBlacklistMapper.xml
+src/main/resources/mapper/yak-job/YakWorkerMapper.xml

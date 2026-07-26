@@ -3,7 +3,7 @@
  */
 package com.yak.job.core.task;
 
-import com.yak.job.common.vo.LogITaskLockVO;
+import com.yak.job.common.vo.YakTaskLockVO;
 import java.util.List;
 
 public interface TaskLockService {
@@ -15,7 +15,7 @@ public interface TaskLockService {
 
     public Boolean tryRelease(String var1, String var2);
 
-    public List<LogITaskLockVO> getAll();
+    public List<YakTaskLockVO> getAll();
 
     public void renewAll();
 }

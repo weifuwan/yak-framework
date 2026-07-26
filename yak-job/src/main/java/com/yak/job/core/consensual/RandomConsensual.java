@@ -9,7 +9,7 @@
  */
 package com.yak.job.core.consensual;
 
-import com.yak.job.common.domain.LogITask;
+import com.yak.job.common.domain.YakTask;
 import com.yak.job.core.task.TaskLockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +29,9 @@ extends AbstractConsensual {
     }
 
     @Override
-    public boolean tryClaim(LogITask logITask) {
-        if (this.taskLockService.tryAcquire(logITask.getTaskCode()).booleanValue()) {
-            logITask.setTaskCallback(taskCode -> {
+    public boolean tryClaim(YakTask yakTask) {
+        if (this.taskLockService.tryAcquire(yakTask.getTaskCode()).booleanValue()) {
+            yakTask.setTaskCallback(taskCode -> {
                 logger.info("class=RandomConsensual||method=tryClaim||msg=release task lock taskCode {}", (Object)taskCode);
                 this.taskLockService.tryRelease(taskCode);
             });

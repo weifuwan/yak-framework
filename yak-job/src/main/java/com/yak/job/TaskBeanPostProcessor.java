@@ -14,10 +14,10 @@ package com.yak.job;
 
 import com.yak.job.annotation.Task;
 import com.yak.job.common.enums.TaskStatusEnum;
-import com.yak.job.common.po.LogITaskPO;
+import com.yak.job.common.po.YakTaskPO;
 import com.yak.job.core.job.Job;
 import com.yak.job.core.job.JobFactory;
-import com.yak.job.mapper.LogITaskMapper;
+import com.yak.job.mapper.YakTaskMapper;
 import com.yak.job.utils.CronExpression;
 import com.yak.job.utils.IdWorker;
 import java.sql.Timestamp;
@@ -39,13 +39,13 @@ import org.springframework.stereotype.Component;
 public class TaskBeanPostProcessor
 implements BeanPostProcessor {
     private static final Logger logger = LoggerFactory.getLogger(TaskBeanPostProcessor.class);
-    private static Map<String, LogITaskPO> taskMap = new HashMap<String, LogITaskPO>();
+    private static Map<String, YakTaskPO> taskMap = new HashMap<String, YakTaskPO>();
     @Autowired
-    private LogITaskMapper logITaskMapper;
+    private YakTaskMapper yakTaskMapper;
     @Autowired
     private JobFactory jobFactory;
     @Autowired
-    private LogIJobProperties logIJobProperties;
+    private YakJobProperties yakJobProperties;
 
     @PostConstruct
     public void init() {
@@ -54,7 +54,7 @@ implements BeanPostProcessor {
 
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         try {
-            if (!this.logIJobProperties.getEnable().booleanValue()) {
+            if (!this.yakJobProperties.getEnable().booleanValue()) {
                 return bean;
             }
             Class<?> beanClass = bean.getClass();
@@ -70,14 +70,14 @@ implements BeanPostProcessor {
                 logger.error("class=TaskBeanPostProcessor||method=blacklist||url=||msg=invalid schedule {}", (Object)taskAnnotation.toString());
             }
             if (!this.contains(beanClass.getCanonicalName())) {
-                LogITaskPO task = this.getNewLogTask(beanClass, taskAnnotation);
+                YakTaskPO task = this.getNewLogTask(beanClass, taskAnnotation);
                 task.setTaskCode(IdWorker.getIdStr());
                 task.setStatus(TaskStatusEnum.RUNNING.getValue());
-                this.logITaskMapper.insert(task);
+                this.yakTaskMapper.insert(task);
             } else {
-                LogITaskPO task = taskMap.get(beanClass.getCanonicalName());
+                YakTaskPO task = taskMap.get(beanClass.getCanonicalName());
                 task = this.updateLogTask(task, beanClass, taskAnnotation);
-                this.logITaskMapper.updateByCode(task);
+                this.yakTaskMapper.updateByCode(task);
             }
         } catch (Exception e) {
             logger.error("class=TaskBeanPostProcessor||method=postProcessAfterInitialization||beanName={}||msg=exception", (Object)beanName, (Object)e);
@@ -89,42 +89,42 @@ implements BeanPostProcessor {
         return CronExpression.isValidExpression(schedule.cron());
     }
 
-    private LogITaskPO getNewLogTask(Class<?> beanClass, Task schedule) {
-        LogITaskPO logITaskPO = new LogITaskPO();
-        logITaskPO.setTaskName(schedule.name());
-        logITaskPO.setTaskDesc(schedule.description());
-        logITaskPO.setCron(schedule.cron());
-        logITaskPO.setClassName(beanClass.getCanonicalName());
-        logITaskPO.setParams("");
-        logITaskPO.setRetryTimes(schedule.retryTimes());
-        logITaskPO.setLastFireTime(new Timestamp(System.currentTimeMillis()));
-        logITaskPO.setTimeout(schedule.timeout());
-        logITaskPO.setSubTaskCodes("");
-        logITaskPO.setConsensual(schedule.consensual().name());
-        logITaskPO.setTaskWorkerStr("");
-        logITaskPO.setAppName(this.logIJobProperties.getAppName());
-        logITaskPO.setOwner(schedule.owner());
-        return logITaskPO;
+    private YakTaskPO getNewLogTask(Class<?> beanClass, Task schedule) {
+        YakTaskPO yakTaskPO = new YakTaskPO();
+        yakTaskPO.setTaskName(schedule.name());
+        yakTaskPO.setTaskDesc(schedule.description());
+        yakTaskPO.setCron(schedule.cron());
+        yakTaskPO.setClassName(beanClass.getCanonicalName());
+        yakTaskPO.setParams("");
+        yakTaskPO.setRetryTimes(schedule.retryTimes());
+        yakTaskPO.setLastFireTime(new Timestamp(System.currentTimeMillis()));
+        yakTaskPO.setTimeout(schedule.timeout());
+        yakTaskPO.setSubTaskCodes("");
+        yakTaskPO.setConsensual(schedule.consensual().name());
+        yakTaskPO.setTaskWorkerStr("");
+        yakTaskPO.setAppName(this.yakJobProperties.getAppName());
+        yakTaskPO.setOwner(schedule.owner());
+        return yakTaskPO;
     }
 
-    private LogITaskPO updateLogTask(LogITaskPO logITaskPO, Class<?> beanClass, Task schedule) {
-        logITaskPO.setTaskName(schedule.name());
-        logITaskPO.setTaskDesc(schedule.description());
-        logITaskPO.setCron(schedule.cron());
-        logITaskPO.setClassName(beanClass.getCanonicalName());
-        logITaskPO.setParams("");
-        logITaskPO.setRetryTimes(schedule.retryTimes());
-        logITaskPO.setTimeout(schedule.timeout());
-        logITaskPO.setConsensual(schedule.consensual().name());
-        logITaskPO.setAppName(this.logIJobProperties.getAppName());
-        logITaskPO.setOwner(schedule.owner());
-        return logITaskPO;
+    private YakTaskPO updateLogTask(YakTaskPO yakTaskPO, Class<?> beanClass, Task schedule) {
+        yakTaskPO.setTaskName(schedule.name());
+        yakTaskPO.setTaskDesc(schedule.description());
+        yakTaskPO.setCron(schedule.cron());
+        yakTaskPO.setClassName(beanClass.getCanonicalName());
+        yakTaskPO.setParams("");
+        yakTaskPO.setRetryTimes(schedule.retryTimes());
+        yakTaskPO.setTimeout(schedule.timeout());
+        yakTaskPO.setConsensual(schedule.consensual().name());
+        yakTaskPO.setAppName(this.yakJobProperties.getAppName());
+        yakTaskPO.setOwner(schedule.owner());
+        return yakTaskPO;
     }
 
     private boolean contains(String className) {
         if (taskMap.isEmpty()) {
-            List<LogITaskPO> logITaskPOS = this.logITaskMapper.selectByAppName(this.logIJobProperties.getAppName());
-            taskMap = logITaskPOS.stream().collect(Collectors.toMap(LogITaskPO::getClassName, Function.identity()));
+            List<YakTaskPO> yakTaskPOS = this.yakTaskMapper.selectByAppName(this.yakJobProperties.getAppName());
+            taskMap = yakTaskPOS.stream().collect(Collectors.toMap(YakTaskPO::getClassName, Function.identity()));
         }
         return taskMap.containsKey(className);
     }

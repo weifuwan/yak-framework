@@ -7,7 +7,7 @@
  */
 package com.yak.job.core.job;
 
-import com.yak.job.LogIJobProperties;
+import com.yak.job.YakJobProperties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -21,7 +21,7 @@ public class JobExecutor {
     public ThreadPoolExecutor threadPoolExecutor;
 
     @Autowired
-    public JobExecutor(LogIJobProperties properties) {
+    public JobExecutor(YakJobProperties properties) {
         this.threadPoolExecutor = new ThreadPoolExecutor(properties.getInitThreadNum(), properties.getMaxThreadNum(), 10L, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(100));
     }
 

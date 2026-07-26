@@ -8,8 +8,8 @@
  */
 package com.yak.job.core.job;
 
-import com.yak.job.common.domain.LogIJob;
-import com.yak.job.common.domain.LogITask;
+import com.yak.job.common.domain.YakJob;
+import com.yak.job.common.domain.YakTask;
 import com.yak.job.common.enums.JobStatusEnum;
 import com.yak.job.core.WorkerSingleton;
 import com.yak.job.utils.IdWorker;
@@ -32,26 +32,26 @@ implements JobFactory {
     }
 
     @Override
-    public LogIJob newJob(LogITask logITask) {
-        if (null == this.jobMap.get(logITask.getClassName())) {
+    public YakJob newJob(YakTask yakTask) {
+        if (null == this.jobMap.get(yakTask.getClassName())) {
             return null;
         }
-        LogIJob logIJob = new LogIJob();
-        logIJob.setJobCode(IdWorker.getIdStr());
-        logIJob.setTaskCode(logITask.getTaskCode());
-        logIJob.setTaskId(logITask.getId());
-        logIJob.setTaskName(logITask.getTaskName());
-        logIJob.setTaskDesc(logITask.getTaskDesc());
-        logIJob.setClassName(logITask.getClassName());
-        logIJob.setWorkerCode(WorkerSingleton.getInstance().getLogIWorker().getWorkerCode());
-        logIJob.setWorkerIp(WorkerSingleton.getInstance().getLogIWorker().getIp());
-        logIJob.setTryTimes(logITask.getRetryTimes() == null ? 1 : logITask.getRetryTimes());
-        logIJob.setStatus(JobStatusEnum.STARTED.getValue());
-        logIJob.setTimeout(logITask.getTimeout());
-        logIJob.setJob(this.jobMap.get(logITask.getClassName()));
-        logIJob.setTaskCallback(logITask.getTaskCallback());
-        logIJob.setAppName(logITask.getAppName());
-        return logIJob;
+        YakJob yakJob = new YakJob();
+        yakJob.setJobCode(IdWorker.getIdStr());
+        yakJob.setTaskCode(yakTask.getTaskCode());
+        yakJob.setTaskId(yakTask.getId());
+        yakJob.setTaskName(yakTask.getTaskName());
+        yakJob.setTaskDesc(yakTask.getTaskDesc());
+        yakJob.setClassName(yakTask.getClassName());
+        yakJob.setWorkerCode(WorkerSingleton.getInstance().getYakWorker().getWorkerCode());
+        yakJob.setWorkerIp(WorkerSingleton.getInstance().getYakWorker().getIp());
+        yakJob.setTryTimes(yakTask.getRetryTimes() == null ? 1 : yakTask.getRetryTimes());
+        yakJob.setStatus(JobStatusEnum.STARTED.getValue());
+        yakJob.setTimeout(yakTask.getTimeout());
+        yakJob.setJob(this.jobMap.get(yakTask.getClassName()));
+        yakJob.setTaskCallback(yakTask.getTaskCallback());
+        yakJob.setAppName(yakTask.getAppName());
+        return yakJob;
     }
 }
 

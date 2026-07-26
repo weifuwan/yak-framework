@@ -1,4 +1,4 @@
-# logi-security-spring-boot-starter 2.10.19 源码恢复工程
+# yak-security-spring-boot-starter 2.10.19 源码恢复工程
 
 本工程由已编译 JAR 逆向恢复，采用标准 Maven 目录结构。
 
