@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import net.sf.jsqlparser.expression.StringValue;
+import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import org.flywaydb.core.Flyway;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import javax.sql.DataSource;
@@ -69,8 +70,17 @@ public class DataSourceConfig {
     requireText(properties.getApplicationName(), "yak.security.application-name");
     MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
     // Every ORM SELECT/UPDATE/DELETE and INSERT is constrained to the configured app.
-    interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(
-        () -> new StringValue(properties.getApplicationName())));
+    interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new TenantLineHandler() {
+      @Override
+      public StringValue getTenantId() {
+        return new StringValue(properties.getApplicationName());
+      }
+
+      @Override
+      public String getTenantIdColumn() {
+        return "app_name";
+      }
+    }));
     interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MARIADB));
     return interceptor;
   }

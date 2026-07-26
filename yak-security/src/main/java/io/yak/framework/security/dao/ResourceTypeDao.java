@@ -10,7 +10,7 @@ public interface ResourceTypeDao {
 
   public IPage<ResourceType> selectPage(ResourceTypeQueryDTO var1);
 
-  public ResourceType selectByResourceTypeId(Integer var1);
+  public ResourceType selectByResourceTypeId(Long resourceTypeId);
 
   public void insertBatch(List<ResourceType> var1);
 }

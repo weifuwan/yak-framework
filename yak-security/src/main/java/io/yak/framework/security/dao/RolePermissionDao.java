@@ -6,9 +6,9 @@ import java.util.List;
 public interface RolePermissionDao {
   public void insertBatch(List<RolePermission> var1);
 
-  public void deleteByRoleId(Integer var1);
+  public void deleteByRoleId(Long roleId);
 
-  public List<Long> selectPermissionIdListByRoleId(Integer var1);
+  public List<Long> selectPermissionIdListByRoleId(Long roleId);
 
   public List<Long> selectPermissionIdListByRoleIdList(List<Long> var1);
 }

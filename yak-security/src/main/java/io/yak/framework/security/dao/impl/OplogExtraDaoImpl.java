@@ -36,7 +36,6 @@ public class OplogExtraDaoImpl
         List<OplogExtraPO> oplogExtraPOList =
                 CopyBeanUtil.copyList(oplogExtraList, OplogExtraPO.class);
         for (OplogExtraPO oplogExtraPO : oplogExtraPOList) {
-            oplogExtraPO.setAppName(this.yakSecurityProperties.getApplicationName());
             this.oplogExtraMapper.insert(oplogExtraPO);
         }
     }

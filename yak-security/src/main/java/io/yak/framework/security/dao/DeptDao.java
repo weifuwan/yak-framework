@@ -9,11 +9,11 @@ public interface DeptDao {
 
   public List<Long> selectIdListByLikeDeptName(String var1);
 
-  public DeptBrief selectBriefByDeptId(Integer var1);
+  public DeptBrief selectBriefByDeptId(Long deptId);
 
   public List<Long> selectAllDeptIdList();
 
-  public List<Long> selectIdListByParentId(Integer var1);
+  public List<Long> selectIdListByParentId(Long parentId);
 
   public void insertBatch(List<Dept> var1);
 

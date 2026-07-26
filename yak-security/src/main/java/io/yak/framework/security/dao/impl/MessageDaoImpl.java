@@ -22,7 +22,6 @@ public class MessageDaoImpl
     @Override
     public void insert(Message message) {
         MessagePO messagePO = CopyBeanUtil.copy(message, MessagePO.class);
-        messagePO.setAppName(this.yakSecurityProperties.getApplicationName());
         this.messageMapper.insert(messagePO);
         message.setId(messagePO.getId());
     }
@@ -40,7 +39,6 @@ public class MessageDaoImpl
         List<MessagePO> messagePOList =
                 CopyBeanUtil.copyList(messageList, MessagePO.class);
         for (MessagePO messagePO : messagePOList) {
-            messagePO.setAppName(this.yakSecurityProperties.getApplicationName());
             this.messageMapper.insert(messagePO);
         }
     }

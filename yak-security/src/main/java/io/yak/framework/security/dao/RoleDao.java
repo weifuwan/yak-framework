@@ -9,13 +9,13 @@ import java.util.List;
 public interface RoleDao {
   public Role selectByRoleName(String var1);
 
-  public Role selectByRoleId(Integer var1);
+  public Role selectByRoleId(Long roleId);
 
   public IPage<Role> selectPage(RoleQueryDTO var1);
 
   public void insert(Role var1);
 
-  public void deleteByRoleId(Integer var1);
+  public void deleteByRoleId(Long roleId);
 
   public void update(Role var1);
 
@@ -26,5 +26,5 @@ public interface RoleDao {
 
   public List<RoleBrief> selectBriefListByRoleIdList(List<Long> var1);
 
-  public int selectCountByRoleNameAndNotRoleId(String var1, Integer var2);
+  public int selectCountByRoleNameAndNotRoleId(String roleName, Long roleId);
 }

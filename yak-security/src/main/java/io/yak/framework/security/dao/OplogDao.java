@@ -8,7 +8,7 @@ import java.util.List;
 public interface OplogDao {
   public IPage<Oplog> selectPageWithoutDetail(OplogQueryDTO var1);
 
-  public Oplog selectByOplogId(Integer var1);
+  public Oplog selectByOplogId(Long oplogId);
 
   public void insert(Oplog var1);
 

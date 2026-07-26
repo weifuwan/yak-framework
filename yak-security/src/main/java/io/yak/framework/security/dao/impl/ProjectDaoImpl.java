@@ -37,7 +37,6 @@ public class ProjectDaoImpl
     @Override
     public void insert(Project project) {
         ProjectPO projectPO = CopyBeanUtil.copy(project, ProjectPO.class);
-        projectPO.setAppName(this.yakSecurityProperties.getApplicationName());
         this.projectMapper.insert(projectPO);
         project.setId(projectPO.getId());
     }
