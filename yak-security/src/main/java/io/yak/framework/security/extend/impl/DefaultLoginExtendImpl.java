@@ -7,8 +7,8 @@ import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.extend.LoginExtend;
+import io.yak.framework.security.extend.PasswordEncoder;
 import io.yak.framework.security.service.UserService;
-import io.yak.framework.security.util.AESUtils;
 import io.yak.framework.security.util.CopyBeanUtil;
 import io.yak.framework.security.util.HttpRequestUtil;
 import jakarta.servlet.http.Cookie;
@@ -28,6 +28,7 @@ public class DefaultLoginExtendImpl implements LoginExtend {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(DefaultLoginExtendImpl.class);
   @Autowired private UserService userService;
+  @Autowired private PasswordEncoder passwordEncoder;
 
   @Override
   public UserBriefVO verifyLogin(AccountLoginDTO loginDTO,
@@ -38,9 +39,10 @@ public class DefaultLoginExtendImpl implements LoginExtend {
     if (user == null) {
       throw new YakSecurityException(ResultCode.USER_NOT_EXISTS);
     }
-    String decodePasswd = AESUtils.decrypt(loginDTO.getPw());
-    loginDTO.setPw(decodePasswd);
-    if (!user.getPw().equals(loginDTO.getPw())) {
+    if (Integer.valueOf(2).equals(user.getStatus())) {
+      throw new YakSecurityException(ResultCode.USER_ACCOUNT_DISABLE);
+    }
+    if (!this.passwordEncoder.matches(loginDTO.getPw(), user.getPw())) {
       throw new YakSecurityException(ResultCode.USER_CREDENTIALS_ERROR);
     }
     this.initLoginContext(request, response, loginDTO.getUserName(),

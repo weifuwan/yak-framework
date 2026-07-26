@@ -30,6 +30,14 @@ public class YakSecurityProperties {
   public void setApplicationName(String applicationName) { this.applicationName = applicationName; }
   public DataSourceProperties getDatasource() { return datasource; }
 
+  @Override
+  public String toString() {
+    return "YakSecurityProperties(enabled=" + enabled +
+        ", databaseEnabled=" + databaseEnabled + ", webEnabled=" + webEnabled +
+        ", auditEnabled=" + auditEnabled + ", applicationName=" + applicationName +
+        ", datasource=" + datasource + ")";
+  }
+
   /** Yak Security 使用的 Druid 数据源参数。 */
   public static class DataSourceProperties {
     /** 是否启用 Yak Security 独立数据源。 */
@@ -85,5 +93,13 @@ public class YakSecurityProperties {
     public void setTestOnBorrow(boolean testOnBorrow) { this.testOnBorrow = testOnBorrow; }
     public boolean isTestOnReturn() { return testOnReturn; }
     public void setTestOnReturn(boolean testOnReturn) { this.testOnReturn = testOnReturn; }
+
+    @Override
+    public String toString() {
+      return "DataSourceProperties(enabled=" + enabled + ", url=" + url +
+          ", username=" + username + ", driverClassName=" + driverClassName +
+          ", initialSize=" + initialSize + ", minIdle=" + minIdle +
+          ", maxActive=" + maxActive + ", maxWait=" + maxWait + ")";
+    }
   }
 }

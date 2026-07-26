@@ -12,6 +12,8 @@ public class UserPO extends BasePO {
   private String phone;
   private String email;
   private Integer deptId;
+  /** 1 = active, 2 = disabled. */
+  private Integer status = 1;
 
   @Override
   public boolean equals(Object o) {
@@ -110,6 +112,8 @@ public class UserPO extends BasePO {
 
   public Integer getDeptId() { return this.deptId; }
 
+  public Integer getStatus() { return this.status; }
+
   public void setUserName(String userName) { this.userName = userName; }
 
   public void setPw(String pw) { this.pw = pw; }
@@ -124,11 +128,13 @@ public class UserPO extends BasePO {
 
   public void setDeptId(Integer deptId) { this.deptId = deptId; }
 
+  public void setStatus(Integer status) { this.status = status; }
+
   @Override
   public String toString() {
-    return "UserPO(userName=" + this.getUserName() + ", pw=" + this.getPw() +
-        ", salt=" + this.getSalt() + ", realName=" + this.getRealName() +
-        ", phone=" + this.getPhone() + ", email=" + this.getEmail() +
-        ", deptId=" + this.getDeptId() + ")";
+    return "UserPO(userName=" + this.getUserName() +
+        ", realName=" + this.getRealName() + ", phone=" + this.getPhone() +
+        ", email=" + this.getEmail() + ", deptId=" + this.getDeptId() +
+        ", status=" + this.getStatus() + ")";
   }
 }

@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Import;
     YakSecurityAuditConfiguration.class})
 public class YakSecurityAutoConfiguration {
   static class ExtensionConfiguration {
-    @Bean @ConditionalOnMissingBean
+    @Bean @ConditionalOnMissingBean(PasswordEncoder.class)
     PasswordEncoder passwordEncoder() { return new DefaultPasswordEncoder(); }
     @Bean @ConditionalOnMissingBean
     PermissionExtend permissionExtend() { return new DefaultPermissionExtend(); }

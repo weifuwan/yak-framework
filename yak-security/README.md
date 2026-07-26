@@ -23,3 +23,17 @@ spring:
 
 HTTP 接口统一位于 `/yak-security/api/v1`，项目隔离标识通过
 `X-YAK-SECURITY-PROJECT-ID` 请求头传递。
+## Password storage and migration
+
+Yak Security stores only one-way BCrypt hashes. New users and password changes are
+always passed through the configured `PasswordEncoder`; authentication uses
+`matches` and never decrypts a stored credential. Applications can replace the
+encoder by declaring their own `PasswordEncoder` bean.
+
+Login credentials must be sent over HTTPS as ordinary request values. The module
+does not provide application-level password decryption or embed a transport key.
+
+The former reversible Base64 format is intentionally **not** accepted. Before
+upgrading, reset legacy credentials or perform an offline forced-password-reset
+campaign. There is no compatibility switch because retaining a decoder would
+preserve the ability to recover user passwords.

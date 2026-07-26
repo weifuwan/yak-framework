@@ -102,8 +102,7 @@ public class UserDTO {
   public void setRoleIds(List<Integer> roleIds) { this.roleIds = roleIds; }
 
   public String toString() {
-    return "UserDTO(userName=" + this.getUserName() + ", pw=" + this.getPw() +
-        ", realName=" + this.getRealName() + ", phone=" + this.getPhone() +
+    return "UserDTO(userName=" + this.getUserName() + ", realName=" + this.getRealName() + ", phone=" + this.getPhone() +
         ", email=" + this.getEmail() + ", roleIds=" + this.getRoleIds() + ")";
   }
 }

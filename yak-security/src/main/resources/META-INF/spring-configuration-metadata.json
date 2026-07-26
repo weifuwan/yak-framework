@@ -12,7 +12,7 @@
     {"name":"yak.security.datasource.enabled","type":"java.lang.Boolean","defaultValue":true,"description":"是否启用 Yak Security 独立数据源。"},
     {"name":"yak.security.datasource.url","type":"java.lang.String","description":"数据库 JDBC 连接地址。"},
     {"name":"yak.security.datasource.username","type":"java.lang.String","description":"数据库登录用户名。"},
-    {"name":"yak.security.datasource.password","type":"java.lang.String","description":"数据库登录密码。"},
+    {"name":"yak.security.datasource.password","type":"java.lang.String","description":"数据库登录密码（不会出现在配置对象字符串中）。"},
     {"name":"yak.security.datasource.driver-class-name","type":"java.lang.String","description":"JDBC 驱动类名。"},
     {"name":"yak.security.datasource.initial-size","type":"java.lang.Integer","defaultValue":0,"description":"连接池初始化连接数。"},
     {"name":"yak.security.datasource.min-idle","type":"java.lang.Integer","defaultValue":0,"description":"连接池最小空闲连接数。"},

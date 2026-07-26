@@ -137,6 +137,7 @@ CREATE TABLE `yak_security_user`
     phone       char(11)     default ''                not null comment 'mobile',
     email       varchar(30)  default ''                not null comment 'email',
     dept_id     int                                    null comment '所属部门id',
+    status      int          default 1                 not null comment '1 正常 2 禁用',
     is_delete   tinyint(1)   default 0                 not null comment '逻辑删除',
     create_time timestamp    default CURRENT_TIMESTAMP null comment '注册时间',
     update_time timestamp    default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
