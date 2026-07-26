@@ -48,7 +48,6 @@ public class AccountLoginDTO {
   }
 
   public String toString() {
-    return "AccountLoginDTO(userName=" + this.getUserName() +
-        ", pw=" + this.getPw() + ")";
+    return "AccountLoginDTO(userName=" + this.getUserName() + ")";
   }
 }

@@ -10,6 +10,7 @@ import io.yak.framework.security.dao.OplogDao;
 import io.yak.framework.security.service.OplogService;
 import io.yak.framework.security.util.CopyBeanUtil;
 import io.yak.framework.security.util.NetworkUtil;
+import io.yak.framework.security.util.SensitiveDataSanitizer;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,11 @@ public class OplogServiceImpl implements OplogService {
 
   @Override
   public Integer saveOplog(OplogDTO oplogDTO) {
+    oplogDTO.setOperator(SensitiveDataSanitizer.sanitize(oplogDTO.getOperator()));
+    oplogDTO.setTarget(SensitiveDataSanitizer.sanitize(oplogDTO.getTarget()));
+    oplogDTO.setDetail(SensitiveDataSanitizer.sanitize(oplogDTO.getDetail()));
+    oplogDTO.setOperationMethods(
+        SensitiveDataSanitizer.sanitize(oplogDTO.getOperationMethods()));
     Oplog oplog = CopyBeanUtil.copy(oplogDTO, Oplog.class);
     String realIpAddress = NetworkUtil.getRealIpAddress();
     oplog.setOperatorIp(realIpAddress);

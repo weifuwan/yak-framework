@@ -13,7 +13,6 @@ import io.yak.framework.security.dao.UserDao;
 import io.yak.framework.security.dao.impl.BaseDaoImpl;
 import io.yak.framework.security.dao.mapper.UserMapper;
 import io.yak.framework.security.util.CopyBeanUtil;
-import io.yak.framework.security.util.PWEncryptUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,14 +27,12 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
 
   @Override
   public int addUser(UserPO userPO) throws Exception {
-    userPO.setPw(PWEncryptUtil.encode(userPO.getPw()));
     userPO.setAppName(this.yakSecurityProperties.getApplicationName());
     return this.userMapper.insert(userPO);
   }
 
   @Override
   public int editUser(UserPO userPO) throws Exception {
-    userPO.setPw(PWEncryptUtil.encode(userPO.getPw()));
     return this.userMapper.updateById(userPO);
   }
 
@@ -59,7 +56,6 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
     this.userMapper.selectPage((IPage)page, (Wrapper)queryWrapper);
     page.setTotal(
         (long)this.userMapper.selectCount((Wrapper)queryWrapper).intValue());
-    page.setRecords(this.decodePW(page.getRecords()));
     return CopyBeanUtil.copyPage(page, User.class);
   }
 
@@ -79,7 +75,6 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
                (Object) "real_name", (Object)queryDTO.getRealName()))
         .in(deptIdList != null, (Object) "dept_id", deptIdList);
     this.userMapper.selectPage((IPage)page, (Wrapper)queryWrapper);
-    page.setRecords(this.decodePW(page.getRecords()));
     return CopyBeanUtil.copyPage(page, UserBrief.class);
   }
 
@@ -91,7 +86,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.eq((Object) "id", (Object)userId);
     return CopyBeanUtil.copy(
-        this.decodePW((UserPO)this.userMapper.selectOne((Wrapper)queryWrapper)),
+        this.userMapper.selectOne((Wrapper)queryWrapper),
         User.class);
   }
 
@@ -100,7 +95,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.eq((Object) "email", (Object)userName);
     return CopyBeanUtil.copy(
-        this.decodePW((UserPO)this.userMapper.selectOne((Wrapper)queryWrapper)),
+        this.userMapper.selectOne((Wrapper)queryWrapper),
         User.class);
   }
 
@@ -109,7 +104,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.eq((Object) "phone", (Object)userPhone);
     return CopyBeanUtil.copy(
-        this.decodePW((UserPO)this.userMapper.selectOne((Wrapper)queryWrapper)),
+        this.userMapper.selectOne((Wrapper)queryWrapper),
         User.class);
   }
 
@@ -131,7 +126,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
     QueryWrapper<UserPO> queryWrapper = this.wrapBriefQuery();
     queryWrapper.in((Object) "id", userIdList);
     return CopyBeanUtil.copyList(
-        this.decodePW(this.userMapper.selectList((Wrapper)queryWrapper)),
+        this.userMapper.selectList((Wrapper)queryWrapper),
         UserBrief.class);
   }
 
@@ -147,7 +142,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
                (Object)name))
         .orderByDesc((Object) "create_time");
     return CopyBeanUtil.copyList(
-        this.decodePW(this.userMapper.selectList((Wrapper)queryWrapper)),
+        this.userMapper.selectList((Wrapper)queryWrapper),
         UserBrief.class);
   }
 
@@ -159,7 +154,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
     QueryWrapper<UserPO> queryWrapper = this.wrapBriefQuery();
     queryWrapper.in(deptIdList != null, (Object) "dept_id", deptIdList);
     return CopyBeanUtil.copyList(
-        this.decodePW(this.userMapper.selectList((Wrapper)queryWrapper)),
+        this.userMapper.selectList((Wrapper)queryWrapper),
         UserBrief.class);
   }
 
@@ -173,7 +168,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
     }
     this.userMapper.selectList((Wrapper)queryWrapper);
     return CopyBeanUtil.copyList(
-        this.decodePW(this.userMapper.selectList((Wrapper)queryWrapper)),
+        this.userMapper.selectList((Wrapper)queryWrapper),
         UserBrief.class);
   }
 
@@ -181,7 +176,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
   public List<UserBrief> selectAllBriefList() {
     QueryWrapper<UserPO> queryWrapper = this.wrapBriefQuery();
     return CopyBeanUtil.copyList(
-        this.decodePW(this.userMapper.selectList((Wrapper)queryWrapper)),
+        this.userMapper.selectList((Wrapper)queryWrapper),
         UserBrief.class);
   }
 
@@ -207,8 +202,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
     }
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.eq((Object) "user_name", (Object)username);
-    UserPO userPO =
-        this.decodePW((UserPO)this.userMapper.selectOne((Wrapper)queryWrapper));
+    UserPO userPO = this.userMapper.selectOne((Wrapper)queryWrapper);
     return CopyBeanUtil.copy(userPO, User.class);
   }
 
@@ -219,23 +213,4 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
     return queryWrapper;
   }
 
-  private List<UserPO> decodePW(List<UserPO> userPOS) {
-    if (CollectionUtils.isEmpty(userPOS)) {
-      return userPOS;
-    }
-    return userPOS.stream()
-        .map(u -> this.decodePW((UserPO)u))
-        .collect(Collectors.toList());
-  }
-
-  private UserPO decodePW(UserPO userPO) {
-    if (null != userPO && !StringUtils.isEmpty((Object)userPO.getPw())) {
-      try {
-        userPO.setPw(PWEncryptUtil.decode(userPO.getPw()));
-      } catch (Exception exception) {
-        // empty catch block
-      }
-    }
-    return userPO;
-  }
 }

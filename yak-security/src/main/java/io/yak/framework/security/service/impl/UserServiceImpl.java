@@ -25,6 +25,7 @@ import io.yak.framework.security.dao.ProjectDao;
 import io.yak.framework.security.dao.UserDao;
 import io.yak.framework.security.dao.UserProjectDao;
 import io.yak.framework.security.exception.YakSecurityException;
+import io.yak.framework.security.extend.PasswordEncoder;
 import io.yak.framework.security.service.DeptService;
 import io.yak.framework.security.service.PermissionService;
 import io.yak.framework.security.service.RolePermissionService;
@@ -62,6 +63,7 @@ public class UserServiceImpl implements UserService {
   @Autowired private UserRoleService userRoleService;
   @Autowired private UserProjectDao userProjectDao;
   @Autowired private ProjectDao projectDao;
+  @Autowired private PasswordEncoder passwordEncoder;
 
   @Override
   public Result<Void> check(Integer type, String value) {
@@ -358,6 +360,7 @@ public class UserServiceImpl implements UserService {
     }
     try {
       UserPO userPO = CopyBeanUtil.copy(userDTO, UserPO.class);
+      userPO.setPw(this.passwordEncoder.encode(userDTO.getPw()));
       if (this.userDao.addUser(userPO) > 0) {
         this.userRoleService.updateUserRoleByUserId(userPO.getId(),
                                                     userDTO.getRoleIds());
@@ -377,6 +380,11 @@ public class UserServiceImpl implements UserService {
     try {
       UserPO userPO = CopyBeanUtil.copy(userDTO, UserPO.class);
       userPO.setId(user.getId());
+      if (StringUtils.hasText(userDTO.getPw())) {
+        userPO.setPw(this.passwordEncoder.encode(userDTO.getPw()));
+      } else {
+        userPO.setPw(null);
+      }
       if (this.userDao.editUser(userPO) > 0) {
         this.userRoleService.updateUserRoleByUserId(userPO.getId(),
                                                     userDTO.getRoleIds());

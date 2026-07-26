@@ -1,12 +1,20 @@
 package io.yak.framework.security.extend.impl;
 
 import io.yak.framework.security.extend.PasswordEncoder;
-import java.util.Objects;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-/** Compatibility encoder retaining the module's existing plain credential semantics. */
+/** One-way BCrypt encoder used for newly created and changed credentials. */
 public class DefaultPasswordEncoder implements PasswordEncoder {
-  public String encode(CharSequence rawPassword) { return rawPassword == null ? null : rawPassword.toString(); }
+  private final BCryptPasswordEncoder delegate = new BCryptPasswordEncoder();
+
+  public String encode(CharSequence rawPassword) {
+    if (rawPassword == null) {
+      throw new IllegalArgumentException("rawPassword cannot be null");
+    }
+    return delegate.encode(rawPassword);
+  }
   public boolean matches(CharSequence rawPassword, String encodedPassword) {
-    return Objects.equals(encode(rawPassword), encodedPassword);
+    return rawPassword != null && encodedPassword != null
+        && delegate.matches(rawPassword, encodedPassword);
   }
 }
