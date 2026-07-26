@@ -32,7 +32,5 @@ public class YakSecurityAutoConfiguration {
     ResourceExtend resourceExtend() { return new DefaultResourceExtendImpl(); }
     @Bean @ConditionalOnMissingBean
     ResourceExtendBeanTool resourceExtendBeanTool(ResourceExtend extend) { return new ResourceExtendBeanTool(extend); }
-    @Bean @ConditionalOnBean(LoginExtend.class) @ConditionalOnMissingBean
-    LoginExtendBeanTool loginExtendBeanTool(LoginExtend extend) { return new LoginExtendBeanTool(extend); }
   }
 }
