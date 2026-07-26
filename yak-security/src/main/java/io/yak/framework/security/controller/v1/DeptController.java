@@ -45,7 +45,7 @@ public class DeptController {
   @Operation(summary = "查询完整部门树")
   @GetMapping("/tree")
   public Result<DeptTreeVO> tree() {
-    return Result.buildSucc(
+    return Result.success(
             deptService.buildDeptTree());
   }
 
@@ -63,6 +63,6 @@ public class DeptController {
 
     deptService.saveDept(deptDTOList);
 
-    return Result.buildSucc(null);
+    return Result.success(null);
   }
 }

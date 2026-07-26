@@ -62,7 +62,7 @@ public class MessageController {
       String username =
               HttpRequestUtil.getOperator(request);
 
-      return Result.buildSucc(
+      return Result.success(
               messageService
                       .getMessageListByUsernameAndReadTag(
                               username,
@@ -86,6 +86,6 @@ public class MessageController {
     messageService.changeMessageStatus(
             messageIdList);
 
-    return Result.buildSucc(null);
+    return Result.success(null);
   }
 }
