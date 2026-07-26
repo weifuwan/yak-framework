@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ConsensualEnum {
-    RANDOM("\u968f\u673a\u62a2\u5360"),
-    BROADCAST("\u5e7f\u64ad");
+    RANDOM("随机抢占"),
+    BROADCAST("广播");
 
     private static Map<String, ConsensualEnum> map;
 
