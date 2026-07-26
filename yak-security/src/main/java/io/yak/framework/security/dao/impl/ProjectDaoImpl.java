@@ -244,7 +244,7 @@ public class ProjectDaoImpl
             List<Long> projectIds) {
 
         if (!hasItems(projectIds)) {
-            return List.of();
+            return java.util.Collections.emptyList();
         }
 
         List<ProjectPO> projectPOList =

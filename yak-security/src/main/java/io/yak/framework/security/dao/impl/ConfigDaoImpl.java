@@ -216,7 +216,7 @@ public class ConfigDaoImpl
         return configs.stream()
                 .map(ConfigPO::getValueGroup)
                 .filter(StringUtils::hasText)
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**

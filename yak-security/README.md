@@ -24,6 +24,28 @@ spring:
 HTTP 接口统一位于 `/yak-security/api/v1`，项目隔离标识通过
 `X-YAK-SECURITY-PROJECT-ID` 请求头传递。
 
+## 统一登录认证
+
+Starter 会自动注册 Spring MVC `HandlerInterceptor`。除登录接口
+`/yak-security/api/v1/account/login`、健康检查和公开接口外，所有 MVC 请求都必须具有有效的
+服务端 HTTP Session；未登录或会话中的用户已禁用/不存在时返回 HTTP 401。
+
+公开接口可以在控制器类或方法上添加 `@PublicEndpoint`，也可以通过配置添加 Ant 风格路径：
+
+```yaml
+yak:
+  security:
+    authentication-enabled: true
+    public-paths:
+      - /yak-security/api/v1/account/login
+      - /yak-security/api/v1/common/heart
+      - /api/public/**
+```
+
+`OPTIONS` CORS 预检请求会被直接放行。若宿主应用需要完全接管认证，可将
+`yak.security.authentication-enabled` 设为 `false`。本模块使用 Spring Boot 2.7 和
+`javax.servlet` API 构建，支持 JDK 8。
+
 ## 数据库迁移与应用隔离
 
 模块启动时由 Flyway 依次执行 `db/migration/V1__init_yak_security.sql` 和

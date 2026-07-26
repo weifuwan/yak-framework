@@ -236,7 +236,7 @@ public class UserDaoImpl
           List<Long> userIdList) {
 
     if (userIdList == null || userIdList.isEmpty()) {
-      return List.of();
+      return java.util.Collections.emptyList();
     }
 
     List<UserPO> users = userMapper.selectList(
@@ -286,7 +286,7 @@ public class UserDaoImpl
           List<Long> deptIdList) {
 
     if (isEmptyScope(deptIdList)) {
-      return List.of();
+      return java.util.Collections.emptyList();
     }
 
     List<UserPO> users = userMapper.selectList(
@@ -349,7 +349,7 @@ public class UserDaoImpl
           String name) {
 
     if (!StringUtils.hasText(name)) {
-      return List.of();
+      return java.util.Collections.emptyList();
     }
 
     return userMapper.selectObjs(
@@ -370,7 +370,7 @@ public class UserDaoImpl
     )
             .stream()
             .map(DatabaseNumberUtils::toLong)
-            .toList();
+            .collect(java.util.stream.Collectors.toList());
   }
 
   /**

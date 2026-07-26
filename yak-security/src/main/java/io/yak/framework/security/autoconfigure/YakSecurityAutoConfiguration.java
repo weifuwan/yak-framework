@@ -3,7 +3,6 @@ package io.yak.framework.security.autoconfigure;
 import io.yak.framework.security.extend.*;
 import io.yak.framework.security.extend.impl.*;
 import io.yak.framework.security.config.YakSecurityProperties;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,7 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-@AutoConfiguration
+@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(YakSecurityProperties.class)
 @ConditionalOnProperty(prefix = "yak.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import({YakSecurityAutoConfiguration.ExtensionConfiguration.class,

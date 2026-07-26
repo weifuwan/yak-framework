@@ -30,7 +30,7 @@ public class OplogExtraDaoImpl
     @Override
     public List<OplogExtra> selectListByType(Integer type) {
         if (type == null) {
-            return List.of();
+            return java.util.Collections.emptyList();
         }
 
         List<OplogExtraPO> oplogExtraPOList =

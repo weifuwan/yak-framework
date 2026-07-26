@@ -1,8 +1,8 @@
 package io.yak.framework.security.extend.impl;
 
 import io.yak.framework.security.extend.CurrentUserProvider;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;

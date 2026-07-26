@@ -283,7 +283,7 @@ public class UserResourceDaoImpl
             UserResourceQueryDTO queryDTO) {
 
         if (userId == null) {
-            return List.of();
+            return java.util.Collections.emptyList();
         }
 
         return userResourceMapper.selectObjs(
@@ -295,7 +295,7 @@ public class UserResourceDaoImpl
                 .stream()
                 .map(DatabaseNumberUtils::toLong)
                 .distinct()
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**
@@ -412,7 +412,7 @@ public class UserResourceDaoImpl
         )
                 .stream()
                 .map(DatabaseNumberUtils::toLong)
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**

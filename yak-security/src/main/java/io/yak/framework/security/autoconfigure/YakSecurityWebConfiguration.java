@@ -10,9 +10,14 @@ import io.yak.framework.security.controller.v1.ProjectController;
 import io.yak.framework.security.controller.v1.ResourceController;
 import io.yak.framework.security.controller.v1.RoleController;
 import io.yak.framework.security.controller.v1.UserController;
+import io.yak.framework.security.config.YakSecurityProperties;
+import io.yak.framework.security.service.LoginService;
+import io.yak.framework.security.web.YakAuthenticationInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(
@@ -36,5 +41,20 @@ import org.springframework.context.annotation.Import;
         RoleController.class,
         UserController.class
 })
-public class YakSecurityWebConfiguration {
+public class YakSecurityWebConfiguration implements WebMvcConfigurer {
+
+  private final YakAuthenticationInterceptor authenticationInterceptor;
+
+  public YakSecurityWebConfiguration(
+          LoginService loginService,
+          YakSecurityProperties properties) {
+    this.authenticationInterceptor =
+            new YakAuthenticationInterceptor(loginService, properties);
+  }
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(authenticationInterceptor)
+            .addPathPatterns("/**");
+  }
 }

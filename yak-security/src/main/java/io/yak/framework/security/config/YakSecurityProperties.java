@@ -6,6 +6,10 @@ import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Yak Security 模块配置。
  */
@@ -31,6 +35,19 @@ public class YakSecurityProperties {
    * 是否启用 Web 接口。
    */
   private boolean webEnabled = true;
+
+  /**
+   * 是否启用统一登录拦截。关闭后所有接口均不校验登录状态。
+   */
+  private boolean authenticationEnabled = true;
+
+  /**
+   * 无需登录即可访问的 Ant 风格路径。登录接口和健康检查默认公开。
+   */
+  private List<String> publicPaths = new ArrayList<String>(Arrays.asList(
+          "/yak-security/api/v1/account/login",
+          "/yak-security/api/v1/common/heart"
+  ));
 
   /**
    * 是否启用审计功能。

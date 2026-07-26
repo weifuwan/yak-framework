@@ -1,6 +1,7 @@
 package io.yak.framework.security.dao.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.yak.framework.security.common.dto.oplog.OplogQueryDTO;
@@ -41,7 +42,7 @@ public class OplogDaoImpl
                 queryDTO.getSize()
         );
 
-        var wrapper = Wrappers.<OplogPO>lambdaQuery()
+        LambdaQueryWrapper<OplogPO> wrapper = Wrappers.<OplogPO>lambdaQuery()
                 .select(
                         OplogPO::getId,
                         OplogPO::getOperateType,
@@ -153,7 +154,7 @@ public class OplogDaoImpl
                 .stream()
                 .map(OplogPO::getTargetType)
                 .filter(StringUtils::hasText)
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**

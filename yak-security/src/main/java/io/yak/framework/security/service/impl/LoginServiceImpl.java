@@ -7,8 +7,8 @@ import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.extend.LoginExtend;
 import io.yak.framework.security.extend.LoginExtendBeanTool;
 import io.yak.framework.security.service.LoginService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Collections;

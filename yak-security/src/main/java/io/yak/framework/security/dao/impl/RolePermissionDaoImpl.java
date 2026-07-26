@@ -72,11 +72,11 @@ public class RolePermissionDaoImpl
           Long roleId) {
 
     if (roleId == null) {
-      return List.of();
+      return java.util.Collections.emptyList();
     }
 
     return selectPermissionIdListByRoleIdList(
-            List.of(roleId)
+            java.util.Collections.singletonList(roleId)
     );
   }
 
@@ -91,7 +91,7 @@ public class RolePermissionDaoImpl
           List<Long> roleIds) {
 
     if (roleIds == null || roleIds.isEmpty()) {
-      return List.of();
+      return java.util.Collections.emptyList();
     }
 
     return rolePermissionMapper.selectObjs(
@@ -106,6 +106,6 @@ public class RolePermissionDaoImpl
     )
             .stream()
             .map(DatabaseNumberUtils::toLong)
-            .toList();
+            .collect(java.util.stream.Collectors.toList());
   }
 }

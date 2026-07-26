@@ -35,7 +35,7 @@ public class UserRoleDaoImpl
   @Override
   public List<Long> selectUserIdListByRoleId(Long roleId) {
     if (roleId == null) {
-      return List.of();
+      return java.util.Collections.emptyList();
     }
 
     return selectIdList(
@@ -54,7 +54,7 @@ public class UserRoleDaoImpl
   @Override
   public List<Long> selectRoleIdListByUserId(Long userId) {
     if (userId == null) {
-      return List.of();
+      return java.util.Collections.emptyList();
     }
 
     return selectIdList(
@@ -80,7 +80,7 @@ public class UserRoleDaoImpl
     CopyBeanUtil.copyList(
             userRoleList.stream()
                     .filter(Objects::nonNull)
-                    .toList(),
+                    .collect(java.util.stream.Collectors.toList()),
             UserRolePO.class
     )
             .forEach(userRoleMapper::insert);
@@ -151,7 +151,7 @@ public class UserRoleDaoImpl
           List<Long> roleIds) {
 
     if (isEmpty(roleIds)) {
-      return List.of();
+      return java.util.Collections.emptyList();
     }
 
     return userRoleMapper.selectList(
@@ -171,7 +171,7 @@ public class UserRoleDaoImpl
           List<Long> userIds) {
 
     if (isEmpty(userIds)) {
-      return List.of();
+      return java.util.Collections.emptyList();
     }
 
     return userRoleMapper.selectList(
@@ -199,7 +199,7 @@ public class UserRoleDaoImpl
             .stream()
             .map(DatabaseNumberUtils::toLong)
             .distinct()
-            .toList();
+            .collect(java.util.stream.Collectors.toList());
   }
 
   /**
