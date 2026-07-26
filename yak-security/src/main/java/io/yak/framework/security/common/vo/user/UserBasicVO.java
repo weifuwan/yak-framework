@@ -1,8 +1,17 @@
 package io.yak.framework.security.common.vo.user;
+/**
+ * 用户基础信息视图对象。
+ *
+ * @author weifuwan
+ */
 public class UserBasicVO {
+  /** 主键标识。 */
   private Long id;
+  /** 用户名。 */
   private String userName;
+  /** 用户真实姓名。 */
   private String realName;
+  /** 部门标识。 */
   private Long deptId;
 
   public Long getId() { return this.id; }

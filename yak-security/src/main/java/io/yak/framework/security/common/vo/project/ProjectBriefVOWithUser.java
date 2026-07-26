@@ -2,11 +2,21 @@ package io.yak.framework.security.common.vo.project;
 
 import io.yak.framework.security.common.vo.user.UserBasicVO;
 import java.util.List;
+/**
+ * 包含用户信息的项目简要视图对象。
+ *
+ * @author weifuwan
+ */
 public class ProjectBriefVOWithUser {
+  /** 主键标识。 */
   private Long id;
+  /** 项目编码。 */
   private String projectCode;
+  /** 项目名称。 */
   private String projectName;
+  /** 项目负责人列表。 */
   private List<UserBasicVO> ownerList;
+  /** 用户列表。 */
   private List<UserBasicVO> userList;
 
   public Long getId() { return this.id; }

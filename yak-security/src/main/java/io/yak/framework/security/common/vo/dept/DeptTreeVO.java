@@ -1,12 +1,23 @@
 package io.yak.framework.security.common.vo.dept;
 
 import java.util.List;
+/**
+ * 部门树节点视图对象。
+ *
+ * @author weifuwan
+ */
 public class DeptTreeVO {
+  /** 主键标识。 */
   private Long id;
+  /** 部门名称。 */
   private String deptName;
+  /** 描述信息。 */
   private String description;
+  /** 父节点标识。 */
   private Long parentId;
+  /** 是否为叶子节点。 */
   private Boolean leaf;
+  /** 子节点列表。 */
   private List<DeptTreeVO> childList;
 
   public DeptTreeVO() {}
@@ -134,12 +145,23 @@ public class DeptTreeVO {
         ", childList=" + this.getChildList() + ")";
   }
 
+  /**
+   * 部门树节点构建器。
+   *
+   * @author weifuwan
+   */
   public static class DeptTreeVOBuilder {
+    /** 主键标识。 */
     private Long id;
+    /** 部门名称。 */
     private String deptName;
+    /** 描述信息。 */
     private String description;
+    /** 父节点标识。 */
     private Long parentId;
+    /** 是否为叶子节点。 */
     private Boolean leaf;
+    /** 子节点列表。 */
     private List<DeptTreeVO> childList;
 
     DeptTreeVOBuilder() {}

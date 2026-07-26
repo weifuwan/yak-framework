@@ -1,7 +1,15 @@
 package io.yak.framework.security.common.vo.role;
+/**
+ * 分配信息视图对象。
+ *
+ * @author weifuwan
+ */
 public class AssignInfoVO {
+  /** 主键标识。 */
   private Long id;
+  /** 名称。 */
   private String name;
+  /** 是否已分配。 */
   private Boolean has;
 
   public Long getId() { return this.id; }
