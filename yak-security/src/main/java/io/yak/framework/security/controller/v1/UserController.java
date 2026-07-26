@@ -1,5 +1,8 @@
 package io.yak.framework.security.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.PagingData;
 import io.yak.framework.security.common.PagingResult;
 import io.yak.framework.security.common.Result;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author weifuwan
  */
+@Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "用户管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/user")
 public class UserController {
@@ -53,6 +57,7 @@ public class UserController {
    * @param value 校验值
    * @return 校验结果
    */
+  @Operation(summary = "校验用户字段是否可用")
   @GetMapping("/{type}/{value}/check")
   public Result<Void> check(
           @PathVariable Integer type,
@@ -69,6 +74,7 @@ public class UserController {
    * @param ids 用户 ID JSON 数组
    * @return 用户详情列表
    */
+  @Operation(summary = "根据用户 ID 集合批量查询用户详情")
   @GetMapping
   public Result<List<UserVO>> detailList(
           @RequestParam("ids") String ids) {
@@ -94,6 +100,7 @@ public class UserController {
    * @param userId 用户 ID
    * @return 用户详情
    */
+  @Operation(summary = "根据用户 ID 查询用户详情")
   @GetMapping("/{id}")
   public Result<UserVO> detail(
           @PathVariable("id") Long userId) {
@@ -113,6 +120,7 @@ public class UserController {
    * @param queryDTO 查询条件
    * @return 用户分页结果
    */
+  @Operation(summary = "分页查询用户")
   @PostMapping("/page")
   public PagingResult<UserVO> page(
           @RequestBody UserQueryDTO queryDTO) {
@@ -129,6 +137,7 @@ public class UserController {
    * @param deptId 部门 ID
    * @return 用户简要信息列表
    */
+  @Operation(summary = "根据部门 ID 查询用户")
   @GetMapping("/list/dept/{deptId}")
   public Result<List<UserBriefVO>> listByDeptId(
           @PathVariable Long deptId) {
@@ -144,6 +153,7 @@ public class UserController {
    * @param roleId 角色 ID
    * @return 用户简要信息列表
    */
+  @Operation(summary = "根据角色 ID 查询用户")
   @GetMapping("/list/role/{roleId}")
   public Result<List<UserBriefVO>> listByRoleId(
           @PathVariable Long roleId) {
@@ -159,6 +169,7 @@ public class UserController {
    * @param userId 用户 ID
    * @return 角色分配信息列表
    */
+  @Operation(summary = "查询用户的角色分配信息")
   @GetMapping("/assign/list/{userId}")
   public Result<List<AssignInfoVO>> assignList(
           @PathVariable Long userId) {
@@ -178,6 +189,7 @@ public class UserController {
    * @param keyword 查询关键字
    * @return 用户简要信息列表
    */
+  @Operation(summary = "根据用户名或真实姓名模糊查询用户")
   @GetMapping("/list/{keyword}")
   public Result<List<UserBriefVO>> listByName(
           @PathVariable String keyword) {
@@ -196,6 +208,7 @@ public class UserController {
    * @param userDTO 用户信息
    * @return 新增结果
    */
+  @Operation(summary = "新增用户")
   @PutMapping("/add")
   public Result<Void> add(
           HttpServletRequest request,
@@ -213,6 +226,7 @@ public class UserController {
    * @param userDTO 用户信息
    * @return 编辑结果
    */
+  @Operation(summary = "编辑用户")
   @PostMapping("/edit")
   public Result<Void> edit(
           HttpServletRequest request,
@@ -229,6 +243,7 @@ public class UserController {
    * @param userId 用户 ID
    * @return 删除结果
    */
+  @Operation(summary = "根据用户 ID 删除用户")
   @DeleteMapping("/{id}")
   public Result<Void> delete(
           @PathVariable("id") Long userId) {

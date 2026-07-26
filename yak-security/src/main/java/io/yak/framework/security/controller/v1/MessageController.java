@@ -1,5 +1,8 @@
 package io.yak.framework.security.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.Result;
 import io.yak.framework.security.common.vo.message.MessageVO;
 import io.yak.framework.security.exception.YakSecurityException;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author weifuwan
  */
+@Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "消息管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/message")
 public class MessageController {
@@ -47,6 +51,7 @@ public class MessageController {
    * @param request HTTP 请求
    * @return 消息列表
    */
+  @Operation(summary = "查询当前用户消息")
   @GetMapping({"/list", "/list/{readTag}"})
   public Result<List<MessageVO>> list(
           @PathVariable(required = false)
@@ -73,6 +78,7 @@ public class MessageController {
    * @param messageIdList 消息 ID 列表
    * @return 操作结果
    */
+  @Operation(summary = "批量切换消息已读状态")
   @PutMapping("/switch")
   public Result<Void> switchStatus(
           @RequestBody List<Long> messageIdList) {

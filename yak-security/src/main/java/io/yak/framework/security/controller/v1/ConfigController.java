@@ -1,5 +1,8 @@
 package io.yak.framework.security.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.PagingData;
 import io.yak.framework.security.common.PagingResult;
 import io.yak.framework.security.common.Result;
@@ -18,6 +21,7 @@ import java.util.List;
  *
  * @author weifuwan
  */
+@Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "配置管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/config")
 public class ConfigController {
@@ -39,6 +43,7 @@ public class ConfigController {
      * @param condition 查询条件
      * @return 配置列表
      */
+    @Operation(summary = "根据条件查询配置列表")
     @PostMapping("/list")
     public Result<List<ConfigVO>> list(
             @RequestBody ConfigDTO condition) {
@@ -53,6 +58,7 @@ public class ConfigController {
      * @param queryDTO 分页查询条件
      * @return 配置分页结果
      */
+    @Operation(summary = "分页查询配置")
     @PostMapping("/page")
     public PagingResult<ConfigVO> page(
             @RequestBody ConfigQueryDTO queryDTO) {
@@ -68,6 +74,7 @@ public class ConfigController {
      *
      * @return 配置分组列表
      */
+    @Operation(summary = "查询全部配置分组")
     @GetMapping("/group/list")
     public Result<List<String>> groups() {
         return Result.buildSucc(
@@ -80,6 +87,7 @@ public class ConfigController {
      * @param configId 配置 ID
      * @return 配置详情
      */
+    @Operation(summary = "根据配置 ID 查询配置详情")
     @GetMapping("/get")
     public Result<ConfigVO> get(
             @RequestParam("configId") Long configId) {
@@ -95,6 +103,7 @@ public class ConfigController {
      * @param configDTO 配置信息
      * @return 状态切换结果
      */
+    @Operation(summary = "切换配置状态")
     @PostMapping("/switch")
     public Result<Void> switchConfig(
             HttpServletRequest request,
@@ -113,6 +122,7 @@ public class ConfigController {
      * @param configId 配置 ID
      * @return 删除结果
      */
+    @Operation(summary = "删除配置")
     @DeleteMapping("/del")
     public Result<Void> delete(
             HttpServletRequest request,
@@ -132,6 +142,7 @@ public class ConfigController {
      * @param configDTO 配置信息
      * @return 新增结果及配置 ID
      */
+    @Operation(summary = "新增配置")
     @PutMapping("/add")
     public Result<Long> add(
             HttpServletRequest request,
@@ -149,6 +160,7 @@ public class ConfigController {
      * @param configDTO 配置信息
      * @return 编辑结果
      */
+    @Operation(summary = "编辑配置")
     @PostMapping("/edit")
     public Result<Void> edit(
             HttpServletRequest request,

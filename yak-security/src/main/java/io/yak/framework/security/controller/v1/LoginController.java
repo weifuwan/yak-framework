@@ -1,5 +1,8 @@
 package io.yak.framework.security.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.Result;
 import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author weifuwan
  */
+@Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "账户认证接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/account")
 public class LoginController {
@@ -44,6 +48,7 @@ public class LoginController {
    * @param loginDTO 登录信息
    * @return 当前登录用户
    */
+  @Operation(summary = "用户登录")
   @PostMapping("/login")
   @PublicEndpoint
   public Result<UserBriefVO> login(
@@ -71,6 +76,7 @@ public class LoginController {
    * @param response HTTP 响应
    * @return 退出结果
    */
+  @Operation(summary = "用户退出登录")
   @PostMapping("/logout")
   public Result<Boolean> logout(
           HttpServletRequest request,

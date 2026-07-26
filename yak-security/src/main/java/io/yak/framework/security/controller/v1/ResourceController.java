@@ -1,5 +1,8 @@
 package io.yak.framework.security.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.PagingData;
 import io.yak.framework.security.common.PagingResult;
 import io.yak.framework.security.common.Result;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author weifuwan
  */
+@Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "资源权限管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/resource")
 public class ResourceController {
@@ -62,6 +66,7 @@ public class ResourceController {
    *
    * @return 资源类型列表
    */
+  @Operation(summary = "查询全部资源类型")
   @GetMapping("/type/list")
   public Result<List<ResourceTypeVO>> typeList() {
     return Result.buildSucc(
@@ -74,6 +79,7 @@ public class ResourceController {
    * @param typeNameList 资源类型名称列表
    * @return 导入结果
    */
+  @Operation(summary = "导入资源类型")
   @PostMapping("/type/import")
   public Result<Void> typeImport(
           @RequestBody List<String> typeNameList) {
@@ -89,6 +95,7 @@ public class ResourceController {
    *
    * @return 是否开启查看权限控制
    */
+  @Operation(summary = "查询资源查看权限控制状态")
   @GetMapping("/vpc/status")
   public Result<Boolean> vpcStatus() {
     return Result.buildSucc(
@@ -101,6 +108,7 @@ public class ResourceController {
    *
    * @return 切换结果
    */
+  @Operation(summary = "切换资源查看权限控制状态")
   @PutMapping("/vpc/switch")
   public Result<Void> vpcSwitch() {
     userResourceService
@@ -115,6 +123,7 @@ public class ResourceController {
    * @param queryDTO 查询条件
    * @return 资源权限数据列表
    */
+  @Operation(summary = "查询按用户管理的资源权限数据")
   @PostMapping("/mbu/list")
   public Result<List<MByUDataVO>> mbuList(
           @RequestBody MByUDataQueryDTO queryDTO) {
@@ -135,6 +144,7 @@ public class ResourceController {
    * @param queryDTO 查询条件
    * @return 用户权限数据列表
    */
+  @Operation(summary = "查询按资源管理的用户权限数据")
   @PostMapping("/mbr/list")
   public Result<List<MByRDataVO>> mbrList(
           @RequestBody MByRDataQueryDTO queryDTO) {
@@ -155,6 +165,7 @@ public class ResourceController {
    * @param queryDTO 查询条件
    * @return 权限分页结果
    */
+  @Operation(summary = "分页查询按资源管理的权限信息")
   @PostMapping("/mbr/page")
   public PagingResult<MByRVO> mbrPage(
           @RequestBody MByRQueryDTO queryDTO) {
@@ -177,6 +188,7 @@ public class ResourceController {
    * @param queryDTO 查询条件
    * @return 权限分页结果
    */
+  @Operation(summary = "分页查询按用户管理的权限信息")
   @PostMapping("/mbu/page")
   public PagingResult<MByUVO> mbuPage(
           @RequestBody MByUQueryDTO queryDTO) {
@@ -195,6 +207,7 @@ public class ResourceController {
    * @param assignDTO 分配参数
    * @return 分配结果
    */
+  @Operation(summary = "为多个用户分配资源权限")
   @PostMapping("/permission/mbr/assign")
   public Result<Void> mbrAssign(
           @RequestBody AssignToManyUserDTO assignDTO) {
@@ -216,6 +229,7 @@ public class ResourceController {
    * @param assignDTO 分配参数
    * @return 分配结果
    */
+  @Operation(summary = "为单个用户分配资源权限")
   @PostMapping("/permission/mbu/assign")
   public Result<Void> mbuAssign(
           @RequestBody AssignToOneUserDTO assignDTO) {
@@ -237,6 +251,7 @@ public class ResourceController {
    * @param assignDTO 批量分配参数
    * @return 分配结果
    */
+  @Operation(summary = "批量分配资源权限")
   @PostMapping("/permission/assign/batch")
   public Result<Void> batchAssign(
           @RequestBody BatchAssignDTO assignDTO) {
@@ -258,6 +273,7 @@ public class ResourceController {
    * @param queryDTO 查询条件
    * @return 权限控制级别
    */
+  @Operation(summary = "查询资源权限控制级别")
   @PostMapping("/control/level")
   public Result<Integer> getControlLevel(
           @RequestBody ControlLevelQueryDTO queryDTO) {
