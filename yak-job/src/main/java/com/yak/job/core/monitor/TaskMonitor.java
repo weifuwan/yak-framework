@@ -3,6 +3,9 @@
  */
 package com.yak.job.core.monitor;
 
+/**
+ * 任务状态监控接口。
+ */
 public interface TaskMonitor
         extends Monitor {
 }

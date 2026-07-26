@@ -6,25 +6,28 @@ import io.yak.framework.security.common.entity.role.Role;
 import io.yak.framework.security.common.entity.role.RoleBrief;
 import java.util.List;
 
+/**
+ * 角色数据访问接口。
+ */
 public interface RoleDao {
-  public Role selectByRoleName(String var1);
+  Role selectByRoleName(String var1);
 
-  public Role selectByRoleId(Long roleId);
+  Role selectByRoleId(Long roleId);
 
-  public IPage<Role> selectPage(RoleQueryDTO var1);
+  IPage<Role> selectPage(RoleQueryDTO var1);
 
-  public void insert(Role var1);
+  void insert(Role var1);
 
-  public void deleteByRoleId(Long roleId);
+  void deleteByRoleId(Long roleId);
 
-  public void update(Role var1);
+  void update(Role var1);
 
-  public List<RoleBrief>
+  List<RoleBrief>
   selectBriefListByRoleNameAndDescOrderByCreateTime(String var1);
 
-  public List<RoleBrief> selectAllBrief();
+  List<RoleBrief> selectAllBrief();
 
-  public List<RoleBrief> selectBriefListByRoleIdList(List<Long> var1);
+  List<RoleBrief> selectBriefListByRoleIdList(List<Long> var1);
 
-  public int selectCountByRoleNameAndNotRoleId(String roleName, Long roleId);
+  int selectCountByRoleNameAndNotRoleId(String roleName, Long roleId);
 }

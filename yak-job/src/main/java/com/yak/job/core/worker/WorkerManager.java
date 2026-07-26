@@ -9,9 +9,12 @@ import com.yak.job.common.po.YakWorkerPO;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 工作节点管理接口。
+ */
 public interface WorkerManager {
-    public Result<List<String>> listAllWorkerIps();
+    Result<List<String>> listAllWorkerIps();
 
-    public Map<String, YakWorkerPO> mapAllWorkers();
+    Map<String, YakWorkerPO> mapAllWorkers();
 }
 

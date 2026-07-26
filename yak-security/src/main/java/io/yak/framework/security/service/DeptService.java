@@ -8,22 +8,25 @@ import io.yak.framework.security.common.vo.dept.DeptTreeVO;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 部门服务接口。
+ */
 public interface DeptService {
-  public DeptTreeVO buildDeptTree();
+  DeptTreeVO buildDeptTree();
 
-  public List<DeptBriefVO> getDeptBriefListByChildId(Long var1);
+  List<DeptBriefVO> getDeptBriefListByChildId(Long var1);
 
-  public List<Long> getDeptIdListByParentId(Long var1);
+  List<Long> getDeptIdListByParentId(Long var1);
 
-  public List<Long> getDeptIdListByParentIdAndDeptName(Long var1,
+  List<Long> getDeptIdListByParentIdAndDeptName(Long var1,
                                                           String var2);
 
-  public Map<Long, Dept> getAllDeptMap();
+  Map<Long, Dept> getAllDeptMap();
 
-  public List<DeptBriefVO>
+  List<DeptBriefVO>
   getDeptBriefListFromDeptMapByChildId(Map<Long, Dept> var1, Long var2);
 
-  public void saveDept(List<DeptDTO> var1);
+  void saveDept(List<DeptDTO> var1);
 
-  public List<DeptBrief> listAllDeptBrief();
+  List<DeptBrief> listAllDeptBrief();
 }

@@ -8,10 +8,10 @@ import java.util.List;
  * 业务资源扩展点。安全模块通过该接口读取外部资源，供权限计算和数据隔离使用。
  */
 public interface ResourceExtend {
-  public PagingData<ResourceDTO>
+  PagingData<ResourceDTO>
   getResourcePage(Long var1, Long var2, String var3, int var4, int var5);
 
-  public List<ResourceDTO> getResourceList(Long var1, Long var2);
+  List<ResourceDTO> getResourceList(Long var1, Long var2);
 
-  public int getResourceCnt(Long var1, Long var2);
+  int getResourceCnt(Long var1, Long var2);
 }

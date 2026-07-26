@@ -9,17 +9,20 @@ import com.yak.job.common.domain.LogITask;
 import java.util.List;
 import java.util.concurrent.Future;
 
+/**
+ * 作业管理接口。
+ */
 public interface JobManager {
-    public Future<Object> start(LogITask var1);
+    Future<Object> start(LogITask var1);
 
-    public Integer runningJobSize();
+    Integer runningJobSize();
 
-    public boolean stopByJobCode(String var1);
+    boolean stopByJobCode(String var1);
 
-    public boolean stopByTaskCode(String var1);
+    boolean stopByTaskCode(String var1);
 
-    public int stopAll();
+    int stopAll();
 
-    public List<LogIJob> getJobs();
+    List<LogIJob> getJobs();
 }
 

@@ -13,49 +13,52 @@ import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.exception.YakSecurityException;
 import java.util.List;
 
+/**
+ * 项目服务接口。
+ */
 public interface ProjectService {
-  public ProjectVO createProject(ProjectSaveDTO var1, String var2)
+  ProjectVO createProject(ProjectSaveDTO var1, String var2)
       throws YakSecurityException;
 
-  public ProjectVO getProjectDetailByProjectId(Long var1)
+  ProjectVO getProjectDetailByProjectId(Long var1)
       throws YakSecurityException;
 
-  public ProjectBriefVO getProjectBriefByProjectId(Long var1);
+  ProjectBriefVO getProjectBriefByProjectId(Long var1);
 
-  public PagingData<ProjectVO> getProjectPage(ProjectQueryDTO var1);
+  PagingData<ProjectVO> getProjectPage(ProjectQueryDTO var1);
 
-  public PagingData<ProjectVO> getProjectPage(ProjectQueryDTO var1,
+  PagingData<ProjectVO> getProjectPage(ProjectQueryDTO var1,
                                               List<Long> var2);
 
-  public void deleteProjectByProjectId(Long var1, String var2);
+  void deleteProjectByProjectId(Long var1, String var2);
 
-  public void updateProject(ProjectSaveDTO var1, String var2)
+  void updateProject(ProjectSaveDTO var1, String var2)
       throws YakSecurityException;
 
-  public void changeProjectStatus(Long var1, String var2);
+  void changeProjectStatus(Long var1, String var2);
 
-  public void addProjectUser(Long var1, Long var2, String var3);
+  void addProjectUser(Long var1, Long var2, String var3);
 
-  public void delProjectUser(Long var1, Long var2, String var3);
+  void delProjectUser(Long var1, Long var2, String var3);
 
-  public void addProjectOwner(Long var1, Long var2, String var3);
+  void addProjectOwner(Long var1, Long var2, String var3);
 
-  public void delProjectOwner(Long var1, Long var2, String var3);
+  void delProjectOwner(Long var1, Long var2, String var3);
 
-  public List<ProjectBriefVO> getProjectBriefList();
+  List<ProjectBriefVO> getProjectBriefList();
 
-  public ProjectDeleteCheckVO checkBeforeDelete(Long var1);
+  ProjectDeleteCheckVO checkBeforeDelete(Long var1);
 
-  public PagingData<ProjectBriefVO>
+  PagingData<ProjectBriefVO>
   getProjectBriefPage(ProjectBriefQueryDTO var1);
 
-  public boolean checkProjectExist(Long var1);
+  boolean checkProjectExist(Long var1);
 
-  public Result<List<UserBriefVO>> unassignedByProjectId(Long var1)
+  Result<List<UserBriefVO>> unassignedByProjectId(Long var1)
       throws YakSecurityException;
 
-  public Result<List<ProjectBriefVO>> getProjectBriefByUserId(Long var1);
+  Result<List<ProjectBriefVO>> getProjectBriefByUserId(Long var1);
 
-  public List<ProjectBriefVOWithUser>
+  List<ProjectBriefVOWithUser>
   listProjectBriefVOWithUserByProjectIds(List<Long> var1);
 }

@@ -5,22 +5,25 @@ import io.yak.framework.security.common.entity.UserProject;
 import io.yak.framework.security.common.po.UserProjectPO;
 import java.util.List;
 
+/**
+ * 用户项目关系数据访问接口。
+ */
 public interface UserProjectDao {
-  public List<Long> selectUserIdListByProjectId(Long projectId, int userType);
+  List<Long> selectUserIdListByProjectId(Long projectId, int userType);
 
-  public List<Long> selectProjectIdListByUserIdList(List<Long> var1);
+  List<Long> selectProjectIdListByUserIdList(List<Long> var1);
 
-  public List<UserProjectPO> selectProjectListByUserIdList(List<Long> var1);
+  List<UserProjectPO> selectProjectListByUserIdList(List<Long> var1);
 
-  public void insertBatch(List<UserProject> var1);
+  void insertBatch(List<UserProject> var1);
 
-  public int deleteUserProject(List<UserProject> var1);
+  int deleteUserProject(List<UserProject> var1);
 
-  public void deleteByProjectId(Long projectId);
+  void deleteByProjectId(Long projectId);
 
-  public void deleteByProjectIdAndUserType(Long projectId, int userType);
+  void deleteByProjectIdAndUserType(Long projectId, int userType);
 
-  public List<UserProject> selectByProjectIds(List<Long> var1);
+  List<UserProject> selectByProjectIds(List<Long> var1);
 
-  public List<UserProject> select(UserProjectDTO var1);
+  List<UserProject> select(UserProjectDTO var1);
 }

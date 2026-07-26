@@ -6,9 +6,12 @@ package com.yak.job.core.job;
 import com.yak.job.common.domain.YakJob;
 import com.yak.job.common.domain.YakTask;
 
+/**
+ * 作业实例工厂接口。
+ */
 public interface JobFactory {
-    public void addJob(String var1, Job var2);
+    void addJob(String var1, Job var2);
 
-    public YakJob newJob(YakTask var1);
+    YakJob newJob(YakTask var1);
 }
 

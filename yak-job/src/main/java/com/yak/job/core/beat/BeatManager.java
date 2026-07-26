@@ -3,9 +3,12 @@
  */
 package com.yak.job.core.beat;
 
+/**
+ * 工作节点心跳管理接口。
+ */
 public interface BeatManager {
-    public boolean beat();
+    boolean beat();
 
-    public boolean stop();
+    boolean stop();
 }
 

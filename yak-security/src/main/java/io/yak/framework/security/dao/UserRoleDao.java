@@ -4,18 +4,21 @@ import io.yak.framework.security.common.entity.UserRole;
 import io.yak.framework.security.common.po.UserRolePO;
 import java.util.List;
 
+/**
+ * 用户角色关系数据访问接口。
+ */
 public interface UserRoleDao {
-  public List<Long> selectUserIdListByRoleId(Long roleId);
+  List<Long> selectUserIdListByRoleId(Long roleId);
 
-  public List<Long> selectRoleIdListByUserId(Long userId);
+  List<Long> selectRoleIdListByUserId(Long userId);
 
-  public void insertBatch(List<UserRole> var1);
+  void insertBatch(List<UserRole> var1);
 
-  public int deleteByUserIdOrRoleId(Long userId, Long roleId);
+  int deleteByUserIdOrRoleId(Long userId, Long roleId);
 
-  public int selectCountByRoleId(Long roleId);
+  int selectCountByRoleId(Long roleId);
 
-  public List<UserRolePO> selectByRoleIds(List<Long> var1);
+  List<UserRolePO> selectByRoleIds(List<Long> var1);
 
-  public List<UserRolePO> getRoleIdListByUserIds(List<Long> var1);
+  List<UserRolePO> getRoleIdListByUserIds(List<Long> var1);
 }

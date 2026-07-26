@@ -7,17 +7,20 @@ import com.yak.job.common.vo.YakTaskLockVO;
 
 import java.util.List;
 
+/**
+ * 任务锁服务接口。
+ */
 public interface TaskLockService {
-    public Boolean tryAcquire(String var1);
+    Boolean tryAcquire(String var1);
 
-    public Boolean tryAcquire(String var1, String var2, Long var3);
+    Boolean tryAcquire(String var1, String var2, Long var3);
 
-    public Boolean tryRelease(String var1);
+    Boolean tryRelease(String var1);
 
-    public Boolean tryRelease(String var1, String var2);
+    Boolean tryRelease(String var1, String var2);
 
-    public List<YakTaskLockVO> getAll();
+    List<YakTaskLockVO> getAll();
 
-    public void renewAll();
+    void renewAll();
 }
 

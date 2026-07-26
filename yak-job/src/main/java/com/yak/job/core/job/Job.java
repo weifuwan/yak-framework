@@ -5,7 +5,10 @@ package com.yak.job.core.job;
 
 import com.yak.job.common.TaskResult;
 
+/**
+ * 可执行作业接口。
+ */
 public interface Job {
-    public TaskResult execute(JobContext var1) throws Exception;
+    TaskResult execute(JobContext var1) throws Exception;
 }
 

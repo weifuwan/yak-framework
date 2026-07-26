@@ -1,7 +1,10 @@
 package io.yak.framework.security.exception;
 
+/**
+ * 错误码与错误消息定义接口。
+ */
 public interface CodeMsg {
-  public Integer getCode();
+  Integer getCode();
 
-  public String getMessage();
+  String getMessage();
 }

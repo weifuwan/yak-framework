@@ -3,11 +3,14 @@
  */
 package com.yak.job.core;
 
+/**
+ * 任务调度接口。
+ */
 public interface Scheduler {
-    public void initialize();
+    void initialize();
 
-    public void startup();
+    void startup();
 
-    public void shutdown();
+    void shutdown();
 }
 

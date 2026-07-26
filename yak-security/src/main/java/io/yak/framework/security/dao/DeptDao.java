@@ -4,18 +4,21 @@ import io.yak.framework.security.common.entity.dept.Dept;
 import io.yak.framework.security.common.entity.dept.DeptBrief;
 import java.util.List;
 
+/**
+ * 部门数据访问接口。
+ */
 public interface DeptDao {
-  public List<Dept> selectAllAndAscOrderByLevel();
+  List<Dept> selectAllAndAscOrderByLevel();
 
-  public List<Long> selectIdListByLikeDeptName(String var1);
+  List<Long> selectIdListByLikeDeptName(String var1);
 
-  public DeptBrief selectBriefByDeptId(Long deptId);
+  DeptBrief selectBriefByDeptId(Long deptId);
 
-  public List<Long> selectAllDeptIdList();
+  List<Long> selectAllDeptIdList();
 
-  public List<Long> selectIdListByParentId(Long parentId);
+  List<Long> selectIdListByParentId(Long parentId);
 
-  public void insertBatch(List<Dept> var1);
+  void insertBatch(List<Dept> var1);
 
-  public List<DeptBrief> selectAllDeptBriefList();
+  List<DeptBrief> selectAllDeptBriefList();
 }
