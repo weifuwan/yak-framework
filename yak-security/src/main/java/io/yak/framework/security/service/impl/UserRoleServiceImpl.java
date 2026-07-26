@@ -3,6 +3,7 @@ package io.yak.framework.security.service.impl;
 import io.yak.framework.security.common.entity.UserRole;
 import io.yak.framework.security.dao.UserRoleDao;
 import io.yak.framework.security.service.UserRoleService;
+import io.yak.framework.security.service.PermissionCache;
 import io.yak.framework.security.util.CopyBeanUtil;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 public class UserRoleServiceImpl implements UserRoleService {
 
   private final UserRoleDao userRoleDao;
+  private final PermissionCache permissionCache;
 
   /**
    * 创建用户角色关系服务。
@@ -30,9 +32,11 @@ public class UserRoleServiceImpl implements UserRoleService {
    * @param userRoleDao 用户角色关系数据访问对象
    */
   public UserRoleServiceImpl(
-          UserRoleDao userRoleDao) {
+          UserRoleDao userRoleDao,
+          PermissionCache permissionCache) {
 
     this.userRoleDao = userRoleDao;
+    this.permissionCache = permissionCache;
   }
 
   /**
@@ -108,6 +112,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     userRoleDao.deleteByUserIdOrRoleId(
             userId,
             null);
+    permissionCache.invalidateUser(userId);
 
     List<Long> validRoleIds =
             normalizeIds(roleIdList);
@@ -140,6 +145,8 @@ public class UserRoleServiceImpl implements UserRoleService {
     if (roleId == null) {
       return;
     }
+
+    permissionCache.invalidateRole(roleId);
 
     /*
      * 用户列表为空时，表示清空该角色关联的全部用户。
@@ -208,6 +215,11 @@ public class UserRoleServiceImpl implements UserRoleService {
       return 0;
     }
 
+    if (userId != null) {
+      permissionCache.invalidateUser(userId);
+    } else {
+      permissionCache.invalidateRole(roleId);
+    }
     return userRoleDao.deleteByUserIdOrRoleId(
             userId,
             roleId);

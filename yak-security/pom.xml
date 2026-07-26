@@ -38,6 +38,12 @@
 
     <dependencies>
 
+        <!-- 单体部署的用户权限本地缓存 -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
         <!-- Spring 基础能力 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

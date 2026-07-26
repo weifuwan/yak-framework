@@ -7,6 +7,7 @@ import io.yak.framework.security.common.vo.permission.PermissionTreeVO;
 import io.yak.framework.security.dao.PermissionDao;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.PermissionService;
+import io.yak.framework.security.service.PermissionCache;
 import io.yak.framework.security.service.RolePermissionService;
 import io.yak.framework.security.util.CopyBeanUtil;
 import io.yak.framework.security.util.MathUtil;
@@ -66,6 +67,7 @@ public class PermissionServiceImpl
   private final PermissionDao permissionDao;
 
   private final RolePermissionService rolePermissionService;
+  private final PermissionCache permissionCache;
 
   /**
    * 创建权限服务。
@@ -75,10 +77,12 @@ public class PermissionServiceImpl
    */
   public PermissionServiceImpl(
           PermissionDao permissionDao,
-          RolePermissionService rolePermissionService) {
+          RolePermissionService rolePermissionService,
+          PermissionCache permissionCache) {
 
     this.permissionDao = permissionDao;
     this.rolePermissionService = rolePermissionService;
+    this.permissionCache = permissionCache;
   }
 
   /**
@@ -163,6 +167,7 @@ public class PermissionServiceImpl
 
     permissionDao.insertBatch(
             permissionList);
+    permissionCache.invalidateAll();
 
     LOGGER.info(
             "批量导入权限成功，权限数量={}",
@@ -185,6 +190,7 @@ public class PermissionServiceImpl
             .deleteRolePermissionByPermissionId(
                     permissionId);
     permissionDao.deleteById(permissionId);
+    permissionCache.invalidateAll();
   }
 
   /**
