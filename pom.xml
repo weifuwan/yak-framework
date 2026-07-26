@@ -17,9 +17,10 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.0.0</revision>
+        <revision>0.1.0-SNAPSHOT</revision>
         <java.version>21</java.version>
         <mybatis-plus.version>3.5.15</mybatis-plus.version>
+        <druid.version>1.2.27</druid.version>
     </properties>
 
     <modules>
@@ -32,6 +33,11 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-4-starter</artifactId>
+                <version>${druid.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
