@@ -131,6 +131,21 @@ public class RolePermissionServiceImpl
             roleId);
   }
 
+  /** 根据权限 ID 删除角色权限关系。 */
+  @Override
+  @Transactional(
+          transactionManager =
+                  "yakSecurityTransactionManager",
+          rollbackFor = Exception.class)
+  public void deleteRolePermissionByPermissionId(
+          Long permissionId) {
+
+    if (permissionId == null) {
+      return;
+    }
+    rolePermissionDao.deleteByPermissionId(permissionId);
+  }
+
   /**
    * 根据角色 ID 查询权限 ID。
    *

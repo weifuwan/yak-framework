@@ -21,6 +21,8 @@ public interface UserProjectDao {
 
   void deleteByProjectId(Long projectId);
 
+  void deleteByUserId(Long userId);
+
   void deleteByProjectIdAndUserType(Long projectId, int userType);
 
   List<UserProject> selectByProjectIds(List<Long> var1);

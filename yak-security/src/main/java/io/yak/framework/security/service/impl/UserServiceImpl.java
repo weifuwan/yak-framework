@@ -23,6 +23,7 @@ import io.yak.framework.security.common.vo.user.UserVO;
 import io.yak.framework.security.dao.ProjectDao;
 import io.yak.framework.security.dao.UserDao;
 import io.yak.framework.security.dao.UserProjectDao;
+import io.yak.framework.security.dao.UserResourceDao;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.extend.PasswordEncoder;
 import io.yak.framework.security.service.DeptService;
@@ -92,6 +93,8 @@ public class UserServiceImpl implements UserService {
 
   private final UserProjectDao userProjectDao;
 
+  private final UserResourceDao userResourceDao;
+
   private final ProjectDao projectDao;
 
   private final PasswordEncoder passwordEncoder;
@@ -106,6 +109,7 @@ public class UserServiceImpl implements UserService {
    * @param roleService 角色服务
    * @param userRoleService 用户角色服务
    * @param userProjectDao 用户项目数据访问对象
+   * @param userResourceDao 用户资源数据访问对象
    * @param projectDao 项目数据访问对象
    * @param passwordEncoder 密码编码器
    */
@@ -117,6 +121,7 @@ public class UserServiceImpl implements UserService {
           RoleService roleService,
           UserRoleService userRoleService,
           UserProjectDao userProjectDao,
+          UserResourceDao userResourceDao,
           ProjectDao projectDao,
           PasswordEncoder passwordEncoder) {
 
@@ -127,6 +132,7 @@ public class UserServiceImpl implements UserService {
     this.roleService = roleService;
     this.userRoleService = userRoleService;
     this.userProjectDao = userProjectDao;
+    this.userResourceDao = userResourceDao;
     this.projectDao = projectDao;
     this.passwordEncoder = passwordEncoder;
   }
@@ -481,16 +487,18 @@ public class UserServiceImpl implements UserService {
               "用户 ID 不能为空");
     }
 
+    userRoleService.deleteByUserIdOrRoleId(
+            userId,
+            null);
+    userProjectDao.deleteByUserId(userId);
+    userResourceDao.deleteByUserId(userId, null);
+
     boolean success =
             userDao.deleteByUserId(userId);
 
     if (!success) {
       return Result.fail();
     }
-
-    userRoleService.deleteByUserIdOrRoleId(
-            userId,
-            null);
 
     return Result.success();
   }

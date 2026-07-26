@@ -10,4 +10,6 @@ public interface PermissionDao {
   List<Permission> selectAllAndAscOrderByLevel();
 
   void insertBatch(List<Permission> var1);
+
+  int deleteById(Long permissionId);
 }

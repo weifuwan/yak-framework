@@ -421,16 +421,9 @@ public class RoleServiceImpl implements RoleService {
               ResultCode.ROLE_NOT_EXISTS);
     }
 
-    List<Long> userIdList =
-            userRoleService
-                    .getUserIdListByRoleId(
-                            roleId);
-
-    if (!CollectionUtils.isEmpty(userIdList)) {
-      throw new YakSecurityException(
-              ResultCode.ROLE_USER_AUTHED);
-    }
-
+    userRoleService.deleteByUserIdOrRoleId(
+            null,
+            roleId);
     rolePermissionService
             .deleteRolePermissionByRoleId(
                     roleId);

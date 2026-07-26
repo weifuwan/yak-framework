@@ -238,6 +238,18 @@ public class UserProjectDaoImpl
         );
     }
 
+    /** 删除指定用户的全部项目关联。 */
+    @Override
+    public void deleteByUserId(Long userId) {
+        if (userId == null) {
+            return;
+        }
+        userProjectMapper.delete(
+                Wrappers.<UserProjectPO>lambdaQuery()
+                        .eq(UserProjectPO::getUserId, userId)
+        );
+    }
+
     /**
      * 删除指定项目和用户类型的关联。
      *

@@ -169,6 +169,24 @@ public class PermissionServiceImpl
             permissionList.size());
   }
 
+  /** 根据权限 ID 删除权限及其角色关联。 */
+  @Override
+  @Transactional(
+          transactionManager =
+                  "yakSecurityTransactionManager",
+          rollbackFor = Exception.class)
+  public void deletePermissionById(Long permissionId) {
+    if (permissionId == null) {
+      throw new IllegalArgumentException(
+              "权限 ID 不能为空");
+    }
+
+    rolePermissionService
+            .deleteRolePermissionByPermissionId(
+                    permissionId);
+    permissionDao.deleteById(permissionId);
+  }
+
   /**
    * 构建权限树。
    *
