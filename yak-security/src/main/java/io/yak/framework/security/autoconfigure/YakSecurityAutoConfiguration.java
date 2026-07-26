@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnProperty(prefix = "yak.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import({YakSecurityAutoConfiguration.ExtensionConfiguration.class,
     YakSecurityDatabaseConfiguration.class, YakSecurityWebConfiguration.class,
-    YakSecurityAuditConfiguration.class})
+    YakSecurityAuditConfiguration.class, YakSecurityOpenApiConfiguration.class})
 public class YakSecurityAutoConfiguration {
   static class ExtensionConfiguration {
     @Bean @ConditionalOnMissingBean(PasswordEncoder.class)

@@ -28,6 +28,13 @@ yak:
 HTTP 接口统一位于 `/yak-security/api/v1`，项目隔离标识通过
 `X-YAK-SECURITY-PROJECT-ID` 请求头传递。
 
+## OpenAPI 3 / Swagger UI
+
+Starter 默认生成 OpenAPI 3 接口文档。应用启动后可访问 `/swagger-ui.html` 查看 Swagger UI，
+或通过 `/v3/api-docs` 获取 OpenAPI JSON。文档端点默认不要求登录；如果宿主应用声明自己的
+`OpenAPI` Bean，Starter 会保留宿主应用提供的标题、版本、服务器等自定义信息。将
+`yak.security.web-enabled` 设置为 `false` 时，安全模块的接口和 OpenAPI 配置会一并关闭。
+
 ## 统一登录认证
 
 Starter 会自动注册 Spring MVC `HandlerInterceptor`。除登录接口
