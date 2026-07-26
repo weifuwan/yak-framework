@@ -23,7 +23,6 @@ import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.dao.ProjectDao;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.extend.ResourceExtend;
-import io.yak.framework.security.extend.ResourceExtendBeanTool;
 import io.yak.framework.security.service.DeptService;
 import io.yak.framework.security.service.OplogService;
 import io.yak.framework.security.service.ProjectService;
@@ -85,7 +84,7 @@ public class ProjectServiceImpl
 
   private final UserProjectService userProjectService;
 
-  private final ResourceExtendBeanTool resourceExtendBeanTool;
+  private final ResourceExtend resourceExtend;
 
   /**
    * 创建项目服务。
@@ -95,7 +94,7 @@ public class ProjectServiceImpl
    * @param oplogService 操作日志服务
    * @param userService 用户服务
    * @param userProjectService 用户项目关系服务
-   * @param resourceExtendBeanTool 资源扩展工具
+   * @param resourceExtend 资源扩展
    */
   public ProjectServiceImpl(
           ProjectDao projectDao,
@@ -103,14 +102,14 @@ public class ProjectServiceImpl
           OplogService oplogService,
           UserService userService,
           UserProjectService userProjectService,
-          ResourceExtendBeanTool resourceExtendBeanTool) {
+          ResourceExtend resourceExtend) {
 
     this.projectDao = projectDao;
     this.deptService = deptService;
     this.oplogService = oplogService;
     this.userService = userService;
     this.userProjectService = userProjectService;
-    this.resourceExtendBeanTool = resourceExtendBeanTool;
+    this.resourceExtend = resourceExtend;
   }
 
   /**
@@ -1280,14 +1279,6 @@ public class ProjectServiceImpl
                     projectId);
 
     if (project == null) {
-      return new ArrayList<>();
-    }
-
-    ResourceExtend resourceExtend =
-            resourceExtendBeanTool
-                    .getResourceExtendImpl();
-
-    if (resourceExtend == null) {
       return new ArrayList<>();
     }
 

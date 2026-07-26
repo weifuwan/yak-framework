@@ -2,12 +2,10 @@ package io.yak.framework.security.autoconfigure;
 
 import io.yak.framework.security.extend.CurrentUserProvider;
 import io.yak.framework.security.extend.LoginExtend;
-import io.yak.framework.security.extend.LoginExtendBeanTool;
 import io.yak.framework.security.extend.OperationLogExtend;
 import io.yak.framework.security.extend.PasswordEncoder;
 import io.yak.framework.security.extend.PermissionExtend;
 import io.yak.framework.security.extend.ResourceExtend;
-import io.yak.framework.security.extend.ResourceExtendBeanTool;
 import io.yak.framework.security.extend.TokenSessionStore;
 import io.yak.framework.security.extend.impl.DefaultCurrentUserProvider;
 import io.yak.framework.security.extend.impl.DefaultLoginExtendImpl;
@@ -99,25 +97,4 @@ public class YakSecurityExtendAutoConfiguration {
         return new InMemoryTokenSessionStore();
     }
 
-    /**
-     * 注册登录扩展兼容包装类。
-     */
-    @Bean
-    @ConditionalOnMissingBean(LoginExtendBeanTool.class)
-    public LoginExtendBeanTool loginExtendBeanTool(
-            LoginExtend loginExtend) {
-
-        return new LoginExtendBeanTool(loginExtend);
-    }
-
-    /**
-     * 注册资源扩展兼容包装类。
-     */
-    @Bean
-    @ConditionalOnMissingBean(ResourceExtendBeanTool.class)
-    public ResourceExtendBeanTool resourceExtendBeanTool(
-            ResourceExtend resourceExtend) {
-
-        return new ResourceExtendBeanTool(resourceExtend);
-    }
 }
