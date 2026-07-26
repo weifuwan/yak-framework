@@ -84,7 +84,7 @@ public class UserResourceServiceImpl implements UserResourceService {
     Long resourceTypeId = queryDTO.getResourceTypeId();
     int showLevel = queryDTO.getShowLevel();
     int controlLevel = queryDTO.getControlLevel();
-    int userId = queryDTO.getUserId();
+    Long userId = queryDTO.getUserId();
     boolean isBatch = queryDTO.getBatch();
     ArrayList<MByUDataVO> resultList = new ArrayList<MByUDataVO>();
     if (ShowLevelCode.PROJECT.getType().equals(showLevel)) {
@@ -156,7 +156,7 @@ public class UserResourceServiceImpl implements UserResourceService {
   }
 
   private HasLevelCode getHasLevel(boolean isBatch, int controlLevel,
-                                   int userId, Long projectId,
+                                   Long userId, Long projectId,
                                    Long resourceTypeId, Long resourceId) {
     if (isBatch) {
       return HasLevelCode.NONE;
@@ -458,7 +458,7 @@ public class UserResourceServiceImpl implements UserResourceService {
 
   @Override
   public PagingData<MByUVO> getManageByUserPage(MByUQueryDTO queryDTO) {
-    Map<Integer, Dept> deptMap = this.deptService.getAllDeptMap();
+    Map<Long, Dept> deptMap = this.deptService.getAllDeptMap();
     PagingData<UserBriefVO> userPage =
         this.userService.getUserBriefPage(new UserBriefQueryDTO(queryDTO));
     List result = Collections.synchronizedList(new ArrayList());

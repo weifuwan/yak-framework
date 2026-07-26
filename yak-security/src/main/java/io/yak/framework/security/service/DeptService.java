@@ -11,17 +11,17 @@ import java.util.Map;
 public interface DeptService {
   public DeptTreeVO buildDeptTree();
 
-  public List<DeptBriefVO> getDeptBriefListByChildId(Integer var1);
+  public List<DeptBriefVO> getDeptBriefListByChildId(Long var1);
 
-  public List<Long> getDeptIdListByParentId(Integer var1);
+  public List<Long> getDeptIdListByParentId(Long var1);
 
-  public List<Long> getDeptIdListByParentIdAndDeptName(Integer var1,
+  public List<Long> getDeptIdListByParentIdAndDeptName(Long var1,
                                                           String var2);
 
-  public Map<Integer, Dept> getAllDeptMap();
+  public Map<Long, Dept> getAllDeptMap();
 
   public List<DeptBriefVO>
-  getDeptBriefListFromDeptMapByChildId(Map<Integer, Dept> var1, Integer var2);
+  getDeptBriefListFromDeptMapByChildId(Map<Long, Dept> var1, Long var2);
 
   public void saveDept(List<DeptDTO> var1);
 

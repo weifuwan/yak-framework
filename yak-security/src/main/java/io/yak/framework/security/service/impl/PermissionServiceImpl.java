@@ -35,8 +35,8 @@ public class PermissionServiceImpl implements PermissionService {
                                 .id(0)
                                 .childList(new ArrayList<PermissionTreeVO>())
                                 .build();
-    HashMap<Integer, PermissionTreeVO> parentMap =
-        new HashMap<Integer, PermissionTreeVO>(permissionList.size());
+    HashMap<Long, PermissionTreeVO> parentMap =
+        new HashMap<Long, PermissionTreeVO>(permissionList.size());
     parentMap.put(0, root);
     for (Permission permission : permissionList) {
       PermissionTreeVO parent;

@@ -11,7 +11,7 @@ public interface OplogService {
 
   public PagingData<OplogVO> getOplogPage(OplogQueryDTO var1);
 
-  public OplogVO getOplogDetailByOplogId(Integer var1);
+  public OplogVO getOplogDetailByOplogId(Long var1);
 
   public List<String> listTargetType();
 }

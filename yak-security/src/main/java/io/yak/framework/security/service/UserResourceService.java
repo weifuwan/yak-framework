@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface UserResourceService {
-  public int getResourceCntByUserId(Integer var1, UserResourceQueryDTO var2);
+  public int getResourceCntByUserId(Long var1, UserResourceQueryDTO var2);
 
   public PagingData<MByRVO> getManageByResourcePage(MByRQueryDTO var1)
       throws YakSecurityException;

@@ -20,9 +20,9 @@ public interface UserService {
 
   public PagingData<UserBriefVO> getUserBriefPage(UserBriefQueryDTO var1);
 
-  public UserVO getUserDetailByUserId(Integer var1);
+  public UserVO getUserDetailByUserId(Long var1);
 
-  public Result<Void> deleteByUserId(Integer var1);
+  public Result<Void> deleteByUserId(Long var1);
 
   public UserBriefVO getUserBriefByUserName(String var1);
 
@@ -30,12 +30,12 @@ public interface UserService {
 
   public List<UserBriefVO> getUserBriefListByUserIdList(List<Long> var1);
 
-  public List<UserBriefVO> getUserBriefListByDeptId(Integer var1);
+  public List<UserBriefVO> getUserBriefListByDeptId(Long var1);
 
-  public List<AssignInfoVO> getAssignDataByUserId(Integer var1)
+  public List<AssignInfoVO> getAssignDataByUserId(Long var1)
       throws YakSecurityException;
 
-  public List<UserBriefVO> getUserBriefListByRoleId(Integer var1);
+  public List<UserBriefVO> getUserBriefListByRoleId(Long var1);
 
   public List<UserBriefVO> getUserBriefListByUsernameOrRealName(String var1);
 

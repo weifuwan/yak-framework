@@ -108,7 +108,7 @@ public class RoleServiceImpl implements RoleService {
                                 .collect(Collectors.toList());
     List<UserBasicVO> userBasicVOS =
         this.userService.getUserBasicListByUserIdList(userIds);
-    Map<Integer, String> userId2usernameMap = userBasicVOS.stream().collect(
+    Map<Long, String> userId2usernameMap = userBasicVOS.stream().collect(
         Collectors.toMap(UserBasicVO::getId, UserBasicVO::getUserName));
     Map roleId2UserIdListMap = userRoles.stream().collect(Collectors.groupingBy(
         UserRole::getRoleId,
@@ -307,7 +307,7 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public Map<Integer, List<RoleBriefVO>>
+  public Map<Long, List<RoleBriefVO>>
   getRoleBriefListByUserIds(List<Long> userId) {
     List<UserRole> userRoleList =
         this.userRoleService.getRoleIdListByUserIds(userId);
@@ -316,7 +316,7 @@ public class RoleServiceImpl implements RoleService {
                                 .collect(Collectors.toList());
     List<RoleBriefVO> roleBriefs = CopyBeanUtil.copyList(
         this.roleDao.selectBriefListByRoleIdList(roleIds), RoleBriefVO.class);
-    Map<Integer, RoleBriefVO> roleId2RoleMap = roleBriefs.stream().collect(
+    Map<Long, RoleBriefVO> roleId2RoleMap = roleBriefs.stream().collect(
         Collectors.toMap(RoleBriefVO::getId, i -> i));
     return userRoleList.stream().collect(Collectors.groupingBy(
         UserRole::getUserId,

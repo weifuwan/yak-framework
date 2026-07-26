@@ -9,9 +9,9 @@ import java.util.List;
  */
 public interface ResourceExtend {
   public PagingData<ResourceDTO>
-  getResourcePage(Integer var1, Integer var2, String var3, int var4, int var5);
+  getResourcePage(Long var1, Long var2, String var3, int var4, int var5);
 
-  public List<ResourceDTO> getResourceList(Integer var1, Integer var2);
+  public List<ResourceDTO> getResourceList(Long var1, Long var2);
 
-  public int getResourceCnt(Integer var1, Integer var2);
+  public int getResourceCnt(Long var1, Long var2);
 }

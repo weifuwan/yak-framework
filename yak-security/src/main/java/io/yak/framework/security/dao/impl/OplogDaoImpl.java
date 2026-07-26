@@ -66,7 +66,7 @@ public class OplogDaoImpl extends BaseDaoImpl<OplogPO> implements OplogDao {
         }
         queryWrapper.select(new String[]{"id"});
         pageInfo.setTotal(
-                (long) this.oplogMapper.selectCount((Wrapper) queryWrapper).intValue());
+                this.oplogMapper.selectCount((Wrapper) queryWrapper));
         queryWrapper.orderByDesc((Object) "update_time");
         queryWrapper.select(new String[]{"id", "operate_type", "detail", "target",
                 "target_type", "operator_ip", "operator",

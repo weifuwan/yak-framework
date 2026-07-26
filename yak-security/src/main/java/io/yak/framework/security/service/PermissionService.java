@@ -9,7 +9,7 @@ public interface PermissionService {
 
   public PermissionTreeVO buildPermissionTree();
 
-  public PermissionTreeVO buildPermissionTreeByRoleId(Integer var1);
+  public PermissionTreeVO buildPermissionTreeByRoleId(Long var1);
 
   public void savePermission(List<PermissionDTO> var1);
 }
