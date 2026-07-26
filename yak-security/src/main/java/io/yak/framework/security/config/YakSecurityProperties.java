@@ -82,6 +82,22 @@ public class YakSecurityProperties {
   private final PermissionRegistrationProperties permissionRegistration =
           new PermissionRegistrationProperties();
 
+  /** User permission cache settings. */
+  private final PermissionCacheProperties permissionCache =
+          new PermissionCacheProperties();
+
+  @Getter
+  @Setter
+  @ToString
+  public static class PermissionCacheProperties {
+    /** Whether the local permission cache is enabled. */
+    private boolean enabled = true;
+    /** Minutes after which an entry expires. */
+    private long ttlMinutes = 20;
+    /** Maximum number of users retained in memory. */
+    private long maximumSize = 10_000;
+  }
+
   @Getter
   @Setter
   @ToString

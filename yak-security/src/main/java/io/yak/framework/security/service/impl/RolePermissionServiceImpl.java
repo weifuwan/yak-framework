@@ -3,6 +3,7 @@ package io.yak.framework.security.service.impl;
 import io.yak.framework.security.common.entity.RolePermission;
 import io.yak.framework.security.dao.RolePermissionDao;
 import io.yak.framework.security.service.RolePermissionService;
+import io.yak.framework.security.service.PermissionCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class RolePermissionServiceImpl
         implements RolePermissionService {
 
   private final RolePermissionDao rolePermissionDao;
+  private final PermissionCache permissionCache;
 
   /**
    * 创建角色权限关系服务。
@@ -30,9 +32,11 @@ public class RolePermissionServiceImpl
    * @param rolePermissionDao 角色权限关系数据访问对象
    */
   public RolePermissionServiceImpl(
-          RolePermissionDao rolePermissionDao) {
+          RolePermissionDao rolePermissionDao,
+          PermissionCache permissionCache) {
 
     this.rolePermissionDao = rolePermissionDao;
+    this.permissionCache = permissionCache;
   }
 
   /**
@@ -53,6 +57,7 @@ public class RolePermissionServiceImpl
     if (roleId == null) {
       return;
     }
+    permissionCache.invalidateRole(roleId);
 
     List<Long> validPermissionIds =
             normalizeIds(permissionIdList);
@@ -88,6 +93,7 @@ public class RolePermissionServiceImpl
     if (roleId == null) {
       return;
     }
+    permissionCache.invalidateRole(roleId);
 
     /*
      * 先删除原有关联。
@@ -126,6 +132,7 @@ public class RolePermissionServiceImpl
     if (roleId == null) {
       return;
     }
+    permissionCache.invalidateRole(roleId);
 
     rolePermissionDao.deleteByRoleId(
             roleId);
@@ -143,6 +150,7 @@ public class RolePermissionServiceImpl
     if (permissionId == null) {
       return;
     }
+    permissionCache.invalidateAll();
     rolePermissionDao.deleteByPermissionId(permissionId);
   }
 

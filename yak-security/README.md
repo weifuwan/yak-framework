@@ -108,6 +108,24 @@ yak:
 `yak.security.authentication-enabled` 设为 `false`。本模块使用 Spring Boot 3.3.13 和
 `jakarta.servlet` API 构建，需要 JDK 21。
 
+## 权限缓存
+
+默认使用 Caffeine 按 `applicationName + userId` 缓存用户的权限编码集合，权限判断命中缓存后
+直接执行集合查询。条目默认在写入 20 分钟后过期，最多保存 10,000 个用户；可按需调整：
+
+```yaml
+yak:
+  security:
+    permission-cache:
+      enabled: true
+      ttl-minutes: 20
+      maximum-size: 10000
+```
+
+用户角色、角色用户或角色权限关系发生增删时会主动清除受影响用户的缓存；权限记录发生变更时
+清空整个应用实例的权限缓存。单体应用无需部署额外基础设施，集群部署可通过替换
+`PermissionCache` Bean 扩展为共享缓存。
+
 ## 数据库迁移与应用隔离
 
 模块启动时由 Flyway 依次执行 `db/migration/V1__init_yak_security.sql` 和

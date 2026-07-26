@@ -7,6 +7,7 @@ import io.yak.framework.security.dao.RolePermissionDao;
 import io.yak.framework.security.dao.UserRoleDao;
 import io.yak.framework.security.extend.PermissionExtend;
 import io.yak.framework.security.service.RbacPermissionService;
+import io.yak.framework.security.service.PermissionCache;
 import io.yak.framework.security.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -26,18 +27,21 @@ public class RbacPermissionServiceImpl implements RbacPermissionService {
   private final RolePermissionDao rolePermissionDao;
   private final PermissionDao permissionDao;
   private final PermissionExtend permissionExtend;
+  private final PermissionCache permissionCache;
 
   public RbacPermissionServiceImpl(
           UserService userService,
           UserRoleDao userRoleDao,
           RolePermissionDao rolePermissionDao,
           PermissionDao permissionDao,
-          PermissionExtend permissionExtend) {
+          PermissionExtend permissionExtend,
+          PermissionCache permissionCache) {
     this.userService = userService;
     this.userRoleDao = userRoleDao;
     this.rolePermissionDao = rolePermissionDao;
     this.permissionDao = permissionDao;
     this.permissionExtend = permissionExtend;
+    this.permissionCache = permissionCache;
   }
 
   @Override
@@ -49,21 +53,31 @@ public class RbacPermissionServiceImpl implements RbacPermissionService {
 
     User user = userService.getUserByUsername(userName);
     if (user != null && user.getId() != null) {
-      List<Long> roleIds = userRoleDao.selectRoleIdListByUserId(user.getId());
+      Set<String> permissionCodes = permissionCache.get(
+              user.getId(), () -> loadPermissionCodes(user.getId()));
+      if (permissionCodes.contains(permissionCode)) {
+        return true;
+      }
+    }
+
+    return permissionExtend.hasPermission(userName, permissionCode);
+  }
+
+  private Set<String> loadPermissionCodes(Long userId) {
+      List<Long> roleIds = userRoleDao.selectRoleIdListByUserId(userId);
       List<Long> permissionIds =
               rolePermissionDao.selectPermissionIdListByRoleIdList(roleIds);
+      Set<String> permissionCodes = new HashSet<>();
       if (!permissionIds.isEmpty()) {
         Set<Long> grantedIds = new HashSet<>(permissionIds);
         for (Permission permission : permissionDao.selectAllAndAscOrderByLevel()) {
           if (permission != null
                   && grantedIds.contains(permission.getId())
-                  && permissionCode.equals(permission.getPermissionCode())) {
-            return true;
+                  && StringUtils.hasText(permission.getPermissionCode())) {
+            permissionCodes.add(permission.getPermissionCode());
           }
         }
       }
-    }
-
-    return permissionExtend.hasPermission(userName, permissionCode);
+      return permissionCodes;
   }
 }
