@@ -39,6 +39,10 @@ public interface RolePermissionService {
   void deleteRolePermissionByRoleId(
           Long roleId);
 
+  /** 根据权限 ID 删除角色权限关系。 */
+  void deleteRolePermissionByPermissionId(
+          Long permissionId);
+
   /**
    * 根据角色 ID 查询权限 ID。
    *

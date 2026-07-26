@@ -5,6 +5,7 @@ import io.yak.framework.security.common.entity.user.User;
 import io.yak.framework.security.dao.ProjectDao;
 import io.yak.framework.security.dao.UserDao;
 import io.yak.framework.security.dao.UserProjectDao;
+import io.yak.framework.security.dao.UserResourceDao;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.extend.PasswordEncoder;
 import io.yak.framework.security.service.DeptService;
@@ -29,12 +30,16 @@ class UserServiceImplTransactionTest {
 
   private UserDao userDao;
   private UserRoleService userRoleService;
+  private UserProjectDao userProjectDao;
+  private UserResourceDao userResourceDao;
   private UserServiceImpl userService;
 
   @BeforeEach
   void setUp() {
     userDao = mock(UserDao.class);
     userRoleService = mock(UserRoleService.class);
+    userProjectDao = mock(UserProjectDao.class);
+    userResourceDao = mock(UserResourceDao.class);
     PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
     when(passwordEncoder.encode(any())).thenReturn("encoded-password");
 
@@ -45,7 +50,8 @@ class UserServiceImplTransactionTest {
             mock(DeptService.class),
             mock(RoleService.class),
             userRoleService,
-            mock(UserProjectDao.class),
+            userProjectDao,
+            userResourceDao,
             mock(ProjectDao.class),
             passwordEncoder);
   }
@@ -86,6 +92,20 @@ class UserServiceImplTransactionTest {
 
     assertEquals("2018-用户更新失败", exception.getMessage());
     assertSame(cause, exception.getCause());
+  }
+
+  @Test
+  void deleteUserCleansAllUserAssociations() {
+    when(userDao.deleteByUserId(1L)).thenReturn(true);
+
+    userService.deleteByUserId(1L);
+
+    org.mockito.Mockito.verify(userRoleService)
+            .deleteByUserIdOrRoleId(1L, null);
+    org.mockito.Mockito.verify(userProjectDao)
+            .deleteByUserId(1L);
+    org.mockito.Mockito.verify(userResourceDao)
+            .deleteByUserId(1L, null);
   }
 
   private UserDTO userDTO() {

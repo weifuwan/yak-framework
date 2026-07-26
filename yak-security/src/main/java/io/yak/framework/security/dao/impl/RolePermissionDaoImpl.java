@@ -61,6 +61,18 @@ public class RolePermissionDaoImpl
     );
   }
 
+  /** 删除指定权限的全部角色关联。 */
+  @Override
+  public void deleteByPermissionId(Long permissionId) {
+    if (permissionId == null) {
+      return;
+    }
+    rolePermissionMapper.delete(
+            Wrappers.<RolePermissionPO>lambdaQuery()
+                    .eq(RolePermissionPO::getPermissionId, permissionId)
+    );
+  }
+
   /**
    * 查询指定角色关联的权限标识。
    *

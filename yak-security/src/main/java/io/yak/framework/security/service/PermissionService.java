@@ -44,4 +44,11 @@ public interface PermissionService {
    */
   void savePermission(
           List<PermissionDTO> permissionDTOList);
+
+  /**
+   * 根据权限 ID 删除权限及其角色关联。
+   *
+   * @param permissionId 权限 ID
+   */
+  void deletePermissionById(Long permissionId);
 }

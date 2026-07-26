@@ -11,6 +11,8 @@ public interface RolePermissionDao {
 
   void deleteByRoleId(Long roleId);
 
+  void deleteByPermissionId(Long permissionId);
+
   List<Long> selectPermissionIdListByRoleId(Long roleId);
 
   List<Long> selectPermissionIdListByRoleIdList(List<Long> var1);

@@ -62,4 +62,13 @@ public class PermissionDaoImpl
         )
                 .forEach(permissionMapper::insert);
     }
+
+    /** 根据权限标识删除权限。 */
+    @Override
+    public int deleteById(Long permissionId) {
+        if (permissionId == null) {
+            return 0;
+        }
+        return permissionMapper.deleteById(permissionId);
+    }
 }
