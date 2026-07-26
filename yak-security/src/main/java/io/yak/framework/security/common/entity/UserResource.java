@@ -1,137 +1,23 @@
 package io.yak.framework.security.common.entity;
 
-import io.yak.framework.security.common.dto.resource.ResourceDTO;
+import lombok.Data;
 
+/**
+ * 用户资源关联实体。
+ *
+ * @author weifuwan
+ */
+@Data
 public class UserResource {
+  /** 用户标识。 */
   private Long userId;
+  /** 项目标识。 */
   private Long projectId;
+  /** 资源类型标识。 */
   private Long resourceTypeId;
+  /** 资源标识。 */
   private Long resourceId;
+  /** 控制级别。 */
   private Integer controlLevel;
 
-  public UserResource(ResourceDTO resourceDTO) {
-    this.projectId = resourceDTO.getProjectId();
-    this.resourceTypeId = resourceDTO.getResourceTypeId();
-    this.resourceId = resourceDTO.getResourceId();
-  }
-
-  public UserResource() {}
-
-  public UserResource(Long userId, Long projectId, Long resourceTypeId,
-                      Long resourceId, Integer controlLevel) {
-    this.userId = userId;
-    this.projectId = projectId;
-    this.resourceTypeId = resourceTypeId;
-    this.resourceId = resourceId;
-    this.controlLevel = controlLevel;
-  }
-
-  public static UserResource getOpenViewPermissionControlEntity() {
-    return new UserResource(0, 0, 0, 0, 0);
-  }
-
-  public Long getUserId() { return this.userId; }
-
-  public Long getProjectId() { return this.projectId; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public Long getResourceId() { return this.resourceId; }
-
-  public Integer getControlLevel() { return this.controlLevel; }
-
-  public void setUserId(Long userId) { this.userId = userId; }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
-  public void setResourceId(Long resourceId) {
-    this.resourceId = resourceId;
-  }
-
-  public void setControlLevel(Integer controlLevel) {
-    this.controlLevel = controlLevel;
-  }
-
-  public boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (!(o instanceof UserResource)) {
-      return false;
-    }
-    UserResource other = (UserResource)o;
-    if (!other.canEqual(this)) {
-      return false;
-    }
-    Long this$userId = this.getUserId();
-    Long other$userId = other.getUserId();
-    if (this$userId == null ? other$userId != null
-                            : !((Object)this$userId).equals(other$userId)) {
-      return false;
-    }
-    Long this$projectId = this.getProjectId();
-    Long other$projectId = other.getProjectId();
-    if (this$projectId == null
-            ? other$projectId != null
-            : !((Object)this$projectId).equals(other$projectId)) {
-      return false;
-    }
-    Long this$resourceTypeId = this.getResourceTypeId();
-    Long other$resourceTypeId = other.getResourceTypeId();
-    if (this$resourceTypeId == null
-            ? other$resourceTypeId != null
-            : !((Object)this$resourceTypeId).equals(other$resourceTypeId)) {
-      return false;
-    }
-    Long this$resourceId = this.getResourceId();
-    Long other$resourceId = other.getResourceId();
-    if (this$resourceId == null
-            ? other$resourceId != null
-            : !((Object)this$resourceId).equals(other$resourceId)) {
-      return false;
-    }
-    Integer this$controlLevel = this.getControlLevel();
-    Integer other$controlLevel = other.getControlLevel();
-    return !(this$controlLevel == null
-                 ? other$controlLevel != null
-                 : !((Object)this$controlLevel).equals(other$controlLevel));
-  }
-
-  protected boolean canEqual(Object other) {
-    return other instanceof UserResource;
-  }
-
-  public int hashCode() {
-    int PRIME = 59;
-    int result = 1;
-    Long $userId = this.getUserId();
-    result =
-        result * 59 + ($userId == null ? 43 : ((Object)$userId).hashCode());
-    Long $projectId = this.getProjectId();
-    result = result * 59 +
-             ($projectId == null ? 43 : ((Object)$projectId).hashCode());
-    Long $resourceTypeId = this.getResourceTypeId();
-    result =
-        result * 59 +
-        ($resourceTypeId == null ? 43 : ((Object)$resourceTypeId).hashCode());
-    Long $resourceId = this.getResourceId();
-    result = result * 59 +
-             ($resourceId == null ? 43 : ((Object)$resourceId).hashCode());
-    Integer $controlLevel = this.getControlLevel();
-    result = result * 59 +
-             ($controlLevel == null ? 43 : ((Object)$controlLevel).hashCode());
-    return result;
-  }
-
-  public String toString() {
-    return "UserResource(userId=" + this.getUserId() +
-        ", projectId=" + this.getProjectId() +
-        ", resourceTypeId=" + this.getResourceTypeId() +
-        ", resourceId=" + this.getResourceId() +
-        ", controlLevel=" + this.getControlLevel() + ")";
-  }
 }
