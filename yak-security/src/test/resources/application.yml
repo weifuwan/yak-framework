@@ -1,0 +1,43 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: yak-security-demo
+  # Yak Security 使用自己创建的 Flyway 实例，避免 Spring Boot 再自动创建一套。
+  flyway:
+    enabled: false
+
+# 本地启动前请先创建数据库：
+# CREATE DATABASE yak_security
+#   DEFAULT CHARACTER SET utf8mb4
+#   COLLATE utf8mb4_unicode_ci;
+yak:
+  security:
+    enabled: true
+    database-enabled: true
+    web-enabled: true
+    # 本地联调先关闭登录拦截，方便直接验证各接口。
+    # 发布或接入业务系统时建议开启。
+    authentication-enabled: false
+    audit-enabled: true
+    application-name: ${YAK_SECURITY_APPLICATION_NAME:yak-security-demo}
+    datasource:
+      enabled: true
+      url: ${YAK_SECURITY_DATASOURCE_URL:jdbc:mariadb://127.0.0.1:3306/yak_security?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai}
+      username: ${YAK_SECURITY_DATASOURCE_USERNAME:root}
+      password: ${YAK_SECURITY_DATASOURCE_PASSWORD:root}
+      driver-class-name: org.mariadb.jdbc.Driver
+      initial-size: 1
+      min-idle: 1
+      max-active: 8
+      max-wait: 60000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+
+logging:
+  level:
+    io.yak.framework.security: DEBUG
+    org.flywaydb: INFO
