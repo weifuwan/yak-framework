@@ -1,1 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.yak.security.config.AutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.yak.security.config.SecurityAutoConfiguration
