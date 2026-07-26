@@ -2,6 +2,8 @@ package io.yak.framework.security.web;
 
 import io.yak.framework.security.config.YakSecurityProperties;
 import io.yak.framework.security.service.LoginService;
+import io.yak.framework.security.service.RbacPermissionService;
+import io.yak.framework.security.extend.CurrentUserProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -12,6 +14,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -24,12 +27,17 @@ class YakAuthenticationInterceptorTest {
   private LoginService loginService;
   private YakSecurityProperties properties;
   private YakAuthenticationInterceptor interceptor;
+  private RbacPermissionService permissionService;
+  private CurrentUserProvider currentUserProvider;
 
   @BeforeEach
   void setUp() {
     loginService = mock(LoginService.class);
     properties = new YakSecurityProperties();
-    interceptor = new YakAuthenticationInterceptor(loginService, properties);
+    permissionService = mock(RbacPermissionService.class);
+    currentUserProvider = mock(CurrentUserProvider.class);
+    interceptor = new YakAuthenticationInterceptor(
+            loginService, properties, permissionService, currentUserProvider);
   }
 
   @Test
@@ -68,9 +76,41 @@ class YakAuthenticationInterceptorTest {
     verify(loginService, never()).interceptorCheck(any(), any(), any(), any());
   }
 
+  @Test
+  void requiredPermissionAllowsAuthorizedUser() throws Exception {
+    HandlerMethod handler = new HandlerMethod(
+            new TestController(), TestController.class.getMethod("protectedApi"));
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/protected");
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    when(loginService.interceptorCheck(any(), any(), any(), any())).thenReturn(true);
+    when(currentUserProvider.getCurrentUser(request)).thenReturn("yak");
+    when(permissionService.hasPermission("yak", "user:read")).thenReturn(true);
+
+    assertTrue(interceptor.preHandle(request, response, handler));
+  }
+
+  @Test
+  void requiredPermissionReturnsUnifiedForbiddenResult() throws Exception {
+    HandlerMethod handler = new HandlerMethod(
+            new TestController(), TestController.class.getMethod("protectedApi"));
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/protected");
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    when(loginService.interceptorCheck(any(), any(), any(), any())).thenReturn(true);
+    when(currentUserProvider.getCurrentUser(request)).thenReturn("yak");
+
+    assertFalse(interceptor.preHandle(request, response, handler));
+    assertEquals(403, response.getStatus());
+    assertEquals("application/json", response.getContentType());
+    assertTrue(response.getContentAsString().contains("\"code\":3001"));
+  }
+
   private static class TestController {
     @PublicEndpoint
     public void publicApi() {
+    }
+
+    @RequiresPermission("user:read")
+    public void protectedApi() {
     }
   }
 }
