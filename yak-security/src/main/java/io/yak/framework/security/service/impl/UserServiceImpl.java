@@ -866,8 +866,9 @@ public class UserServiceImpl implements UserService {
               operator,
               exception);
 
-      return Result.fail(
-              ResultCode.USER_ACCOUNT_INSERT_FAIL);
+      throw new YakSecurityException(
+              ResultCode.USER_ACCOUNT_INSERT_FAIL,
+              exception);
     }
   }
 
@@ -958,8 +959,9 @@ public class UserServiceImpl implements UserService {
               operator,
               exception);
 
-      return Result.fail(
-              ResultCode.USER_ACCOUNT_UPDATE_FAIL);
+      throw new YakSecurityException(
+              ResultCode.USER_ACCOUNT_UPDATE_FAIL,
+              exception);
     }
   }
 

@@ -36,6 +36,20 @@ public class YakSecurityException extends RuntimeException {
     }
 
     /**
+     * 根据错误码定义和原始异常创建异常。
+     *
+     * @param codeMsg 错误码及错误消息定义
+     * @param cause   原始异常
+     */
+    public YakSecurityException(
+            CodeMsg codeMsg,
+            Throwable cause) {
+        super(
+                codeMsg.getCode() + "-" + codeMsg.getMessage(),
+                cause);
+    }
+
+    /**
      * 根据指定错误消息创建异常。
      *
      * @param message 异常消息
