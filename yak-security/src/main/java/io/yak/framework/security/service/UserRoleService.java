@@ -1,25 +1,59 @@
 package io.yak.framework.security.service;
 
 import io.yak.framework.security.common.entity.UserRole;
+
 import java.util.List;
 
 /**
  * 用户角色关系服务接口。
+ *
+ * @author weifuwan
  */
 public interface UserRoleService {
-  List<Long> getUserIdListByRoleId(Long var1);
 
-  List<Long> getRoleIdListByUserId(Long var1);
+  /**
+   * 根据角色 ID 查询用户 ID 集合。
+   */
+  List<Long> getUserIdListByRoleId(Long roleId);
 
-  void updateUserRoleByUserId(Long var1, List<Long> var2);
+  /**
+   * 根据用户 ID 查询角色 ID 集合。
+   */
+  List<Long> getRoleIdListByUserId(Long userId);
 
-  void updateUserRoleByRoleId(Long var1, List<Long> var2);
+  /**
+   * 根据用户 ID 更新用户角色关系。
+   */
+  void updateUserRoleByUserId(
+          Long userId,
+          List<Long> roleIdList);
 
-  int getUserRoleCountByRoleId(Long var1);
+  /**
+   * 根据角色 ID 更新用户角色关系。
+   */
+  void updateUserRoleByRoleId(
+          Long roleId,
+          List<Long> userIdList);
 
-  int deleteByUserIdOrRoleId(Long var1, Long var2);
+  /**
+   * 根据角色 ID 查询用户角色关系数量。
+   */
+  int getUserRoleCountByRoleId(Long roleId);
 
-  List<UserRole> getByRoleIds(List<Long> var1);
+  /**
+   * 根据用户 ID 或角色 ID 删除用户角色关系。
+   */
+  int deleteByUserIdOrRoleId(
+          Long userId,
+          Long roleId);
 
-  List<UserRole> getRoleIdListByUserIds(List<Long> var1);
+  /**
+   * 根据角色 ID 集合查询用户角色关系。
+   */
+  List<UserRole> getByRoleIds(List<Long> roleIdList);
+
+  /**
+   * 根据用户 ID 集合查询用户角色关系。
+   */
+  List<UserRole> getRoleIdListByUserIds(List<Long> userIdList);
 }

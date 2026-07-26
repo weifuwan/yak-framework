@@ -11,48 +11,110 @@ import io.yak.framework.security.common.vo.user.UserBasicVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.common.vo.user.UserVO;
 import io.yak.framework.security.exception.YakSecurityException;
+
 import java.util.List;
 
 /**
  * 用户服务接口。
+ *
+ * @author weifuwan
  */
 public interface UserService {
-  Result<Void> check(Integer var1, String var2);
 
-  PagingData<UserVO> getUserPage(UserQueryDTO var1);
+  /**
+   * 校验指定用户字段是否可用。
+   */
+  Result<Void> check(Integer checkType, String checkValue);
 
-  PagingData<UserBriefVO> getUserBriefPage(UserBriefQueryDTO var1);
+  /**
+   * 分页查询用户详细信息。
+   */
+  PagingData<UserVO> getUserPage(UserQueryDTO queryDTO);
 
-  UserVO getUserDetailByUserId(Long var1);
+  /**
+   * 分页查询用户简要信息。
+   */
+  PagingData<UserBriefVO> getUserBriefPage(UserBriefQueryDTO queryDTO);
 
-  Result<Void> deleteByUserId(Long var1);
+  /**
+   * 根据用户 ID 查询用户详情。
+   */
+  UserVO getUserDetailByUserId(Long userId);
 
-  UserBriefVO getUserBriefByUserName(String var1);
+  /**
+   * 根据用户 ID 删除用户。
+   */
+  Result<Void> deleteByUserId(Long userId);
 
-  User getUserByUserName(String var1);
+  /**
+   * 根据用户名查询用户简要信息。
+   */
+  UserBriefVO getUserBriefByUsername(String username);
 
-  List<UserBriefVO> getUserBriefListByUserIdList(List<Long> var1);
+  /**
+   * 根据用户名查询用户实体。
+   */
+  User getUserByUsername(String username);
 
-  List<UserBriefVO> getUserBriefListByDeptId(Long var1);
+  /**
+   * 根据用户 ID 集合查询用户简要信息。
+   */
+  List<UserBriefVO> getUserBriefListByUserIds(List<Long> userIds);
 
-  List<AssignInfoVO> getAssignDataByUserId(Long var1)
-      throws YakSecurityException;
+  /**
+   * 根据部门 ID 查询用户简要信息。
+   */
+  List<UserBriefVO> getUserBriefListByDeptId(Long deptId);
 
-  List<UserBriefVO> getUserBriefListByRoleId(Long var1);
+  /**
+   * 根据用户 ID 查询角色分配信息。
+   */
+  List<AssignInfoVO> getAssignInfoListByUserId(Long userId)
+          throws YakSecurityException;
 
-  List<UserBriefVO> getUserBriefListByUsernameOrRealName(String var1);
+  /**
+   * 根据角色 ID 查询用户简要信息。
+   */
+  List<UserBriefVO> getUserBriefListByRoleId(Long roleId);
 
-  List<UserBriefVO> getAllUserBriefListOrderByCreateTime(boolean var1);
+  /**
+   * 根据用户名或真实姓名模糊查询用户。
+   */
+  List<UserBriefVO> searchUserBriefList(String keyword);
 
-  List<Long> getUserIdListByUsernameOrRealName(String var1);
+  /**
+   * 查询全部用户简要信息并按创建时间排序。
+   */
+  List<UserBriefVO> getAllUserBriefListOrderByCreateTime(
+          boolean ascending);
 
+  /**
+   * 根据用户名或真实姓名查询用户 ID 集合。
+   */
+  List<Long> searchUserIds(String keyword);
+
+  /**
+   * 查询全部用户简要信息。
+   */
   List<UserBriefVO> getAllUserBriefList();
 
-  Result<Void> addUser(UserDTO var1, String var2);
+  /**
+   * 新增用户。
+   */
+  Result<Void> addUser(UserDTO userDTO, String operator);
 
-  Result<Void> editUser(UserDTO var1, String var2);
+  /**
+   * 编辑用户。
+   */
+  Result<Void> editUser(UserDTO userDTO, String operator);
 
-  Result<List<UserVO>> getUserDetailByUserIds(List<Long> var1);
+  /**
+   * 根据用户 ID 集合批量查询用户详情。
+   */
+  Result<List<UserVO>> getUserDetailsByUserIds(List<Long> userIds);
 
-  List<UserBasicVO> getUserBasicListByUserIdList(List<Long> var1);
+  /**
+   * 根据用户 ID 集合查询用户基础信息。
+   */
+  List<UserBasicVO> getUserBasicListByUserIds(List<Long> userIds);
 }

@@ -17,40 +17,87 @@ import io.yak.framework.security.common.vo.resource.MByUDataVO;
 import io.yak.framework.security.common.vo.resource.MByUVO;
 import io.yak.framework.security.exception.YakSecurityException;
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
 
 /**
  * 用户资源服务接口。
+ *
+ * @author weifuwan
  */
 public interface UserResourceService {
-  int getResourceCntByUserId(Long var1, UserResourceQueryDTO var2);
 
-  PagingData<MByRVO> getManageByResourcePage(MByRQueryDTO var1)
-      throws YakSecurityException;
+  /**
+   * 根据用户 ID 统计符合条件的资源数量。
+   */
+  int getResourceCntByUserId(
+          Long userId,
+          UserResourceQueryDTO queryDTO);
 
-  PagingData<MByUVO> getManageByUserPage(MByUQueryDTO var1);
+  /**
+   * 分页查询按资源管理的权限信息。
+   */
+  PagingData<MByRVO> getManageByResourcePage(
+          MByRQueryDTO queryDTO)
+          throws YakSecurityException;
 
-  void assignResourcePermission(AssignToOneUserDTO var1)
-      throws YakSecurityException;
+  /**
+   * 分页查询按用户管理的权限信息。
+   */
+  PagingData<MByUVO> getManageByUserPage(
+          MByUQueryDTO queryDTO);
 
-  void assignResourcePermission(AssignToManyUserDTO var1,
-                                       HttpServletRequest var2)
-      throws YakSecurityException;
+  /**
+   * 为单个用户分配资源权限。
+   */
+  void assignResourcePermission(
+          AssignToOneUserDTO assignDTO)
+          throws YakSecurityException;
 
-  void batchAssignResourcePermission(BatchAssignDTO var1,
-                                            HttpServletRequest var2)
-      throws YakSecurityException;
+  /**
+   * 为多个用户分配资源权限。
+   */
+  void assignResourcePermission(
+          AssignToManyUserDTO assignDTO,
+          HttpServletRequest request)
+          throws YakSecurityException;
 
-  List<MByUDataVO> getManagerByUserDataList(MByUDataQueryDTO var1)
-      throws YakSecurityException;
+  /**
+   * 批量分配资源权限。
+   */
+  void batchAssignResourcePermission(
+          BatchAssignDTO assignDTO,
+          HttpServletRequest request)
+          throws YakSecurityException;
 
-  List<MByRDataVO> getManagerByResourceDataList(MByRDataQueryDTO var1)
-      throws YakSecurityException;
+  /**
+   * 查询按用户管理的资源权限数据。
+   */
+  List<MByUDataVO> getManagerByUserDataList(
+          MByUDataQueryDTO queryDTO)
+          throws YakSecurityException;
 
+  /**
+   * 查询按资源管理的用户权限数据。
+   */
+  List<MByRDataVO> getManagerByResourceDataList(
+          MByRDataQueryDTO queryDTO)
+          throws YakSecurityException;
+
+  /**
+   * 获取资源查看权限控制状态。
+   */
   boolean getViewPermissionControlStatus();
 
+  /**
+   * 切换资源查看权限控制状态。
+   */
   void changeResourceViewControlStatus();
 
-  ControlLevelCode getControlLevel(ControlLevelQueryDTO var1)
-      throws YakSecurityException;
+  /**
+   * 查询资源权限控制级别。
+   */
+  ControlLevelCode getControlLevel(
+          ControlLevelQueryDTO queryDTO)
+          throws YakSecurityException;
 }
