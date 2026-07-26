@@ -1,5 +1,24 @@
 # yak-security-spring-boot-starter
 
+## 首次管理员初始化
+
+新应用可以临时启用内置初始化器，在当前应用尚无任何用户时创建管理员、默认管理员角色，
+并将所有内置权限授予该角色：
+
+```yaml
+yak:
+  security:
+    bootstrap:
+      enabled: true
+      username: admin
+      password: ${YAK_ADMIN_PASSWORD}
+      real-name: 系统管理员
+```
+
+密码没有默认值，生产环境应通过环境变量或密钥管理系统提供。创建成功后启动日志会发出警告；
+请立即将 `yak.security.bootstrap.enabled` 设为 `false`。如果当前应用已经存在用户，初始化器不会
+修改任何用户、角色或权限数据。
+
 `yak-security` 为 Spring Boot 应用提供用户、角色、权限、登录、数据隔离和操作审计能力。
 
 完整的依赖引入、数据库准备、首次管理员初始化、登录调用、权限注解及扩展点示例，参见
