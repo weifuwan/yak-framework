@@ -1,8 +1,8 @@
 package io.yak.framework.security.dao.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.yak.framework.security.common.dto.role.RoleQueryDTO;
 import io.yak.framework.security.common.entity.role.Role;
@@ -11,117 +11,254 @@ import io.yak.framework.security.common.po.RolePO;
 import io.yak.framework.security.dao.RoleDao;
 import io.yak.framework.security.dao.mapper.RoleMapper;
 import io.yak.framework.security.util.CopyBeanUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-@Component
-public class RoleDaoImpl extends BaseDaoImpl<RolePO> implements RoleDao {
-    @Autowired
-    private RoleMapper roleMapper;
+/**
+ * 角色数据访问实现。
+ *
+ * @author weifuwan
+ */
+@Repository
+@RequiredArgsConstructor
+public class RoleDaoImpl
+        implements RoleDao {
 
+    private final RoleMapper roleMapper;
+
+    /**
+     * 根据角色名称查询角色。
+     *
+     * @param roleName 角色名称
+     * @return 角色信息
+     */
     @Override
     public Role selectByRoleName(String roleName) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.eq((Object) "role_name", (Object) roleName);
-        return CopyBeanUtil.copy(this.roleMapper.selectOne((Wrapper) queryWrapper),
-                Role.class);
+        if (!StringUtils.hasText(roleName)) {
+            return null;
+        }
+
+        RolePO rolePO = roleMapper.selectOne(
+                Wrappers.<RolePO>lambdaQuery()
+                        .eq(RolePO::getRoleName, roleName)
+        );
+
+        return CopyBeanUtil.copy(rolePO, Role.class);
     }
 
+    /**
+     * 根据角色主键查询角色。
+     *
+     * @param roleId 角色主键
+     * @return 角色信息
+     */
     @Override
     public Role selectByRoleId(Long roleId) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.eq((Object) "id", (Object) roleId);
-        return CopyBeanUtil.copy(this.roleMapper.selectOne((Wrapper) queryWrapper),
-                Role.class);
+        if (roleId == null) {
+            return null;
+        }
+
+        return CopyBeanUtil.copy(
+                roleMapper.selectById(roleId),
+                Role.class
+        );
     }
 
+    /**
+     * 分页查询角色。
+     *
+     * <p>角色编码存在时使用精确查询，否则根据角色名称和描述进行模糊查询。</p>
+     *
+     * @param queryDTO 查询条件
+     * @return 角色分页数据
+     */
     @Override
     public IPage<Role> selectPage(RoleQueryDTO queryDTO) {
-        Page pageInfo =
-                new Page((long) queryDTO.getPage(), (long) queryDTO.getSize());
-        QueryWrapper roleWrapper = this.getQueryWrapperWithAppName();
-        String roleName = queryDTO.getRoleName();
-        String description = queryDTO.getDescription();
-        if (!StringUtils.isEmpty((Object) queryDTO.getRoleCode())) {
-            roleWrapper.eq((Object) "role_code", (Object) queryDTO.getRoleCode());
+        Page<RolePO> page = Page.of(
+                queryDTO.getPage(),
+                queryDTO.getSize()
+        );
+
+        LambdaQueryWrapper<RolePO> wrapper =
+                Wrappers.<RolePO>lambdaQuery()
+                        .eq(
+                                queryDTO.getId() != null,
+                                RolePO::getId,
+                                queryDTO.getId()
+                        );
+
+        if (StringUtils.hasText(queryDTO.getRoleCode())) {
+            wrapper.eq(
+                    RolePO::getRoleCode,
+                    queryDTO.getRoleCode()
+            );
         } else {
-            ((QueryWrapper) ((QueryWrapper) roleWrapper.like(
-                    !StringUtils.isEmpty((Object) roleName),
-                    (Object) "role_name", (Object) roleName))
-                    .like(!StringUtils.isEmpty((Object) description),
-                            (Object) "description", (Object) description))
-                    .orderByDesc((Object) "create_time");
+            wrapper.like(
+                    StringUtils.hasText(queryDTO.getRoleName()),
+                    RolePO::getRoleName,
+                    queryDTO.getRoleName()
+            )
+                    .like(
+                            StringUtils.hasText(queryDTO.getDescription()),
+                            RolePO::getDescription,
+                            queryDTO.getDescription()
+                    );
         }
-        roleWrapper.eq(Objects.nonNull(queryDTO.getId()), (Object) "id",
-                (Object) queryDTO.getId());
-        this.roleMapper.selectPage((IPage) pageInfo, (Wrapper) roleWrapper);
-        return CopyBeanUtil.copyPage(pageInfo, Role.class);
+
+        wrapper.orderByDesc(RolePO::getCreateTime);
+
+        IPage<RolePO> result =
+                roleMapper.selectPage(page, wrapper);
+
+        return CopyBeanUtil.copyPage(result, Role.class);
     }
 
+    /**
+     * 新增角色，并回填角色主键。
+     *
+     * @param role 角色信息
+     */
     @Override
     public void insert(Role role) {
-        RolePO rolePO = CopyBeanUtil.copy(role, RolePO.class);
-        this.roleMapper.insert(rolePO);
+        RolePO rolePO =
+                CopyBeanUtil.copy(role, RolePO.class);
+
+        roleMapper.insert(rolePO);
+
         role.setId(rolePO.getId());
     }
 
+    /**
+     * 根据角色主键删除角色。
+     *
+     * @param roleId 角色主键
+     */
     @Override
     public void deleteByRoleId(Long roleId) {
-        this.roleMapper.deleteById(roleId);
+        if (roleId != null) {
+            roleMapper.deleteById(roleId);
+        }
     }
 
+    /**
+     * 根据主键更新角色。
+     *
+     * @param role 角色信息
+     */
     @Override
     public void update(Role role) {
-        this.roleMapper.updateById(CopyBeanUtil.copy(role, RolePO.class));
+        roleMapper.updateById(
+                CopyBeanUtil.copy(role, RolePO.class)
+        );
     }
 
+    /**
+     * 根据角色名称查询角色简要信息，并按创建时间倒序排列。
+     *
+     * @param roleName 角色名称
+     * @return 角色简要信息列表
+     */
     @Override
     public List<RoleBrief>
-    selectBriefListByRoleNameAndDescOrderByCreateTime(String roleName) {
-        QueryWrapper<RolePO> queryWrapper = this.wrapBriefQuery();
-        ((QueryWrapper) queryWrapper.like(!StringUtils.isEmpty((Object) roleName),
-                (Object) "role_name", (Object) roleName))
-                .orderByDesc((Object) "create_time");
+    selectBriefListByRoleNameAndDescOrderByCreateTime(
+            String roleName) {
+
+        List<RolePO> rolePOList = roleMapper.selectList(
+                briefQuery()
+                        .like(
+                                StringUtils.hasText(roleName),
+                                RolePO::getRoleName,
+                                roleName
+                        )
+                        .orderByDesc(RolePO::getCreateTime)
+        );
+
         return CopyBeanUtil.copyList(
-                this.roleMapper.selectList((Wrapper) queryWrapper), RoleBrief.class);
+                rolePOList,
+                RoleBrief.class
+        );
     }
 
+    /**
+     * 查询全部角色简要信息。
+     *
+     * @return 角色简要信息列表
+     */
     @Override
     public List<RoleBrief> selectAllBrief() {
+        List<RolePO> rolePOList = roleMapper.selectList(
+                briefQuery()
+                        .orderByAsc(RolePO::getRoleName)
+                        .orderByAsc(RolePO::getId)
+        );
+
         return CopyBeanUtil.copyList(
-                this.roleMapper.selectList((Wrapper) this.wrapBriefQuery()),
-                RoleBrief.class);
+                rolePOList,
+                RoleBrief.class
+        );
     }
 
+    /**
+     * 根据角色主键集合查询角色简要信息。
+     *
+     * @param roleIdList 角色主键集合
+     * @return 角色简要信息列表
+     */
     @Override
-    public List<RoleBrief> selectBriefListByRoleIdList(List<Long> roleIdList) {
-        if (CollectionUtils.isEmpty(roleIdList)) {
-            return new ArrayList<RoleBrief>();
+    public List<RoleBrief> selectBriefListByRoleIdList(
+            List<Long> roleIdList) {
+
+        if (roleIdList == null || roleIdList.isEmpty()) {
+            return List.of();
         }
-        QueryWrapper<RolePO> queryWrapper = this.wrapBriefQuery();
-        queryWrapper.in((Object) "id", roleIdList);
+
+        List<RolePO> rolePOList = roleMapper.selectList(
+                briefQuery()
+                        .in(RolePO::getId, roleIdList)
+        );
+
         return CopyBeanUtil.copyList(
-                this.roleMapper.selectList((Wrapper) queryWrapper), RoleBrief.class);
+                rolePOList,
+                RoleBrief.class
+        );
     }
 
+    /**
+     * 查询同名角色数量，并排除指定角色。
+     *
+     * @param roleName 角色名称
+     * @param roleId   需要排除的角色主键
+     * @return 同名角色数量
+     */
     @Override
-    public int selectCountByRoleNameAndNotRoleId(String roleName,
-                                                 Long roleId) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        ((QueryWrapper) queryWrapper.eq((Object) "role_name", (Object) roleName))
-                .ne(roleId != null, (Object) "id", (Object) roleId);
-        return this.roleMapper.selectCount((Wrapper) queryWrapper);
+    public int selectCountByRoleNameAndNotRoleId(
+            String roleName,
+            Long roleId) {
+
+        Long count = roleMapper.selectCount(
+                Wrappers.<RolePO>lambdaQuery()
+                        .eq(RolePO::getRoleName, roleName)
+                        .ne(
+                                roleId != null,
+                                RolePO::getId,
+                                roleId
+                        )
+        );
+
+        return Math.toIntExact(count);
     }
 
-    private QueryWrapper<RolePO> wrapBriefQuery() {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(new String[]{"id", "role_name"});
-        return queryWrapper;
+    /**
+     * 创建角色简要信息查询条件。
+     */
+    private LambdaQueryWrapper<RolePO> briefQuery() {
+        return Wrappers.<RolePO>lambdaQuery()
+                .select(
+                        RolePO::getId,
+                        RolePO::getRoleName
+                );
     }
 }

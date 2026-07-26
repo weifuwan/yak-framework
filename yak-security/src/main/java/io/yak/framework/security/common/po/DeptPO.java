@@ -3,7 +3,6 @@ package io.yak.framework.security.common.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -14,23 +13,33 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
-@TableName(value = "yak_security_dept")
+@TableName("yak_security_dept")
 public class DeptPO extends BasePO {
-  /** 部门名称。 */
+
+  /**
+   * 部门名称。
+   */
   private String deptName;
 
-  /** 部门描述。 */
+  /**
+   * 部门描述。
+   */
   private String description;
 
-  /** 上级部门标识。 */
+  /**
+   * 上级部门标识。
+   */
   private Long parentId;
 
-  /** 是否为叶子部门。 */
+  /**
+   * 是否为叶子部门。
+   */
   private Boolean leaf;
 
-  /** 部门层级。 */
+  /**
+   * 部门层级。
+   */
   private Integer level;
 }

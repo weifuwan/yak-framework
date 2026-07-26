@@ -1,105 +1,258 @@
 package io.yak.framework.security.config;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
-/** Yak Security 模块配置。 */
-@ConfigurationProperties(prefix = "yak.security")
+/**
+ * Yak Security 模块配置。
+ */
+@Getter
+@Setter
+@ToString
+@ConfigurationProperties(prefix = YakSecurityProperties.PREFIX)
 public class YakSecurityProperties {
-  /** 是否启用 Yak Security。 */
+
+  public static final String PREFIX = "yak.security";
+
+  /**
+   * 是否启用 Yak Security。
+   */
   private boolean enabled = true;
-  /** 是否启用数据库相关功能。 */
+
+  /**
+   * 是否启用数据库相关功能。
+   */
   private boolean databaseEnabled = true;
-  /** 是否启用 Web 接口。 */
+
+  /**
+   * 是否启用 Web 接口。
+   */
   private boolean webEnabled = true;
-  /** 是否启用审计功能。 */
+
+  /**
+   * 是否启用审计功能。
+   */
   private boolean auditEnabled = true;
-  /** 用于隔离安全数据的应用名称。 */
+
+  /**
+   * 用于隔离安全数据的应用名称。
+   *
+   * <p>该值将写入数据库的 app_name 字段，
+   * 用于不同应用之间的数据隔离。</p>
+   */
   private String applicationName;
-  /** Yak Security 独立数据源配置。 */
-  private final DataSourceProperties datasource = new DataSourceProperties();
 
-  public boolean isEnabled() { return enabled; }
-  public void setEnabled(boolean enabled) { this.enabled = enabled; }
-  public boolean isDatabaseEnabled() { return databaseEnabled; }
-  public void setDatabaseEnabled(boolean databaseEnabled) { this.databaseEnabled = databaseEnabled; }
-  public boolean isWebEnabled() { return webEnabled; }
-  public void setWebEnabled(boolean webEnabled) { this.webEnabled = webEnabled; }
-  public boolean isAuditEnabled() { return auditEnabled; }
-  public void setAuditEnabled(boolean auditEnabled) { this.auditEnabled = auditEnabled; }
-  public String getApplicationName() { return applicationName; }
-  public void setApplicationName(String applicationName) { this.applicationName = applicationName; }
-  public DataSourceProperties getDatasource() { return datasource; }
+  /**
+   * Yak Security 独立数据源配置。
+   *
+   * <p>保持为 final，避免整个数据源配置对象被替换，
+   * Spring Boot 仍然可以绑定其内部属性。</p>
+   */
+  private final DataSourceProperties datasource =
+          new DataSourceProperties();
 
-  @Override
-  public String toString() {
-    return "YakSecurityProperties(enabled=" + enabled +
-        ", databaseEnabled=" + databaseEnabled + ", webEnabled=" + webEnabled +
-        ", auditEnabled=" + auditEnabled + ", applicationName=" + applicationName +
-        ", datasource=" + datasource + ")";
+  /**
+   * 校验数据库相关配置。
+   *
+   * <p>仅在安全模块、数据库和独立数据源均启用时执行校验。</p>
+   */
+  public void validateDatabaseConfiguration() {
+    if (!enabled
+            || !databaseEnabled
+            || !datasource.isEnabled()) {
+      return;
+    }
+
+    requireText(
+            applicationName,
+            PREFIX + ".application-name"
+    );
+
+    datasource.validate();
   }
 
-  /** Yak Security 使用的 Druid 数据源参数。 */
+  /**
+   * Yak Security 使用的 Druid 数据源参数。
+   */
+  @Getter
+  @Setter
+  @ToString
   public static class DataSourceProperties {
-    /** 是否启用 Yak Security 独立数据源。 */
+
+    /**
+     * 是否启用 Yak Security 独立数据源。
+     */
     private boolean enabled = true;
-    /** 数据库 JDBC 连接地址。 */
+
+    /**
+     * 数据库 JDBC 连接地址。
+     */
     private String url;
-    /** 数据库登录用户名。 */
+
+    /**
+     * 数据库登录用户名。
+     */
     private String username;
-    /** 数据库登录密码。 */
+
+    /**
+     * 数据库登录密码。
+     *
+     * <p>禁止输出到日志。</p>
+     */
+    @ToString.Exclude
     private String password;
-    /** JDBC 驱动类名。 */
-    private String driverClassName;
-    /** 连接池初始化连接数。 */
-    private int initialSize = 0;
-    /** 连接池最小空闲连接数。 */
-    private int minIdle = 0;
-    /** 连接池最大活跃连接数。 */
+
+    /**
+     * JDBC 驱动类名。
+     */
+    private String driverClassName =
+            "org.mariadb.jdbc.Driver";
+
+    /**
+     * 连接池初始化连接数。
+     */
+    private int initialSize = 1;
+
+    /**
+     * 连接池最小空闲连接数。
+     */
+    private int minIdle = 1;
+
+    /**
+     * 连接池最大活跃连接数。
+     */
     private int maxActive = 8;
-    /** 获取连接的最大等待毫秒数。 */
-    private long maxWait = -1L;
-    /** 检测连接有效性的 SQL。 */
-    private String validationQuery;
-    /** 是否在空闲连接检测时验证连接。 */
+
+    /**
+     * 获取连接的最大等待时间，单位为毫秒。
+     */
+    private long maxWait = 60_000L;
+
+    /**
+     * 检测连接有效性的 SQL。
+     */
+    private String validationQuery = "SELECT 1";
+
+    /**
+     * 是否在空闲连接检测时验证连接。
+     */
     private boolean testWhileIdle = true;
-    /** 是否在借出连接时验证连接。 */
+
+    /**
+     * 是否在借出连接时验证连接。
+     */
     private boolean testOnBorrow = false;
-    /** 是否在归还连接时验证连接。 */
+
+    /**
+     * 是否在归还连接时验证连接。
+     */
     private boolean testOnReturn = false;
 
-    public boolean isEnabled() { return enabled; }
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public String getDriverClassName() { return driverClassName; }
-    public void setDriverClassName(String driverClassName) { this.driverClassName = driverClassName; }
-    public int getInitialSize() { return initialSize; }
-    public void setInitialSize(int initialSize) { this.initialSize = initialSize; }
-    public int getMinIdle() { return minIdle; }
-    public void setMinIdle(int minIdle) { this.minIdle = minIdle; }
-    public int getMaxActive() { return maxActive; }
-    public void setMaxActive(int maxActive) { this.maxActive = maxActive; }
-    public long getMaxWait() { return maxWait; }
-    public void setMaxWait(long maxWait) { this.maxWait = maxWait; }
-    public String getValidationQuery() { return validationQuery; }
-    public void setValidationQuery(String validationQuery) { this.validationQuery = validationQuery; }
-    public boolean isTestWhileIdle() { return testWhileIdle; }
-    public void setTestWhileIdle(boolean testWhileIdle) { this.testWhileIdle = testWhileIdle; }
-    public boolean isTestOnBorrow() { return testOnBorrow; }
-    public void setTestOnBorrow(boolean testOnBorrow) { this.testOnBorrow = testOnBorrow; }
-    public boolean isTestOnReturn() { return testOnReturn; }
-    public void setTestOnReturn(boolean testOnReturn) { this.testOnReturn = testOnReturn; }
+    /**
+     * 校验数据源配置。
+     */
+    private void validate() {
+      requireText(
+              url,
+              PREFIX + ".datasource.url"
+      );
 
-    @Override
-    public String toString() {
-      return "DataSourceProperties(enabled=" + enabled + ", url=" + url +
-          ", username=" + username + ", driverClassName=" + driverClassName +
-          ", initialSize=" + initialSize + ", minIdle=" + minIdle +
-          ", maxActive=" + maxActive + ", maxWait=" + maxWait + ")";
+      requireText(
+              username,
+              PREFIX + ".datasource.username"
+      );
+
+      requireText(
+              driverClassName,
+              PREFIX + ".datasource.driver-class-name"
+      );
+
+      if (initialSize < 0) {
+        throw invalidProperty(
+                PREFIX + ".datasource.initial-size",
+                "must be greater than or equal to 0"
+        );
+      }
+
+      if (minIdle < 0) {
+        throw invalidProperty(
+                PREFIX + ".datasource.min-idle",
+                "must be greater than or equal to 0"
+        );
+      }
+
+      if (maxActive <= 0) {
+        throw invalidProperty(
+                PREFIX + ".datasource.max-active",
+                "must be greater than 0"
+        );
+      }
+
+      if (initialSize > maxActive) {
+        throw invalidProperty(
+                PREFIX + ".datasource.initial-size",
+                "must not be greater than max-active"
+        );
+      }
+
+      if (minIdle > maxActive) {
+        throw invalidProperty(
+                PREFIX + ".datasource.min-idle",
+                "must not be greater than max-active"
+        );
+      }
+
+      /*
+       * 允许：
+       * -1：由 Druid 使用其特殊等待策略；
+       * >= 0：明确的最大等待毫秒数。
+       */
+      if (maxWait < -1L) {
+        throw invalidProperty(
+                PREFIX + ".datasource.max-wait",
+                "must be -1 or greater than or equal to 0"
+        );
+      }
+
+      boolean connectionValidationEnabled =
+              testWhileIdle
+                      || testOnBorrow
+                      || testOnReturn;
+
+      if (connectionValidationEnabled
+              && !StringUtils.hasText(validationQuery)) {
+
+        throw invalidProperty(
+                PREFIX + ".datasource.validation-query",
+                "must not be blank when connection validation is enabled"
+        );
+      }
     }
+  }
+
+  private static void requireText(
+          String value,
+          String key) {
+
+    if (!StringUtils.hasText(value)) {
+      throw new IllegalStateException(
+              "Missing required configuration: " + key
+      );
+    }
+  }
+
+  private static IllegalStateException invalidProperty(
+          String key,
+          String message) {
+
+    return new IllegalStateException(
+            "Invalid configuration: "
+                    + key
+                    + " "
+                    + message
+    );
   }
 }

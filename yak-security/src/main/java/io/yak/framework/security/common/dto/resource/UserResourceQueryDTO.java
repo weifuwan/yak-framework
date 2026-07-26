@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class UserResourceQueryDTO {
   /** 管控级别。 */
-  private int controlLevel;
+  private Integer controlLevel;
   /** 项目标识。 */
   private Long projectId;
   /** 资源类型标识。 */
@@ -42,7 +42,7 @@ public class UserResourceQueryDTO {
   }
 
   public static UserResourceQueryDTO getOpenViewPermissionControlQueryEntity() {
-    return new UserResourceQueryDTO(0, 0, 0, 0);
+    return new UserResourceQueryDTO(0, 0L, 0L, 0L);
   }
 
 }

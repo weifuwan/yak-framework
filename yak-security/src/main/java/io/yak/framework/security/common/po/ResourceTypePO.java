@@ -3,7 +3,6 @@ package io.yak.framework.security.common.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -14,11 +13,13 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
-@TableName(value = "yak_security_resource_type")
+@TableName("yak_security_resource_type")
 public class ResourceTypePO extends BasePO {
-  /** 资源类型名称。 */
+
+  /**
+   * 资源类型名称。
+   */
   private String typeName;
 }

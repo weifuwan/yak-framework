@@ -1,10 +1,8 @@
 package io.yak.framework.security.common.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -15,15 +13,18 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
-@TableName(value = "yak_security_user_role")
+@TableName("yak_security_user_role")
 public class UserRolePO extends BasePO {
-  /** 用户标识。 */
+
+  /**
+   * 用户标识。
+   */
   private Long userId;
 
-  /** 角色标识。 */
+  /**
+   * 角色标识。
+   */
   private Long roleId;
 }

@@ -3,7 +3,6 @@ package io.yak.framework.security.common.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -14,23 +13,33 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
-@TableName(value = "yak_security_user_resource")
+@TableName("yak_security_user_resource")
 public class UserResourcePO extends BasePO {
-  /** 用户标识。 */
+
+  /**
+   * 用户标识。
+   */
   private Long userId;
 
-  /** 项目标识。 */
+  /**
+   * 项目标识。
+   */
   private Long projectId;
 
-  /** 资源类型标识。 */
+  /**
+   * 资源类型标识。
+   */
   private Long resourceTypeId;
 
-  /** 资源标识。 */
+  /**
+   * 资源标识。
+   */
   private Long resourceId;
 
-  /** 资源控制级别。 */
+  /**
+   * 资源控制级别。
+   */
   private Integer controlLevel;
 }

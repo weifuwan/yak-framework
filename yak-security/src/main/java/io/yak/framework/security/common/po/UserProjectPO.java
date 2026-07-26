@@ -3,7 +3,6 @@ package io.yak.framework.security.common.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -14,17 +13,23 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
-@TableName(value = "yak_security_user_project")
+@TableName("yak_security_user_project")
 public class UserProjectPO extends BasePO {
-  /** 用户标识。 */
+
+  /**
+   * 用户标识。
+   */
   private Long userId;
 
-  /** 项目中的用户类型。 */
+  /**
+   * 项目中的用户类型。
+   */
   private Integer userType;
 
-  /** 项目标识。 */
+  /**
+   * 项目标识。
+   */
   private Long projectId;
 }

@@ -1,143 +1,257 @@
 package io.yak.framework.security.dao.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.yak.framework.security.common.dto.config.ConfigQueryDTO;
 import io.yak.framework.security.common.po.ConfigPO;
 import io.yak.framework.security.dao.ConfigDao;
 import io.yak.framework.security.dao.mapper.ConfigMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
-public class ConfigDaoImpl extends BaseDaoImpl<ConfigPO> implements ConfigDao {
-    private static final String ID = "id";
-    private static final String VALUE_GROUP = "value_group";
-    private static final String VALUE_NAME = "value_name";
-    private static final String VALUE = "value";
-    private static final String STATUS = "status";
-    private static final String MEMO = "memo";
-    private static final String OPERATOR = "operator";
-    private static final String CREATE_TIME = "create_time";
-    private static final String UPDATE_TIME = "update_time";
-    @Autowired
-    private ConfigMapper configMapper;
+/**
+ * 系统配置数据访问实现。
+ */
+@Repository
+@RequiredArgsConstructor
+public class ConfigDaoImpl
+        implements ConfigDao {
 
+    private final ConfigMapper configMapper;
+
+    /**
+     * 新增配置。
+     *
+     * @param config 配置信息
+     * @return 受影响行数
+     */
     @Override
-    public int insert(ConfigPO param) {
-        return this.configMapper.insert(param);
+    public int insert(ConfigPO config) {
+        return configMapper.insert(config);
     }
 
+    /**
+     * 根据主键更新配置。
+     *
+     * @param config 配置信息
+     * @return 受影响行数
+     */
     @Override
-    public int updateById(ConfigPO param) {
-        return this.configMapper.updateById(param);
+    public int updateById(ConfigPO config) {
+        return configMapper.updateById(config);
     }
 
+    /**
+     * 根据配置分组和配置名称更新配置。
+     *
+     * @param config 配置信息
+     * @return 受影响行数
+     */
     @Override
-    public int update(ConfigPO param) {
-        QueryWrapper<ConfigPO> queryWrapper = this.wrapBriefQuery();
-        queryWrapper.eq((Object) VALUE_GROUP, (Object) param.getValueGroup());
-        queryWrapper.eq((Object) VALUE_NAME, (Object) param.getValueName());
-        return this.configMapper.update(param, (Wrapper) queryWrapper);
+    public int update(ConfigPO config) {
+        LambdaUpdateWrapper<ConfigPO> wrapper =
+                Wrappers.<ConfigPO>lambdaUpdate()
+                        .eq(
+                                ConfigPO::getValueGroup,
+                                config.getValueGroup()
+                        )
+                        .eq(
+                                ConfigPO::getValueName,
+                                config.getValueName()
+                        );
+
+        return configMapper.update(config, wrapper);
     }
 
+    /**
+     * 根据主键删除配置。
+     *
+     * @param id 配置主键
+     * @return 受影响行数
+     */
     @Override
     public int deleteById(Long id) {
-        return this.configMapper.deleteById(id);
+        return configMapper.deleteById(id);
     }
 
+    /**
+     * 分页查询配置。
+     *
+     * @param queryDTO 查询条件
+     * @return 配置分页数据
+     */
     @Override
-    public IPage<ConfigPO> selectPage(ConfigQueryDTO queryDTO) {
-        Page page = new Page((long) queryDTO.getPage(), (long) queryDTO.getSize());
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        ((QueryWrapper) ((QueryWrapper) ((QueryWrapper) ((QueryWrapper) ((QueryWrapper) queryWrapper
-                .eq(queryDTO.getValueGroup() !=
-                                null,
-                        (Object)
-                                VALUE_GROUP,
-                        (Object) queryDTO
-                                .getValueGroup()))
-                .eq(queryDTO.getStatus() !=
-                                null,
-                        (Object) STATUS,
-                        (Object) queryDTO
-                                .getStatus()))
-                .eq(queryDTO.getOperator() != null,
-                        (Object) OPERATOR,
-                        (Object) queryDTO.getOperator()))
-                .like(queryDTO.getMemo() != null, (Object) MEMO,
-                        (Object) queryDTO.getMemo()))
-                .like(queryDTO.getValueName() != null, (Object) VALUE_NAME,
-                        (Object) queryDTO.getValueName()))
-                .orderByDesc((Object) CREATE_TIME);
-        this.configMapper.selectPage((IPage) page, (Wrapper) queryWrapper);
-        page.setTotal(
-                this.configMapper.selectCount((Wrapper) queryWrapper));
-        return page;
+    public IPage<ConfigPO> selectPage(
+            ConfigQueryDTO queryDTO) {
+
+        Page<ConfigPO> page = Page.of(
+                queryDTO.getPage(),
+                queryDTO.getSize()
+        );
+
+        LambdaQueryWrapper<ConfigPO> wrapper =
+                Wrappers.<ConfigPO>lambdaQuery()
+                        .eq(
+                                StringUtils.hasText(
+                                        queryDTO.getValueGroup()
+                                ),
+                                ConfigPO::getValueGroup,
+                                queryDTO.getValueGroup()
+                        )
+                        .eq(
+                                queryDTO.getStatus() != null,
+                                ConfigPO::getStatus,
+                                queryDTO.getStatus()
+                        )
+                        .eq(
+                                StringUtils.hasText(
+                                        queryDTO.getOperator()
+                                ),
+                                ConfigPO::getOperator,
+                                queryDTO.getOperator()
+                        )
+                        .like(
+                                StringUtils.hasText(
+                                        queryDTO.getMemo()
+                                ),
+                                ConfigPO::getMemo,
+                                queryDTO.getMemo()
+                        )
+                        .like(
+                                StringUtils.hasText(
+                                        queryDTO.getValueName()
+                                ),
+                                ConfigPO::getValueName,
+                                queryDTO.getValueName()
+                        )
+                        .orderByDesc(ConfigPO::getCreateTime);
+
+        return configMapper.selectPage(page, wrapper);
     }
 
+    /**
+     * 根据配置对象中的非空条件查询配置。
+     *
+     * @param condition 查询条件
+     * @return 配置列表
+     */
     @Override
-    public List<ConfigPO> listByCondition(ConfigPO condt) {
-        QueryWrapper<ConfigPO> queryWrapper = this.wrapBriefQuery();
-        if (!StringUtils.isBlank((CharSequence) condt.getValueGroup())) {
-            queryWrapper.eq((Object) VALUE_GROUP, (Object) condt.getValueGroup());
-        }
-        if (!StringUtils.isBlank((CharSequence) condt.getValueName())) {
-            queryWrapper.eq((Object) VALUE_NAME, (Object) condt.getValueName());
-        }
-        if (null != condt.getStatus()) {
-            queryWrapper.eq((Object) STATUS, (Object) condt.getStatus());
-        }
-        return this.configMapper.selectList((Wrapper) queryWrapper);
+    public List<ConfigPO> listByCondition(
+            ConfigPO condition) {
+
+        LambdaQueryWrapper<ConfigPO> wrapper =
+                Wrappers.<ConfigPO>lambdaQuery()
+                        .eq(
+                                StringUtils.hasText(
+                                        condition.getValueGroup()
+                                ),
+                                ConfigPO::getValueGroup,
+                                condition.getValueGroup()
+                        )
+                        .eq(
+                                StringUtils.hasText(
+                                        condition.getValueName()
+                                ),
+                                ConfigPO::getValueName,
+                                condition.getValueName()
+                        )
+                        .eq(
+                                condition.getStatus() != null,
+                                ConfigPO::getStatus,
+                                condition.getStatus()
+                        );
+
+        return configMapper.selectList(wrapper);
     }
 
+    /**
+     * 根据配置分组查询配置列表。
+     *
+     * @param groupName 配置分组
+     * @return 配置列表
+     */
     @Override
-    public List<ConfigPO> listConfigByGroup(String groupName) {
-        QueryWrapper<ConfigPO> queryWrapper = this.wrapBriefQuery();
-        queryWrapper.eq((Object) VALUE_GROUP, (Object) groupName);
-        return this.configMapper.selectList((Wrapper) queryWrapper);
+    public List<ConfigPO> listConfigByGroup(
+            String groupName) {
+
+        return configMapper.selectList(
+                Wrappers.<ConfigPO>lambdaQuery()
+                        .eq(
+                                ConfigPO::getValueGroup,
+                                groupName
+                        )
+        );
     }
 
+    /**
+     * 查询所有不重复的配置分组。
+     *
+     * @return 配置分组列表
+     */
     @Override
     public List<String> listDistinctGroup() {
-        QueryWrapper<ConfigPO> queryWrapper = this.wrapBriefQuery();
-        queryWrapper.select(new String[]{"distinct value_group"});
-        List configPOS = this.configMapper.selectList((Wrapper) queryWrapper);
-        if (!CollectionUtils.isEmpty((Collection) configPOS)) {
-            return configPOS.stream()
-                    .map(ConfigPO::getValueGroup)
-                    .collect(Collectors.toList());
-        }
-        return new ArrayList<String>();
+        List<ConfigPO> configs =
+                configMapper.selectList(
+                        Wrappers.<ConfigPO>lambdaQuery()
+                                .select(
+                                        ConfigPO::getValueGroup
+                                )
+                                .isNotNull(
+                                        ConfigPO::getValueGroup
+                                )
+                                .groupBy(
+                                        ConfigPO::getValueGroup
+                                )
+                                .orderByAsc(
+                                        ConfigPO::getValueGroup
+                                )
+                );
+
+        return configs.stream()
+                .map(ConfigPO::getValueGroup)
+                .filter(StringUtils::hasText)
+                .toList();
     }
 
+    /**
+     * 根据主键查询配置。
+     *
+     * @param configId 配置主键
+     * @return 配置信息
+     */
     @Override
     public ConfigPO getbyId(Long configId) {
-        return (ConfigPO) this.configMapper.selectById(configId);
+        return configMapper.selectById(configId);
     }
 
+    /**
+     * 根据配置分组和配置名称查询配置。
+     *
+     * @param valueGroup 配置分组
+     * @param valueName  配置名称
+     * @return 配置信息
+     */
     @Override
-    public ConfigPO getByGroupAndName(String valueGroup, String valueName) {
-        QueryWrapper<ConfigPO> queryWrapper = this.wrapBriefQuery();
-        queryWrapper.eq((Object) VALUE_GROUP, (Object) valueGroup);
-        queryWrapper.eq((Object) VALUE_NAME, (Object) valueName);
-        return (ConfigPO) this.configMapper.selectOne((Wrapper) queryWrapper);
-    }
+    public ConfigPO getByGroupAndName(
+            String valueGroup,
+            String valueName) {
 
-    private QueryWrapper<ConfigPO> wrapBriefQuery() {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(new String[]{ID, VALUE_GROUP, VALUE_NAME, VALUE,
-                STATUS, MEMO, OPERATOR, CREATE_TIME,
-                UPDATE_TIME});
-        return queryWrapper;
+        return configMapper.selectOne(
+                Wrappers.<ConfigPO>lambdaQuery()
+                        .eq(
+                                ConfigPO::getValueGroup,
+                                valueGroup
+                        )
+                        .eq(
+                                ConfigPO::getValueName,
+                                valueName
+                        )
+        );
     }
 }

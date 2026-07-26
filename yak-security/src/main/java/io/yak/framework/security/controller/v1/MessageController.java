@@ -2,11 +2,13 @@ package io.yak.framework.security.controller.v1;
 
 import io.yak.framework.security.common.Result;
 import io.yak.framework.security.common.vo.message.MessageVO;
+import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.MessageService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,25 +16,70 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 消息管理接口。
+ *
+ * @author weifuwan
+ */
 @RestController
-@RequestMapping(value = {"/yak-security/api/v1/message"})
+@RequestMapping("/yak-security/api/v1/message")
 public class MessageController {
-  @Autowired private MessageService messageService;
 
-  @GetMapping(value = {"/list/{readTag}", "/list"})
-  public Result<List<MessageVO>>
-  list(@PathVariable(required = false) Boolean readTag,
-       HttpServletRequest request) {
-    List<MessageVO> messageVOList =
-        this.messageService.getMessageListByUserIdAndReadTag(
-            HttpRequestUtil.getOperator(request), readTag);
-    return Result.success(messageVOList);
+  private final MessageService messageService;
+
+  /**
+   * 创建消息管理接口。
+   *
+   * @param messageService 消息服务
+   */
+  public MessageController(
+          MessageService messageService) {
+
+    this.messageService = messageService;
   }
 
-  @PutMapping(value = {"/switch"})
-  public Result<String> switched(@RequestBody @ApiParam(
-      name = "idList", value = "\u6d88\u606fidList") List<Long> idList) {
-    this.messageService.changeMessageStatus(idList);
-    return Result.success();
+  /**
+   * 查询当前用户消息。
+   *
+   * <p>readTag 为空时查询全部消息。
+   *
+   * @param readTag 已读状态
+   * @param request HTTP 请求
+   * @return 消息列表
+   */
+  @GetMapping({"/list", "/list/{readTag}"})
+  public Result<List<MessageVO>> list(
+          @PathVariable(required = false)
+                  Boolean readTag,
+          HttpServletRequest request) {
+
+    try {
+      String username =
+              HttpRequestUtil.getOperator(request);
+
+      return Result.buildSucc(
+              messageService
+                      .getMessageListByUsernameAndReadTag(
+                              username,
+                              readTag));
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
+    }
+  }
+
+  /**
+   * 批量切换消息已读状态。
+   *
+   * @param messageIdList 消息 ID 列表
+   * @return 操作结果
+   */
+  @PutMapping("/switch")
+  public Result<Void> switchStatus(
+          @RequestBody List<Long> messageIdList) {
+
+    messageService.changeMessageStatus(
+            messageIdList);
+
+    return Result.buildSucc(null);
   }
 }

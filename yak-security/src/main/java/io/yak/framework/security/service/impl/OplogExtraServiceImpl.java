@@ -4,37 +4,163 @@ import io.yak.framework.security.common.entity.OplogExtra;
 import io.yak.framework.security.common.enums.oplog.OplogCode;
 import io.yak.framework.security.dao.OplogExtraDao;
 import io.yak.framework.security.service.OplogExtraService;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
-@Service(value = "yakSecurityOplogExtraServiceImpl")
-public class OplogExtraServiceImpl implements OplogExtraService {
-  @Autowired private OplogExtraDao oplogExtraDao;
+/**
+ * 操作日志扩展服务实现类。
+ *
+ * @author weifuwan
+ */
+@Service("yakSecurityOplogExtraServiceImpl")
+public class OplogExtraServiceImpl
+        implements OplogExtraService {
 
-  @Override
-  public void saveOplogExtraList(List<String> nameList, OplogCode oplogCode) {
-    if (oplogCode == null || CollectionUtils.isEmpty(nameList)) {
-      return;
-    }
-    ArrayList<OplogExtra> oplogExtraList = new ArrayList<OplogExtra>();
-    for (String name : nameList) {
-      OplogExtra oplogExtra = new OplogExtra();
-      oplogExtra.setInfo(name);
-      oplogExtra.setType(oplogCode.getType());
-    }
-    this.oplogExtraDao.insertBatch(oplogExtraList);
+  private final OplogExtraDao oplogExtraDao;
+
+  /**
+   * 创建操作日志扩展服务。
+   *
+   * @param oplogExtraDao 操作日志扩展数据访问对象
+   */
+  public OplogExtraServiceImpl(
+          OplogExtraDao oplogExtraDao) {
+
+    this.oplogExtraDao = oplogExtraDao;
   }
 
+  /**
+   * 批量保存操作日志扩展信息。
+   *
+   * @param nameList 扩展名称列表
+   * @param oplogCode 操作日志类型
+   */
   @Override
-  public List<String> getOplogExtraNameListByType(Integer type) {
-    List<OplogExtra> oplogExtraList = this.oplogExtraDao.selectListByType(type);
-    ArrayList<String> result = new ArrayList<String>();
-    for (OplogExtra oplogExtra : oplogExtraList) {
-      result.add(oplogExtra.getInfo());
+  @Transactional(
+          transactionManager =
+                  "yakSecurityTransactionManager",
+          rollbackFor = Exception.class)
+  public void saveOplogExtraList(
+          List<String> nameList,
+          OplogCode oplogCode) {
+
+    if (oplogCode == null) {
+      return;
     }
-    return result;
+
+    List<String> validNameList =
+            normalizeNames(nameList);
+
+    if (validNameList.isEmpty()) {
+      return;
+    }
+
+    List<OplogExtra> oplogExtraList =
+            buildOplogExtraList(
+                    validNameList,
+                    oplogCode);
+
+    if (oplogExtraList.isEmpty()) {
+      return;
+    }
+
+    oplogExtraDao.insertBatch(
+            oplogExtraList);
+  }
+
+  /**
+   * 根据类型查询操作日志扩展名称。
+   *
+   * @param type 操作日志扩展类型
+   * @return 操作日志扩展名称列表
+   */
+  @Override
+  public List<String> getOplogExtraNameListByType(
+          Integer type) {
+
+    if (type == null) {
+      return new ArrayList<>();
+    }
+
+    List<OplogExtra> oplogExtraList =
+            oplogExtraDao.selectListByType(
+                    type);
+
+    if (CollectionUtils.isEmpty(
+            oplogExtraList)) {
+
+      return new ArrayList<>();
+    }
+
+    return oplogExtraList.stream()
+            .filter(Objects::nonNull)
+            .map(OplogExtra::getInfo)
+            .filter(StringUtils::hasText)
+            .map(String::trim)
+            .distinct()
+            .collect(Collectors.toList());
+  }
+
+  /**
+   * 构建操作日志扩展实体列表。
+   *
+   * @param nameList 扩展名称列表
+   * @param oplogCode 操作日志类型
+   * @return 操作日志扩展实体列表
+   */
+  private List<OplogExtra> buildOplogExtraList(
+          List<String> nameList,
+          OplogCode oplogCode) {
+
+    List<OplogExtra> oplogExtraList =
+            new ArrayList<>(nameList.size());
+
+    for (String name : nameList) {
+      OplogExtra oplogExtra =
+              new OplogExtra();
+
+      oplogExtra.setInfo(name);
+      oplogExtra.setType(
+              oplogCode.getType());
+
+      /*
+       * 原实现缺少这一行，
+       * 导致最终批量插入空集合。
+       */
+      oplogExtraList.add(
+              oplogExtra);
+    }
+
+    return oplogExtraList;
+  }
+
+  /**
+   * 清理操作日志扩展名称。
+   *
+   * <p>过滤空名称、去除首尾空格并去重。
+   *
+   * @param nameList 原始名称列表
+   * @return 有效名称列表
+   */
+  private List<String> normalizeNames(
+          List<String> nameList) {
+
+    if (CollectionUtils.isEmpty(nameList)) {
+      return new ArrayList<>();
+    }
+
+    return nameList.stream()
+            .filter(StringUtils::hasText)
+            .map(String::trim)
+            .distinct()
+            .collect(Collectors.toList());
   }
 }

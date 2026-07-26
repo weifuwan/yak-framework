@@ -3,7 +3,6 @@ package io.yak.framework.security.common.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -14,23 +13,34 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
-@TableName(value = "yak_security_message")
+@TableName("yak_security_message")
 public class MessagePO extends BasePO {
-  /** 消息标题。 */
+
+  /**
+   * 消息标题。
+   */
   private String title;
 
-  /** 消息内容。 */
+  /**
+   * 消息内容。
+   */
+  @ToString.Exclude
   private String content;
 
-  /** 消息是否已读。 */
+  /**
+   * 消息是否已读。
+   */
   private Boolean readTag;
 
-  /** 关联操作日志标识。 */
+  /**
+   * 关联操作日志标识。
+   */
   private Long oplogId;
 
-  /** 接收用户标识。 */
+  /**
+   * 接收用户标识。
+   */
   private Long userId;
 }

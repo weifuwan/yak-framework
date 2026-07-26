@@ -3,7 +3,6 @@ package io.yak.framework.security.common.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -14,14 +13,18 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
-@TableName(value = "yak_security_role_permission")
+@TableName("yak_security_role_permission")
 public class RolePermissionPO extends BasePO {
-  /** 角色标识。 */
+
+  /**
+   * 角色标识。
+   */
   private Long roleId;
 
-  /** 权限标识。 */
+  /**
+   * 权限标识。
+   */
   private Long permissionId;
 }

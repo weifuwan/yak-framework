@@ -20,9 +20,9 @@ import io.yak.framework.security.common.vo.resource.ResourceTypeVO;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.ResourceTypeService;
 import io.yak.framework.security.service.UserResourceService;
-import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,129 +30,248 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 资源权限管理接口。
+ *
+ * @author weifuwan
+ */
 @RestController
-@RequestMapping(value = {"/yak-security/api/v1/resource"})
+@RequestMapping("/yak-security/api/v1/resource")
 public class ResourceController {
-  @Autowired private UserResourceService userResourceService;
-  @Autowired private ResourceTypeService resourceTypeService;
 
-  @GetMapping(value = {"/type/list"})
+  private final UserResourceService userResourceService;
+
+  private final ResourceTypeService resourceTypeService;
+
+  /**
+   * 创建资源权限管理接口。
+   *
+   * @param userResourceService 用户资源权限服务
+   * @param resourceTypeService 资源类型服务
+   */
+  public ResourceController(
+          UserResourceService userResourceService,
+          ResourceTypeService resourceTypeService) {
+
+    this.userResourceService = userResourceService;
+    this.resourceTypeService = resourceTypeService;
+  }
+
+  /**
+   * 查询全部资源类型。
+   *
+   * @return 资源类型列表
+   */
+  @GetMapping("/type/list")
   public Result<List<ResourceTypeVO>> typeList() {
-    List<ResourceTypeVO> resourceTypeVOList =
-        this.resourceTypeService.getAllResourceTypeList();
-    return Result.success(resourceTypeVOList);
+    return Result.buildSucc(
+            resourceTypeService.getAllResourceTypeList());
   }
 
-  @PostMapping(value = {"/type/import"})
-  public Result<String> typeImport(@RequestBody @ApiParam(
-      name = "list",
-      value = "\u8d44\u6e90\u7c7b\u578b\u540dList") List<String> list) {
-    this.resourceTypeService.saveResourceType(list);
-    return Result.success();
+  /**
+   * 导入资源类型。
+   *
+   * @param typeNameList 资源类型名称列表
+   * @return 导入结果
+   */
+  @PostMapping("/type/import")
+  public Result<Void> typeImport(
+          @RequestBody List<String> typeNameList) {
+
+    resourceTypeService.saveResourceType(
+            typeNameList);
+
+    return Result.buildSucc(null);
   }
 
-  @GetMapping(value = {"/vpc/status"})
+  /**
+   * 查询资源查看权限控制状态。
+   *
+   * @return 是否开启查看权限控制
+   */
+  @GetMapping("/vpc/status")
   public Result<Boolean> vpcStatus() {
-    boolean isOn = this.userResourceService.getViewPermissionControlStatus();
-    return Result.success(isOn);
+    return Result.buildSucc(
+            userResourceService
+                    .getViewPermissionControlStatus());
   }
 
-  @PutMapping(value = {"/vpc/switch"})
-  public Result<String> vpcSwitch() {
-    this.userResourceService.changeResourceViewControlStatus();
-    return Result.success();
+  /**
+   * 切换资源查看权限控制状态。
+   *
+   * @return 切换结果
+   */
+  @PutMapping("/vpc/switch")
+  public Result<Void> vpcSwitch() {
+    userResourceService
+            .changeResourceViewControlStatus();
+
+    return Result.buildSucc(null);
   }
 
-  @PostMapping(value = {"/mbu/list"})
-  public Result<List<MByUDataVO>>
-  mbuList(@RequestBody MByUDataQueryDTO queryDTO) {
+  /**
+   * 查询按用户管理的资源权限数据。
+   *
+   * @param queryDTO 查询条件
+   * @return 资源权限数据列表
+   */
+  @PostMapping("/mbu/list")
+  public Result<List<MByUDataVO>> mbuList(
+          @RequestBody MByUDataQueryDTO queryDTO) {
+
     try {
-      List<MByUDataVO> resultList =
-          this.userResourceService.getManagerByUserDataList(queryDTO);
-      return Result.success(resultList);
-    } catch (YakSecurityException e) {
-      e.printStackTrace();
-      return Result.fail(e);
+      return Result.buildSucc(
+              userResourceService
+                      .getManagerByUserDataList(
+                              queryDTO));
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 
-  @PostMapping(value = {"/mbr/list"})
-  public Result<List<MByRDataVO>>
-  mbrList(@RequestBody MByRDataQueryDTO queryDTO) {
+  /**
+   * 查询按资源管理的用户权限数据。
+   *
+   * @param queryDTO 查询条件
+   * @return 用户权限数据列表
+   */
+  @PostMapping("/mbr/list")
+  public Result<List<MByRDataVO>> mbrList(
+          @RequestBody MByRDataQueryDTO queryDTO) {
+
     try {
-      List<MByRDataVO> resultList =
-          this.userResourceService.getManagerByResourceDataList(queryDTO);
-      return Result.success(resultList);
-    } catch (YakSecurityException e) {
-      e.printStackTrace();
-      return Result.fail(e);
+      return Result.buildSucc(
+              userResourceService
+                      .getManagerByResourceDataList(
+                              queryDTO));
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 
-  @PostMapping(value = {"/mbr/page"})
-  public PagingResult<MByRVO> mbrPage(@RequestBody MByRQueryDTO queryDTO) {
+  /**
+   * 分页查询按资源管理的权限信息。
+   *
+   * @param queryDTO 查询条件
+   * @return 权限分页结果
+   */
+  @PostMapping("/mbr/page")
+  public PagingResult<MByRVO> mbrPage(
+          @RequestBody MByRQueryDTO queryDTO) {
+
     try {
       PagingData<MByRVO> pagingData =
-          this.userResourceService.getManageByResourcePage(queryDTO);
+              userResourceService
+                      .getManageByResourcePage(
+                              queryDTO);
+
       return PagingResult.success(pagingData);
-    } catch (YakSecurityException e) {
-      e.printStackTrace();
-      return PagingResult.fail(e);
+    } catch (YakSecurityException exception) {
+      return PagingResult.fail(exception);
     }
   }
 
-  @PostMapping(value = {"/mbu/page"})
-  public PagingResult<MByUVO> mbuPage(@RequestBody MByUQueryDTO queryDTO) {
+  /**
+   * 分页查询按用户管理的权限信息。
+   *
+   * @param queryDTO 查询条件
+   * @return 权限分页结果
+   */
+  @PostMapping("/mbu/page")
+  public PagingResult<MByUVO> mbuPage(
+          @RequestBody MByUQueryDTO queryDTO) {
+
     PagingData<MByUVO> pagingData =
-        this.userResourceService.getManageByUserPage(queryDTO);
+            userResourceService
+                    .getManageByUserPage(
+                            queryDTO);
+
     return PagingResult.success(pagingData);
   }
 
-  @PostMapping(value = {"/permission/mbr/assign"})
-  public Result<String> mbrAssign(@RequestBody AssignToManyUserDTO assignDTO,
-                                  HttpServletRequest request) {
-    try {
-      this.userResourceService.assignResourcePermission(assignDTO, request);
-    } catch (YakSecurityException e) {
-      e.printStackTrace();
-      return Result.fail(e);
-    }
-    return Result.success();
-  }
+  /**
+   * 为多个用户分配资源权限。
+   *
+   * @param assignDTO 分配参数
+   * @return 分配结果
+   */
+  @PostMapping("/permission/mbr/assign")
+  public Result<Void> mbrAssign(
+          @RequestBody AssignToManyUserDTO assignDTO) {
 
-  @PostMapping(value = {"/permission/mbu/assign"})
-  public Result<String> mbuAssign(@RequestBody AssignToOneUserDTO assignDTO) {
     try {
-      this.userResourceService.assignResourcePermission(assignDTO);
-      return Result.success();
-    } catch (YakSecurityException e) {
-      e.printStackTrace();
-      return Result.fail(e);
+      userResourceService
+              .assignResourcePermission(
+                      assignDTO);
+
+      return Result.buildSucc(null);
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 
-  @PostMapping(value = {"/permission/assign/batch"})
-  public Result<String> batchAssign(@RequestBody BatchAssignDTO assignDTO,
-                                    HttpServletRequest request) {
+  /**
+   * 为单个用户分配资源权限。
+   *
+   * @param assignDTO 分配参数
+   * @return 分配结果
+   */
+  @PostMapping("/permission/mbu/assign")
+  public Result<Void> mbuAssign(
+          @RequestBody AssignToOneUserDTO assignDTO) {
+
     try {
-      this.userResourceService.batchAssignResourcePermission(assignDTO,
-                                                             request);
-      return Result.success();
-    } catch (YakSecurityException e) {
-      e.printStackTrace();
-      return Result.fail(e);
+      userResourceService
+              .assignResourcePermission(
+                      assignDTO);
+
+      return Result.buildSucc(null);
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 
-  @PostMapping(value = {"/control/level"})
-  public Result<Integer>
-  getControlLevel(@RequestBody ControlLevelQueryDTO queryDTO) {
+  /**
+   * 批量分配资源权限。
+   *
+   * @param assignDTO 批量分配参数
+   * @return 分配结果
+   */
+  @PostMapping("/permission/assign/batch")
+  public Result<Void> batchAssign(
+          @RequestBody BatchAssignDTO assignDTO) {
+
+    try {
+      userResourceService
+              .batchAssignResourcePermission(
+                      assignDTO);
+
+      return Result.buildSucc(null);
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
+    }
+  }
+
+  /**
+   * 查询资源权限控制级别。
+   *
+   * @param queryDTO 查询条件
+   * @return 权限控制级别
+   */
+  @PostMapping("/control/level")
+  public Result<Integer> getControlLevel(
+          @RequestBody ControlLevelQueryDTO queryDTO) {
+
     try {
       ControlLevelCode controlLevel =
-          this.userResourceService.getControlLevel(queryDTO);
-      return Result.success(controlLevel.getType());
-    } catch (YakSecurityException e) {
-      return Result.fail(e);
+              userResourceService
+                      .getControlLevel(
+                              queryDTO);
+
+      return Result.buildSucc(
+              controlLevel.getType());
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 }

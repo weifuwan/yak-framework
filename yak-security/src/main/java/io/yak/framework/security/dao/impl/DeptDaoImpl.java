@@ -1,7 +1,7 @@
 package io.yak.framework.security.dao.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.yak.framework.security.common.entity.dept.Dept;
 import io.yak.framework.security.common.entity.dept.DeptBrief;
 import io.yak.framework.security.common.po.DeptPO;
@@ -9,92 +9,125 @@ import io.yak.framework.security.dao.DeptDao;
 import io.yak.framework.security.dao.mapper.DeptMapper;
 import io.yak.framework.security.util.CopyBeanUtil;
 import io.yak.framework.security.util.DatabaseNumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
-public class DeptDaoImpl extends BaseDaoImpl<DeptPO> implements DeptDao {
-    @Autowired
-    private DeptMapper deptMapper;
+/**
+ * 部门数据访问实现。
+ */
+@Repository
+@RequiredArgsConstructor
+public class DeptDaoImpl
+        implements DeptDao {
 
-    private QueryWrapper<DeptPO> wrapBriefQuery() {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(
-                new String[]{"id", "dept_name", "leaf", "level", "parent_id"});
-        return queryWrapper;
-    }
+    private final DeptMapper deptMapper;
 
     @Override
     public List<Dept> selectAllAndAscOrderByLevel() {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.orderByAsc((Object) "level");
-        return CopyBeanUtil.copyList(
-                this.deptMapper.selectList((Wrapper) queryWrapper), Dept.class);
+        List<DeptPO> departments = deptMapper.selectList(
+                Wrappers.<DeptPO>lambdaQuery()
+                        .orderByAsc(DeptPO::getLevel)
+        );
+
+        return CopyBeanUtil.copyList(departments, Dept.class);
     }
 
     @Override
-    public List<Long> selectIdListByLikeDeptName(String deptName) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(new String[]{"id"})
-                .like(!StringUtils.isEmpty((Object) deptName), (Object) "dept_name",
-                        (Object) deptName);
-        List deptIdList = this.deptMapper.selectObjs((Wrapper) queryWrapper);
-        return deptIdList.stream()
-                .map(DatabaseNumberUtils::toLong)
-                .collect(Collectors.toList());
+    public List<Long> selectIdListByLikeDeptName(
+            String deptName) {
+
+        LambdaQueryWrapper<DeptPO> wrapper =
+                Wrappers.<DeptPO>lambdaQuery()
+                        .select(DeptPO::getId)
+                        .like(
+                                StringUtils.hasText(deptName),
+                                DeptPO::getDeptName,
+                                deptName
+                        );
+
+        return selectIdList(wrapper);
     }
 
     @Override
     public DeptBrief selectBriefByDeptId(Long deptId) {
-        QueryWrapper<DeptPO> queryWrapper = this.wrapBriefQuery();
-        queryWrapper.eq((Object) "id", (Object) deptId);
-        return CopyBeanUtil.copy(this.deptMapper.selectOne((Wrapper) queryWrapper),
-                DeptBrief.class);
+        DeptPO department = deptMapper.selectOne(
+                briefQuery()
+                        .eq(DeptPO::getId, deptId)
+        );
+
+        return CopyBeanUtil.copy(
+                department,
+                DeptBrief.class
+        );
     }
 
     @Override
     public List<Long> selectAllDeptIdList() {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(new String[]{"id"});
-        List deptIdList = this.deptMapper.selectObjs((Wrapper) queryWrapper);
-        return deptIdList.stream()
-                .map(DatabaseNumberUtils::toLong)
-                .collect(Collectors.toList());
+        return selectIdList(
+                Wrappers.<DeptPO>lambdaQuery()
+                        .select(DeptPO::getId)
+        );
     }
 
     @Override
-    public List<Long> selectIdListByParentId(Long deptId) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(new String[]{"id"})
-                .eq((Object) "parent_id", (Object) deptId);
-        List deptIdList = this.deptMapper.selectObjs((Wrapper) queryWrapper);
-        return deptIdList.stream()
-                .map(DatabaseNumberUtils::toLong)
-                .collect(Collectors.toList());
+    public List<Long> selectIdListByParentId(
+            Long parentId) {
+
+        return selectIdList(
+                Wrappers.<DeptPO>lambdaQuery()
+                        .select(DeptPO::getId)
+                        .eq(DeptPO::getParentId, parentId)
+        );
     }
 
     @Override
     public void insertBatch(List<Dept> deptList) {
-        if (CollectionUtils.isEmpty(deptList)) {
+        if (deptList == null || deptList.isEmpty()) {
             return;
         }
-        List<DeptPO> deptPOList = CopyBeanUtil.copyList(deptList, DeptPO.class);
-        for (DeptPO deptPO : deptPOList) {
-            this.deptMapper.insert(deptPO);
-        }
+
+        CopyBeanUtil.copyList(deptList, DeptPO.class)
+                .forEach(deptMapper::insert);
     }
 
     @Override
     public List<DeptBrief> selectAllDeptBriefList() {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(
-                new String[]{"id", "description", "parent_id", "leaf", "level"});
+        List<DeptPO> departments =
+                deptMapper.selectList(briefQuery());
+
         return CopyBeanUtil.copyList(
-                this.deptMapper.selectList((Wrapper) queryWrapper), DeptBrief.class);
+                departments,
+                DeptBrief.class
+        );
+    }
+
+    /**
+     * 创建部门简要信息查询条件。
+     */
+    private LambdaQueryWrapper<DeptPO> briefQuery() {
+        return Wrappers.<DeptPO>lambdaQuery()
+                .select(
+                        DeptPO::getId,
+                        DeptPO::getDeptName,
+                        DeptPO::getDescription,
+                        DeptPO::getParentId,
+                        DeptPO::getLeaf,
+                        DeptPO::getLevel
+                );
+    }
+
+    /**
+     * 查询并转换部门主键。
+     */
+    private List<Long> selectIdList(
+            LambdaQueryWrapper<DeptPO> wrapper) {
+
+        return deptMapper.selectObjs(wrapper)
+                .stream()
+                .map(DatabaseNumberUtils::toLong)
+                .toList();
     }
 }

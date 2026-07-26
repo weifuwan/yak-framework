@@ -3,7 +3,6 @@ package io.yak.framework.security.common.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -14,14 +13,22 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
-@TableName(value = "yak_security_oplog_extra")
+@TableName("yak_security_oplog_extra")
 public class OplogExtraPO extends BasePO {
-  /** 扩展信息内容。 */
+
+  /**
+   * 扩展信息内容。
+   *
+   * <p>该字段可能包含较长内容或敏感数据，
+   * 因此不输出到日志字符串中。</p>
+   */
+  @ToString.Exclude
   private String info;
 
-  /** 扩展信息类型。 */
+  /**
+   * 扩展信息类型。
+   */
   private Integer type;
 }

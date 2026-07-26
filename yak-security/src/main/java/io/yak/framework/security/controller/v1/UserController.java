@@ -1,6 +1,5 @@
 package io.yak.framework.security.controller.v1;
 
-import com.google.common.collect.Lists;
 import io.yak.framework.security.common.PagingData;
 import io.yak.framework.security.common.PagingResult;
 import io.yak.framework.security.common.Result;
@@ -14,8 +13,9 @@ import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import io.yak.framework.security.util.JsonUtils;
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,101 +24,215 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 用户管理接口。
+ *
+ * @author weifuwan
+ */
 @RestController
-@RequestMapping(value = {"/yak-security/api/v1/user"})
+@RequestMapping("/yak-security/api/v1/user")
 public class UserController {
-  @Autowired private UserService userService;
 
-  @GetMapping(value = {"/{type}/{value}/check"})
-  public Result<Void> check(@PathVariable Integer type,
-                            @PathVariable String value) {
-    return this.userService.check(type, value);
+  private final UserService userService;
+
+  /**
+   * 创建用户管理接口。
+   *
+   * @param userService 用户服务
+   */
+  public UserController(UserService userService) {
+    this.userService = userService;
   }
 
+  /**
+   * 校验用户字段是否可用。
+   *
+   * @param type 校验类型
+   * @param value 校验值
+   * @return 校验结果
+   */
+  @GetMapping("/{type}/{value}/check")
+  public Result<Void> check(
+          @PathVariable Integer type,
+          @PathVariable String value) {
+
+    return userService.check(type, value);
+  }
+
+  /**
+   * 根据用户 ID 集合批量查询用户详情。
+   *
+   * <p>ids 参数格式示例：{@code [1, 2, 3]}。
+   *
+   * @param ids 用户 ID JSON 数组
+   * @return 用户详情列表
+   */
   @GetMapping
-  public Result<List<UserVO>>
-  detailList(@RequestParam(value = "ids") String ids) {
-    List idList = Lists.newArrayList();
+  public Result<List<UserVO>> detailList(
+          @RequestParam("ids") String ids) {
+
     try {
-      idList = JsonUtils.toList(ids, Integer.class);
-    } catch (Exception e) {
+      /*
+       * 用户 ID 类型是 Long，不能再解析为 Integer。
+       */
+      List<Long> userIds =
+              JsonUtils.toList(ids, Long.class);
+
+      return userService.getUserDetailsByUserIds(
+              userIds);
+    } catch (Exception exception) {
       return Result.buildParamIllegal(
-          "\u4f20\u5165\u7684\u53c2\u6570\u4e0d\u5c5e\u4e8ejson\u6570\u7ec4");
+              "传入的参数不是合法的 JSON 数组");
     }
-    return this.userService.getUserDetailByUserIds(idList);
   }
 
-  @GetMapping(value = {"/{id}"})
-  public Result<UserVO> detail(@PathVariable Long id) {
+  /**
+   * 根据用户 ID 查询用户详情。
+   *
+   * @param userId 用户 ID
+   * @return 用户详情
+   */
+  @GetMapping("/{id}")
+  public Result<UserVO> detail(
+          @PathVariable("id") Long userId) {
+
     try {
-      UserVO userVo = this.userService.getUserDetailByUserId(id);
-      return Result.success(userVo);
-    } catch (YakSecurityException e) {
-      return Result.fail(e);
+      return Result.buildSucc(
+              userService.getUserDetailByUserId(
+                      userId));
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 
-  @PostMapping(value = {"/page"})
-  public PagingResult<UserVO> page(@RequestBody UserQueryDTO queryDTO) {
-    PagingData<UserVO> pageUser = this.userService.getUserPage(queryDTO);
-    return PagingResult.success(pageUser);
+  /**
+   * 分页查询用户。
+   *
+   * @param queryDTO 查询条件
+   * @return 用户分页结果
+   */
+  @PostMapping("/page")
+  public PagingResult<UserVO> page(
+          @RequestBody UserQueryDTO queryDTO) {
+
+    PagingData<UserVO> pagingData =
+            userService.getUserPage(queryDTO);
+
+    return PagingResult.success(pagingData);
   }
 
-  @GetMapping(value = {"/list/dept/{deptId}"})
-  public Result<List<UserBriefVO>> listByDeptId(@PathVariable Long deptId) {
-    List<UserBriefVO> userBriefVOList =
-        this.userService.getUserBriefListByDeptId(deptId);
-    return Result.success(userBriefVOList);
+  /**
+   * 根据部门 ID 查询用户。
+   *
+   * @param deptId 部门 ID
+   * @return 用户简要信息列表
+   */
+  @GetMapping("/list/dept/{deptId}")
+  public Result<List<UserBriefVO>> listByDeptId(
+          @PathVariable Long deptId) {
+
+    return Result.buildSucc(
+            userService.getUserBriefListByDeptId(
+                    deptId));
   }
 
-  @GetMapping(value = {"/list/role/{roleId}"})
-  public Result<List<UserBriefVO>> listByRoleId(@PathVariable Long roleId) {
-    List<UserBriefVO> userBriefVOList =
-        this.userService.getUserBriefListByRoleId(roleId);
-    return Result.success(userBriefVOList);
+  /**
+   * 根据角色 ID 查询用户。
+   *
+   * @param roleId 角色 ID
+   * @return 用户简要信息列表
+   */
+  @GetMapping("/list/role/{roleId}")
+  public Result<List<UserBriefVO>> listByRoleId(
+          @PathVariable Long roleId) {
+
+    return Result.buildSucc(
+            userService.getUserBriefListByRoleId(
+                    roleId));
   }
 
-  @GetMapping(value = {"/assign/list/{userId}"})
-  public Result<List<AssignInfoVO>> assignList(@PathVariable Long userId) {
+  /**
+   * 查询用户的角色分配信息。
+   *
+   * @param userId 用户 ID
+   * @return 角色分配信息列表
+   */
+  @GetMapping("/assign/list/{userId}")
+  public Result<List<AssignInfoVO>> assignList(
+          @PathVariable Long userId) {
+
     try {
-      List<AssignInfoVO> assignInfoVOList =
-          this.userService.getAssignDataByUserId(userId);
-      return Result.success(assignInfoVOList);
-    } catch (YakSecurityException e) {
-      e.printStackTrace();
-      return Result.fail(e);
+      return Result.buildSucc(
+              userService.getAssignInfoListByUserId(
+                      userId));
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 
-  @GetMapping(value = {"/list/{name}"})
-  public Result<List<UserBriefVO>>
-  listByName(@PathVariable(required = false) String name) {
-    List<UserBriefVO> userBriefVOList =
-        this.userService.getUserBriefListByUsernameOrRealName(name);
-    return Result.success(userBriefVOList);
+  /**
+   * 根据用户名或真实姓名模糊查询用户。
+   *
+   * @param keyword 查询关键字
+   * @return 用户简要信息列表
+   */
+  @GetMapping("/list/{keyword}")
+  public Result<List<UserBriefVO>> listByName(
+          @PathVariable String keyword) {
+
+    return Result.buildSucc(
+            userService.searchUserBriefList(
+                    keyword));
   }
 
-  @PutMapping(value = {"/add"})
-  @ResponseBody
-  public Result<Void> add(HttpServletRequest request,
-                          @RequestBody UserDTO param) {
-    return this.userService.addUser(param,
-                                    HttpRequestUtil.getOperator(request));
+  /**
+   * 新增用户。
+   *
+   * <p>保留原有 PUT 请求方式，避免影响现有前端调用。
+   *
+   * @param request HTTP 请求
+   * @param userDTO 用户信息
+   * @return 新增结果
+   */
+  @PutMapping("/add")
+  public Result<Void> add(
+          HttpServletRequest request,
+          @RequestBody UserDTO userDTO) {
+
+    return userService.addUser(
+            userDTO,
+            HttpRequestUtil.getOperator(request));
   }
 
-  @PostMapping(value = {"/edit"})
-  @ResponseBody
-  public Result<Void> edit(HttpServletRequest request,
-                           @RequestBody UserDTO param) {
-    return this.userService.editUser(param,
-                                     HttpRequestUtil.getOperator(request));
+  /**
+   * 编辑用户。
+   *
+   * @param request HTTP 请求
+   * @param userDTO 用户信息
+   * @return 编辑结果
+   */
+  @PostMapping("/edit")
+  public Result<Void> edit(
+          HttpServletRequest request,
+          @RequestBody UserDTO userDTO) {
+
+    return userService.editUser(
+            userDTO,
+            HttpRequestUtil.getOperator(request));
   }
 
-  @DeleteMapping(value = {"/{id}"})
-  public Result<Void> del(@PathVariable Long id) {
-    return this.userService.deleteByUserId(id);
+  /**
+   * 根据用户 ID 删除用户。
+   *
+   * @param userId 用户 ID
+   * @return 删除结果
+   */
+  @DeleteMapping("/{id}")
+  public Result<Void> delete(
+          @PathVariable("id") Long userId) {
+
+    return userService.deleteByUserId(userId);
   }
 }

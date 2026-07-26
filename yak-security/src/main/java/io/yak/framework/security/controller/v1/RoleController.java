@@ -12,9 +12,11 @@ import io.yak.framework.security.common.vo.role.RoleDeleteCheckVO;
 import io.yak.framework.security.common.vo.role.RoleVO;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.RoleService;
+import io.yak.framework.security.util.HttpRequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,96 +26,221 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 角色管理接口。
+ *
+ * @author weifuwan
+ */
 @RestController
-@RequestMapping(value = {"/yak-security/api/v1/role"})
+@RequestMapping("/yak-security/api/v1/role")
 public class RoleController {
-  @Autowired private RoleService roleService;
 
-  @GetMapping(value = {"/{id}"})
-  public Result<RoleVO> detail(@PathVariable Long id) {
-    RoleVO roleVo = this.roleService.getRoleDetailByRoleId(id);
-    return Result.success(roleVo);
+  private final RoleService roleService;
+
+  /**
+   * 创建角色管理接口。
+   *
+   * @param roleService 角色服务
+   */
+  public RoleController(RoleService roleService) {
+    this.roleService = roleService;
   }
 
+  /**
+   * 根据角色 ID 查询角色详情。
+   *
+   * @param roleId 角色 ID
+   * @return 角色详情
+   */
+  @GetMapping("/{id}")
+  public Result<RoleVO> detail(
+          @PathVariable("id") Long roleId) {
+
+    return Result.buildSucc(
+            roleService.getRoleDetailByRoleId(
+                    roleId));
+  }
+
+  /**
+   * 更新角色。
+   *
+   * @param request HTTP 请求
+   * @param roleSaveDTO 角色信息
+   * @return 更新结果
+   */
   @PutMapping
-  public Result<String> update(@RequestBody RoleSaveDTO saveDTO,
-                               HttpServletRequest request) {
+  public Result<Void> update(
+          HttpServletRequest request,
+          @RequestBody RoleSaveDTO roleSaveDTO) {
+
     try {
-      this.roleService.updateRole(saveDTO, request);
-      return Result.success();
-    } catch (YakSecurityException e) {
-      return Result.fail(e);
+      roleService.updateRole(
+              roleSaveDTO,
+              HttpRequestUtil.getOperator(request));
+
+      return Result.buildSucc(null);
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 
+  /**
+   * 创建角色。
+   *
+   * @param request HTTP 请求
+   * @param roleSaveDTO 角色信息
+   * @return 创建结果
+   */
   @PostMapping
-  public Result<String> create(@RequestBody RoleSaveDTO saveDTO,
-                               HttpServletRequest request) {
+  public Result<Void> create(
+          HttpServletRequest request,
+          @RequestBody RoleSaveDTO roleSaveDTO) {
+
     try {
-      this.roleService.createRole(saveDTO, request);
-      return Result.success();
-    } catch (YakSecurityException e) {
-      return Result.fail(e);
+      roleService.createRole(
+              roleSaveDTO,
+              HttpRequestUtil.getOperator(request));
+
+      return Result.buildSucc(null);
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 
-  @DeleteMapping(value = {"/delete/check/{id}"})
-  public Result<RoleDeleteCheckVO> check(@PathVariable Long id) {
-    return Result.success(this.roleService.checkBeforeDelete(id));
+  /**
+   * 执行角色删除前校验。
+   *
+   * <p>保留原有 DELETE 请求方式，避免影响现有前端调用。
+   *
+   * @param roleId 角色 ID
+   * @return 删除校验结果
+   */
+  @DeleteMapping("/delete/check/{id}")
+  public Result<RoleDeleteCheckVO> check(
+          @PathVariable("id") Long roleId) {
+
+    return Result.buildSucc(
+            roleService.checkBeforeDelete(
+                    roleId));
   }
 
-  @DeleteMapping(value = {"/{id}/user/{userId}"})
-  public Result<String> deleteUser(@PathVariable Long id,
-                                   @PathVariable Long userId,
-                                   HttpServletRequest request) {
+  /**
+   * 从角色中删除用户。
+   *
+   * @param request HTTP 请求
+   * @param roleId 角色 ID
+   * @param userId 用户 ID
+   * @return 删除结果
+   */
+  @DeleteMapping("/{id}/user/{userId}")
+  public Result<Void> deleteUser(
+          HttpServletRequest request,
+          @PathVariable("id") Long roleId,
+          @PathVariable Long userId) {
+
     try {
-      this.roleService.deleteUserFromRole(id, userId, request);
-    } catch (YakSecurityException e) {
-      return Result.fail(e);
-    }
-    return Result.success();
-  }
+      roleService.deleteUserFromRole(
+              roleId,
+              userId,
+              HttpRequestUtil.getOperator(request));
 
-  @DeleteMapping(value = {"/{id}"})
-  public Result<String> delete(@PathVariable Long id,
-                               HttpServletRequest request) {
-    try {
-      this.roleService.deleteRoleByRoleId(id, request);
-    } catch (YakSecurityException e) {
-      return Result.fail(e);
-    }
-    return Result.success();
-  }
-
-  @PostMapping(value = {"/page"})
-  public PagingResult<RoleVO> page(@RequestBody RoleQueryDTO queryDTO) {
-    PagingData<RoleVO> pageRole = this.roleService.getRolePage(queryDTO);
-    return PagingResult.success(pageRole);
-  }
-
-  @PostMapping(value = {"/assign"})
-  public Result<String> assign(@RequestBody RoleAssignDTO assignDTO,
-                               HttpServletRequest request) {
-    try {
-      this.roleService.assignRoles(assignDTO, request);
-      return Result.success();
-    } catch (YakSecurityException e) {
-      return Result.fail(e);
+      return Result.buildSucc(null);
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
     }
   }
 
-  @GetMapping(value = {"/assign/list/{roleId}"})
-  public Result<List<AssignInfoVO>> assignList(@PathVariable Long roleId) {
-    List<AssignInfoVO> assignInfoVOList =
-        this.roleService.getAssignInfoByRoleId(roleId);
-    return Result.success(assignInfoVOList);
+  /**
+   * 根据角色 ID 删除角色。
+   *
+   * @param request HTTP 请求
+   * @param roleId 角色 ID
+   * @return 删除结果
+   */
+  @DeleteMapping("/{id}")
+  public Result<Void> delete(
+          HttpServletRequest request,
+          @PathVariable("id") Long roleId) {
+
+    try {
+      roleService.deleteRoleByRoleId(
+              roleId,
+              HttpRequestUtil.getOperator(request));
+
+      return Result.buildSucc(null);
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
+    }
   }
 
-  @GetMapping(value = {"/list/{roleName}", "/list"})
-  public Result<List<RoleBriefVO>>
-  list(@PathVariable(required = false) String roleName) {
-    List<RoleBriefVO> roleBriefVOList =
-        this.roleService.getRoleBriefListByRoleName(roleName);
-    return Result.success(roleBriefVOList);
+  /**
+   * 分页查询角色。
+   *
+   * @param queryDTO 查询条件
+   * @return 角色分页结果
+   */
+  @PostMapping("/page")
+  public PagingResult<RoleVO> page(
+          @RequestBody RoleQueryDTO queryDTO) {
+
+    PagingData<RoleVO> pagingData =
+            roleService.getRolePage(queryDTO);
+
+    return PagingResult.success(pagingData);
+  }
+
+  /**
+   * 分配角色或为角色分配用户。
+   *
+   * @param request HTTP 请求
+   * @param assignDTO 分配参数
+   * @return 分配结果
+   */
+  @PostMapping("/assign")
+  public Result<Void> assign(
+          HttpServletRequest request,
+          @RequestBody RoleAssignDTO assignDTO) {
+
+    try {
+      roleService.assignRoles(
+              assignDTO,
+              HttpRequestUtil.getOperator(request));
+
+      return Result.buildSucc(null);
+    } catch (YakSecurityException exception) {
+      return Result.fail(exception);
+    }
+  }
+
+  /**
+   * 根据角色 ID 查询用户分配信息。
+   *
+   * @param roleId 角色 ID
+   * @return 用户分配信息列表
+   */
+  @GetMapping("/assign/list/{roleId}")
+  public Result<List<AssignInfoVO>> assignList(
+          @PathVariable Long roleId) {
+
+    return Result.buildSucc(
+            roleService.getAssignInfoByRoleId(
+                    roleId));
+  }
+
+  /**
+   * 根据角色名称查询角色。
+   *
+   * @param roleName 角色名称
+   * @return 角色简要信息列表
+   */
+  @GetMapping({"/list/{roleName}", "/list"})
+  public Result<List<RoleBriefVO>> list(
+          @PathVariable(required = false)
+                  String roleName) {
+
+    return Result.buildSucc(
+            roleService
+                    .getRoleBriefListByRoleName(
+                            roleName));
   }
 }

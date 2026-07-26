@@ -1,7 +1,7 @@
 package io.yak.framework.security.dao.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.yak.framework.security.common.dto.user.UserProjectDTO;
 import io.yak.framework.security.common.entity.UserProject;
 import io.yak.framework.security.common.po.UserProjectPO;
@@ -9,173 +9,389 @@ import io.yak.framework.security.dao.UserProjectDao;
 import io.yak.framework.security.dao.mapper.UserProjectMapper;
 import io.yak.framework.security.util.CopyBeanUtil;
 import io.yak.framework.security.util.DatabaseNumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-@Component
+/**
+ * 用户项目关联数据访问实现。
+ *
+ * @author weifuwan
+ */
+@Repository
+@RequiredArgsConstructor
 public class UserProjectDaoImpl
-        extends BaseDaoImpl<UserProjectPO> implements UserProjectDao {
-    @Autowired
-    private UserProjectMapper userProjectMapper;
+        implements UserProjectDao {
 
+    private final UserProjectMapper userProjectMapper;
+
+    /**
+     * 根据项目和用户类型查询用户标识。
+     *
+     * @param projectId 项目标识
+     * @param userType  项目中的用户类型
+     * @return 用户标识列表
+     */
     @Override
-    public List<Long> selectUserIdListByProjectId(Long projectId,
-                                                  int type) {
+    public List<Long> selectUserIdListByProjectId(
+            Long projectId,
+            int userType) {
+
         if (projectId == null) {
-            return new ArrayList<Long>();
+            return List.of();
         }
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(new String[]{"user_id"});
-        queryWrapper.eq((Object) "project_id", (Object) projectId);
-        queryWrapper.eq((Object) "user_type", (Object) type);
-        List userIdList = this.userProjectMapper.selectObjs((Wrapper) queryWrapper);
-        return userIdList.stream()
+
+        return userProjectMapper.selectObjs(
+                Wrappers.<UserProjectPO>lambdaQuery()
+                        .select(UserProjectPO::getUserId)
+                        .eq(
+                                UserProjectPO::getProjectId,
+                                projectId
+                        )
+                        .eq(
+                                UserProjectPO::getUserType,
+                                userType
+                        )
+        )
+                .stream()
                 .map(DatabaseNumberUtils::toLong)
-                .collect(Collectors.toList());
+                .toList();
     }
 
+    /**
+     * 根据项目标识列表查询用户项目关联。
+     *
+     * @param projectIds 项目标识列表
+     * @return 用户项目关联列表
+     */
     @Override
-    public List<UserProject> selectByProjectIds(List<Long> projectIds) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(new String[]{"user_id", "project_id", "user_type"});
+    public List<UserProject> selectByProjectIds(
+            List<Long> projectIds) {
+
+        if (isEmpty(projectIds)) {
+            return List.of();
+        }
+
+        List<UserProjectPO> records =
+                userProjectMapper.selectList(
+                        briefQuery()
+                                .in(
+                                        UserProjectPO::getProjectId,
+                                        projectIds
+                                )
+                );
+
         return CopyBeanUtil.copyList(
-                this.userProjectMapper.selectList((Wrapper) queryWrapper),
-                UserProject.class);
+                records,
+                UserProject.class
+        );
     }
 
+    /**
+     * 根据用户标识列表查询项目标识。
+     *
+     * @param userIdList 用户标识列表
+     * @return 项目标识列表
+     */
     @Override
-    public List<Long>
-    selectProjectIdListByUserIdList(List<Long> userIdList) {
-        if (CollectionUtils.isEmpty(userIdList)) {
-            return new ArrayList<Long>();
+    public List<Long> selectProjectIdListByUserIdList(
+            List<Long> userIdList) {
+
+        if (isEmpty(userIdList)) {
+            return List.of();
         }
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(new String[]{"project_id"})
-                .in((Object) "user_id", userIdList);
-        List projectIdList =
-                this.userProjectMapper.selectObjs((Wrapper) queryWrapper);
-        return projectIdList.stream()
+
+        return userProjectMapper.selectObjs(
+                Wrappers.<UserProjectPO>lambdaQuery()
+                        .select(
+                                UserProjectPO::getProjectId
+                        )
+                        .in(
+                                UserProjectPO::getUserId,
+                                userIdList
+                        )
+        )
+                .stream()
                 .map(DatabaseNumberUtils::toLong)
-                .collect(Collectors.toList());
+                .distinct()
+                .toList();
     }
 
+    /**
+     * 根据用户标识列表查询用户项目持久化数据。
+     *
+     * @param userIdList 用户标识列表
+     * @return 用户项目关联列表
+     */
     @Override
-    public List<UserProjectPO>
-    selectProjectListByUserIdList(List<Long> userIdList) {
-        if (CollectionUtils.isEmpty(userIdList)) {
-            return Collections.emptyList();
+    public List<UserProjectPO> selectProjectListByUserIdList(
+            List<Long> userIdList) {
+
+        if (isEmpty(userIdList)) {
+            return List.of();
         }
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.in((Object) "user_id", userIdList);
-        return this.userProjectMapper.selectList((Wrapper) queryWrapper);
+
+        return userProjectMapper.selectList(
+                Wrappers.<UserProjectPO>lambdaQuery()
+                        .in(
+                                UserProjectPO::getUserId,
+                                userIdList
+                        )
+        );
     }
 
+    /**
+     * 批量保存用户项目关联。
+     *
+     * <p>已存在的关联执行更新，不存在的关联执行新增。</p>
+     *
+     * @param userProjectList 用户项目关联列表
+     */
     @Override
-    public void insertBatch(List<UserProject> userProjectList) {
-        if (!CollectionUtils.isEmpty(userProjectList)) {
-            for (UserProject project : userProjectList) {
-                UserProjectPO userProjectPO = this.getByProjectAndUserId(project);
-                if (null == userProjectPO) {
-                    this.addUserProject(project);
-                    continue;
-                }
-                this.updateUserProject(userProjectPO.getId(), project);
+    public void insertBatch(
+            List<UserProject> userProjectList) {
+
+        if (isEmpty(userProjectList)) {
+            return;
+        }
+
+        for (UserProject userProject : userProjectList) {
+            if (userProject == null) {
+                continue;
+            }
+
+            UserProjectPO existing =
+                    selectExisting(userProject);
+
+            if (existing == null) {
+                insertUserProject(userProject);
+            } else {
+                updateUserProject(
+                        existing.getId(),
+                        userProject
+                );
             }
         }
     }
 
+    /**
+     * 删除指定的用户项目关联。
+     *
+     * @param userProjectList 待删除的关联列表
+     * @return 删除的数据条数
+     */
     @Override
-    public int deleteUserProject(List<UserProject> userProjectList) {
-        int delNu = 0;
-        if (!CollectionUtils.isEmpty(userProjectList)) {
-            for (UserProject userProject : userProjectList) {
-                QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-                queryWrapper.eq((Object) "project_id",
-                        (Object) userProject.getProjectId());
-                queryWrapper.eq((Object) "user_id", (Object) userProject.getUserId());
-                queryWrapper.eq(Objects.nonNull(userProject.getUserType()),
-                        (Object) "user_type",
-                        (Object) userProject.getUserType());
-                delNu += this.userProjectMapper.delete((Wrapper) queryWrapper);
-            }
+    public int deleteUserProject(
+            List<UserProject> userProjectList) {
+
+        if (isEmpty(userProjectList)) {
+            return 0;
         }
-        return delNu;
+
+        int deletedCount = 0;
+
+        for (UserProject userProject : userProjectList) {
+            if (userProject == null) {
+                continue;
+            }
+
+            deletedCount += userProjectMapper.delete(
+                    Wrappers.<UserProjectPO>lambdaQuery()
+                            .eq(
+                                    UserProjectPO::getProjectId,
+                                    userProject.getProjectId()
+                            )
+                            .eq(
+                                    UserProjectPO::getUserId,
+                                    userProject.getUserId()
+                            )
+                            .eq(
+                                    userProject.getUserType() != null,
+                                    UserProjectPO::getUserType,
+                                    userProject.getUserType()
+                            )
+            );
+        }
+
+        return deletedCount;
     }
 
+    /**
+     * 删除指定项目的全部用户关联。
+     *
+     * @param projectId 项目标识
+     */
     @Override
     public void deleteByProjectId(Long projectId) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.eq((Object) "project_id", (Object) projectId);
-        this.userProjectMapper.delete((Wrapper) queryWrapper);
-    }
-
-    @Override
-    public void deleteByProjectIdAndUserType(Long projectId, int userType) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.eq((Object) "project_id", (Object) projectId);
-        queryWrapper.eq((Object) "user_type", (Object) userType);
-        this.userProjectMapper.delete((Wrapper) queryWrapper);
-    }
-
-    private int addUserProject(UserProject userProject) {
-        UserProjectPO userProjectPO =
-                CopyBeanUtil.copy(userProject, UserProjectPO.class);
-        return this.userProjectMapper.insert(userProjectPO);
-    }
-
-    private UserProjectPO getByProjectAndUserId(UserProject userProject) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.eq((Object) "project_id", (Object) userProject.getProjectId());
-        queryWrapper.eq((Object) "user_id", (Object) userProject.getUserId());
-        queryWrapper.eq(Objects.nonNull(userProject.getUserType()),
-                (Object) "user_type", (Object) userProject.getUserType());
-        return (UserProjectPO) this.userProjectMapper.selectOne(
-                (Wrapper) queryWrapper);
-    }
-
-    private int updateUserProject(int id, UserProject userProject) {
-        UserProjectPO userProjectPO =
-                CopyBeanUtil.copy(userProject, UserProjectPO.class);
-        userProjectPO.setId(id);
-        return this.userProjectMapper.updateById(userProjectPO);
-    }
-
-    @Override
-    public List<UserProject> select(UserProjectDTO userProjectDTO) {
-        QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-        queryWrapper.select(
-                new String[]{"id", "project_id", "user_id", "user_type"});
-        if (Objects.nonNull(userProjectDTO)) {
-            ((QueryWrapper) ((QueryWrapper) ((QueryWrapper) ((QueryWrapper) queryWrapper
-                    .eq(Objects.nonNull(
-                            userProjectDTO
-                                    .getId()),
-                            (Object) "id",
-                            (Object)
-                                    userProjectDTO
-                                            .getId()))
-                    .eq(Objects.nonNull(
-                            userProjectDTO.getProjectId()),
-                            (Object) "project_id",
-                            (Object)
-                                    userProjectDTO.getProjectId()))
-                    .eq(Objects.nonNull(userProjectDTO.getUserId()),
-                            (Object) "user_id",
-                            (Object) userProjectDTO.getUserId()))
-                    .eq(Objects.nonNull(userProjectDTO.getUserType()),
-                            (Object) "user_type", (Object) userProjectDTO.getUserType()))
-                    .eq(Objects.nonNull(userProjectDTO.getIsDelete()),
-                            (Object) "is_delete", (Object) userProjectDTO.getIsDelete());
+        if (projectId == null) {
+            return;
         }
+
+        userProjectMapper.delete(
+                Wrappers.<UserProjectPO>lambdaQuery()
+                        .eq(
+                                UserProjectPO::getProjectId,
+                                projectId
+                        )
+        );
+    }
+
+    /**
+     * 删除指定项目和用户类型的关联。
+     *
+     * @param projectId 项目标识
+     * @param userType  项目中的用户类型
+     */
+    @Override
+    public void deleteByProjectIdAndUserType(
+            Long projectId,
+            int userType) {
+
+        if (projectId == null) {
+            return;
+        }
+
+        userProjectMapper.delete(
+                Wrappers.<UserProjectPO>lambdaQuery()
+                        .eq(
+                                UserProjectPO::getProjectId,
+                                projectId
+                        )
+                        .eq(
+                                UserProjectPO::getUserType,
+                                userType
+                        )
+        );
+    }
+
+    /**
+     * 根据查询条件查询用户项目关联。
+     *
+     * @param queryDTO 查询条件，可为空
+     * @return 用户项目关联列表
+     */
+    @Override
+    public List<UserProject> select(
+            UserProjectDTO queryDTO) {
+
+        LambdaQueryWrapper<UserProjectPO> wrapper =
+                Wrappers.<UserProjectPO>lambdaQuery()
+                        .select(
+                                UserProjectPO::getId,
+                                UserProjectPO::getProjectId,
+                                UserProjectPO::getUserId,
+                                UserProjectPO::getUserType
+                        );
+
+        if (queryDTO != null) {
+            wrapper
+                    .eq(
+                            queryDTO.getId() != null,
+                            UserProjectPO::getId,
+                            queryDTO.getId()
+                    )
+                    .eq(
+                            queryDTO.getProjectId() != null,
+                            UserProjectPO::getProjectId,
+                            queryDTO.getProjectId()
+                    )
+                    .eq(
+                            queryDTO.getUserId() != null,
+                            UserProjectPO::getUserId,
+                            queryDTO.getUserId()
+                    )
+                    .eq(
+                            queryDTO.getUserType() != null,
+                            UserProjectPO::getUserType,
+                            queryDTO.getUserType()
+                    )
+                    .eq(
+                            queryDTO.getIsDelete() != null,
+                            UserProjectPO::getIsDelete,
+                            queryDTO.getIsDelete()
+                    );
+        }
+
         return CopyBeanUtil.copyList(
-                this.userProjectMapper.selectList((Wrapper) queryWrapper),
-                UserProject.class);
+                userProjectMapper.selectList(wrapper),
+                UserProject.class
+        );
+    }
+
+    /**
+     * 查询已经存在的用户项目关联。
+     */
+    private UserProjectPO selectExisting(
+            UserProject userProject) {
+
+        return userProjectMapper.selectOne(
+                Wrappers.<UserProjectPO>lambdaQuery()
+                        .eq(
+                                UserProjectPO::getProjectId,
+                                userProject.getProjectId()
+                        )
+                        .eq(
+                                UserProjectPO::getUserId,
+                                userProject.getUserId()
+                        )
+                        .eq(
+                                userProject.getUserType() != null,
+                                UserProjectPO::getUserType,
+                                userProject.getUserType()
+                        )
+        );
+    }
+
+    /**
+     * 新增用户项目关联。
+     */
+    private int insertUserProject(
+            UserProject userProject) {
+
+        return userProjectMapper.insert(
+                CopyBeanUtil.copy(
+                        userProject,
+                        UserProjectPO.class
+                )
+        );
+    }
+
+    /**
+     * 根据主键更新用户项目关联。
+     */
+    private int updateUserProject(
+            Long id,
+            UserProject userProject) {
+
+        UserProjectPO userProjectPO =
+                CopyBeanUtil.copy(
+                        userProject,
+                        UserProjectPO.class
+                );
+
+        userProjectPO.setId(id);
+
+        return userProjectMapper.updateById(userProjectPO);
+    }
+
+    /**
+     * 创建用户项目简要查询条件。
+     */
+    private LambdaQueryWrapper<UserProjectPO> briefQuery() {
+        return Wrappers.<UserProjectPO>lambdaQuery()
+                .select(
+                        UserProjectPO::getUserId,
+                        UserProjectPO::getProjectId,
+                        UserProjectPO::getUserType
+                );
+    }
+
+    /**
+     * 判断集合是否为空。
+     */
+    private static boolean isEmpty(List<?> values) {
+        return values == null || values.isEmpty();
     }
 }

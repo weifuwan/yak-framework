@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -16,30 +15,44 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ToString
-@TableName(value = "yak_security_config")
+@TableName("yak_security_config")
 public class ConfigPO extends BasePO {
-  /** 配置主键标识。 */
+
+  /**
+   * 配置主键。
+   */
   @TableId(type = IdType.AUTO)
   private Long id;
 
-  /** 配置分组。 */
+  /**
+   * 配置分组。
+   */
   private String valueGroup;
 
-  /** 配置项名称。 */
+  /**
+   * 配置项名称。
+   */
   private String valueName;
 
-  /** 配置项值。 */
+  /**
+   * 配置项值。
+   */
   private String value;
 
-  /** 配置状态。 */
+  /**
+   * 配置状态。
+   */
   private Integer status;
 
-  /** 配置备注。 */
+  /**
+   * 配置备注。
+   */
   private String memo;
 
-  /** 最后操作人。 */
+  /**
+   * 最后操作人。
+   */
   private String operator;
 }

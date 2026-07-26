@@ -16,12 +16,11 @@ import io.yak.framework.security.common.vo.resource.MByRVO;
 import io.yak.framework.security.common.vo.resource.MByUDataVO;
 import io.yak.framework.security.common.vo.resource.MByUVO;
 import io.yak.framework.security.exception.YakSecurityException;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
 /**
- * 用户资源服务接口。
+ * 用户资源权限服务接口。
  *
  * @author weifuwan
  */
@@ -29,6 +28,10 @@ public interface UserResourceService {
 
   /**
    * 根据用户 ID 统计符合条件的资源数量。
+   *
+   * @param userId 用户 ID
+   * @param queryDTO 资源查询条件
+   * @return 资源数量
    */
   int getResourceCntByUserId(
           Long userId,
@@ -36,6 +39,10 @@ public interface UserResourceService {
 
   /**
    * 分页查询按资源管理的权限信息。
+   *
+   * @param queryDTO 查询条件
+   * @return 按资源管理的权限分页数据
+   * @throws YakSecurityException 查询参数异常
    */
   PagingData<MByRVO> getManageByResourcePage(
           MByRQueryDTO queryDTO)
@@ -43,12 +50,18 @@ public interface UserResourceService {
 
   /**
    * 分页查询按用户管理的权限信息。
+   *
+   * @param queryDTO 查询条件
+   * @return 按用户管理的权限分页数据
    */
   PagingData<MByUVO> getManageByUserPage(
           MByUQueryDTO queryDTO);
 
   /**
    * 为单个用户分配资源权限。
+   *
+   * @param assignDTO 分配参数
+   * @throws YakSecurityException 分配参数异常
    */
   void assignResourcePermission(
           AssignToOneUserDTO assignDTO)
@@ -56,22 +69,30 @@ public interface UserResourceService {
 
   /**
    * 为多个用户分配资源权限。
+   *
+   * @param assignDTO 分配参数
+   * @throws YakSecurityException 分配参数异常
    */
   void assignResourcePermission(
-          AssignToManyUserDTO assignDTO,
-          HttpServletRequest request)
+          AssignToManyUserDTO assignDTO)
           throws YakSecurityException;
 
   /**
    * 批量分配资源权限。
+   *
+   * @param assignDTO 批量分配参数
+   * @throws YakSecurityException 分配参数异常
    */
   void batchAssignResourcePermission(
-          BatchAssignDTO assignDTO,
-          HttpServletRequest request)
+          BatchAssignDTO assignDTO)
           throws YakSecurityException;
 
   /**
    * 查询按用户管理的资源权限数据。
+   *
+   * @param queryDTO 查询条件
+   * @return 资源权限数据列表
+   * @throws YakSecurityException 查询参数异常
    */
   List<MByUDataVO> getManagerByUserDataList(
           MByUDataQueryDTO queryDTO)
@@ -79,6 +100,10 @@ public interface UserResourceService {
 
   /**
    * 查询按资源管理的用户权限数据。
+   *
+   * @param queryDTO 查询条件
+   * @return 用户权限数据列表
+   * @throws YakSecurityException 查询参数异常
    */
   List<MByRDataVO> getManagerByResourceDataList(
           MByRDataQueryDTO queryDTO)
@@ -86,6 +111,8 @@ public interface UserResourceService {
 
   /**
    * 获取资源查看权限控制状态。
+   *
+   * @return 是否开启查看权限控制
    */
   boolean getViewPermissionControlStatus();
 
@@ -95,7 +122,11 @@ public interface UserResourceService {
   void changeResourceViewControlStatus();
 
   /**
-   * 查询资源权限控制级别。
+   * 查询指定用户对资源的权限控制级别。
+   *
+   * @param queryDTO 查询条件
+   * @return 权限控制级别
+   * @throws YakSecurityException 查询参数异常
    */
   ControlLevelCode getControlLevel(
           ControlLevelQueryDTO queryDTO)

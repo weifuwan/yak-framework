@@ -37,607 +37,1651 @@ import io.yak.framework.security.service.ResourceTypeService;
 import io.yak.framework.security.service.UserResourceService;
 import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.util.CopyBeanUtil;
-import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-@Service(value = "yakSecurityUserResourceServiceImpl")
 /**
- * 用户资源授权服务，按应用、项目和资源层级维护授权关系，实现数据隔离。
- * 批量授权方法使用事务保证授权关系、审计消息和关联数据的一致性。
+ * 用户资源权限服务实现类。
+ *
+ * <p>按照项目、资源类型和资源三个层级维护用户资源权限，
+ * 用于实现资源访问控制和数据隔离。
+ *
+ * @author weifuwan
  */
-public class UserResourceServiceImpl implements UserResourceService {
-  @Autowired private UserResourceDao userResourceDao;
-  @Autowired private DeptService deptService;
-  @Autowired private UserService userService;
-  @Autowired private ProjectService projectService;
-  @Autowired private ResourceTypeService resourceTypeService;
-  @Autowired private ResourceExtendBeanTool resourceExtendBeanTool;
+@Service("yakSecurityUserResourceServiceImpl")
+public class UserResourceServiceImpl
+        implements UserResourceService {
 
-  @Override
-  public int getResourceCntByUserId(Long userId,
-                                    UserResourceQueryDTO queryDTO) {
-    if (userId == null) {
-      return 0;
-    }
-    return this.userResourceDao.selectCountByUserId(userId, queryDTO);
+  private static final Logger LOGGER =
+          LoggerFactory.getLogger(
+                  UserResourceServiceImpl.class);
+
+  /**
+   * 系统级虚拟用户 ID。
+   *
+   * <p>用于记录全局资源查看权限控制状态。
+   */
+  private static final Long SYSTEM_USER_ID = 0L;
+
+  private final UserResourceDao userResourceDao;
+
+  private final DeptService deptService;
+
+  private final UserService userService;
+
+  private final ProjectService projectService;
+
+  private final ResourceTypeService resourceTypeService;
+
+  private final ResourceExtendBeanTool resourceExtendBeanTool;
+
+  /**
+   * 创建用户资源权限服务。
+   *
+   * @param userResourceDao 用户资源权限数据访问对象
+   * @param deptService 部门服务
+   * @param userService 用户服务
+   * @param projectService 项目服务
+   * @param resourceTypeService 资源类型服务
+   * @param resourceExtendBeanTool 资源扩展工具
+   */
+  public UserResourceServiceImpl(
+          UserResourceDao userResourceDao,
+          DeptService deptService,
+          UserService userService,
+          ProjectService projectService,
+          ResourceTypeService resourceTypeService,
+          ResourceExtendBeanTool resourceExtendBeanTool) {
+
+    this.userResourceDao = userResourceDao;
+    this.deptService = deptService;
+    this.userService = userService;
+    this.projectService = projectService;
+    this.resourceTypeService = resourceTypeService;
+    this.resourceExtendBeanTool = resourceExtendBeanTool;
   }
 
+  /**
+   * 根据用户 ID 统计符合条件的资源数量。
+   *
+   * @param userId 用户 ID
+   * @param queryDTO 查询条件
+   * @return 资源数量
+   */
+  @Override
+  public int getResourceCntByUserId(
+          Long userId,
+          UserResourceQueryDTO queryDTO) {
+
+    if (userId == null || queryDTO == null) {
+      return 0;
+    }
+
+    return userResourceDao.selectCountByUserId(
+            userId,
+            queryDTO);
+  }
+
+  /**
+   * 获取资源查看权限控制状态。
+   *
+   * @return 是否开启查看权限控制
+   */
   @Override
   public boolean getViewPermissionControlStatus() {
     UserResourceQueryDTO queryDTO =
-        UserResourceQueryDTO.getOpenViewPermissionControlQueryEntity();
-    return this.userResourceDao.selectCountByUserId(0, queryDTO) > 0;
+            UserResourceQueryDTO
+                    .getOpenViewPermissionControlQueryEntity();
+
+    return userResourceDao.selectCountByUserId(
+            SYSTEM_USER_ID,
+            queryDTO) > 0;
   }
 
+  /**
+   * 查询按用户管理的资源权限数据。
+   *
+   * @param queryDTO 查询条件
+   * @return 资源权限数据列表
+   */
   @Override
-  public List<MByUDataVO> getManagerByUserDataList(MByUDataQueryDTO queryDTO)
-      throws YakSecurityException {
-    this.checkParam(queryDTO);
+  public List<MByUDataVO> getManagerByUserDataList(
+          MByUDataQueryDTO queryDTO) {
+
+    checkParam(queryDTO);
+
     Long projectId = queryDTO.getProjectId();
-    Long resourceTypeId = queryDTO.getResourceTypeId();
+    Long resourceTypeId =
+            queryDTO.getResourceTypeId();
+
     int showLevel = queryDTO.getShowLevel();
-    int controlLevel = queryDTO.getControlLevel();
+    int controlLevel =
+            queryDTO.getControlLevel();
+
     Long userId = queryDTO.getUserId();
-    boolean isBatch = queryDTO.getBatch();
-    ArrayList<MByUDataVO> resultList = new ArrayList<MByUDataVO>();
-    if (ShowLevelCode.PROJECT.getType().equals(showLevel)) {
-      List<ProjectBriefVO> projectBriefVOList =
-          this.projectService.getProjectBriefList();
-      for (ProjectBriefVO projectBriefVO : projectBriefVOList) {
-        MByUDataVO dataVo = new MByUDataVO(projectBriefVO.getId(),
-                                           projectBriefVO.getProjectName());
-        HasLevelCode hasLevel = this.getHasLevel(
-            isBatch, controlLevel, userId, projectBriefVO.getId(), null, null);
-        dataVo.setHasLevel(hasLevel.getType());
-        resultList.add(dataVo);
-      }
-    } else if (ShowLevelCode.RESOURCE_TYPE.getType().equals(showLevel)) {
-      List<ResourceTypeVO> resourceTypeVOList =
-          this.resourceTypeService.getAllResourceTypeList();
-      for (ResourceTypeVO resourceTypeVO : resourceTypeVOList) {
-        MByUDataVO dataVo = new MByUDataVO(resourceTypeVO.getId(),
-                                           resourceTypeVO.getTypeName());
-        HasLevelCode hasLevel =
-            this.getHasLevel(isBatch, controlLevel, userId, projectId,
-                             resourceTypeVO.getId(), null);
-        dataVo.setHasLevel(hasLevel.getType());
-        resultList.add(dataVo);
-      }
-    } else {
-      ResourceExtend resourceExtend =
-          this.resourceExtendBeanTool.getResourceExtendImpl();
-      List<ResourceDTO> resourceDTOList =
-          resourceExtend.getResourceList(projectId, resourceTypeId);
-      for (ResourceDTO resourceDto : resourceDTOList) {
-        MByUDataVO dataVo = new MByUDataVO(resourceDto.getResourceId(),
-                                           resourceDto.getResourceName());
-        HasLevelCode hasLevel =
-            this.getHasLevel(isBatch, controlLevel, userId, projectId,
-                             resourceTypeId, resourceDto.getResourceId());
-        dataVo.setHasLevel(hasLevel.getType());
-        resultList.add(dataVo);
-      }
+
+    boolean batch =
+            Boolean.TRUE.equals(
+                    queryDTO.getBatch());
+
+    List<MByUDataVO> resultList =
+            new ArrayList<>();
+
+    if (Objects.equals(
+            ShowLevelCode.PROJECT.getType(),
+            showLevel)) {
+
+      buildProjectPermissionData(
+              resultList,
+              batch,
+              controlLevel,
+              userId);
+
+      return resultList;
     }
+
+    if (Objects.equals(
+            ShowLevelCode.RESOURCE_TYPE.getType(),
+            showLevel)) {
+
+      buildResourceTypePermissionData(
+              resultList,
+              batch,
+              controlLevel,
+              userId,
+              projectId);
+
+      return resultList;
+    }
+
+    buildResourcePermissionData(
+            resultList,
+            batch,
+            controlLevel,
+            userId,
+            projectId,
+            resourceTypeId);
+
     return resultList;
   }
 
+  /**
+   * 查询按资源管理的用户权限数据。
+   *
+   * @param queryDTO 查询条件
+   * @return 用户权限数据列表
+   */
   @Override
   public List<MByRDataVO>
-  getManagerByResourceDataList(MByRDataQueryDTO queryDTO)
-      throws YakSecurityException {
-    this.checkParam(queryDTO);
-    Long projectId = queryDTO.getProjectId();
-    Long resourceTypeId = queryDTO.getResourceTypeId();
-    Long resourceId = queryDTO.getResourceId();
-    int controlLevel = queryDTO.getControlLevel();
-    boolean isBatch = queryDTO.getBatch();
-    List<UserBriefVO> userBriefVOList =
-        this.userService.getAllUserBriefListOrderByCreateTime(false);
-    List<MByRDataVO> result = Collections.synchronizedList(new ArrayList());
-    userBriefVOList.parallelStream().forEach(userBriefVO -> {
-      MByRDataVO dataVo = new MByRDataVO();
-      dataVo.setUserId(userBriefVO.getId());
-      dataVo.setUserName(userBriefVO.getUserName());
-      dataVo.setRealName(userBriefVO.getRealName());
+  getManagerByResourceDataList(
+          MByRDataQueryDTO queryDTO) {
+
+    checkParam(queryDTO);
+
+    List<UserBriefVO> userList =
+            userService
+                    .getAllUserBriefListOrderByCreateTime(
+                            false);
+
+    if (CollectionUtils.isEmpty(userList)) {
+      return new ArrayList<>();
+    }
+
+    boolean batch =
+            Boolean.TRUE.equals(
+                    queryDTO.getBatch());
+
+    List<MByRDataVO> resultList =
+            new ArrayList<>(userList.size());
+
+    /*
+     * 不使用 parallelStream。
+     *
+     * 每个用户都需要访问数据库，并行流容易造成数据库连接池
+     * 瞬间被占满，同时返回顺序也不可控。
+     */
+    for (UserBriefVO user : userList) {
+      MByRDataVO dataVO =
+              new MByRDataVO();
+
+      dataVO.setUserId(user.getId());
+      dataVO.setUserName(
+              user.getUserName());
+      dataVO.setRealName(
+              user.getRealName());
+
       HasLevelCode hasLevel =
-          this.getHasLevel(isBatch, controlLevel, userBriefVO.getId(),
-                           projectId, resourceTypeId, resourceId);
-      dataVo.setHasLevel(hasLevel.getType());
-      result.add(dataVo);
-    });
-    return result;
+              getHasLevel(
+                      batch,
+                      queryDTO.getControlLevel(),
+                      user.getId(),
+                      queryDTO.getProjectId(),
+                      queryDTO.getResourceTypeId(),
+                      queryDTO.getResourceId());
+
+      dataVO.setHasLevel(
+              hasLevel.getType());
+
+      resultList.add(dataVO);
+    }
+
+    return resultList;
   }
 
-  private HasLevelCode getHasLevel(boolean isBatch, int controlLevel,
-                                   Long userId, Long projectId,
-                                   Long resourceTypeId, Long resourceId) {
-    if (isBatch) {
-      return HasLevelCode.NONE;
-    }
-    UserResourceQueryDTO queryDTO = new UserResourceQueryDTO(
-        controlLevel, projectId, resourceTypeId, resourceId);
-    int hasResourceCnt = this.getResourceCntByUserId(userId, queryDTO);
-    if (hasResourceCnt == 0) {
-      return HasLevelCode.NONE;
-    }
-    int resourceCnt = 1;
-    if (resourceId == null) {
-      ResourceExtend resourceExtend =
-          this.resourceExtendBeanTool.getResourceExtendImpl();
-      resourceCnt = resourceExtend.getResourceCnt(projectId, resourceTypeId);
-      return hasResourceCnt == resourceCnt ? HasLevelCode.ALL
-                                           : HasLevelCode.HALF;
-    }
-    return hasResourceCnt == resourceCnt ? HasLevelCode.ALL : HasLevelCode.NONE;
-  }
-
+  /**
+   * 切换资源查看权限控制状态。
+   */
   @Override
-  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
+  @Transactional(
+          transactionManager =
+                  "yakSecurityTransactionManager",
+          rollbackFor = Exception.class)
   public void changeResourceViewControlStatus() {
-    boolean isOn = this.getViewPermissionControlStatus();
-    if (isOn) {
+    boolean enabled =
+            getViewPermissionControlStatus();
+
+    if (enabled) {
       UserResourceQueryDTO queryDTO =
-          UserResourceQueryDTO.getOpenViewPermissionControlQueryEntity();
-      this.userResourceDao.deleteByUserId(0, queryDTO);
-    } else {
-      this.userResourceDao.deleteByControlLevel(ControlLevelCode.VIEW);
-      UserResource userResource =
-          UserResource.getOpenViewPermissionControlEntity();
-      this.userResourceDao.insert(userResource);
+              UserResourceQueryDTO
+                      .getOpenViewPermissionControlQueryEntity();
+
+      userResourceDao.deleteByUserId(
+              SYSTEM_USER_ID,
+              queryDTO);
+
+      LOGGER.info("关闭资源查看权限控制");
+      return;
     }
+
+    userResourceDao.deleteByControlLevel(
+            ControlLevelCode.VIEW);
+
+    UserResource controlResource =
+            new UserResource();
+
+    controlResource.setUserId(SYSTEM_USER_ID);
+    controlResource.setControlLevel(
+            ControlLevelCode.VIEW.getType());
+
+    userResourceDao.insert(
+            controlResource);
+
+    LOGGER.info("开启资源查看权限控制");
   }
 
+  /**
+   * 查询指定用户对资源的权限控制级别。
+   *
+   * @param queryDTO 查询条件
+   * @return 权限控制级别
+   */
   @Override
-  public ControlLevelCode getControlLevel(ControlLevelQueryDTO queryDTO)
-      throws YakSecurityException {
+  public ControlLevelCode getControlLevel(
+          ControlLevelQueryDTO queryDTO) {
+
+    if (queryDTO == null) {
+      throw new IllegalArgumentException(
+              "权限控制级别查询条件不能为空");
+    }
+
     if (queryDTO.getUserId() == null) {
-      throw new YakSecurityException(ResultCode.USER_ID_CANNOT_BE_NULL);
+      throw new YakSecurityException(
+              ResultCode.USER_ID_CANNOT_BE_NULL);
     }
+
     if (queryDTO.getProjectId() == null) {
-      throw new YakSecurityException(ResultCode.PROJECT_ID_CANNOT_BE_NULL);
+      throw new YakSecurityException(
+              ResultCode.PROJECT_ID_CANNOT_BE_NULL);
     }
+
     if (queryDTO.getResourceTypeId() == null) {
       throw new YakSecurityException(
-          ResultCode.RESOURCE_TYPE_ID_CANNOT_BE_NULL);
+              ResultCode
+                      .RESOURCE_TYPE_ID_CANNOT_BE_NULL);
     }
+
     if (queryDTO.getResourceId() == null) {
-      throw new YakSecurityException(ResultCode.RESOURCE_ID_CANNOT_BE_NULL);
+      throw new YakSecurityException(
+              ResultCode.RESOURCE_ID_CANNOT_BE_NULL);
     }
-    Integer controlLevel = this.userResourceDao.selectControlLevel(queryDTO);
+
+    Integer controlLevel =
+            userResourceDao.selectControlLevel(
+                    queryDTO);
+
     if (controlLevel == null) {
-      if (!this.getViewPermissionControlStatus()) {
-        return ControlLevelCode.VIEW;
-      }
-      return ControlLevelCode.NONE;
+      return getViewPermissionControlStatus()
+              ? ControlLevelCode.NONE
+              : ControlLevelCode.VIEW;
     }
-    return ControlLevelCode.getByType(controlLevel);
+
+    ControlLevelCode controlLevelCode =
+            ControlLevelCode.getByType(
+                    controlLevel);
+
+    if (controlLevelCode == null) {
+      throw new YakSecurityException(
+              ResultCode
+                      .RESOURCE_INVALID_CONTROL_LEVEL);
+    }
+
+    return controlLevelCode;
   }
 
-  private void checkParam(Integer controlLevel, Long projectId,
-                          Long resourceTypeId, Long resourceId)
-      throws YakSecurityException {
-    if (projectId == null) {
-      throw new YakSecurityException(ResultCode.PROJECT_ID_CANNOT_BE_NULL);
-    }
-    if (resourceTypeId == null && resourceId != null) {
-      throw new YakSecurityException(ResultCode.RESOURCE_ASSIGN_ERROR);
-    }
-    if (ControlLevelCode.getByType(controlLevel) == null) {
-      throw new YakSecurityException(ResultCode.RESOURCE_INVALID_CONTROL_LEVEL);
-    }
-  }
+  /**
+   * 为单个用户分配资源权限。
+   *
+   * @param assignDTO 分配参数
+   */
+  @Override
+  @Transactional(
+          transactionManager =
+                  "yakSecurityTransactionManager",
+          rollbackFor = Exception.class)
+  public void assignResourcePermission(
+          AssignToOneUserDTO assignDTO) {
 
-  private void checkParam(MByRDataQueryDTO queryDTO)
-      throws YakSecurityException {
-    this.checkParam(queryDTO.getControlLevel(), queryDTO.getProjectId(),
-                    queryDTO.getResourceTypeId(), queryDTO.getResourceId());
-  }
+    checkParam(assignDTO);
 
-  private void checkParam(MByUDataQueryDTO queryDTO)
-      throws YakSecurityException {
-    if (queryDTO.getUserId() == null) {
-      throw new YakSecurityException(ResultCode.USER_ID_CANNOT_BE_NULL);
-    }
-    if (ControlLevelCode.getByType(queryDTO.getControlLevel()) == null) {
-      throw new YakSecurityException(ResultCode.RESOURCE_INVALID_CONTROL_LEVEL);
-    }
-    this.checkParam(queryDTO.getShowLevel(), queryDTO.getProjectId(),
-                    queryDTO.getResourceTypeId());
-  }
+    Long userId = assignDTO.getUserId();
+    Long projectId = assignDTO.getProjectId();
+    Long resourceTypeId =
+            assignDTO.getResourceTypeId();
 
-  private void checkParam(AssignToOneUserDTO assignDTO)
-      throws YakSecurityException {
-    if (assignDTO.getUserId() == null) {
-      throw new YakSecurityException(ResultCode.USER_ID_CANNOT_BE_NULL);
-    }
-    if (ControlLevelCode.getByType(assignDTO.getControlLevel()) == null) {
-      throw new YakSecurityException(ResultCode.RESOURCE_INVALID_CONTROL_LEVEL);
-    }
-    if (assignDTO.getProjectId() == null &&
-        assignDTO.getResourceTypeId() != null) {
-      throw new YakSecurityException(ResultCode.RESOURCE_ASSIGN_ERROR_2);
-    }
-  }
+    int controlLevel =
+            assignDTO.getControlLevel();
 
-  private List<UserResource> getUserResourceList(Long projectId,
-                                                 Long resourceTypeId,
-                                                 int controlLevel,
-                                                 List<Long> idList,
-                                                 List<Long> userIdList) {
-    List<Long> resourceTypeIdList;
-    ArrayList<Long> projectIdList;
-    ArrayList<Long> resourceIdList = null;
-    if (projectId == null) {
-      projectIdList = new ArrayList<Long>(idList);
-      resourceTypeIdList = this.resourceTypeService.getAllResourceTypeIdList();
+    UserResourceQueryDTO queryDTO =
+            new UserResourceQueryDTO(
+                    controlLevel,
+                    projectId,
+                    resourceTypeId);
+
+    List<Long> excludeIdList =
+            normalizeIds(
+                    assignDTO.getExcludeIdList());
+
+    if (excludeIdList.isEmpty()) {
+      userResourceDao.deleteByUserId(
+              userId,
+              queryDTO);
+    } else if (projectId == null) {
+      userResourceDao
+              .deleteByUserIdWithoutProjectIdList(
+                      userId,
+                      queryDTO,
+                      excludeIdList);
     } else if (resourceTypeId == null) {
-      projectIdList = new ArrayList();
-      projectIdList.add(projectId);
-      resourceTypeIdList = new ArrayList<Long>(idList);
-    } else {
-      projectIdList = new ArrayList();
-      projectIdList.add(projectId);
-      resourceTypeIdList = new ArrayList<Long>();
-      resourceTypeIdList.add(resourceTypeId);
-      resourceIdList = new ArrayList<Long>(idList);
+      userResourceDao
+              .deleteByUserIdWithoutResourceTypeIdList(
+                      userId,
+                      queryDTO,
+                      excludeIdList);
     }
-    List<ResourceDTO> resourceDTOList = this.getResourceDTOList(
-        projectIdList, resourceTypeIdList, resourceIdList);
-    return this.buildUserResourceList(controlLevel, userIdList,
-                                      resourceDTOList);
+
+    List<Long> idList =
+            normalizeIds(
+                    assignDTO.getIdList());
+
+    if (idList.isEmpty()) {
+      return;
+    }
+
+    List<UserResource> userResourceList =
+            getUserResourceList(
+                    projectId,
+                    resourceTypeId,
+                    controlLevel,
+                    idList,
+                    Collections.singletonList(
+                            userId));
+
+    insertBatch(userResourceList);
   }
 
-  private List<ResourceDTO> getResourceDTOList(List<Long> projectIdList,
-                                               List<Long> resourceTypeIdList,
-                                               List<Long> resourceIdList) {
-    ArrayList<ResourceDTO> resourceDTOList = new ArrayList<ResourceDTO>();
+  /**
+   * 为多个用户分配资源权限。
+   *
+   * @param assignDTO 分配参数
+   */
+  @Override
+  @Transactional(
+          transactionManager =
+                  "yakSecurityTransactionManager",
+          rollbackFor = Exception.class)
+  public void assignResourcePermission(
+          AssignToManyUserDTO assignDTO) {
+
+    checkParam(assignDTO);
+
+    List<Long> userIdList =
+            normalizeIds(
+                    assignDTO.getUserIdList());
+
+    Long projectId = assignDTO.getProjectId();
+    Long resourceTypeId =
+            assignDTO.getResourceTypeId();
+    Long resourceId =
+            assignDTO.getResourceId();
+
+    int controlLevel =
+            assignDTO.getControlLevel();
+
+    UserResourceQueryDTO queryDTO =
+            new UserResourceQueryDTO(
+                    controlLevel,
+                    projectId,
+                    resourceTypeId,
+                    resourceId);
+
+    userResourceDao.deleteWithoutUserIdList(
+            queryDTO,
+            normalizeIds(
+                    assignDTO
+                            .getExcludeUserIdList()));
+
+    if (userIdList.isEmpty()) {
+      return;
+    }
+
+    List<ResourceDTO> resourceList =
+            new ArrayList<>();
+
+    if (resourceId == null) {
+      ResourceExtend resourceExtend =
+              getResourceExtend();
+
+      List<ResourceDTO> extensionResources =
+              resourceExtend.getResourceList(
+                      projectId,
+                      resourceTypeId);
+
+      if (!CollectionUtils.isEmpty(
+              extensionResources)) {
+
+        resourceList.addAll(
+                extensionResources);
+      }
+    } else {
+      resourceList.add(
+              new ResourceDTO(
+                      projectId,
+                      resourceTypeId,
+                      resourceId));
+    }
+
+    List<UserResource> userResourceList =
+            buildUserResourceList(
+                    controlLevel,
+                    userIdList,
+                    resourceList);
+
+    insertBatch(userResourceList);
+  }
+
+  /**
+   * 批量分配资源权限。
+   *
+   * @param assignDTO 批量分配参数
+   */
+  @Override
+  @Transactional(
+          transactionManager =
+                  "yakSecurityTransactionManager",
+          rollbackFor = Exception.class)
+  public void batchAssignResourcePermission(
+          BatchAssignDTO assignDTO) {
+
+    checkParam(assignDTO);
+
+    List<Long> userIdList =
+            normalizeIds(
+                    assignDTO.getUserIdList());
+
+    List<Long> idList =
+            normalizeIds(
+                    assignDTO.getIdList());
+
+    int controlLevel =
+            assignDTO.getControlLevel();
+
+    boolean assignFlag =
+            Boolean.TRUE.equals(
+                    assignDTO.getAssignFlag());
+
+    Long projectId = assignDTO.getProjectId();
+    Long resourceTypeId =
+            assignDTO.getResourceTypeId();
+
+    deleteOldRelationBeforeBatchAssign(
+            projectId,
+            resourceTypeId,
+            assignFlag,
+            controlLevel,
+            idList);
+
+    if (idList.isEmpty()
+            || userIdList.isEmpty()) {
+
+      return;
+    }
+
+    List<UserResource> userResourceList =
+            getUserResourceList(
+                    projectId,
+                    resourceTypeId,
+                    controlLevel,
+                    idList,
+                    userIdList);
+
+    insertBatch(userResourceList);
+  }
+
+  /**
+   * 分页查询按用户管理的权限信息。
+   *
+   * @param queryDTO 查询条件
+   * @return 按用户管理的权限分页数据
+   */
+  @Override
+  public PagingData<MByUVO> getManageByUserPage(
+          MByUQueryDTO queryDTO) {
+
+    if (queryDTO == null) {
+      throw new IllegalArgumentException(
+              "用户权限分页查询条件不能为空");
+    }
+
+    Map<Long, Dept> deptMap =
+            deptService.getAllDeptMap();
+
+    PagingData<UserBriefVO> userPage =
+            userService.getUserBriefPage(
+                    new UserBriefQueryDTO(
+                            queryDTO));
+
+    if (userPage == null
+            || CollectionUtils.isEmpty(
+            userPage.getBizData())) {
+
+      return new PagingData<>(
+              new ArrayList<>(),
+              userPage == null
+                      ? null
+                      : userPage.getPagination());
+    }
+
+    boolean viewControlEnabled =
+            getViewPermissionControlStatus();
+
+    List<MByUVO> resultList =
+            new ArrayList<>(
+                    userPage.getBizData().size());
+
+    for (UserBriefVO user : userPage.getBizData()) {
+      MByUVO dataVO =
+              CopyBeanUtil.copy(
+                      user,
+                      MByUVO.class);
+
+      if (dataVO == null) {
+        continue;
+      }
+
+      dataVO.setUserId(user.getId());
+
+      dataVO.setDeptList(
+              deptService
+                      .getDeptBriefListFromDeptMapByChildId(
+                              deptMap,
+                              user.getDeptId()));
+
+      dataVO.setAdminResourceCnt(
+              userResourceDao
+                      .selectCountByUserIdAndControlLevel(
+                              user.getId(),
+                              ControlLevelCode.ADMIN));
+
+      if (viewControlEnabled) {
+        dataVO.setViewResourceCnt(
+                userResourceDao
+                        .selectCountByUserIdAndControlLevel(
+                                user.getId(),
+                                ControlLevelCode.VIEW));
+      }
+
+      resultList.add(dataVO);
+    }
+
+    return new PagingData<>(
+            resultList,
+            userPage.getPagination());
+  }
+
+  /**
+   * 分页查询按资源管理的权限信息。
+   *
+   * @param queryDTO 查询条件
+   * @return 按资源管理的权限分页数据
+   */
+  @Override
+  public PagingData<MByRVO> getManageByResourcePage(
+          MByRQueryDTO queryDTO) {
+
+    checkParam(queryDTO);
+
+    boolean viewControlEnabled =
+            getViewPermissionControlStatus();
+
+    Integer showLevel =
+            queryDTO.getShowLevel();
+
+    if (Objects.equals(
+            showLevel,
+            ShowLevelCode.PROJECT.getType())) {
+
+      return dealProjectLevel(
+              queryDTO,
+              viewControlEnabled);
+    }
+
+    if (Objects.equals(
+            showLevel,
+            ShowLevelCode.RESOURCE_TYPE.getType())) {
+
+      return dealResourceTypeLevel(
+              queryDTO,
+              viewControlEnabled);
+    }
+
+    return dealResourceLevel(
+            queryDTO,
+            viewControlEnabled);
+  }
+
+  /**
+   * 构建项目层级权限数据。
+   */
+  private void buildProjectPermissionData(
+          List<MByUDataVO> resultList,
+          boolean batch,
+          int controlLevel,
+          Long userId) {
+
+    List<ProjectBriefVO> projectList =
+            projectService.getProjectBriefList();
+
+    if (CollectionUtils.isEmpty(projectList)) {
+      return;
+    }
+
+    for (ProjectBriefVO project : projectList) {
+      MByUDataVO dataVO =
+              new MByUDataVO(
+                      project.getId(),
+                      project.getProjectName());
+
+      HasLevelCode hasLevel =
+              getHasLevel(
+                      batch,
+                      controlLevel,
+                      userId,
+                      project.getId(),
+                      null,
+                      null);
+
+      dataVO.setHasLevel(
+              hasLevel.getType());
+
+      resultList.add(dataVO);
+    }
+  }
+
+  /**
+   * 构建资源类型层级权限数据。
+   */
+  private void buildResourceTypePermissionData(
+          List<MByUDataVO> resultList,
+          boolean batch,
+          int controlLevel,
+          Long userId,
+          Long projectId) {
+
+    List<ResourceTypeVO> resourceTypeList =
+            resourceTypeService
+                    .getAllResourceTypeList();
+
+    if (CollectionUtils.isEmpty(
+            resourceTypeList)) {
+
+      return;
+    }
+
+    for (ResourceTypeVO resourceType
+            : resourceTypeList) {
+
+      MByUDataVO dataVO =
+              new MByUDataVO(
+                      resourceType.getId(),
+                      resourceType.getTypeName());
+
+      HasLevelCode hasLevel =
+              getHasLevel(
+                      batch,
+                      controlLevel,
+                      userId,
+                      projectId,
+                      resourceType.getId(),
+                      null);
+
+      dataVO.setHasLevel(
+              hasLevel.getType());
+
+      resultList.add(dataVO);
+    }
+  }
+
+  /**
+   * 构建资源层级权限数据。
+   */
+  private void buildResourcePermissionData(
+          List<MByUDataVO> resultList,
+          boolean batch,
+          int controlLevel,
+          Long userId,
+          Long projectId,
+          Long resourceTypeId) {
+
+    ResourceExtend resourceExtend =
+            getResourceExtend();
+
+    List<ResourceDTO> resourceList =
+            resourceExtend.getResourceList(
+                    projectId,
+                    resourceTypeId);
+
+    if (CollectionUtils.isEmpty(resourceList)) {
+      return;
+    }
+
+    for (ResourceDTO resource : resourceList) {
+      MByUDataVO dataVO =
+              new MByUDataVO(
+                      resource.getResourceId(),
+                      resource.getResourceName());
+
+      HasLevelCode hasLevel =
+              getHasLevel(
+                      batch,
+                      controlLevel,
+                      userId,
+                      projectId,
+                      resourceTypeId,
+                      resource.getResourceId());
+
+      dataVO.setHasLevel(
+              hasLevel.getType());
+
+      resultList.add(dataVO);
+    }
+  }
+
+  /**
+   * 计算当前节点的授权状态。
+   */
+  private HasLevelCode getHasLevel(
+          boolean batch,
+          int controlLevel,
+          Long userId,
+          Long projectId,
+          Long resourceTypeId,
+          Long resourceId) {
+
+    if (batch) {
+      return HasLevelCode.NONE;
+    }
+
+    UserResourceQueryDTO queryDTO =
+            new UserResourceQueryDTO(
+                    controlLevel,
+                    projectId,
+                    resourceTypeId,
+                    resourceId);
+
+    int assignedResourceCount =
+            getResourceCntByUserId(
+                    userId,
+                    queryDTO);
+
+    if (assignedResourceCount <= 0) {
+      return HasLevelCode.NONE;
+    }
+
+    if (resourceId != null) {
+      return HasLevelCode.ALL;
+    }
+
+    int totalResourceCount =
+            getResourceExtend().getResourceCnt(
+                    projectId,
+                    resourceTypeId);
+
+    if (totalResourceCount <= 0) {
+      return HasLevelCode.NONE;
+    }
+
+    return assignedResourceCount >= totalResourceCount
+            ? HasLevelCode.ALL
+            : HasLevelCode.HALF;
+  }
+
+  /**
+   * 构建待保存的用户资源权限关系。
+   */
+  private List<UserResource> getUserResourceList(
+          Long projectId,
+          Long resourceTypeId,
+          int controlLevel,
+          List<Long> idList,
+          List<Long> userIdList) {
+
+    List<Long> validIds =
+            normalizeIds(idList);
+
+    List<Long> validUserIds =
+            normalizeIds(userIdList);
+
+    if (validIds.isEmpty()
+            || validUserIds.isEmpty()) {
+
+      return new ArrayList<>();
+    }
+
+    List<Long> projectIdList;
+    List<Long> resourceTypeIdList;
+    List<Long> resourceIdList = null;
+
+    if (projectId == null) {
+      projectIdList =
+              new ArrayList<>(validIds);
+
+      resourceTypeIdList =
+              normalizeIds(
+                      resourceTypeService
+                              .getAllResourceTypeIdList());
+    } else if (resourceTypeId == null) {
+      projectIdList =
+              Collections.singletonList(
+                      projectId);
+
+      resourceTypeIdList =
+              new ArrayList<>(validIds);
+    } else {
+      projectIdList =
+              Collections.singletonList(
+                      projectId);
+
+      resourceTypeIdList =
+              Collections.singletonList(
+                      resourceTypeId);
+
+      resourceIdList =
+              new ArrayList<>(validIds);
+    }
+
+    List<ResourceDTO> resourceList =
+            getResourceDTOList(
+                    projectIdList,
+                    resourceTypeIdList,
+                    resourceIdList);
+
+    return buildUserResourceList(
+            controlLevel,
+            validUserIds,
+            resourceList);
+  }
+
+  /**
+   * 查询或构建资源列表。
+   */
+  private List<ResourceDTO> getResourceDTOList(
+          List<Long> projectIdList,
+          List<Long> resourceTypeIdList,
+          List<Long> resourceIdList) {
+
+    if (CollectionUtils.isEmpty(projectIdList)
+            || CollectionUtils.isEmpty(
+            resourceTypeIdList)) {
+
+      return new ArrayList<>();
+    }
+
+    List<ResourceDTO> resourceList =
+            new ArrayList<>();
+
+    ResourceExtend resourceExtend =
+            getResourceExtend();
+
     for (Long projectId : projectIdList) {
-      for (Long resourceTypeId : resourceTypeIdList) {
-        if (resourceIdList == null) {
-          ResourceExtend resourceExtend =
-              this.resourceExtendBeanTool.getResourceExtendImpl();
-          List<ResourceDTO> list =
-              resourceExtend.getResourceList(projectId, resourceTypeId);
-          if (list == null)
-            continue;
-          resourceDTOList.addAll(list);
+      if (projectId == null) {
+        continue;
+      }
+
+      for (Long resourceTypeId
+              : resourceTypeIdList) {
+
+        if (resourceTypeId == null) {
           continue;
         }
+
+        if (resourceIdList == null) {
+          List<ResourceDTO> extensionResources =
+                  resourceExtend.getResourceList(
+                          projectId,
+                          resourceTypeId);
+
+          if (!CollectionUtils.isEmpty(
+                  extensionResources)) {
+
+            resourceList.addAll(
+                    extensionResources);
+          }
+
+          continue;
+        }
+
         for (Long resourceId : resourceIdList) {
-          resourceDTOList.add(
-              new ResourceDTO(projectId, resourceTypeId, resourceId));
+          if (resourceId == null) {
+            continue;
+          }
+
+          resourceList.add(
+                  new ResourceDTO(
+                          projectId,
+                          resourceTypeId,
+                          resourceId));
         }
       }
     }
-    return resourceDTOList;
+
+    return resourceList;
   }
 
-  private List<UserResource>
-  buildUserResourceList(int controlLevel, List<Long> userIdList,
-                        List<ResourceDTO> resourceDTOList) {
-    ArrayList<UserResource> userResourceList = new ArrayList<UserResource>();
+  /**
+   * 构建用户资源权限关系列表。
+   */
+  private List<UserResource> buildUserResourceList(
+          int controlLevel,
+          List<Long> userIdList,
+          List<ResourceDTO> resourceList) {
+
+    if (CollectionUtils.isEmpty(userIdList)
+            || CollectionUtils.isEmpty(
+            resourceList)) {
+
+      return new ArrayList<>();
+    }
+
+    List<UserResource> userResourceList =
+            new ArrayList<>(
+                    userIdList.size()
+                            * resourceList.size());
+
     for (Long userId : userIdList) {
-      for (ResourceDTO resourceDTO : resourceDTOList) {
-        UserResource userResource = new UserResource(resourceDTO);
+      if (userId == null) {
+        continue;
+      }
+
+      for (ResourceDTO resource : resourceList) {
+        if (resource == null) {
+          continue;
+        }
+
+        UserResource userResource =
+                new UserResource();
+
         userResource.setUserId(userId);
-        userResource.setControlLevel(controlLevel);
+        userResource.setControlLevel(
+                controlLevel);
+
         userResourceList.add(userResource);
       }
     }
+
     return userResourceList;
   }
 
-  @Override
-  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
-  public void assignResourcePermission(AssignToOneUserDTO assignDTO)
-      throws YakSecurityException {
-    this.checkParam(assignDTO);
-    Long userId = assignDTO.getUserId();
-    Long projectId = assignDTO.getProjectId();
-    Long resourceTypeId = assignDTO.getResourceTypeId();
-    int controlLevel = assignDTO.getControlLevel();
+  /**
+   * 删除批量分配前的旧权限关系。
+   */
+  private void deleteOldRelationBeforeBatchAssign(
+          Long projectId,
+          Long resourceTypeId,
+          boolean assignFlag,
+          int controlLevel,
+          List<Long> idList) {
+
+    if (CollectionUtils.isEmpty(idList)) {
+      return;
+    }
+
     UserResourceQueryDTO queryDTO =
-        new UserResourceQueryDTO(controlLevel, projectId, resourceTypeId);
-    if (CollectionUtils.isEmpty(assignDTO.getExcludeIdList())) {
-      this.userResourceDao.deleteByUserId(userId, queryDTO);
-    } else if (projectId == null) {
-      this.userResourceDao.deleteByUserIdWithoutProjectIdList(
-          userId, queryDTO, assignDTO.getExcludeIdList());
+            new UserResourceQueryDTO(
+                    controlLevel,
+                    projectId,
+                    resourceTypeId);
+
+    if (!assignFlag) {
+      userResourceDao.deleteByUserIdList(
+              idList,
+              queryDTO);
+
+      return;
+    }
+
+    if (projectId == null) {
+      userResourceDao.deleteByProjectIdList(
+              idList,
+              queryDTO);
     } else if (resourceTypeId == null) {
-      this.userResourceDao.deleteByUserIdWithoutResourceTypeIdList(
-          userId, queryDTO, assignDTO.getExcludeIdList());
-    }
-    List<Long> idList = assignDTO.getIdList();
-    ArrayList<Long> userIdList = new ArrayList<Long>();
-    userIdList.add(userId);
-    List<UserResource> userResourceList = this.getUserResourceList(
-        projectId, resourceTypeId, controlLevel, idList, userIdList);
-    this.userResourceDao.insertBatch(userResourceList);
-  }
-
-  @Override
-  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
-  public void assignResourcePermission(AssignToManyUserDTO assignDTO,
-                                       HttpServletRequest request)
-      throws YakSecurityException {
-    this.checkParam(assignDTO);
-    List<Long> userIdList = assignDTO.getUserIdList();
-    Long projectId = assignDTO.getProjectId();
-    Long resourceTypeId = assignDTO.getResourceTypeId();
-    Long resourceId = assignDTO.getResourceId();
-    int controlLevel = assignDTO.getControlLevel();
-    UserResourceQueryDTO queryDTO = new UserResourceQueryDTO(
-        controlLevel, projectId, resourceTypeId, resourceId);
-    this.userResourceDao.deleteWithoutUserIdList(
-        queryDTO, assignDTO.getExcludeUserIdList());
-    ArrayList<ResourceDTO> resourceDTOList = new ArrayList<ResourceDTO>();
-    if (resourceId == null) {
-      ResourceExtend resourceExtend =
-          this.resourceExtendBeanTool.getResourceExtendImpl();
-      List<ResourceDTO> list =
-          resourceExtend.getResourceList(projectId, resourceTypeId);
-      if (list != null) {
-        resourceDTOList.addAll(list);
-      }
+      userResourceDao
+              .deleteByResourceTypeIdList(
+                      idList,
+                      queryDTO);
     } else {
-      resourceDTOList.add(
-          new ResourceDTO(projectId, resourceTypeId, resourceId));
+      userResourceDao.deleteByResourceIdList(
+              idList,
+              queryDTO);
     }
-    this.userResourceDao.insertBatch(
-        this.buildUserResourceList(controlLevel, userIdList, resourceDTOList));
   }
 
-  private void deleteOldRelationBeforeBatchAssign(Long projectId,
-                                                  Long resourceTypeId,
-                                                  boolean flag,
-                                                  int controlLevel,
-                                                  List<Long> idList) {
-    UserResourceQueryDTO queryDTO =
-        new UserResourceQueryDTO(controlLevel, projectId, resourceTypeId);
-    if (flag) {
-      if (projectId == null) {
-        this.userResourceDao.deleteByProjectIdList(idList, queryDTO);
-      } else if (resourceTypeId == null) {
-        this.userResourceDao.deleteByResourceTypeIdList(idList, queryDTO);
-      } else {
-        this.userResourceDao.deleteByResourceIdList(idList, queryDTO);
+  /**
+   * 查询具有完整权限的用户数量。
+   */
+  private int getAdminOrViewUserCnt(
+          UserResourceQueryDTO queryDTO) {
+
+    List<Long> userIdList =
+            userResourceDao
+                    .selectUserIdListGroupByUserId(
+                            queryDTO);
+
+    if (CollectionUtils.isEmpty(userIdList)) {
+      return 0;
+    }
+
+    int totalResourceCount =
+            getResourceExtend().getResourceCnt(
+                    queryDTO.getProjectId(),
+                    queryDTO.getResourceTypeId());
+
+    if (totalResourceCount <= 0) {
+      return 0;
+    }
+
+    int result = 0;
+
+    for (Long userId : userIdList) {
+      int assignedResourceCount =
+              userResourceDao.selectCountByUserId(
+                      userId,
+                      queryDTO);
+
+      if (assignedResourceCount
+              >= totalResourceCount) {
+
+        result++;
       }
-    } else {
-      this.userResourceDao.deleteByUserIdList(idList, queryDTO);
     }
-  }
 
-  @Override
-  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
-  public void batchAssignResourcePermission(BatchAssignDTO assignDTO,
-                                            HttpServletRequest request)
-      throws YakSecurityException {
-    this.checkParam(assignDTO);
-    List<Long> userIdList = assignDTO.getUserIdList();
-    List<Long> idList = assignDTO.getIdList();
-    int controlLevel = assignDTO.getControlLevel();
-    boolean assignFlag = assignDTO.getAssignFlag();
-    Long projectId = assignDTO.getProjectId();
-    Long resourceTypeId = assignDTO.getResourceTypeId();
-    this.deleteOldRelationBeforeBatchAssign(projectId, resourceTypeId,
-                                            assignFlag, controlLevel, idList);
-    this.userResourceDao.insertBatch(this.getUserResourceList(
-        projectId, resourceTypeId, controlLevel, idList, userIdList));
-  }
-
-  private void checkParam(BatchAssignDTO assignDTO)
-      throws YakSecurityException {
-    if (assignDTO.getUserIdList() == null) {
-      throw new YakSecurityException(ResultCode.USER_ID_CANNOT_BE_NULL);
-    }
-    if (assignDTO.getAssignFlag() == null) {
-      throw new YakSecurityException(
-          ResultCode.RESOURCE_ASSIGN_BATCH_FLAG_CANNOT_BE_NULL);
-    }
-    if (assignDTO.getProjectId() == null &&
-        assignDTO.getResourceTypeId() != null) {
-      throw new YakSecurityException(ResultCode.RESOURCE_ASSIGN_ERROR_2);
-    }
-    if (ControlLevelCode.getByType(assignDTO.getControlLevel()) == null) {
-      throw new YakSecurityException(ResultCode.RESOURCE_INVALID_CONTROL_LEVEL);
-    }
-  }
-
-  private void checkParam(AssignToManyUserDTO assignDTO)
-      throws YakSecurityException {
-    this.checkParam(assignDTO.getControlLevel(), assignDTO.getProjectId(),
-                    assignDTO.getResourceTypeId(), assignDTO.getResourceId());
-  }
-
-  @Override
-  public PagingData<MByUVO> getManageByUserPage(MByUQueryDTO queryDTO) {
-    Map<Long, Dept> deptMap = this.deptService.getAllDeptMap();
-    PagingData<UserBriefVO> userPage =
-        this.userService.getUserBriefPage(new UserBriefQueryDTO(queryDTO));
-    List result = Collections.synchronizedList(new ArrayList());
-    boolean isOn = this.getViewPermissionControlStatus();
-    userPage.getBizData().parallelStream().forEach(userBriefVO -> {
-      MByUVO dataVo = CopyBeanUtil.copy(userBriefVO, MByUVO.class);
-      dataVo.setUserId(userBriefVO.getId());
-      dataVo.setDeptList(this.deptService.getDeptBriefListFromDeptMapByChildId(
-          deptMap, userBriefVO.getDeptId()));
-      dataVo.setAdminResourceCnt(
-          this.userResourceDao.selectCountByUserIdAndControlLevel(
-              userBriefVO.getId(), ControlLevelCode.ADMIN));
-      if (isOn) {
-        dataVo.setViewResourceCnt(
-            this.userResourceDao.selectCountByUserIdAndControlLevel(
-                userBriefVO.getId(), ControlLevelCode.VIEW));
-      }
-      result.add(dataVo);
-    });
-    return new PagingData<MByUVO>(result, userPage.getPagination());
-  }
-
-  @Override
-  public PagingData<MByRVO> getManageByResourcePage(MByRQueryDTO queryDTO)
-      throws YakSecurityException {
-    this.checkParam(queryDTO);
-    boolean isOn = this.getViewPermissionControlStatus();
-    PagingData<MByRVO> result =
-        queryDTO.getShowLevel().equals(ShowLevelCode.PROJECT.getType())
-            ? this.dealProjectLevel(queryDTO, isOn)
-            : (queryDTO.getShowLevel().equals(
-                   ShowLevelCode.RESOURCE_TYPE.getType())
-                   ? this.dealResourceTypeLevel(queryDTO, isOn)
-                   : this.dealResourceLevel(queryDTO, isOn));
     return result;
   }
 
-  private void checkParam(Integer showLevel, Long projectId,
-                          Long resourceTypeId) throws YakSecurityException {
-    if (ShowLevelCode.getByType(showLevel) == null) {
-      throw new YakSecurityException(ResultCode.RESOURCE_INVALID_SHOW_LEVEL);
-    }
-    if (showLevel >= ShowLevelCode.RESOURCE_TYPE.getType()) {
-      if (projectId == null) {
-        throw new YakSecurityException(ResultCode.RESOURCE_SHOW_LEVEL_ERROR);
-      }
-      ProjectBriefVO projectBriefVO =
-          this.projectService.getProjectBriefByProjectId(projectId);
-      if (projectBriefVO == null) {
-        throw new YakSecurityException(ResultCode.PROJECT_NOT_EXISTS);
-      }
-    }
-    if (showLevel >= ShowLevelCode.RESOURCE.getType()) {
-      if (resourceTypeId == null) {
-        throw new YakSecurityException(ResultCode.RESOURCE_SHOW_LEVEL_ERROR_2);
-      }
-      ResourceTypeVO resourceTypeVO =
-          this.resourceTypeService.getResourceTypeByResourceTypeId(
-              resourceTypeId);
-      if (resourceTypeVO == null) {
-        throw new YakSecurityException(ResultCode.RESOURCE_TYPE_NOT_EXISTS);
-      }
-    }
-  }
+  /**
+   * 处理项目层级分页数据。
+   */
+  private PagingData<MByRVO> dealProjectLevel(
+          MByRQueryDTO queryDTO,
+          boolean viewControlEnabled) {
 
-  private void checkParam(MByRQueryDTO queryDTO) throws YakSecurityException {
-    this.checkParam(queryDTO.getShowLevel(), queryDTO.getProjectId(),
-                    queryDTO.getResourceTypeId());
-  }
-
-  private int getAdminOrViewUserCnt(UserResourceQueryDTO queryDTO) {
-    List<Long> userIdList =
-        this.userResourceDao.selectUserIdListGroupByUserId(queryDTO);
-    ResourceExtend resourceExtend =
-        this.resourceExtendBeanTool.getResourceExtendImpl();
-    int total = resourceExtend.getResourceCnt(queryDTO.getProjectId(),
-                                              queryDTO.getResourceTypeId());
-    int cnt = userIdList.size();
-    for (Long userId : userIdList) {
-      if (total == this.userResourceDao.selectCountByUserId(userId, queryDTO))
-        continue;
-      --cnt;
-    }
-    return cnt;
-  }
-
-  private PagingData<MByRVO> dealProjectLevel(MByRQueryDTO queryDTO,
-                                              boolean isOn) {
-    ProjectBriefQueryDTO projectBriefQueryDTO =
-        new ProjectBriefQueryDTO(queryDTO);
     PagingData<ProjectBriefVO> projectPage =
-        this.projectService.getProjectBriefPage(projectBriefQueryDTO);
-    List result = Collections.synchronizedList(new ArrayList());
-    projectPage.getBizData().parallelStream().forEach(projectBriefVO -> {
-      MByRVO data = new MByRVO();
-      data.setProjectId(projectBriefVO.getId());
-      data.setProjectCode(projectBriefVO.getProjectCode());
-      data.setProjectName(projectBriefVO.getProjectName());
-      Long projectId = projectBriefVO.getId();
-      UserResourceQueryDTO queryDTO2 =
-          new UserResourceQueryDTO(ControlLevelCode.ADMIN.getType(), projectId);
-      data.setAdminUserCnt(this.getAdminOrViewUserCnt(queryDTO2));
-      if (isOn) {
-        queryDTO2 = new UserResourceQueryDTO(ControlLevelCode.VIEW.getType(),
-                                             projectId);
-        data.setViewUserCnt(this.getAdminOrViewUserCnt(queryDTO2));
+            projectService.getProjectBriefPage(
+                    new ProjectBriefQueryDTO(
+                            queryDTO));
+
+    if (projectPage == null
+            || CollectionUtils.isEmpty(
+            projectPage.getBizData())) {
+
+      return new PagingData<>(
+              new ArrayList<>(),
+              projectPage == null
+                      ? null
+                      : projectPage.getPagination());
+    }
+
+    List<MByRVO> resultList =
+            new ArrayList<>(
+                    projectPage.getBizData().size());
+
+    for (ProjectBriefVO project
+            : projectPage.getBizData()) {
+
+      MByRVO dataVO = new MByRVO();
+
+      dataVO.setProjectId(
+              project.getId());
+      dataVO.setProjectCode(
+              project.getProjectCode());
+      dataVO.setProjectName(
+              project.getProjectName());
+
+      UserResourceQueryDTO adminQuery =
+              new UserResourceQueryDTO(
+                      ControlLevelCode.ADMIN.getType(),
+                      project.getId());
+
+      dataVO.setAdminUserCnt(
+              getAdminOrViewUserCnt(
+                      adminQuery));
+
+      if (viewControlEnabled) {
+        UserResourceQueryDTO viewQuery =
+                new UserResourceQueryDTO(
+                        ControlLevelCode.VIEW.getType(),
+                        project.getId());
+
+        dataVO.setViewUserCnt(
+                getAdminOrViewUserCnt(
+                        viewQuery));
       }
-      result.add(data);
-    });
-    return new PagingData<MByRVO>(result, projectPage.getPagination());
+
+      resultList.add(dataVO);
+    }
+
+    return new PagingData<>(
+            resultList,
+            projectPage.getPagination());
   }
 
-  private PagingData<MByRVO> dealResourceTypeLevel(MByRQueryDTO queryDTO,
-                                                   boolean isOn) {
-    List result = Collections.synchronizedList(new ArrayList());
-    ResourceTypeQueryDTO resourceTypeQueryDTO =
-        new ResourceTypeQueryDTO(queryDTO);
+  /**
+   * 处理资源类型层级分页数据。
+   */
+  private PagingData<MByRVO> dealResourceTypeLevel(
+          MByRQueryDTO queryDTO,
+          boolean viewControlEnabled) {
+
     PagingData<ResourceTypeVO> resourceTypePage =
-        this.resourceTypeService.getResourceTypePage(resourceTypeQueryDTO);
-    ProjectBriefVO projectBriefVO =
-        this.projectService.getProjectBriefByProjectId(queryDTO.getProjectId());
-    resourceTypePage.getBizData().parallelStream().forEach(resourceTypeVO -> {
-      MByRVO data = new MByRVO();
-      data.setResourceTypeId(resourceTypeVO.getId());
-      data.setResourceTypeName(resourceTypeVO.getTypeName());
-      data.setProjectId(queryDTO.getProjectId());
-      data.setProjectName(projectBriefVO.getProjectName());
-      UserResourceQueryDTO queryDTO2 = new UserResourceQueryDTO(
-          ControlLevelCode.ADMIN.getType(), queryDTO.getProjectId(),
-          resourceTypeVO.getId());
-      data.setAdminUserCnt(this.getAdminOrViewUserCnt(queryDTO2));
-      if (isOn) {
-        queryDTO2 = new UserResourceQueryDTO(ControlLevelCode.VIEW.getType(),
-                                             queryDTO.getProjectId(),
-                                             resourceTypeVO.getId());
-        data.setViewUserCnt(this.getAdminOrViewUserCnt(queryDTO2));
+            resourceTypeService
+                    .getResourceTypePage(
+                            new ResourceTypeQueryDTO(
+                                    queryDTO));
+
+    if (resourceTypePage == null
+            || CollectionUtils.isEmpty(
+            resourceTypePage.getBizData())) {
+
+      return new PagingData<>(
+              new ArrayList<>(),
+              resourceTypePage == null
+                      ? null
+                      : resourceTypePage
+                      .getPagination());
+    }
+
+    ProjectBriefVO project =
+            projectService
+                    .getProjectBriefByProjectId(
+                            queryDTO.getProjectId());
+
+    List<MByRVO> resultList =
+            new ArrayList<>(
+                    resourceTypePage
+                            .getBizData()
+                            .size());
+
+    for (ResourceTypeVO resourceType
+            : resourceTypePage.getBizData()) {
+
+      MByRVO dataVO = new MByRVO();
+
+      dataVO.setProjectId(
+              queryDTO.getProjectId());
+
+      if (project != null) {
+        dataVO.setProjectName(
+                project.getProjectName());
       }
-      result.add(data);
-    });
-    return new PagingData<MByRVO>(result, resourceTypePage.getPagination());
+
+      dataVO.setResourceTypeId(
+              resourceType.getId());
+      dataVO.setResourceTypeName(
+              resourceType.getTypeName());
+
+      UserResourceQueryDTO adminQuery =
+              new UserResourceQueryDTO(
+                      ControlLevelCode.ADMIN.getType(),
+                      queryDTO.getProjectId(),
+                      resourceType.getId());
+
+      dataVO.setAdminUserCnt(
+              getAdminOrViewUserCnt(
+                      adminQuery));
+
+      if (viewControlEnabled) {
+        UserResourceQueryDTO viewQuery =
+                new UserResourceQueryDTO(
+                        ControlLevelCode.VIEW.getType(),
+                        queryDTO.getProjectId(),
+                        resourceType.getId());
+
+        dataVO.setViewUserCnt(
+                getAdminOrViewUserCnt(
+                        viewQuery));
+      }
+
+      resultList.add(dataVO);
+    }
+
+    return new PagingData<>(
+            resultList,
+            resourceTypePage.getPagination());
   }
 
-  private PagingData<MByRVO> dealResourceLevel(MByRQueryDTO queryDTO,
-                                               boolean isOn) {
-    ResourceExtend resourceExtend =
-        this.resourceExtendBeanTool.getResourceExtendImpl();
-    PagingData<ResourceDTO> page = resourceExtend.getResourcePage(
-        queryDTO.getProjectId(), queryDTO.getResourceTypeId(),
-        queryDTO.getName(), queryDTO.getPage(), queryDTO.getSize());
-    if (page == null) {
-      return new PagingData<MByRVO>();
+  /**
+   * 处理资源层级分页数据。
+   */
+  private PagingData<MByRVO> dealResourceLevel(
+          MByRQueryDTO queryDTO,
+          boolean viewControlEnabled) {
+
+    PagingData<ResourceDTO> resourcePage =
+            getResourceExtend().getResourcePage(
+                    queryDTO.getProjectId(),
+                    queryDTO.getResourceTypeId(),
+                    queryDTO.getName(),
+                    queryDTO.getPage(),
+                    queryDTO.getSize());
+
+    if (resourcePage == null) {
+      return new PagingData<>();
     }
-    ArrayList<MByRVO> list = new ArrayList<MByRVO>();
-    Long projectId = queryDTO.getProjectId();
-    Long resourceTypeId = queryDTO.getResourceTypeId();
-    ResourceTypeVO resourceTypeVO =
-        this.resourceTypeService.getResourceTypeByResourceTypeId(
-            resourceTypeId);
-    for (ResourceDTO resourceDTO : page.getBizData()) {
-      MByRVO data = new MByRVO();
-      data.setResourceTypeId(resourceTypeVO.getId());
-      data.setResourceTypeName(resourceTypeVO.getTypeName());
-      data.setProjectId(queryDTO.getProjectId());
-      data.setResourceId(resourceDTO.getResourceId());
-      data.setResourceName(resourceDTO.getResourceName());
-      UserResourceQueryDTO queryDTO2 =
-          new UserResourceQueryDTO(ControlLevelCode.ADMIN.getType(), projectId,
-                                   resourceTypeId, resourceDTO.getResourceId());
-      data.setAdminUserCnt(
-          this.userResourceDao.selectCountGroupByUserId(queryDTO2));
-      if (isOn) {
-        queryDTO2 = new UserResourceQueryDTO(ControlLevelCode.VIEW.getType(),
-                                             projectId, resourceTypeId,
-                                             resourceDTO.getResourceId());
-        data.setViewUserCnt(
-            this.userResourceDao.selectCountGroupByUserId(queryDTO2));
+
+    ResourceTypeVO resourceType =
+            resourceTypeService
+                    .getResourceTypeByResourceTypeId(
+                            queryDTO.getResourceTypeId());
+
+    List<MByRVO> resultList =
+            new ArrayList<>();
+
+    if (CollectionUtils.isEmpty(
+            resourcePage.getBizData())) {
+
+      return new PagingData<>(
+              resultList,
+              resourcePage.getPagination());
+    }
+
+    for (ResourceDTO resource
+            : resourcePage.getBizData()) {
+
+      MByRVO dataVO = new MByRVO();
+
+      dataVO.setProjectId(
+              queryDTO.getProjectId());
+      dataVO.setResourceId(
+              resource.getResourceId());
+      dataVO.setResourceName(
+              resource.getResourceName());
+
+      if (resourceType != null) {
+        dataVO.setResourceTypeId(
+                resourceType.getId());
+        dataVO.setResourceTypeName(
+                resourceType.getTypeName());
       }
-      list.add(data);
+
+      UserResourceQueryDTO adminQuery =
+              new UserResourceQueryDTO(
+                      ControlLevelCode.ADMIN.getType(),
+                      queryDTO.getProjectId(),
+                      queryDTO.getResourceTypeId(),
+                      resource.getResourceId());
+
+      dataVO.setAdminUserCnt(
+              userResourceDao
+                      .selectCountGroupByUserId(
+                              adminQuery));
+
+      if (viewControlEnabled) {
+        UserResourceQueryDTO viewQuery =
+                new UserResourceQueryDTO(
+                        ControlLevelCode.VIEW.getType(),
+                        queryDTO.getProjectId(),
+                        queryDTO.getResourceTypeId(),
+                        resource.getResourceId());
+
+        dataVO.setViewUserCnt(
+                userResourceDao
+                        .selectCountGroupByUserId(
+                                viewQuery));
+      }
+
+      resultList.add(dataVO);
     }
-    return new PagingData<MByRVO>(list, page.getPagination());
+
+    return new PagingData<>(
+            resultList,
+            resourcePage.getPagination());
+  }
+
+  /**
+   * 校验资源控制层级参数。
+   */
+  private void checkParam(
+          Integer controlLevel,
+          Long projectId,
+          Long resourceTypeId,
+          Long resourceId) {
+
+    if (projectId == null) {
+      throw new YakSecurityException(
+              ResultCode.PROJECT_ID_CANNOT_BE_NULL);
+    }
+
+    if (resourceTypeId == null
+            && resourceId != null) {
+
+      throw new YakSecurityException(
+              ResultCode.RESOURCE_ASSIGN_ERROR);
+    }
+
+    if (controlLevel == null
+            || ControlLevelCode.getByType(
+            controlLevel) == null) {
+
+      throw new YakSecurityException(
+              ResultCode
+                      .RESOURCE_INVALID_CONTROL_LEVEL);
+    }
+  }
+
+  /**
+   * 校验按资源查询参数。
+   */
+  private void checkParam(
+          MByRDataQueryDTO queryDTO) {
+
+    if (queryDTO == null) {
+      throw new IllegalArgumentException(
+              "按资源查询条件不能为空");
+    }
+
+    checkParam(
+            queryDTO.getControlLevel(),
+            queryDTO.getProjectId(),
+            queryDTO.getResourceTypeId(),
+            queryDTO.getResourceId());
+  }
+
+  /**
+   * 校验按用户查询参数。
+   */
+  private void checkParam(
+          MByUDataQueryDTO queryDTO) {
+
+    if (queryDTO == null) {
+      throw new IllegalArgumentException(
+              "按用户查询条件不能为空");
+    }
+
+    if (queryDTO.getUserId() == null) {
+      throw new YakSecurityException(
+              ResultCode.USER_ID_CANNOT_BE_NULL);
+    }
+
+    if (ControlLevelCode.getByType(
+            queryDTO.getControlLevel()) == null) {
+
+      throw new YakSecurityException(
+              ResultCode
+                      .RESOURCE_INVALID_CONTROL_LEVEL);
+    }
+
+    checkParam(
+            queryDTO.getShowLevel(),
+            queryDTO.getProjectId(),
+            queryDTO.getResourceTypeId());
+  }
+
+  /**
+   * 校验单用户分配参数。
+   */
+  private void checkParam(
+          AssignToOneUserDTO assignDTO) {
+
+    if (assignDTO == null) {
+      throw new IllegalArgumentException(
+              "单用户资源分配参数不能为空");
+    }
+
+    if (assignDTO.getUserId() == null) {
+      throw new YakSecurityException(
+              ResultCode.USER_ID_CANNOT_BE_NULL);
+    }
+
+    if (ControlLevelCode.getByType(
+            assignDTO.getControlLevel()) == null) {
+
+      throw new YakSecurityException(
+              ResultCode
+                      .RESOURCE_INVALID_CONTROL_LEVEL);
+    }
+
+    if (assignDTO.getProjectId() == null
+            && assignDTO.getResourceTypeId()
+            != null) {
+
+      throw new YakSecurityException(
+              ResultCode.RESOURCE_ASSIGN_ERROR_2);
+    }
+  }
+
+  /**
+   * 校验多用户分配参数。
+   */
+  private void checkParam(
+          AssignToManyUserDTO assignDTO) {
+
+    if (assignDTO == null) {
+      throw new IllegalArgumentException(
+              "多用户资源分配参数不能为空");
+    }
+
+    checkParam(
+            assignDTO.getControlLevel(),
+            assignDTO.getProjectId(),
+            assignDTO.getResourceTypeId(),
+            assignDTO.getResourceId());
+  }
+
+  /**
+   * 校验批量分配参数。
+   */
+  private void checkParam(
+          BatchAssignDTO assignDTO) {
+
+    if (assignDTO == null) {
+      throw new IllegalArgumentException(
+              "批量资源分配参数不能为空");
+    }
+
+    if (assignDTO.getUserIdList() == null) {
+      throw new YakSecurityException(
+              ResultCode.USER_ID_CANNOT_BE_NULL);
+    }
+
+    if (assignDTO.getAssignFlag() == null) {
+      throw new YakSecurityException(
+              ResultCode
+                      .RESOURCE_ASSIGN_BATCH_FLAG_CANNOT_BE_NULL);
+    }
+
+    if (assignDTO.getProjectId() == null
+            && assignDTO.getResourceTypeId()
+            != null) {
+
+      throw new YakSecurityException(
+              ResultCode.RESOURCE_ASSIGN_ERROR_2);
+    }
+
+    if (ControlLevelCode.getByType(
+            assignDTO.getControlLevel()) == null) {
+
+      throw new YakSecurityException(
+              ResultCode
+                      .RESOURCE_INVALID_CONTROL_LEVEL);
+    }
+  }
+
+  /**
+   * 校验按资源分页查询参数。
+   */
+  private void checkParam(
+          MByRQueryDTO queryDTO) {
+
+    if (queryDTO == null) {
+      throw new IllegalArgumentException(
+              "资源权限分页查询条件不能为空");
+    }
+
+    checkParam(
+            queryDTO.getShowLevel(),
+            queryDTO.getProjectId(),
+            queryDTO.getResourceTypeId());
+  }
+
+  /**
+   * 校验资源展示层级。
+   */
+  private void checkParam(
+          Integer showLevel,
+          Long projectId,
+          Long resourceTypeId) {
+
+    ShowLevelCode showLevelCode =
+            ShowLevelCode.getByType(
+                    showLevel);
+
+    if (showLevelCode == null) {
+      throw new YakSecurityException(
+              ResultCode
+                      .RESOURCE_INVALID_SHOW_LEVEL);
+    }
+
+    if (showLevel
+            >= ShowLevelCode
+            .RESOURCE_TYPE
+            .getType()) {
+
+      if (projectId == null) {
+        throw new YakSecurityException(
+                ResultCode
+                        .RESOURCE_SHOW_LEVEL_ERROR);
+      }
+
+      ProjectBriefVO project =
+              projectService
+                      .getProjectBriefByProjectId(
+                              projectId);
+
+      if (project == null) {
+        throw new YakSecurityException(
+                ResultCode.PROJECT_NOT_EXISTS);
+      }
+    }
+
+    if (showLevel
+            >= ShowLevelCode
+            .RESOURCE
+            .getType()) {
+
+      if (resourceTypeId == null) {
+        throw new YakSecurityException(
+                ResultCode
+                        .RESOURCE_SHOW_LEVEL_ERROR_2);
+      }
+
+      ResourceTypeVO resourceType =
+              resourceTypeService
+                      .getResourceTypeByResourceTypeId(
+                              resourceTypeId);
+
+      if (resourceType == null) {
+        throw new YakSecurityException(
+                ResultCode
+                        .RESOURCE_TYPE_NOT_EXISTS);
+      }
+    }
+  }
+
+  /**
+   * 批量保存用户资源权限关系。
+   */
+  private void insertBatch(
+          List<UserResource> userResourceList) {
+
+    if (CollectionUtils.isEmpty(
+            userResourceList)) {
+
+      return;
+    }
+
+    userResourceDao.insertBatch(
+            userResourceList);
+  }
+
+  /**
+   * 获取资源扩展实现。
+   */
+  private ResourceExtend getResourceExtend() {
+    ResourceExtend resourceExtend =
+            resourceExtendBeanTool
+                    .getResourceExtendImpl();
+
+    if (resourceExtend == null) {
+      throw new IllegalStateException(
+              "未找到资源扩展实现");
+    }
+
+    return resourceExtend;
+  }
+
+  /**
+   * 过滤空 ID 并去重。
+   */
+  private List<Long> normalizeIds(
+          List<Long> idList) {
+
+    if (CollectionUtils.isEmpty(idList)) {
+      return new ArrayList<>();
+    }
+
+    return idList.stream()
+            .filter(Objects::nonNull)
+            .distinct()
+            .collect(Collectors.toList());
   }
 }

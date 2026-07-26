@@ -3,82 +3,159 @@ package io.yak.framework.security.service;
 import io.yak.framework.security.common.dto.user.UserProjectDTO;
 import io.yak.framework.security.common.entity.UserProject;
 import io.yak.framework.security.common.enums.project.ProjectUserCode;
+
 import java.util.List;
 
 /**
  * 用户项目关系服务接口。
+ *
+ * @author weifuwan
  */
 public interface UserProjectService {
-  /**
-   * 根据项目 ID 查询用户 ID 集合。
-   */
-  List<Long> getUserIdListByProjectId(Long var1,
-                                                ProjectUserCode var2);
 
   /**
-   * 根据用户 ID 集合查询项目 ID 集合。
+   * 根据项目 ID 和用户类型查询用户 ID。
+   *
+   * @param projectId 项目 ID
+   * @param projectUserCode 项目用户类型
+   * @return 用户 ID 列表
    */
-  List<Long> getProjectIdListByUserIdList(List<Long> var1);
+  List<Long> getUserIdListByProjectId(
+          Long projectId,
+          ProjectUserCode projectUserCode);
 
   /**
-   * 保存用户项目关系。
+   * 根据用户 ID 集合查询项目 ID。
+   *
+   * @param userIdList 用户 ID 列表
+   * @return 项目 ID 列表
    */
-  void saveUserProject(Long var1, List<Long> var2);
+  List<Long> getProjectIdListByUserIdList(
+          List<Long> userIdList);
 
   /**
-   * 删除用户项目关系。
+   * 保存普通用户项目关系。
+   *
+   * @param projectId 项目 ID
+   * @param userIdList 用户 ID 列表
    */
-  void delUserProject(Long var1, List<Long> var2);
+  void saveUserProject(
+          Long projectId,
+          List<Long> userIdList);
 
   /**
-   * 保存负责人项目关系。
+   * 删除普通用户项目关系。
+   *
+   * @param projectId 项目 ID
+   * @param userIdList 用户 ID 列表
    */
-  void saveOwnerProject(Long var1, List<Long> var2);
+  void delUserProject(
+          Long projectId,
+          List<Long> userIdList);
 
   /**
-   * 删除负责人项目关系。
+   * 保存项目负责人关系。
+   *
+   * @param projectId 项目 ID
+   * @param ownerIdList 负责人 ID 列表
    */
-  void delOwnerProject(Long var1, List<Long> var2);
+  void saveOwnerProject(
+          Long projectId,
+          List<Long> ownerIdList);
 
   /**
-   * 更新用户项目关系。
+   * 删除项目负责人关系。
+   *
+   * @param projectId 项目 ID
+   * @param ownerIdList 负责人 ID 列表
    */
-  void updateUserProject(Long var1, List<Long> var2);
+  void delOwnerProject(
+          Long projectId,
+          List<Long> ownerIdList);
 
   /**
-   * 更新项目关联的用户信息。
+   * 全量更新普通用户项目关系。
+   *
+   * <p>用户 ID 列表为空时，清空项目关联的全部普通用户。
+   *
+   * @param projectId 项目 ID
+   * @param userIdList 用户 ID 列表
    */
-  void updateUserInformationAssociatedWithProject(Long var1,
-                                                         List<Long> var2);
+  void updateUserProject(
+          Long projectId,
+          List<Long> userIdList);
 
   /**
-   * 根据项目 ID 删除用户项目关系。
+   * 增量补充项目关联的普通用户。
+   *
+   * <p>只新增尚未关联的用户，不删除已有关系。
+   *
+   * @param projectId 项目 ID
+   * @param userIdList 用户 ID 列表
    */
-  void deleteUserProjectByProjectId(Long var1);
+  void updateUserInformationAssociatedWithProject(
+          Long projectId,
+          List<Long> userIdList);
 
   /**
-   * 根据项目 ID 删除负责人项目关系。
+   * 根据项目 ID 删除全部普通用户关系。
+   *
+   * @param projectId 项目 ID
    */
-  void deleteOwnerProjectByProjectId(Long var1);
+  void deleteUserProjectByProjectId(
+          Long projectId);
 
   /**
-   * 更新负责人项目关系。
+   * 根据项目 ID 删除全部负责人关系。
+   *
+   * @param projectId 项目 ID
    */
-  void updateOwnerProject(Long var1, List<Long> var2);
+  void deleteOwnerProjectByProjectId(
+          Long projectId);
 
   /**
-   * 更新项目关联的负责人信息。
+   * 全量更新项目负责人关系。
+   *
+   * <p>负责人 ID 列表为空时，清空项目关联的全部负责人。
+   *
+   * @param projectId 项目 ID
+   * @param ownerIdList 负责人 ID 列表
    */
-  void updateOwnerInformationAssociatedWithProject(Long var1,
-                                                          List<Long> var2);
+  void updateOwnerProject(
+          Long projectId,
+          List<Long> ownerIdList);
+
+  /**
+   * 增量补充项目关联的负责人。
+   *
+   * <p>只新增尚未关联的负责人，不删除已有关系。
+   *
+   * @param projectId 项目 ID
+   * @param ownerIdList 负责人 ID 列表
+   */
+  void updateOwnerInformationAssociatedWithProject(
+          Long projectId,
+          List<Long> ownerIdList);
 
   /**
    * 根据项目 ID 集合查询用户项目关系。
+   *
+   * <p>保留原有方法名称，避免影响现有调用方。
+   *
+   * @param projectIdList 项目 ID 列表
+   * @return 用户项目关系列表
    */
-  List<UserProject> lisUserProjectByProjectIds(List<Long> var1);
+  List<UserProject> lisUserProjectByProjectIds(
+          List<Long> projectIdList);
 
   /**
    * 根据查询条件查询用户项目关系。
+   *
+   * <p>保留原有方法名称，避免影响现有调用方。
+   *
+   * @param userProjectDTO 查询条件
+   * @return 用户项目关系列表
    */
-  List<UserProject> lisUserProjectByUserProjectDTO(UserProjectDTO var1);
+  List<UserProject> lisUserProjectByUserProjectDTO(
+          UserProjectDTO userProjectDTO);
 }
