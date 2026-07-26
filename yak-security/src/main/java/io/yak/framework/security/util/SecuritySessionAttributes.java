@@ -15,6 +15,10 @@ public final class SecuritySessionAttributes {
   public static final String USER_ID =
           SecuritySessionAttributes.class.getName() + ".USER_ID";
 
+  /** 登录时的密码摘要，用于在密码修改后拒绝旧会话。 */
+  public static final String CREDENTIAL_VERSION =
+          SecuritySessionAttributes.class.getName() + ".CREDENTIAL_VERSION";
+
   private SecuritySessionAttributes() {
     throw new IllegalStateException("Utility class");
   }

@@ -5,6 +5,7 @@ import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.entity.user.User;
 import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
+import io.yak.framework.security.config.YakSecurityProperties;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.extend.LoginExtend;
 import io.yak.framework.security.extend.PasswordEncoder;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -46,12 +48,6 @@ public class DefaultLoginExtendImpl
   private static final Integer USER_DISABLED_STATUS = 2;
 
   /**
-   * 默认会话有效期，单位为秒。
-   */
-  private static final int SESSION_MAX_INACTIVE_INTERVAL =
-          30 * 60;
-
-  /**
    * 路径匹配器。
    */
   private static final AntPathMatcher PATH_MATCHER =
@@ -60,6 +56,9 @@ public class DefaultLoginExtendImpl
   private final UserService userService;
 
   private final PasswordEncoder passwordEncoder;
+  private final LoginAttemptGuard loginAttemptGuard;
+  private final YakSecurityProperties.LoginSecurityProperties loginProperties;
+  private final int sessionTimeoutSeconds;
 
   /**
    * 创建默认登录扩展。
@@ -71,6 +70,15 @@ public class DefaultLoginExtendImpl
           UserService userService,
           PasswordEncoder passwordEncoder) {
 
+    this(userService, passwordEncoder, new YakSecurityProperties());
+  }
+
+  @Autowired
+  public DefaultLoginExtendImpl(
+          UserService userService,
+          PasswordEncoder passwordEncoder,
+          YakSecurityProperties properties) {
+
     this.userService =
             Objects.requireNonNull(
                     userService,
@@ -80,6 +88,15 @@ public class DefaultLoginExtendImpl
             Objects.requireNonNull(
                     passwordEncoder,
                     "passwordEncoder must not be null");
+    Objects.requireNonNull(properties, "properties must not be null");
+    this.loginProperties = properties.getLogin();
+    this.loginAttemptGuard = new LoginAttemptGuard(loginProperties);
+    long timeout = properties.getSession().getTimeout().getSeconds();
+    if (timeout < 1 || timeout > Integer.MAX_VALUE) {
+      throw new IllegalArgumentException(
+              "session.timeout must be between 1 second and 2147483647 seconds");
+    }
+    this.sessionTimeoutSeconds = (int) timeout;
   }
 
   /**
@@ -105,12 +122,20 @@ public class DefaultLoginExtendImpl
     String userName =
             loginDTO.getUserName().trim();
 
+    String remoteAddress = request.getRemoteAddr();
+    if (loginAttemptGuard.isBlocked(userName, remoteAddress)) {
+      throw new YakSecurityException(ResultCode.USER_ACCOUNT_LOCKED);
+    }
+
     User user =
             userService.getUserByUsername(userName);
 
     if (user == null) {
+      loginAttemptGuard.recordFailure(userName, remoteAddress);
       throw new YakSecurityException(
-              ResultCode.USER_NOT_EXISTS);
+              loginProperties.isHideAccountNotFound()
+                      ? ResultCode.USER_CREDENTIALS_ERROR
+                      : ResultCode.USER_NOT_EXISTS);
     }
 
     if (USER_DISABLED_STATUS.equals(
@@ -124,6 +149,7 @@ public class DefaultLoginExtendImpl
             loginDTO.getPw(),
             user.getPw())) {
 
+      loginAttemptGuard.recordFailure(userName, remoteAddress);
       throw new YakSecurityException(
               ResultCode.USER_CREDENTIALS_ERROR);
     }
@@ -140,7 +166,10 @@ public class DefaultLoginExtendImpl
     initLoginContext(
             request,
             userName,
-            user.getId());
+            user.getId(),
+            user.getPw());
+
+    loginAttemptGuard.recordSuccess(userName, remoteAddress);
 
     return CopyBeanUtil.copy(
             user,
@@ -250,7 +279,10 @@ public class DefaultLoginExtendImpl
             user.getStatus())
             || !Objects.equals(
             sessionUserId,
-            user.getId())) {
+            user.getId())
+            || !Objects.equals(
+            session.getAttribute(SecuritySessionAttributes.CREDENTIAL_VERSION),
+            user.getPw())) {
 
       LOGGER.warn(
               "登录会话失效，operator={}, sessionUserId={}",
@@ -273,7 +305,8 @@ public class DefaultLoginExtendImpl
   private void initLoginContext(
           HttpServletRequest request,
           String userName,
-          Long userId) {
+          Long userId,
+          String credentialVersion) {
 
     HttpSession existingSession =
             request.getSession(false);
@@ -286,7 +319,7 @@ public class DefaultLoginExtendImpl
             request.getSession(true);
 
     session.setMaxInactiveInterval(
-            SESSION_MAX_INACTIVE_INTERVAL);
+            sessionTimeoutSeconds);
 
     session.setAttribute(
             SecuritySessionAttributes.USER_NAME,
@@ -295,6 +328,10 @@ public class DefaultLoginExtendImpl
     session.setAttribute(
             SecuritySessionAttributes.USER_ID,
             userId);
+
+    session.setAttribute(
+            SecuritySessionAttributes.CREDENTIAL_VERSION,
+            credentialVersion);
   }
 
   /**

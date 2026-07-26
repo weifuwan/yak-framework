@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.time.Duration;
 
 /**
  * Yak Security 模块配置。
@@ -85,6 +86,34 @@ public class YakSecurityProperties {
   /** User permission cache settings. */
   private final PermissionCacheProperties permissionCache =
           new PermissionCacheProperties();
+
+  /** Login brute-force protection settings. */
+  private final LoginSecurityProperties login =
+          new LoginSecurityProperties();
+
+  /** HTTP session security settings. */
+  private final SessionSecurityProperties session =
+          new SessionSecurityProperties();
+
+  @Getter
+  @Setter
+  @ToString
+  public static class LoginSecurityProperties {
+    /** Failed attempts allowed for either a username or an IP address. */
+    private int maxFailureCount = 5;
+    /** Period during which a blocked username or IP address cannot retry. */
+    private Duration lockDuration = Duration.ofMinutes(15);
+    /** Do not reveal whether a submitted username exists. */
+    private boolean hideAccountNotFound = true;
+  }
+
+  @Getter
+  @Setter
+  @ToString
+  public static class SessionSecurityProperties {
+    /** Maximum idle time for an authenticated session. */
+    private Duration timeout = Duration.ofMinutes(30);
+  }
 
   @Getter
   @Setter
