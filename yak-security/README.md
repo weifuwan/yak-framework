@@ -2,24 +2,28 @@
 
 `yak-security` 为 Spring Boot 应用提供用户、角色、权限、登录、数据隔离和操作审计能力。
 
+完整的依赖引入、数据库准备、首次管理员初始化、登录调用、权限注解及扩展点示例，参见
+**[使用说明书](docs/USAGE.md)**。
+
 ## 接入
 
 在应用配置中声明安全模块的独立数据源：
 
 ```yaml
-spring:
-  yak-security:
-    app-name: demo
-    username: root
-    password: secret
-    jdbc-url: jdbc:mariadb://localhost:3306/demo
-    driver-class-name: org.mariadb.jdbc.Driver
-    resource-extend-bean-name: yakSecurityDefaultResourceExtendImpl
+yak:
+  security:
+    application-name: demo
+    datasource:
+      url: jdbc:mariadb://localhost:3306/demo
+      username: root
+      password: secret
+      driver-class-name: org.mariadb.jdbc.Driver
 ```
 
 自定义登录或资源查询逻辑时，分别实现
 `io.yak.framework.security.extend.LoginExtend` 或
-`io.yak.framework.security.extend.ResourceExtend`，并将 Bean 名配置到相应的扩展配置项。
+`io.yak.framework.security.extend.ResourceExtend`，并将实现注册为 Spring Bean；Starter 会自动使用
+宿主应用提供的实现。
 
 HTTP 接口统一位于 `/yak-security/api/v1`，项目隔离标识通过
 `X-YAK-SECURITY-PROJECT-ID` 请求头传递。
