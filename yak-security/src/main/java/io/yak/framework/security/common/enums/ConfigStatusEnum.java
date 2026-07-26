@@ -1,8 +1,8 @@
 package io.yak.framework.security.common.enums;
 
 public enum ConfigStatusEnum {
-  NORMAL(1, "\u6b63\u5e38"),
-  DISABLE(2, "\u7981\u7528");
+  NORMAL(1, "正常"),
+  DISABLE(2, "禁用");
 
   private int code;
   private String desc;

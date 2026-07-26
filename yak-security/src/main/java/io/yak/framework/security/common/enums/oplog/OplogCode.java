@@ -1,9 +1,9 @@
 package io.yak.framework.security.common.enums.oplog;
 
 public enum OplogCode {
-  OPERATE_PAGE(1, "\u64cd\u4f5c\u9875\u9762"),
-  OPERATE_TYPE(2, "\u64cd\u4f5c\u7c7b\u578b"),
-  TARGET_TYPE(3, "\u5bf9\u8c61\u5206\u7c7b");
+  OPERATE_PAGE(1, "操作页面"),
+  OPERATE_TYPE(2, "操作类型"),
+  TARGET_TYPE(3, "对象分类");
 
   private final Integer type;
   private final String info;

@@ -1,9 +1,9 @@
 package io.yak.framework.security.common.enums.resource;
 
 public enum ControlLevelCode {
-  NONE(0, "\u65e0\u6743\u9650"),
-  VIEW(1, "\u67e5\u770b\u6743\u9650"),
-  ADMIN(2, "\u7ba1\u7406\u6743\u9650");
+  NONE(0, "无权限"),
+  VIEW(1, "查看权限"),
+  ADMIN(2, "管理权限");
 
   private final Integer type;
   private final String info;

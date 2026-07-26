@@ -1,9 +1,9 @@
 package io.yak.framework.security.common.enums.resource;
 
 public enum ShowLevelCode {
-  PROJECT(1, "\u9879\u76ee\u7ea7\u522b"),
-  RESOURCE_TYPE(2, "\u8d44\u6e90\u7c7b\u522b\u7ea7\u522b"),
-  RESOURCE(3, "\u8d44\u6e90\u7ea7\u522b");
+  PROJECT(1, "项目级别"),
+  RESOURCE_TYPE(2, "资源类别级别"),
+  RESOURCE(3, "资源级别");
 
   private final Integer type;
   private final String info;

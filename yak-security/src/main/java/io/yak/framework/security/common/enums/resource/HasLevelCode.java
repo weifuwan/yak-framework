@@ -1,9 +1,9 @@
 package io.yak.framework.security.common.enums.resource;
 
 public enum HasLevelCode {
-  NONE(0, "\u4e0d\u62e5\u6709"),
-  HALF(1, "\u534a\u62e5\u6709"),
-  ALL(2, "\u5168\u62e5\u6709");
+  NONE(0, "不拥有"),
+  HALF(1, "半拥有"),
+  ALL(2, "全拥有");
 
   private final Integer type;
   private final String info;

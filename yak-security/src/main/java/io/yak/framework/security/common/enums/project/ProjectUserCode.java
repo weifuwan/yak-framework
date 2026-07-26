@@ -1,8 +1,8 @@
 package io.yak.framework.security.common.enums.project;
 
 public enum ProjectUserCode {
-  NORMAL(0, "\u666e\u901a\u7528\u6237"),
-  OWNER(1, "\u9879\u76ee\u8d1f\u8d23\u4eba");
+  NORMAL(0, "普通用户"),
+  OWNER(1, "项目负责人");
 
   private final Integer type;
   private final String info;
