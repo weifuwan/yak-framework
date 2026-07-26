@@ -1,53 +1,53 @@
 {
   "groups": [
     {
-      "name": "spring.logi-security",
-      "type": "com.didiglobal.logi.security.properties.LogiSecurityProper",
-      "sourceType": "com.didiglobal.logi.security.properties.LogiSecurityProper"
+      "name": "spring.yak-security",
+      "type": "io.yak.framework.security.properties.YakSecurityProperties",
+      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
     }
   ],
   "properties": [
     {
-      "name": "spring.logi-security.app-name",
+      "name": "spring.yak-security.app-name",
       "type": "java.lang.String",
       "description": "应用名称",
-      "sourceType": "com.didiglobal.logi.security.properties.LogiSecurityProper"
+      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
     },
     {
-      "name": "spring.logi-security.driver-class-name",
+      "name": "spring.yak-security.driver-class-name",
       "type": "java.lang.String",
       "description": "数据库信息",
-      "sourceType": "com.didiglobal.logi.security.properties.LogiSecurityProper"
+      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
     },
     {
-      "name": "spring.logi-security.jdbc-url",
+      "name": "spring.yak-security.jdbc-url",
       "type": "java.lang.String",
       "description": "数据库信息",
-      "sourceType": "com.didiglobal.logi.security.properties.LogiSecurityProper"
+      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
     },
     {
-      "name": "spring.logi-security.login-extend-bean-name",
+      "name": "spring.yak-security.login-extend-bean-name",
       "type": "java.lang.String",
-      "description": "用户需要实现loginExtend接口，并在spring容器中的bean name 对应 配置文件[logi.security.login-extend-bean-name] 配置 项",
-      "sourceType": "com.didiglobal.logi.security.properties.LogiSecurityProper"
+      "description": "用户需要实现loginExtend接口，并在spring容器中的bean name 对应 配置文件[yak.security.login-extend-bean-name] 配置 项",
+      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
     },
     {
-      "name": "spring.logi-security.password",
+      "name": "spring.yak-security.password",
       "type": "java.lang.String",
       "description": "数据库信息",
-      "sourceType": "com.didiglobal.logi.security.properties.LogiSecurityProper"
+      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
     },
     {
-      "name": "spring.logi-security.resource-extend-bean-name",
+      "name": "spring.yak-security.resource-extend-bean-name",
       "type": "java.lang.String",
       "description": "用户需要实现resourceExtend接口，并在spring容器中的bean name",
-      "sourceType": "com.didiglobal.logi.security.properties.LogiSecurityProper"
+      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
     },
     {
-      "name": "spring.logi-security.username",
+      "name": "spring.yak-security.username",
       "type": "java.lang.String",
       "description": "数据库信息",
-      "sourceType": "com.didiglobal.logi.security.properties.LogiSecurityProper"
+      "sourceType": "io.yak.framework.security.properties.YakSecurityProperties"
     }
   ],
   "hints": []

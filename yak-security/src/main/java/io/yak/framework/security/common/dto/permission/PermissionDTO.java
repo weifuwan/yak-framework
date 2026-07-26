@@ -1,0 +1,107 @@
+package io.yak.framework.security.common.dto.permission;
+
+import java.util.ArrayList;
+import java.util.List;
+public class PermissionDTO {
+  private String permissionName;
+  private String description;
+  private List<PermissionDTO> childPermissionDTOList;
+
+  public List<PermissionDTO> getChildPermissionDTOList() {
+    if (this.childPermissionDTOList == null) {
+      this.childPermissionDTOList = new ArrayList<PermissionDTO>();
+    }
+    return this.childPermissionDTOList;
+  }
+
+  public PermissionDTO() {}
+
+  public PermissionDTO(String permissionName, String description) {
+    this.permissionName = permissionName;
+    this.description = description;
+  }
+
+  public PermissionDTO(String permissionName) {
+    this.permissionName = permissionName;
+    this.description = permissionName;
+  }
+
+  public String getPermissionName() { return this.permissionName; }
+
+  public String getDescription() { return this.description; }
+
+  public void setPermissionName(String permissionName) {
+    this.permissionName = permissionName;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void
+  setChildPermissionDTOList(List<PermissionDTO> childPermissionDTOList) {
+    this.childPermissionDTOList = childPermissionDTOList;
+  }
+
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (!(o instanceof PermissionDTO)) {
+      return false;
+    }
+    PermissionDTO other = (PermissionDTO)o;
+    if (!other.canEqual(this)) {
+      return false;
+    }
+    String this$permissionName = this.getPermissionName();
+    String other$permissionName = other.getPermissionName();
+    if (this$permissionName == null
+            ? other$permissionName != null
+            : !this$permissionName.equals(other$permissionName)) {
+      return false;
+    }
+    String this$description = this.getDescription();
+    String other$description = other.getDescription();
+    if (this$description == null
+            ? other$description != null
+            : !this$description.equals(other$description)) {
+      return false;
+    }
+    List<PermissionDTO> this$childPermissionDTOList =
+        this.getChildPermissionDTOList();
+    List<PermissionDTO> other$childPermissionDTOList =
+        other.getChildPermissionDTOList();
+    return !(this$childPermissionDTOList == null
+                 ? other$childPermissionDTOList != null
+                 : !((Object)this$childPermissionDTOList)
+                        .equals(other$childPermissionDTOList));
+  }
+
+  protected boolean canEqual(Object other) {
+    return other instanceof PermissionDTO;
+  }
+
+  public int hashCode() {
+    int PRIME = 59;
+    int result = 1;
+    String $permissionName = this.getPermissionName();
+    result = result * 59 +
+             ($permissionName == null ? 43 : $permissionName.hashCode());
+    String $description = this.getDescription();
+    result =
+        result * 59 + ($description == null ? 43 : $description.hashCode());
+    List<PermissionDTO> $childPermissionDTOList =
+        this.getChildPermissionDTOList();
+    result = result * 59 + ($childPermissionDTOList == null
+                                ? 43
+                                : ((Object)$childPermissionDTOList).hashCode());
+    return result;
+  }
+
+  public String toString() {
+    return "PermissionDTO(permissionName=" + this.getPermissionName() +
+        ", description=" + this.getDescription() +
+        ", childPermissionDTOList=" + this.getChildPermissionDTOList() + ")";
+  }
+}
