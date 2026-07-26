@@ -2,7 +2,13 @@ package io.yak.framework.security.common.dto.project;
 
 import io.yak.framework.security.common.dto.PageParamDTO;
 import io.yak.framework.security.common.dto.resource.MByRQueryDTO;
+/**
+ * 项目简要查询数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class ProjectBriefQueryDTO extends PageParamDTO {
+  /** 项目名称。 */
   private String projectName;
 
   public ProjectBriefQueryDTO(MByRQueryDTO queryDTO) {

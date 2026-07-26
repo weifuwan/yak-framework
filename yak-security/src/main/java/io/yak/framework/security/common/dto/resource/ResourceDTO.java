@@ -1,9 +1,18 @@
 package io.yak.framework.security.common.dto.resource;
 
+/**
+ * 资源数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class ResourceDTO {
+  /** 资源标识。 */
   private Long resourceId;
+  /** 资源名称。 */
   private String resourceName;
+  /** 项目标识。 */
   private Long projectId;
+  /** 资源类型标识。 */
   private Long resourceTypeId;
 
   public ResourceDTO() {}

@@ -1,10 +1,19 @@
 package io.yak.framework.security.common.dto.role;
 
 import io.yak.framework.security.common.dto.PageParamDTO;
+/**
+ * 角色查询数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class RoleQueryDTO extends PageParamDTO {
+  /** 角色编码。 */
   private String roleCode;
+  /** 标识。 */
   private Long id;
+  /** 角色名称。 */
   private String roleName;
+  /** 描述。 */
   private String description;
 
   @Override
