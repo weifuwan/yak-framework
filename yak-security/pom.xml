@@ -49,6 +49,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- OpenAPI 3 文档和 Swagger UI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+
         <!-- 自定义配置属性元数据 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

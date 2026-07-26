@@ -46,7 +46,10 @@ public class YakSecurityProperties {
    */
   private List<String> publicPaths = new ArrayList<String>(Arrays.asList(
           "/yak-security/api/v1/account/login",
-          "/yak-security/api/v1/common/heart"
+          "/yak-security/api/v1/common/heart",
+          "/v3/api-docs/**",
+          "/swagger-ui/**",
+          "/swagger-ui.html"
   ));
 
   /**
