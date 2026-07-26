@@ -51,7 +51,7 @@ public class ConfigDaoImpl extends BaseDaoImpl<ConfigPO> implements ConfigDao {
   }
 
   @Override
-  public int deleteById(Integer id) {
+  public int deleteById(Long id) {
     return this.configMapper.deleteById(id);
   }
 
@@ -121,7 +121,7 @@ public class ConfigDaoImpl extends BaseDaoImpl<ConfigPO> implements ConfigDao {
   }
 
   @Override
-  public ConfigPO getbyId(Integer configId) {
+  public ConfigPO getbyId(Long configId) {
     return (ConfigPO)this.configMapper.selectById(configId);
   }
 

@@ -7,7 +7,7 @@ import io.yak.framework.security.common.po.BasePO;
 public class DeptPO extends BasePO {
   private String deptName;
   private String description;
-  private Integer parentId;
+  private Long parentId;
   private Boolean leaf;
   private Integer level;
 
@@ -26,8 +26,8 @@ public class DeptPO extends BasePO {
     if (!super.equals(o)) {
       return false;
     }
-    Integer this$parentId = this.getParentId();
-    Integer other$parentId = other.getParentId();
+    Long this$parentId = this.getParentId();
+    Long other$parentId = other.getParentId();
     if (this$parentId == null
             ? other$parentId != null
             : !((Object)this$parentId).equals(other$parentId)) {
@@ -67,7 +67,7 @@ public class DeptPO extends BasePO {
   public int hashCode() {
     int PRIME = 59;
     int result = super.hashCode();
-    Integer $parentId = this.getParentId();
+    Long $parentId = this.getParentId();
     result =
         result * 59 + ($parentId == null ? 43 : ((Object)$parentId).hashCode());
     Boolean $leaf = this.getLeaf();
@@ -86,7 +86,7 @@ public class DeptPO extends BasePO {
 
   public String getDescription() { return this.description; }
 
-  public Integer getParentId() { return this.parentId; }
+  public Long getParentId() { return this.parentId; }
 
   public Boolean getLeaf() { return this.leaf; }
 
@@ -98,7 +98,7 @@ public class DeptPO extends BasePO {
     this.description = description;
   }
 
-  public void setParentId(Integer parentId) { this.parentId = parentId; }
+  public void setParentId(Long parentId) { this.parentId = parentId; }
 
   public void setLeaf(Boolean leaf) { this.leaf = leaf; }
 

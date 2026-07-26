@@ -9,7 +9,7 @@ public class ProjectPO extends BasePO {
   private String projectCode;
   private String description;
   private Boolean running;
-  private Integer deptId;
+  private Long deptId;
 
   @Override
   public boolean equals(Object o) {
@@ -32,8 +32,8 @@ public class ProjectPO extends BasePO {
                              : !((Object)this$running).equals(other$running)) {
       return false;
     }
-    Integer this$deptId = this.getDeptId();
-    Integer other$deptId = other.getDeptId();
+    Long this$deptId = this.getDeptId();
+    Long other$deptId = other.getDeptId();
     if (this$deptId == null ? other$deptId != null
                             : !((Object)this$deptId).equals(other$deptId)) {
       return false;
@@ -71,7 +71,7 @@ public class ProjectPO extends BasePO {
     Boolean $running = this.getRunning();
     result =
         result * 59 + ($running == null ? 43 : ((Object)$running).hashCode());
-    Integer $deptId = this.getDeptId();
+    Long $deptId = this.getDeptId();
     result =
         result * 59 + ($deptId == null ? 43 : ((Object)$deptId).hashCode());
     String $projectName = this.getProjectName();
@@ -94,7 +94,7 @@ public class ProjectPO extends BasePO {
 
   public Boolean getRunning() { return this.running; }
 
-  public Integer getDeptId() { return this.deptId; }
+  public Long getDeptId() { return this.deptId; }
 
   public void setProjectName(String projectName) {
     this.projectName = projectName;
@@ -110,7 +110,7 @@ public class ProjectPO extends BasePO {
 
   public void setRunning(Boolean running) { this.running = running; }
 
-  public void setDeptId(Integer deptId) { this.deptId = deptId; }
+  public void setDeptId(Long deptId) { this.deptId = deptId; }
 
   @Override
   public String toString() {

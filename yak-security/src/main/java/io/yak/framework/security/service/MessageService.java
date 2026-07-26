@@ -10,7 +10,7 @@ public interface MessageService {
   public List<MessageVO> getMessageListByUserIdAndReadTag(String var1,
                                                           Boolean var2);
 
-  public void changeMessageStatus(List<Integer> var1);
+  public void changeMessageStatus(List<Long> var1);
 
   public void saveMessages(List<MessageDTO> var1);
 }

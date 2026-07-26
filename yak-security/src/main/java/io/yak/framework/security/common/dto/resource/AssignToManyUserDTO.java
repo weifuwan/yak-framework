@@ -2,40 +2,40 @@ package io.yak.framework.security.common.dto.resource;
 
 import java.util.List;
 public class AssignToManyUserDTO {
-  private Integer projectId;
-  private Integer resourceTypeId;
-  private Integer resourceId;
-  private List<Integer> userIdList;
-  private List<Integer> excludeUserIdList;
+  private Long projectId;
+  private Long resourceTypeId;
+  private Long resourceId;
+  private List<Long> userIdList;
+  private List<Long> excludeUserIdList;
   private Integer controlLevel;
 
-  public Integer getProjectId() { return this.projectId; }
+  public Long getProjectId() { return this.projectId; }
 
-  public Integer getResourceTypeId() { return this.resourceTypeId; }
+  public Long getResourceTypeId() { return this.resourceTypeId; }
 
-  public Integer getResourceId() { return this.resourceId; }
+  public Long getResourceId() { return this.resourceId; }
 
-  public List<Integer> getUserIdList() { return this.userIdList; }
+  public List<Long> getUserIdList() { return this.userIdList; }
 
-  public List<Integer> getExcludeUserIdList() { return this.excludeUserIdList; }
+  public List<Long> getExcludeUserIdList() { return this.excludeUserIdList; }
 
   public Integer getControlLevel() { return this.controlLevel; }
 
-  public void setProjectId(Integer projectId) { this.projectId = projectId; }
+  public void setProjectId(Long projectId) { this.projectId = projectId; }
 
-  public void setResourceTypeId(Integer resourceTypeId) {
+  public void setResourceTypeId(Long resourceTypeId) {
     this.resourceTypeId = resourceTypeId;
   }
 
-  public void setResourceId(Integer resourceId) {
+  public void setResourceId(Long resourceId) {
     this.resourceId = resourceId;
   }
 
-  public void setUserIdList(List<Integer> userIdList) {
+  public void setUserIdList(List<Long> userIdList) {
     this.userIdList = userIdList;
   }
 
-  public void setExcludeUserIdList(List<Integer> excludeUserIdList) {
+  public void setExcludeUserIdList(List<Long> excludeUserIdList) {
     this.excludeUserIdList = excludeUserIdList;
   }
 
@@ -54,22 +54,22 @@ public class AssignToManyUserDTO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$projectId = this.getProjectId();
-    Integer other$projectId = other.getProjectId();
+    Long this$projectId = this.getProjectId();
+    Long other$projectId = other.getProjectId();
     if (this$projectId == null
             ? other$projectId != null
             : !((Object)this$projectId).equals(other$projectId)) {
       return false;
     }
-    Integer this$resourceTypeId = this.getResourceTypeId();
-    Integer other$resourceTypeId = other.getResourceTypeId();
+    Long this$resourceTypeId = this.getResourceTypeId();
+    Long other$resourceTypeId = other.getResourceTypeId();
     if (this$resourceTypeId == null
             ? other$resourceTypeId != null
             : !((Object)this$resourceTypeId).equals(other$resourceTypeId)) {
       return false;
     }
-    Integer this$resourceId = this.getResourceId();
-    Integer other$resourceId = other.getResourceId();
+    Long this$resourceId = this.getResourceId();
+    Long other$resourceId = other.getResourceId();
     if (this$resourceId == null
             ? other$resourceId != null
             : !((Object)this$resourceId).equals(other$resourceId)) {
@@ -82,15 +82,15 @@ public class AssignToManyUserDTO {
             : !((Object)this$controlLevel).equals(other$controlLevel)) {
       return false;
     }
-    List<Integer> this$userIdList = this.getUserIdList();
-    List<Integer> other$userIdList = other.getUserIdList();
+    List<Long> this$userIdList = this.getUserIdList();
+    List<Long> other$userIdList = other.getUserIdList();
     if (this$userIdList == null
             ? other$userIdList != null
             : !((Object)this$userIdList).equals(other$userIdList)) {
       return false;
     }
-    List<Integer> this$excludeUserIdList = this.getExcludeUserIdList();
-    List<Integer> other$excludeUserIdList = other.getExcludeUserIdList();
+    List<Long> this$excludeUserIdList = this.getExcludeUserIdList();
+    List<Long> other$excludeUserIdList = other.getExcludeUserIdList();
     return !(this$excludeUserIdList == null
                  ? other$excludeUserIdList != null
                  : !((Object)this$excludeUserIdList)
@@ -104,23 +104,23 @@ public class AssignToManyUserDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $projectId = this.getProjectId();
+    Long $projectId = this.getProjectId();
     result = result * 59 +
              ($projectId == null ? 43 : ((Object)$projectId).hashCode());
-    Integer $resourceTypeId = this.getResourceTypeId();
+    Long $resourceTypeId = this.getResourceTypeId();
     result =
         result * 59 +
         ($resourceTypeId == null ? 43 : ((Object)$resourceTypeId).hashCode());
-    Integer $resourceId = this.getResourceId();
+    Long $resourceId = this.getResourceId();
     result = result * 59 +
              ($resourceId == null ? 43 : ((Object)$resourceId).hashCode());
     Integer $controlLevel = this.getControlLevel();
     result = result * 59 +
              ($controlLevel == null ? 43 : ((Object)$controlLevel).hashCode());
-    List<Integer> $userIdList = this.getUserIdList();
+    List<Long> $userIdList = this.getUserIdList();
     result = result * 59 +
              ($userIdList == null ? 43 : ((Object)$userIdList).hashCode());
-    List<Integer> $excludeUserIdList = this.getExcludeUserIdList();
+    List<Long> $excludeUserIdList = this.getExcludeUserIdList();
     result = result * 59 + ($excludeUserIdList == null
                                 ? 43
                                 : ((Object)$excludeUserIdList).hashCode());

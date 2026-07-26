@@ -42,8 +42,8 @@ public class MessageServiceImpl implements MessageService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
-  public void changeMessageStatus(List<Integer> messageIdList) {
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
+  public void changeMessageStatus(List<Long> messageIdList) {
     if (CollectionUtils.isEmpty(messageIdList)) {
       return;
     }

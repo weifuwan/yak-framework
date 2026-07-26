@@ -38,7 +38,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
 
   @Override
   public IPage<User> selectPageByUserIdList(UserQueryDTO queryDTO,
-                                            List<Integer> userIdList) {
+                                            List<Long> userIdList) {
     Page page = new Page((long)queryDTO.getPage(), (long)queryDTO.getSize());
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     ((QueryWrapper)((QueryWrapper)((QueryWrapper)((QueryWrapper)queryWrapper.eq(
@@ -62,7 +62,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
   @Override
   public IPage<UserBrief>
   selectBriefPageByDeptIdList(UserBriefQueryDTO queryDTO,
-                              List<Integer> deptIdList) {
+                              List<Long> deptIdList) {
     Page page = new Page((long)queryDTO.getPage(), (long)queryDTO.getSize());
     if (deptIdList != null && deptIdList.isEmpty()) {
       return CopyBeanUtil.copyPage(page, UserBrief.class);
@@ -79,7 +79,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
   }
 
   @Override
-  public User selectByUserId(Integer userId) {
+  public User selectByUserId(Long userId) {
     if (userId == null) {
       return null;
     }
@@ -109,7 +109,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
   }
 
   @Override
-  public boolean deleteByUserId(Integer userId) {
+  public boolean deleteByUserId(Long userId) {
     if (userId == null) {
       return false;
     }
@@ -119,7 +119,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
   }
 
   @Override
-  public List<UserBrief> selectBriefListByUserIdList(List<Integer> userIdList) {
+  public List<UserBrief> selectBriefListByUserIdList(List<Long> userIdList) {
     if (CollectionUtils.isEmpty(userIdList)) {
       return new ArrayList<UserBrief>();
     }
@@ -147,7 +147,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
   }
 
   @Override
-  public List<UserBrief> selectBriefListByDeptIdList(List<Integer> deptIdList) {
+  public List<UserBrief> selectBriefListByDeptIdList(List<Long> deptIdList) {
     if (deptIdList != null && deptIdList.isEmpty()) {
       return new ArrayList<UserBrief>();
     }
@@ -181,7 +181,7 @@ public class UserDaoImpl extends BaseDaoImpl<UserPO> implements UserDao {
   }
 
   @Override
-  public List<Integer> selectUserIdListByUsernameOrRealName(String name) {
+  public List<Long> selectUserIdListByUsernameOrRealName(String name) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     ((QueryWrapper)((QueryWrapper)queryWrapper.select(new String[] {"id"})
                         .like(!StringUtils.isEmpty((Object)name),

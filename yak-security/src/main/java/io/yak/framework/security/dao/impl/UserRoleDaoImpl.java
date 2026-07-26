@@ -23,16 +23,16 @@ public class UserRoleDaoImpl
   @Autowired private UserRoleMapper userRoleMapper;
 
   @Override
-  public List<Integer> selectUserIdListByRoleId(Integer roleId) {
+  public List<Long> selectUserIdListByRoleId(Long roleId) {
     if (roleId == null) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.select(new String[] {"user_id"})
         .eq((Object) "role_id", (Object)roleId);
     List userIdList = this.userRoleMapper.selectObjs((Wrapper)queryWrapper);
     if (CollectionUtils.isEmpty((Collection)userIdList)) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     return userIdList.stream()
         .map(Integer.class ::cast)
@@ -40,9 +40,9 @@ public class UserRoleDaoImpl
   }
 
   @Override
-  public List<Integer> selectRoleIdListByUserId(Integer userId) {
+  public List<Long> selectRoleIdListByUserId(Long userId) {
     if (userId == null) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     QueryWrapper userRoleWrapper = this.getQueryWrapperWithAppName();
     userRoleWrapper.select(new String[] {"role_id"})
@@ -66,7 +66,7 @@ public class UserRoleDaoImpl
   }
 
   @Override
-  public int deleteByUserIdOrRoleId(Integer userId, Integer roleId) {
+  public int deleteByUserIdOrRoleId(Long userId, Long roleId) {
     if (userId == null && roleId == null) {
       return 0;
     }
@@ -78,7 +78,7 @@ public class UserRoleDaoImpl
   }
 
   @Override
-  public int selectCountByRoleId(Integer roleId) {
+  public int selectCountByRoleId(Long roleId) {
     if (roleId == null) {
       return 0;
     }
@@ -88,7 +88,7 @@ public class UserRoleDaoImpl
   }
 
   @Override
-  public List<UserRolePO> selectByRoleIds(List<Integer> roleIds) {
+  public List<UserRolePO> selectByRoleIds(List<Long> roleIds) {
     if (CollectionUtils.isEmpty(roleIds)) {
       return Collections.emptyList();
     }
@@ -98,7 +98,7 @@ public class UserRoleDaoImpl
   }
 
   @Override
-  public List<UserRolePO> getRoleIdListByUserIds(List<Integer> userIds) {
+  public List<UserRolePO> getRoleIdListByUserIds(List<Long> userIds) {
     if (CollectionUtils.isEmpty(userIds)) {
       return Collections.emptyList();
     }

@@ -33,7 +33,7 @@ public class RoleDaoImpl extends BaseDaoImpl<RolePO> implements RoleDao {
   }
 
   @Override
-  public Role selectByRoleId(Integer roleId) {
+  public Role selectByRoleId(Long roleId) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.eq((Object) "id", (Object)roleId);
     return CopyBeanUtil.copy(this.roleMapper.selectOne((Wrapper)queryWrapper),
@@ -72,7 +72,7 @@ public class RoleDaoImpl extends BaseDaoImpl<RolePO> implements RoleDao {
   }
 
   @Override
-  public void deleteByRoleId(Integer roleId) {
+  public void deleteByRoleId(Long roleId) {
     this.roleMapper.deleteById(roleId);
   }
 
@@ -100,7 +100,7 @@ public class RoleDaoImpl extends BaseDaoImpl<RolePO> implements RoleDao {
   }
 
   @Override
-  public List<RoleBrief> selectBriefListByRoleIdList(List<Integer> roleIdList) {
+  public List<RoleBrief> selectBriefListByRoleIdList(List<Long> roleIdList) {
     if (CollectionUtils.isEmpty(roleIdList)) {
       return new ArrayList<RoleBrief>();
     }
@@ -112,7 +112,7 @@ public class RoleDaoImpl extends BaseDaoImpl<RolePO> implements RoleDao {
 
   @Override
   public int selectCountByRoleNameAndNotRoleId(String roleName,
-                                               Integer roleId) {
+                                               Long roleId) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     ((QueryWrapper)queryWrapper.eq((Object) "role_name", (Object)roleName))
         .ne(roleId != null, (Object) "id", (Object)roleId);

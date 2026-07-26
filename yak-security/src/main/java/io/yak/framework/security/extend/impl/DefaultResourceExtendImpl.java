@@ -9,19 +9,19 @@ import java.util.List;
 public class DefaultResourceExtendImpl implements ResourceExtend {
   @Override
   public PagingData<ResourceDTO>
-  getResourcePage(Integer projectId, Integer resourceTypeId,
+  getResourcePage(Long projectId, Long resourceTypeId,
                   String resourceName, int page, int size) {
     return null;
   }
 
   @Override
-  public List<ResourceDTO> getResourceList(Integer projectId,
-                                           Integer resourceTypeId) {
+  public List<ResourceDTO> getResourceList(Long projectId,
+                                           Long resourceTypeId) {
     return new ArrayList<ResourceDTO>();
   }
 
   @Override
-  public int getResourceCnt(Integer projectId, Integer resourceTypeId) {
+  public int getResourceCnt(Long projectId, Long resourceTypeId) {
     return 0;
   }
 }

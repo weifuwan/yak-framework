@@ -75,7 +75,7 @@ public class OplogDaoImpl extends BaseDaoImpl<OplogPO> implements OplogDao {
   }
 
   @Override
-  public Oplog selectByOplogId(Integer oplogId) {
+  public Oplog selectByOplogId(Long oplogId) {
     if (oplogId == null) {
       return null;
     }

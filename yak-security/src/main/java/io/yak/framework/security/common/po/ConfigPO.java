@@ -7,7 +7,7 @@ import io.yak.framework.security.common.po.BasePO;
 
 @TableName(value = "yak_security_config")
 public class ConfigPO extends BasePO {
-  @TableId(type = IdType.AUTO) private Integer id;
+  @TableId(type = IdType.AUTO) private Long id;
   private String valueGroup;
   private String valueName;
   private String value;
@@ -30,8 +30,8 @@ public class ConfigPO extends BasePO {
     if (!super.equals(o)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -81,7 +81,7 @@ public class ConfigPO extends BasePO {
   public int hashCode() {
     int PRIME = 59;
     int result = super.hashCode();
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Integer $status = this.getStatus();
     result =
@@ -100,7 +100,7 @@ public class ConfigPO extends BasePO {
   }
 
   @Override
-  public Integer getId() {
+  public Long getId() {
     return this.id;
   }
 
@@ -117,7 +117,7 @@ public class ConfigPO extends BasePO {
   public String getOperator() { return this.operator; }
 
   @Override
-  public void setId(Integer id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

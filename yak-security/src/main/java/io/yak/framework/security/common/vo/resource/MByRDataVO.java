@@ -1,11 +1,11 @@
 package io.yak.framework.security.common.vo.resource;
 public class MByRDataVO {
-  private Integer userId;
+  private Long userId;
   private String userName;
   private String realName;
   private Integer hasLevel;
 
-  public Integer getUserId() { return this.userId; }
+  public Long getUserId() { return this.userId; }
 
   public String getUserName() { return this.userName; }
 
@@ -13,7 +13,7 @@ public class MByRDataVO {
 
   public Integer getHasLevel() { return this.hasLevel; }
 
-  public void setUserId(Integer userId) { this.userId = userId; }
+  public void setUserId(Long userId) { this.userId = userId; }
 
   public void setUserName(String userName) { this.userName = userName; }
 
@@ -32,8 +32,8 @@ public class MByRDataVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$userId = this.getUserId();
-    Integer other$userId = other.getUserId();
+    Long this$userId = this.getUserId();
+    Long other$userId = other.getUserId();
     if (this$userId == null ? other$userId != null
                             : !((Object)this$userId).equals(other$userId)) {
       return false;
@@ -64,7 +64,7 @@ public class MByRDataVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $userId = this.getUserId();
+    Long $userId = this.getUserId();
     result =
         result * 59 + ($userId == null ? 43 : ((Object)$userId).hashCode());
     Integer $hasLevel = this.getHasLevel();

@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public PagingData<UserVO> getUserPage(UserQueryDTO queryDTO) {
-    List<Integer> userIdList = null;
+    List<Long> userIdList = null;
     if (queryDTO.getRoleId() != null &&
         CollectionUtils.isEmpty(userIdList =
                                     this.userRoleService.getUserIdListByRoleId(
@@ -93,13 +93,13 @@ public class UserServiceImpl implements UserService {
     IPage<User> pageInfo =
         this.userDao.selectPageByUserIdList(queryDTO, userIdList);
     ArrayList userVOList = Lists.newArrayList();
-    List<Integer> userIds = pageInfo.getRecords()
+    List<Long> userIds = pageInfo.getRecords()
                                 .stream()
                                 .map(BaseEntity::getId)
                                 .collect(Collectors.toList());
     List<UserProjectPO> userProjectList =
         this.userProjectDao.selectProjectListByUserIdList(userIds);
-    List<Integer> projectIds = userProjectList.stream()
+    List<Long> projectIds = userProjectList.stream()
                                    .map(UserProjectPO::getProjectId)
                                    .distinct()
                                    .collect(Collectors.toList());
@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public PagingData<UserBriefVO> getUserBriefPage(UserBriefQueryDTO queryDTO) {
-    List<Integer> deptIdList =
+    List<Long> deptIdList =
         this.deptService.getDeptIdListByParentIdAndDeptName(
             queryDTO.getDeptId(), queryDTO.getDeptName());
     IPage<UserBrief> pageInfo =
@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserVO getUserDetailByUserId(Integer userId)
+  public UserVO getUserDetailByUserId(Long userId)
       throws YakSecurityException {
     User user = this.userDao.selectByUserId(userId);
     if (user == null) {
@@ -159,10 +159,10 @@ public class UserServiceImpl implements UserService {
     List<RoleBriefVO> roleBriefVOList =
         this.roleService.getRoleBriefListByUserId(userId);
     userVo.setRoleList(roleBriefVOList);
-    List<Integer> roleIdList = roleBriefVOList.stream()
+    List<Long> roleIdList = roleBriefVOList.stream()
                                    .map(RoleBriefVO::getId)
                                    .collect(Collectors.toList());
-    List<Integer> hasPermissionIdList =
+    List<Long> hasPermissionIdList =
         this.rolePermissionService.getPermissionIdListByRoleIdList(roleIdList);
     userVo.setPermissionTreeVO(
         this.permissionService.buildPermissionTreeWithHas(hasPermissionIdList));
@@ -182,13 +182,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserBasicVO> getUserBasicListByUserIdList(List<Integer> userIds) {
+  public List<UserBasicVO> getUserBasicListByUserIdList(List<Long> userIds) {
     return CopyBeanUtil.copyList(
         this.userDao.selectBriefListByUserIdList(userIds), UserBasicVO.class);
   }
 
   @Override
-  public Result<List<UserVO>> getUserDetailByUserIds(List<Integer> ids) {
+  public Result<List<UserVO>> getUserDetailByUserIds(List<Long> ids) {
     if (!CollectionUtils.isEmpty(ids)) {
       return Result.buildSucc(Lists.newArrayList());
     }
@@ -205,7 +205,7 @@ public class UserServiceImpl implements UserService {
                        .collect(Collectors.toList());
     List<UserProjectPO> userProjectList =
         this.userProjectDao.selectProjectListByUserIdList(ids);
-    List<Integer> projectIds = userProjectList.stream()
+    List<Long> projectIds = userProjectList.stream()
                                    .map(UserProjectPO::getProjectId)
                                    .distinct()
                                    .collect(Collectors.toList());
@@ -226,10 +226,10 @@ public class UserServiceImpl implements UserService {
       List<RoleBriefVO> roleBriefVOList =
           this.roleService.getRoleBriefListByUserId(userVO.getId());
       userVO.setRoleList(roleBriefVOList);
-      List<Integer> roleIdList = roleBriefVOList.stream()
+      List<Long> roleIdList = roleBriefVOList.stream()
                                      .map(RoleBriefVO::getId)
                                      .collect(Collectors.toList());
-      List<Integer> hasPermissionIdList =
+      List<Long> hasPermissionIdList =
           this.rolePermissionService.getPermissionIdListByRoleIdList(
               roleIdList);
       userVO.setPermissionTreeVO(
@@ -242,7 +242,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Result<Void> deleteByUserId(Integer userId) {
+  public Result<Void> deleteByUserId(Long userId) {
     if (userId == null) {
       return Result.fail("userId is null!");
     }
@@ -269,7 +269,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public List<UserBriefVO>
-  getUserBriefListByUserIdList(List<Integer> userIdList) {
+  getUserBriefListByUserIdList(List<Long> userIdList) {
     if (CollectionUtils.isEmpty(userIdList)) {
       return new ArrayList<UserBriefVO>();
     }
@@ -306,7 +306,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<Integer> getUserIdListByUsernameOrRealName(String name) {
+  public List<Long> getUserIdListByUsernameOrRealName(String name) {
     return this.userDao.selectUserIdListByUsernameOrRealName(name);
   }
 
@@ -317,21 +317,21 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserBriefVO> getUserBriefListByDeptId(Integer deptId) {
-    List<Integer> deptIdList = this.deptService.getDeptIdListByParentId(deptId);
+  public List<UserBriefVO> getUserBriefListByDeptId(Long deptId) {
+    List<Long> deptIdList = this.deptService.getDeptIdListByParentId(deptId);
     List<UserBrief> userBriefList =
         this.userDao.selectBriefListByDeptIdList(deptIdList);
     return CopyBeanUtil.copyList(userBriefList, UserBriefVO.class);
   }
 
   @Override
-  public List<AssignInfoVO> getAssignDataByUserId(Integer userId)
+  public List<AssignInfoVO> getAssignDataByUserId(Long userId)
       throws YakSecurityException {
     if (userId == null) {
       throw new YakSecurityException(ResultCode.USER_ID_CANNOT_BE_NULL);
     }
     List<RoleBriefVO> roleBriefVOList = this.roleService.getAllRoleBriefList();
-    HashSet<Integer> hasRoleIdSet = new HashSet<Integer>(
+    HashSet<Long> hasRoleIdSet = new HashSet<Long>(
         this.userRoleService.getRoleIdListByUserId(userId));
     ArrayList<AssignInfoVO> list = new ArrayList<AssignInfoVO>();
     for (RoleBriefVO roleBriefVO : roleBriefVOList) {
@@ -345,8 +345,8 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserBriefVO> getUserBriefListByRoleId(Integer roleId) {
-    List<Integer> userIdList =
+  public List<UserBriefVO> getUserBriefListByRoleId(Long roleId) {
+    List<Long> userIdList =
         this.userRoleService.getUserIdListByRoleId(roleId);
     List<UserBrief> userBriefList =
         this.userDao.selectBriefListByUserIdList(userIdList);

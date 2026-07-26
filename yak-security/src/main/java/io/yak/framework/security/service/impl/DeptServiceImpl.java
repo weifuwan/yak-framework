@@ -53,41 +53,41 @@ public class DeptServiceImpl implements DeptService {
   }
 
   @Override
-  public List<DeptBriefVO> getDeptBriefListByChildId(Integer deptId) {
+  public List<DeptBriefVO> getDeptBriefListByChildId(Long deptId) {
     Map<Integer, Dept> deptMap = this.getAllDeptMap();
     return this.getDeptBriefListFromDeptMapByChildId(deptMap, deptId);
   }
 
   @Override
-  public List<Integer> getDeptIdListByParentId(Integer deptId) {
+  public List<Long> getDeptIdListByParentId(Long deptId) {
     if (deptId == null) {
       return this.deptDao.selectAllDeptIdList();
     }
     List<Dept> deptList = this.deptDao.selectAllAndAscOrderByLevel();
-    HashSet<Integer> deptIdSet = new HashSet<Integer>();
+    HashSet<Long> deptIdSet = new HashSet<Long>();
     deptIdSet.add(deptId);
     for (Dept dept : deptList) {
       if (!deptIdSet.contains(dept.getParentId()))
         continue;
       deptIdSet.add(dept.getId());
     }
-    return new ArrayList<Integer>(deptIdSet);
+    return new ArrayList<Long>(deptIdSet);
   }
 
   @Override
-  public List<Integer> getDeptIdListByParentIdAndDeptName(Integer deptId,
+  public List<Long> getDeptIdListByParentIdAndDeptName(Long deptId,
                                                           String deptName) {
-    List<Integer> deptIdList = this.getDeptIdListByParentId(deptId);
+    List<Long> deptIdList = this.getDeptIdListByParentId(deptId);
     if (deptIdList == null) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     if (deptIdList.isEmpty() || StringUtils.isEmpty((Object)deptName)) {
       return deptIdList;
     }
-    HashSet<Integer> deptIdSet = new HashSet<Integer>(deptIdList);
-    ArrayList<Integer> result = new ArrayList<Integer>();
+    HashSet<Long> deptIdSet = new HashSet<Long>(deptIdList);
+    ArrayList<Long> result = new ArrayList<Long>();
     deptIdList = this.deptDao.selectIdListByLikeDeptName(deptName);
-    for (Integer id : deptIdList) {
+    for (Long id : deptIdList) {
       if (!deptIdSet.contains(id))
         continue;
       result.add(id);
@@ -108,7 +108,7 @@ public class DeptServiceImpl implements DeptService {
   @Override
   public List<DeptBriefVO>
   getDeptBriefListFromDeptMapByChildId(Map<Integer, Dept> deptMap,
-                                       Integer deptId) {
+                                       Long deptId) {
     Dept dept;
     if (deptId == null || deptId == 0 || CollectionUtils.isEmpty(deptMap)) {
       return new ArrayList<DeptBriefVO>();

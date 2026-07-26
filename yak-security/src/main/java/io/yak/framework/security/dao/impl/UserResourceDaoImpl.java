@@ -23,9 +23,9 @@ public class UserResourceDaoImpl
   @Autowired private UserResourceMapper userResourceMapper;
 
   private QueryWrapper<UserResourcePO>
-  wrapQueryCriteria(Integer userId, UserResourceQueryDTO queryDTO) {
+  wrapQueryCriteria(Long userId, UserResourceQueryDTO queryDTO) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
-    Integer resourceTypeId = queryDTO.getResourceTypeId();
+    Long resourceTypeId = queryDTO.getResourceTypeId();
     ((QueryWrapper)((QueryWrapper)((QueryWrapper)((QueryWrapper)queryWrapper.eq(
                                                       (Object) ("control_" +
                                                                 "level"),
@@ -44,14 +44,14 @@ public class UserResourceDaoImpl
   }
 
   @Override
-  public int selectCountByUserId(Integer userId,
+  public int selectCountByUserId(Long userId,
                                  UserResourceQueryDTO queryDTO) {
     return this.userResourceMapper.selectCount(
         (Wrapper)this.wrapQueryCriteria(userId, queryDTO));
   }
 
   @Override
-  public void deleteByUserId(Integer userId, UserResourceQueryDTO queryDTO) {
+  public void deleteByUserId(Long userId, UserResourceQueryDTO queryDTO) {
     this.userResourceMapper.delete(
         (Wrapper)this.wrapQueryCriteria(userId, queryDTO));
   }
@@ -85,7 +85,7 @@ public class UserResourceDaoImpl
   }
 
   @Override
-  public void deleteByUserIdList(List<Integer> userIdList,
+  public void deleteByUserIdList(List<Long> userIdList,
                                  UserResourceQueryDTO queryDTO) {
     QueryWrapper<UserResourcePO> queryWrapper =
         this.wrapQueryCriteria(null, queryDTO);
@@ -94,7 +94,7 @@ public class UserResourceDaoImpl
   }
 
   @Override
-  public void deleteByProjectIdList(List<Integer> projectIdList,
+  public void deleteByProjectIdList(List<Long> projectIdList,
                                     UserResourceQueryDTO queryDTO) {
     QueryWrapper<UserResourcePO> queryWrapper =
         this.wrapQueryCriteria(null, queryDTO);
@@ -103,7 +103,7 @@ public class UserResourceDaoImpl
   }
 
   @Override
-  public void deleteByResourceTypeIdList(List<Integer> resourceTypeIdList,
+  public void deleteByResourceTypeIdList(List<Long> resourceTypeIdList,
                                          UserResourceQueryDTO queryDTO) {
     QueryWrapper<UserResourcePO> queryWrapper =
         this.wrapQueryCriteria(null, queryDTO);
@@ -112,7 +112,7 @@ public class UserResourceDaoImpl
   }
 
   @Override
-  public void deleteByResourceIdList(List<Integer> resourceIdList,
+  public void deleteByResourceIdList(List<Long> resourceIdList,
                                      UserResourceQueryDTO queryDTO) {
     QueryWrapper<UserResourcePO> queryWrapper =
         this.wrapQueryCriteria(null, queryDTO);
@@ -121,7 +121,7 @@ public class UserResourceDaoImpl
   }
 
   @Override
-  public int selectCountByUserIdAndControlLevel(Integer userId,
+  public int selectCountByUserIdAndControlLevel(Long userId,
                                                 ControlLevelCode controlLevel) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     ((QueryWrapper)queryWrapper.eq(userId != null, (Object) "user_id",
@@ -137,8 +137,8 @@ public class UserResourceDaoImpl
   }
 
   @Override
-  public List<Integer>
-  selectResourceIdListByUserId(Integer userId, UserResourceQueryDTO queryDTO) {
+  public List<Long>
+  selectResourceIdListByUserId(Long userId, UserResourceQueryDTO queryDTO) {
     QueryWrapper<UserResourcePO> queryWrapper =
         this.wrapQueryCriteria(userId, queryDTO);
     queryWrapper.select(new String[] {"resource_id"});
@@ -151,7 +151,7 @@ public class UserResourceDaoImpl
 
   @Override
   public void deleteWithoutUserIdList(UserResourceQueryDTO queryDTO,
-                                      List<Integer> excludeUserIdList) {
+                                      List<Long> excludeUserIdList) {
     QueryWrapper<UserResourcePO> queryWrapper =
         this.wrapQueryCriteria(null, queryDTO);
     if (!CollectionUtils.isEmpty(excludeUserIdList)) {
@@ -161,9 +161,9 @@ public class UserResourceDaoImpl
   }
 
   @Override
-  public void deleteByUserIdWithoutProjectIdList(Integer userId,
+  public void deleteByUserIdWithoutProjectIdList(Long userId,
                                                  UserResourceQueryDTO queryDTO,
-                                                 List<Integer> excludeIdList) {
+                                                 List<Long> excludeIdList) {
     QueryWrapper<UserResourcePO> queryWrapper =
         this.wrapQueryCriteria(userId, queryDTO);
     if (!CollectionUtils.isEmpty(excludeIdList)) {
@@ -174,9 +174,9 @@ public class UserResourceDaoImpl
 
   @Override
   public void
-  deleteByUserIdWithoutResourceTypeIdList(Integer userId,
+  deleteByUserIdWithoutResourceTypeIdList(Long userId,
                                           UserResourceQueryDTO queryDTO,
-                                          List<Integer> excludeIdList) {
+                                          List<Long> excludeIdList) {
     QueryWrapper<UserResourcePO> queryWrapper =
         this.wrapQueryCriteria(userId, queryDTO);
     if (!CollectionUtils.isEmpty(excludeIdList)) {
@@ -194,7 +194,7 @@ public class UserResourceDaoImpl
   }
 
   @Override
-  public List<Integer>
+  public List<Long>
   selectUserIdListGroupByUserId(UserResourceQueryDTO queryDTO) {
     QueryWrapper<UserResourcePO> queryWrapper =
         this.wrapQueryCriteria(null, queryDTO);

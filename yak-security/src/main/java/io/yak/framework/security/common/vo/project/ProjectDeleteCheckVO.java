@@ -2,20 +2,20 @@ package io.yak.framework.security.common.vo.project;
 
 import java.util.List;
 public class ProjectDeleteCheckVO {
-  private Integer projectId;
+  private Long projectId;
   private List<String> resourceNameList;
 
-  public ProjectDeleteCheckVO(Integer projectId,
+  public ProjectDeleteCheckVO(Long projectId,
                               List<String> resourceNameList) {
     this.projectId = projectId;
     this.resourceNameList = resourceNameList;
   }
 
-  public Integer getProjectId() { return this.projectId; }
+  public Long getProjectId() { return this.projectId; }
 
   public List<String> getResourceNameList() { return this.resourceNameList; }
 
-  public void setProjectId(Integer projectId) { this.projectId = projectId; }
+  public void setProjectId(Long projectId) { this.projectId = projectId; }
 
   public void setResourceNameList(List<String> resourceNameList) {
     this.resourceNameList = resourceNameList;
@@ -32,8 +32,8 @@ public class ProjectDeleteCheckVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$projectId = this.getProjectId();
-    Integer other$projectId = other.getProjectId();
+    Long this$projectId = this.getProjectId();
+    Long other$projectId = other.getProjectId();
     if (this$projectId == null
             ? other$projectId != null
             : !((Object)this$projectId).equals(other$projectId)) {
@@ -54,7 +54,7 @@ public class ProjectDeleteCheckVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $projectId = this.getProjectId();
+    Long $projectId = this.getProjectId();
     result = result * 59 +
              ($projectId == null ? 43 : ((Object)$projectId).hashCode());
     List<String> $resourceNameList = this.getResourceNameList();

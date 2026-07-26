@@ -28,7 +28,7 @@ public class OplogController {
   }
 
   @GetMapping(value = {"/{id}"})
-  public Result<OplogVO> get(@PathVariable Integer id) {
+  public Result<OplogVO> get(@PathVariable Long id) {
     OplogVO oplogVO = this.oplogService.getOplogDetailByOplogId(id);
     return Result.success(oplogVO);
   }

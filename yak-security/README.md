@@ -23,6 +23,28 @@ spring:
 
 HTTP 接口统一位于 `/yak-security/api/v1`，项目隔离标识通过
 `X-YAK-SECURITY-PROJECT-ID` 请求头传递。
+
+## 数据库迁移与应用隔离
+
+模块启动时由 Flyway 依次执行 `db/migration/V1__init_yak_security.sql` 和
+`V2__init_yak_security_data.sql`。旧的覆盖式 `yak-security.sql` 已移除，生产环境不得再通过
+`schema.sql` 或初始化脚本重复加载表结构。目标数据库为 MariaDB 10.6 及以上版本。
+
+`yak.security.application-name` 是**必填、非空且无默认值**的应用级数据隔离键。
+全部核心表的 `app_name` 均为 `NOT NULL`；MyBatis 租户拦截器会为用户、角色、权限、项目及其
+关联表的查询、更新、删除和新增自动附加该值。禁止绕过 DAO 执行不带 `app_name` 的 SQL。
+
+唯一索引使用“未删除值”的生成列：`is_delete=0` 时参与应用维度唯一约束，删除后生成列为
+`NULL`，因此同一应用可重新创建同名记录，同时仍可保留多条历史删除记录。`is_delete` 的含义
+统一为 `0` 未删除、`1` 已删除。
+
+数据库刻意不创建物理外键，**关系完整性由 Service 层维护**。创建用户角色、角色权限、用户项目
+或用户资源关系前，Service 必须在同一 `applicationName` 下校验两端记录存在且未删除；删除用户、
+角色或权限时，必须同步逻辑删除相应关系记录。上述校验、主记录变更和关系清理必须置于同一个
+`yakSecurityTransactionManager` 事务边界（实现方法使用 `@Transactional(transactionManager =
+"yakSecurityTransactionManager")`），任一步骤失败即整体回滚。
+
+V2 只提供安全模块运行所需的权限目录和资源类型，不会插入默认用户、明文密码或通用管理员密码。
 ## Password storage and migration
 
 Yak Security stores only one-way BCrypt hashes. New users and password changes are

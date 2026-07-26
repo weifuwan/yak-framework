@@ -8,7 +8,7 @@ public interface RolePermissionDao {
 
   public void deleteByRoleId(Integer var1);
 
-  public List<Integer> selectPermissionIdListByRoleId(Integer var1);
+  public List<Long> selectPermissionIdListByRoleId(Integer var1);
 
-  public List<Integer> selectPermissionIdListByRoleIdList(List<Integer> var1);
+  public List<Long> selectPermissionIdListByRoleIdList(List<Long> var1);
 }

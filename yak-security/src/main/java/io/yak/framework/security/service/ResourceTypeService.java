@@ -8,7 +8,7 @@ import java.util.List;
 public interface ResourceTypeService {
   public List<ResourceTypeVO> getAllResourceTypeList();
 
-  public List<Integer> getAllResourceTypeIdList();
+  public List<Long> getAllResourceTypeIdList();
 
   public PagingData<ResourceTypeVO>
   getResourceTypePage(ResourceTypeQueryDTO var1);

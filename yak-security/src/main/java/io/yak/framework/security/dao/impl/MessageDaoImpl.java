@@ -45,7 +45,7 @@ public class MessageDaoImpl
   }
 
   @Override
-  public List<Message> selectListByUserIdAndReadTag(Integer userId,
+  public List<Message> selectListByUserIdAndReadTag(Long userId,
                                                     Boolean readTag) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     ((QueryWrapper)queryWrapper.eq(userId != null, (Object) "user_id",
@@ -56,7 +56,7 @@ public class MessageDaoImpl
   }
 
   @Override
-  public List<Message> selectListByMessageIdList(List<Integer> messageIdList) {
+  public List<Message> selectListByMessageIdList(List<Long> messageIdList) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.in((Object) "id", messageIdList);
     return CopyBeanUtil.copyList(

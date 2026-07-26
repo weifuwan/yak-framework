@@ -12,10 +12,10 @@ public class MathUtil {
     return (long)((Math.random() + 1.0) * Math.pow(10.0, len));
   }
 
-  public static Set<Integer> getIntersection(List<Integer> list1,
-                                             List<Integer> list2) {
-    HashSet<Integer> result = new HashSet<Integer>();
-    HashSet<Integer> set = new HashSet<Integer>(list2);
+  public static Set<Long> getIntersection(List<Long> list1,
+                                             List<Long> list2) {
+    HashSet<Long> result = new HashSet<Long>();
+    HashSet<Long> set = new HashSet<Long>(list2);
     for (Integer num : list1) {
       if (!set.contains(num))
         continue;

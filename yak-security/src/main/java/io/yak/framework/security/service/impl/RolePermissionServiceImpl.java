@@ -14,8 +14,8 @@ public class RolePermissionServiceImpl implements RolePermissionService {
   @Autowired private RolePermissionDao rolePermissionDao;
 
   @Override
-  public void saveRolePermission(Integer roleId,
-                                 List<Integer> permissionIdList) {
+  public void saveRolePermission(Long roleId,
+                                 List<Long> permissionIdList) {
     if (roleId == null || CollectionUtils.isEmpty(permissionIdList)) {
       return;
     }
@@ -24,14 +24,14 @@ public class RolePermissionServiceImpl implements RolePermissionService {
   }
 
   @Override
-  public void updateRolePermission(Integer roleId,
-                                   List<Integer> permissionIdList) {
+  public void updateRolePermission(Long roleId,
+                                   List<Long> permissionIdList) {
     this.deleteRolePermissionByRoleId(roleId);
     this.saveRolePermission(roleId, permissionIdList);
   }
 
   @Override
-  public void deleteRolePermissionByRoleId(Integer roleId) {
+  public void deleteRolePermissionByRoleId(Long roleId) {
     if (roleId == null) {
       return;
     }
@@ -39,28 +39,28 @@ public class RolePermissionServiceImpl implements RolePermissionService {
   }
 
   @Override
-  public List<Integer> getPermissionIdListByRoleId(Integer roleId) {
+  public List<Long> getPermissionIdListByRoleId(Long roleId) {
     if (roleId == null) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     return this.rolePermissionDao.selectPermissionIdListByRoleId(roleId);
   }
 
   @Override
-  public List<Integer>
-  getPermissionIdListByRoleIdList(List<Integer> roleIdList) {
+  public List<Long>
+  getPermissionIdListByRoleIdList(List<Long> roleIdList) {
     if (CollectionUtils.isEmpty(roleIdList)) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     return this.rolePermissionDao.selectPermissionIdListByRoleIdList(
         roleIdList);
   }
 
   private List<RolePermission>
-  getRolePermissionList(Integer roleId, List<Integer> permissionIdList) {
+  getRolePermissionList(Long roleId, List<Long> permissionIdList) {
     ArrayList<RolePermission> rolePermissionList =
         new ArrayList<RolePermission>();
-    for (Integer permissionId : permissionIdList) {
+    for (Long permissionId : permissionIdList) {
       RolePermission rolePermission = new RolePermission();
       rolePermission.setRoleId(roleId);
       rolePermission.setPermissionId(permissionId);

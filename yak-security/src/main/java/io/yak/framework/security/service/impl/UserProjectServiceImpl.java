@@ -19,25 +19,25 @@ public class UserProjectServiceImpl implements UserProjectService {
   @Autowired private UserProjectDao userProjectDao;
 
   @Override
-  public List<Integer> getUserIdListByProjectId(Integer projectId,
+  public List<Long> getUserIdListByProjectId(Long projectId,
                                                 ProjectUserCode code) {
     if (projectId == null) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     return this.userProjectDao.selectUserIdListByProjectId(projectId,
                                                            code.getType());
   }
 
   @Override
-  public List<Integer> getProjectIdListByUserIdList(List<Integer> userIdList) {
+  public List<Long> getProjectIdListByUserIdList(List<Long> userIdList) {
     if (CollectionUtils.isEmpty(userIdList)) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     return this.userProjectDao.selectProjectIdListByUserIdList(userIdList);
   }
 
   @Override
-  public void saveUserProject(Integer projectId, List<Integer> userIdList) {
+  public void saveUserProject(Long projectId, List<Long> userIdList) {
     if (projectId == null || CollectionUtils.isEmpty(userIdList)) {
       return;
     }
@@ -46,7 +46,7 @@ public class UserProjectServiceImpl implements UserProjectService {
   }
 
   @Override
-  public void delUserProject(Integer projectId, List<Integer> userIdList) {
+  public void delUserProject(Long projectId, List<Long> userIdList) {
     if (projectId == null || CollectionUtils.isEmpty(userIdList)) {
       return;
     }
@@ -55,7 +55,7 @@ public class UserProjectServiceImpl implements UserProjectService {
   }
 
   @Override
-  public void saveOwnerProject(Integer projectId, List<Integer> ownerIdList) {
+  public void saveOwnerProject(Long projectId, List<Long> ownerIdList) {
     if (projectId == null || CollectionUtils.isEmpty(ownerIdList)) {
       return;
     }
@@ -64,7 +64,7 @@ public class UserProjectServiceImpl implements UserProjectService {
   }
 
   @Override
-  public void delOwnerProject(Integer projectId, List<Integer> ownerIdList) {
+  public void delOwnerProject(Long projectId, List<Long> ownerIdList) {
     if (projectId == null || CollectionUtils.isEmpty(ownerIdList)) {
       return;
     }
@@ -73,21 +73,21 @@ public class UserProjectServiceImpl implements UserProjectService {
   }
 
   @Override
-  public void updateUserProject(Integer projectId, List<Integer> userIdList) {
+  public void updateUserProject(Long projectId, List<Long> userIdList) {
     this.deleteUserProjectByProjectId(projectId);
     this.saveUserProject(projectId, userIdList);
   }
 
   @Override
   public void
-  updateUserInformationAssociatedWithProject(Integer projectId,
-                                             List<Integer> userIdList) {
+  updateUserInformationAssociatedWithProject(Long projectId,
+                                             List<Long> userIdList) {
     if (CollectionUtils.isEmpty(userIdList)) {
       return;
     }
-    List<Integer> userIds =
+    List<Long> userIds =
         this.userProjectDao.selectUserIdListByProjectId(projectId, 0);
-    List<Integer> filterUserIdList = userIdList.stream()
+    List<Long> filterUserIdList = userIdList.stream()
                                          .filter(id -> !userIds.contains(id))
                                          .distinct()
                                          .collect(Collectors.toList());
@@ -98,21 +98,21 @@ public class UserProjectServiceImpl implements UserProjectService {
   }
 
   @Override
-  public void updateOwnerProject(Integer projectId, List<Integer> ownerIdList) {
+  public void updateOwnerProject(Long projectId, List<Long> ownerIdList) {
     this.deleteOwnerProjectByProjectId(projectId);
     this.saveOwnerProject(projectId, ownerIdList);
   }
 
   @Override
   public void
-  updateOwnerInformationAssociatedWithProject(Integer projectId,
-                                              List<Integer> ownerIdList) {
+  updateOwnerInformationAssociatedWithProject(Long projectId,
+                                              List<Long> ownerIdList) {
     if (CollectionUtils.isEmpty(ownerIdList)) {
       return;
     }
-    List<Integer> userIds =
+    List<Long> userIds =
         this.userProjectDao.selectUserIdListByProjectId(projectId, 0);
-    List<Integer> filterOwnerIdList = ownerIdList.stream()
+    List<Long> filterOwnerIdList = ownerIdList.stream()
                                           .filter(id -> !userIds.contains(id))
                                           .distinct()
                                           .collect(Collectors.toList());
@@ -123,7 +123,7 @@ public class UserProjectServiceImpl implements UserProjectService {
   }
 
   @Override
-  public void deleteUserProjectByProjectId(Integer projectId) {
+  public void deleteUserProjectByProjectId(Long projectId) {
     if (projectId == null) {
       return;
     }
@@ -131,18 +131,18 @@ public class UserProjectServiceImpl implements UserProjectService {
   }
 
   @Override
-  public void deleteOwnerProjectByProjectId(Integer projectId) {
+  public void deleteOwnerProjectByProjectId(Long projectId) {
     if (projectId == null) {
       return;
     }
     this.userProjectDao.deleteByProjectIdAndUserType(projectId, 1);
   }
 
-  private List<UserProject> getUserProjectList(Integer projectId,
-                                               List<Integer> userIdList,
+  private List<UserProject> getUserProjectList(Long projectId,
+                                               List<Long> userIdList,
                                                int userType) {
     ArrayList<UserProject> userProjectList = new ArrayList<UserProject>();
-    for (Integer userId : userIdList) {
+    for (Long userId : userIdList) {
       UserProject userProject = new UserProject();
       userProject.setProjectId(projectId);
       userProject.setUserId(userId);
@@ -154,7 +154,7 @@ public class UserProjectServiceImpl implements UserProjectService {
 
   @Override
   public List<UserProject>
-  lisUserProjectByProjectIds(List<Integer> projectIds) {
+  lisUserProjectByProjectIds(List<Long> projectIds) {
     return this.userProjectDao.selectByProjectIds(projectIds);
   }
 

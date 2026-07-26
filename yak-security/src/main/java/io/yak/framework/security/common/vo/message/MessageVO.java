@@ -1,13 +1,13 @@
 package io.yak.framework.security.common.vo.message;
 public class MessageVO {
-  private Integer id;
+  private Long id;
   private String title;
   private String content;
   private Boolean readTag;
   private Long createTime;
-  private Integer oplogId;
+  private Long oplogId;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getTitle() { return this.title; }
 
@@ -17,9 +17,9 @@ public class MessageVO {
 
   public Long getCreateTime() { return this.createTime; }
 
-  public Integer getOplogId() { return this.oplogId; }
+  public Long getOplogId() { return this.oplogId; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setTitle(String title) { this.title = title; }
 
@@ -29,7 +29,7 @@ public class MessageVO {
 
   public void setCreateTime(Long createTime) { this.createTime = createTime; }
 
-  public void setOplogId(Integer oplogId) { this.oplogId = oplogId; }
+  public void setOplogId(Long oplogId) { this.oplogId = oplogId; }
 
   public boolean equals(Object o) {
     if (o == this) {
@@ -42,8 +42,8 @@ public class MessageVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -61,8 +61,8 @@ public class MessageVO {
             : !((Object)this$createTime).equals(other$createTime)) {
       return false;
     }
-    Integer this$oplogId = this.getOplogId();
-    Integer other$oplogId = other.getOplogId();
+    Long this$oplogId = this.getOplogId();
+    Long other$oplogId = other.getOplogId();
     if (this$oplogId == null ? other$oplogId != null
                              : !((Object)this$oplogId).equals(other$oplogId)) {
       return false;
@@ -86,7 +86,7 @@ public class MessageVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Boolean $readTag = this.getReadTag();
     result =
@@ -94,7 +94,7 @@ public class MessageVO {
     Long $createTime = this.getCreateTime();
     result = result * 59 +
              ($createTime == null ? 43 : ((Object)$createTime).hashCode());
-    Integer $oplogId = this.getOplogId();
+    Long $oplogId = this.getOplogId();
     result =
         result * 59 + ($oplogId == null ? 43 : ((Object)$oplogId).hashCode());
     String $title = this.getTitle();

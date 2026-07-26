@@ -1,23 +1,23 @@
 package io.yak.framework.security.common.entity;
 
 public class UserRole {
-  private Integer userId;
-  private Integer roleId;
+  private Long userId;
+  private Long roleId;
 
   public UserRole() {}
 
-  public UserRole(Integer userId, Integer roleId) {
+  public UserRole(Long userId, Long roleId) {
     this.userId = userId;
     this.roleId = roleId;
   }
 
-  public Integer getUserId() { return this.userId; }
+  public Long getUserId() { return this.userId; }
 
-  public Integer getRoleId() { return this.roleId; }
+  public Long getRoleId() { return this.roleId; }
 
-  public void setUserId(Integer userId) { this.userId = userId; }
+  public void setUserId(Long userId) { this.userId = userId; }
 
-  public void setRoleId(Integer roleId) { this.roleId = roleId; }
+  public void setRoleId(Long roleId) { this.roleId = roleId; }
 
   public boolean equals(Object o) {
     if (o == this) {
@@ -30,14 +30,14 @@ public class UserRole {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$userId = this.getUserId();
-    Integer other$userId = other.getUserId();
+    Long this$userId = this.getUserId();
+    Long other$userId = other.getUserId();
     if (this$userId == null ? other$userId != null
                             : !((Object)this$userId).equals(other$userId)) {
       return false;
     }
-    Integer this$roleId = this.getRoleId();
-    Integer other$roleId = other.getRoleId();
+    Long this$roleId = this.getRoleId();
+    Long other$roleId = other.getRoleId();
     return !(this$roleId == null ? other$roleId != null
                                  : !((Object)this$roleId).equals(other$roleId));
   }
@@ -47,10 +47,10 @@ public class UserRole {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $userId = this.getUserId();
+    Long $userId = this.getUserId();
     result =
         result * 59 + ($userId == null ? 43 : ((Object)$userId).hashCode());
-    Integer $roleId = this.getRoleId();
+    Long $roleId = this.getRoleId();
     result =
         result * 59 + ($roleId == null ? 43 : ((Object)$roleId).hashCode());
     return result;

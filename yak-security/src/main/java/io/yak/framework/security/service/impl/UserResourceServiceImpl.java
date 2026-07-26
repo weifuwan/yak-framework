@@ -61,7 +61,7 @@ public class UserResourceServiceImpl implements UserResourceService {
   @Autowired private ResourceExtendBeanTool resourceExtendBeanTool;
 
   @Override
-  public int getResourceCntByUserId(Integer userId,
+  public int getResourceCntByUserId(Long userId,
                                     UserResourceQueryDTO queryDTO) {
     if (userId == null) {
       return 0;
@@ -80,8 +80,8 @@ public class UserResourceServiceImpl implements UserResourceService {
   public List<MByUDataVO> getManagerByUserDataList(MByUDataQueryDTO queryDTO)
       throws YakSecurityException {
     this.checkParam(queryDTO);
-    Integer projectId = queryDTO.getProjectId();
-    Integer resourceTypeId = queryDTO.getResourceTypeId();
+    Long projectId = queryDTO.getProjectId();
+    Long resourceTypeId = queryDTO.getResourceTypeId();
     int showLevel = queryDTO.getShowLevel();
     int controlLevel = queryDTO.getControlLevel();
     int userId = queryDTO.getUserId();
@@ -133,9 +133,9 @@ public class UserResourceServiceImpl implements UserResourceService {
   getManagerByResourceDataList(MByRDataQueryDTO queryDTO)
       throws YakSecurityException {
     this.checkParam(queryDTO);
-    Integer projectId = queryDTO.getProjectId();
-    Integer resourceTypeId = queryDTO.getResourceTypeId();
-    Integer resourceId = queryDTO.getResourceId();
+    Long projectId = queryDTO.getProjectId();
+    Long resourceTypeId = queryDTO.getResourceTypeId();
+    Long resourceId = queryDTO.getResourceId();
     int controlLevel = queryDTO.getControlLevel();
     boolean isBatch = queryDTO.getBatch();
     List<UserBriefVO> userBriefVOList =
@@ -156,8 +156,8 @@ public class UserResourceServiceImpl implements UserResourceService {
   }
 
   private HasLevelCode getHasLevel(boolean isBatch, int controlLevel,
-                                   int userId, Integer projectId,
-                                   Integer resourceTypeId, Integer resourceId) {
+                                   int userId, Long projectId,
+                                   Long resourceTypeId, Long resourceId) {
     if (isBatch) {
       return HasLevelCode.NONE;
     }
@@ -179,7 +179,7 @@ public class UserResourceServiceImpl implements UserResourceService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public void changeResourceViewControlStatus() {
     boolean isOn = this.getViewPermissionControlStatus();
     if (isOn) {
@@ -220,8 +220,8 @@ public class UserResourceServiceImpl implements UserResourceService {
     return ControlLevelCode.getByType(controlLevel);
   }
 
-  private void checkParam(Integer controlLevel, Integer projectId,
-                          Integer resourceTypeId, Integer resourceId)
+  private void checkParam(Integer controlLevel, Long projectId,
+                          Long resourceTypeId, Long resourceId)
       throws YakSecurityException {
     if (projectId == null) {
       throw new YakSecurityException(ResultCode.PROJECT_ID_CANNOT_BE_NULL);
@@ -266,27 +266,27 @@ public class UserResourceServiceImpl implements UserResourceService {
     }
   }
 
-  private List<UserResource> getUserResourceList(Integer projectId,
-                                                 Integer resourceTypeId,
+  private List<UserResource> getUserResourceList(Long projectId,
+                                                 Long resourceTypeId,
                                                  int controlLevel,
-                                                 List<Integer> idList,
-                                                 List<Integer> userIdList) {
-    List<Integer> resourceTypeIdList;
-    ArrayList<Integer> projectIdList;
-    ArrayList<Integer> resourceIdList = null;
+                                                 List<Long> idList,
+                                                 List<Long> userIdList) {
+    List<Long> resourceTypeIdList;
+    ArrayList<Long> projectIdList;
+    ArrayList<Long> resourceIdList = null;
     if (projectId == null) {
-      projectIdList = new ArrayList<Integer>(idList);
+      projectIdList = new ArrayList<Long>(idList);
       resourceTypeIdList = this.resourceTypeService.getAllResourceTypeIdList();
     } else if (resourceTypeId == null) {
       projectIdList = new ArrayList();
       projectIdList.add(projectId);
-      resourceTypeIdList = new ArrayList<Integer>(idList);
+      resourceTypeIdList = new ArrayList<Long>(idList);
     } else {
       projectIdList = new ArrayList();
       projectIdList.add(projectId);
-      resourceTypeIdList = new ArrayList<Integer>();
+      resourceTypeIdList = new ArrayList<Long>();
       resourceTypeIdList.add(resourceTypeId);
-      resourceIdList = new ArrayList<Integer>(idList);
+      resourceIdList = new ArrayList<Long>(idList);
     }
     List<ResourceDTO> resourceDTOList = this.getResourceDTOList(
         projectIdList, resourceTypeIdList, resourceIdList);
@@ -294,12 +294,12 @@ public class UserResourceServiceImpl implements UserResourceService {
                                       resourceDTOList);
   }
 
-  private List<ResourceDTO> getResourceDTOList(List<Integer> projectIdList,
-                                               List<Integer> resourceTypeIdList,
-                                               List<Integer> resourceIdList) {
+  private List<ResourceDTO> getResourceDTOList(List<Long> projectIdList,
+                                               List<Long> resourceTypeIdList,
+                                               List<Long> resourceIdList) {
     ArrayList<ResourceDTO> resourceDTOList = new ArrayList<ResourceDTO>();
-    for (Integer projectId : projectIdList) {
-      for (Integer resourceTypeId : resourceTypeIdList) {
+    for (Long projectId : projectIdList) {
+      for (Long resourceTypeId : resourceTypeIdList) {
         if (resourceIdList == null) {
           ResourceExtend resourceExtend =
               this.resourceExtendBeanTool.getResourceExtendImpl();
@@ -310,7 +310,7 @@ public class UserResourceServiceImpl implements UserResourceService {
           resourceDTOList.addAll(list);
           continue;
         }
-        for (Integer resourceId : resourceIdList) {
+        for (Long resourceId : resourceIdList) {
           resourceDTOList.add(
               new ResourceDTO(projectId, resourceTypeId, resourceId));
         }
@@ -320,10 +320,10 @@ public class UserResourceServiceImpl implements UserResourceService {
   }
 
   private List<UserResource>
-  buildUserResourceList(int controlLevel, List<Integer> userIdList,
+  buildUserResourceList(int controlLevel, List<Long> userIdList,
                         List<ResourceDTO> resourceDTOList) {
     ArrayList<UserResource> userResourceList = new ArrayList<UserResource>();
-    for (Integer userId : userIdList) {
+    for (Long userId : userIdList) {
       for (ResourceDTO resourceDTO : resourceDTOList) {
         UserResource userResource = new UserResource(resourceDTO);
         userResource.setUserId(userId);
@@ -335,13 +335,13 @@ public class UserResourceServiceImpl implements UserResourceService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public void assignResourcePermission(AssignToOneUserDTO assignDTO)
       throws YakSecurityException {
     this.checkParam(assignDTO);
-    Integer userId = assignDTO.getUserId();
-    Integer projectId = assignDTO.getProjectId();
-    Integer resourceTypeId = assignDTO.getResourceTypeId();
+    Long userId = assignDTO.getUserId();
+    Long projectId = assignDTO.getProjectId();
+    Long resourceTypeId = assignDTO.getResourceTypeId();
     int controlLevel = assignDTO.getControlLevel();
     UserResourceQueryDTO queryDTO =
         new UserResourceQueryDTO(controlLevel, projectId, resourceTypeId);
@@ -354,8 +354,8 @@ public class UserResourceServiceImpl implements UserResourceService {
       this.userResourceDao.deleteByUserIdWithoutResourceTypeIdList(
           userId, queryDTO, assignDTO.getExcludeIdList());
     }
-    List<Integer> idList = assignDTO.getIdList();
-    ArrayList<Integer> userIdList = new ArrayList<Integer>();
+    List<Long> idList = assignDTO.getIdList();
+    ArrayList<Long> userIdList = new ArrayList<Long>();
     userIdList.add(userId);
     List<UserResource> userResourceList = this.getUserResourceList(
         projectId, resourceTypeId, controlLevel, idList, userIdList);
@@ -363,15 +363,15 @@ public class UserResourceServiceImpl implements UserResourceService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public void assignResourcePermission(AssignToManyUserDTO assignDTO,
                                        HttpServletRequest request)
       throws YakSecurityException {
     this.checkParam(assignDTO);
-    List<Integer> userIdList = assignDTO.getUserIdList();
-    Integer projectId = assignDTO.getProjectId();
-    Integer resourceTypeId = assignDTO.getResourceTypeId();
-    Integer resourceId = assignDTO.getResourceId();
+    List<Long> userIdList = assignDTO.getUserIdList();
+    Long projectId = assignDTO.getProjectId();
+    Long resourceTypeId = assignDTO.getResourceTypeId();
+    Long resourceId = assignDTO.getResourceId();
     int controlLevel = assignDTO.getControlLevel();
     UserResourceQueryDTO queryDTO = new UserResourceQueryDTO(
         controlLevel, projectId, resourceTypeId, resourceId);
@@ -394,11 +394,11 @@ public class UserResourceServiceImpl implements UserResourceService {
         this.buildUserResourceList(controlLevel, userIdList, resourceDTOList));
   }
 
-  private void deleteOldRelationBeforeBatchAssign(Integer projectId,
-                                                  Integer resourceTypeId,
+  private void deleteOldRelationBeforeBatchAssign(Long projectId,
+                                                  Long resourceTypeId,
                                                   boolean flag,
                                                   int controlLevel,
-                                                  List<Integer> idList) {
+                                                  List<Long> idList) {
     UserResourceQueryDTO queryDTO =
         new UserResourceQueryDTO(controlLevel, projectId, resourceTypeId);
     if (flag) {
@@ -415,17 +415,17 @@ public class UserResourceServiceImpl implements UserResourceService {
   }
 
   @Override
-  @Transactional(rollbackFor = {Exception.class})
+  @Transactional(transactionManager = "yakSecurityTransactionManager", rollbackFor = {Exception.class})
   public void batchAssignResourcePermission(BatchAssignDTO assignDTO,
                                             HttpServletRequest request)
       throws YakSecurityException {
     this.checkParam(assignDTO);
-    List<Integer> userIdList = assignDTO.getUserIdList();
-    List<Integer> idList = assignDTO.getIdList();
+    List<Long> userIdList = assignDTO.getUserIdList();
+    List<Long> idList = assignDTO.getIdList();
     int controlLevel = assignDTO.getControlLevel();
     boolean assignFlag = assignDTO.getAssignFlag();
-    Integer projectId = assignDTO.getProjectId();
-    Integer resourceTypeId = assignDTO.getResourceTypeId();
+    Long projectId = assignDTO.getProjectId();
+    Long resourceTypeId = assignDTO.getResourceTypeId();
     this.deleteOldRelationBeforeBatchAssign(projectId, resourceTypeId,
                                             assignFlag, controlLevel, idList);
     this.userResourceDao.insertBatch(this.getUserResourceList(
@@ -496,8 +496,8 @@ public class UserResourceServiceImpl implements UserResourceService {
     return result;
   }
 
-  private void checkParam(Integer showLevel, Integer projectId,
-                          Integer resourceTypeId) throws YakSecurityException {
+  private void checkParam(Integer showLevel, Long projectId,
+                          Long resourceTypeId) throws YakSecurityException {
     if (ShowLevelCode.getByType(showLevel) == null) {
       throw new YakSecurityException(ResultCode.RESOURCE_INVALID_SHOW_LEVEL);
     }
@@ -530,14 +530,14 @@ public class UserResourceServiceImpl implements UserResourceService {
   }
 
   private int getAdminOrViewUserCnt(UserResourceQueryDTO queryDTO) {
-    List<Integer> userIdList =
+    List<Long> userIdList =
         this.userResourceDao.selectUserIdListGroupByUserId(queryDTO);
     ResourceExtend resourceExtend =
         this.resourceExtendBeanTool.getResourceExtendImpl();
     int total = resourceExtend.getResourceCnt(queryDTO.getProjectId(),
                                               queryDTO.getResourceTypeId());
     int cnt = userIdList.size();
-    for (Integer userId : userIdList) {
+    for (Long userId : userIdList) {
       if (total == this.userResourceDao.selectCountByUserId(userId, queryDTO))
         continue;
       --cnt;
@@ -557,7 +557,7 @@ public class UserResourceServiceImpl implements UserResourceService {
       data.setProjectId(projectBriefVO.getId());
       data.setProjectCode(projectBriefVO.getProjectCode());
       data.setProjectName(projectBriefVO.getProjectName());
-      Integer projectId = projectBriefVO.getId();
+      Long projectId = projectBriefVO.getId();
       UserResourceQueryDTO queryDTO2 =
           new UserResourceQueryDTO(ControlLevelCode.ADMIN.getType(), projectId);
       data.setAdminUserCnt(this.getAdminOrViewUserCnt(queryDTO2));
@@ -612,8 +612,8 @@ public class UserResourceServiceImpl implements UserResourceService {
       return new PagingData<MByRVO>();
     }
     ArrayList<MByRVO> list = new ArrayList<MByRVO>();
-    Integer projectId = queryDTO.getProjectId();
-    Integer resourceTypeId = queryDTO.getResourceTypeId();
+    Long projectId = queryDTO.getProjectId();
+    Long resourceTypeId = queryDTO.getResourceTypeId();
     ResourceTypeVO resourceTypeVO =
         this.resourceTypeService.getResourceTypeByResourceTypeId(
             resourceTypeId);

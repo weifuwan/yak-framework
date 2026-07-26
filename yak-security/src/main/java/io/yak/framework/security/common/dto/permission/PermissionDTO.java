@@ -3,6 +3,7 @@ package io.yak.framework.security.common.dto.permission;
 import java.util.ArrayList;
 import java.util.List;
 public class PermissionDTO {
+  private String permissionCode;
   private String permissionName;
   private String description;
   private List<PermissionDTO> childPermissionDTOList;
@@ -24,6 +25,13 @@ public class PermissionDTO {
   public PermissionDTO(String permissionName) {
     this.permissionName = permissionName;
     this.description = permissionName;
+  }
+
+
+  public String getPermissionCode() { return this.permissionCode; }
+
+  public void setPermissionCode(String permissionCode) {
+    this.permissionCode = permissionCode;
   }
 
   public String getPermissionName() { return this.permissionName; }

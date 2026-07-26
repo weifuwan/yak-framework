@@ -3,12 +3,12 @@ package io.yak.framework.security.common.entity;
 import java.util.Date;
 
 public class BaseEntity {
-  private Integer id;
+  private Long id;
   private Date createTime;
   private Date updateTime;
   private Boolean isDelete = false;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public Date getCreateTime() { return this.createTime; }
 
@@ -16,7 +16,7 @@ public class BaseEntity {
 
   public Boolean getIsDelete() { return this.isDelete; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setCreateTime(Date createTime) { this.createTime = createTime; }
 
@@ -35,8 +35,8 @@ public class BaseEntity {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -69,7 +69,7 @@ public class BaseEntity {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Boolean $isDelete = this.getIsDelete();
     result =

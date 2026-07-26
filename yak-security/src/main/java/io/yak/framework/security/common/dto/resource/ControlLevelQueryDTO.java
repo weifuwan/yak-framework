@@ -1,27 +1,27 @@
 package io.yak.framework.security.common.dto.resource;
 public class ControlLevelQueryDTO {
-  private Integer userId;
-  private Integer projectId;
-  private Integer resourceTypeId;
-  private Integer resourceId;
+  private Long userId;
+  private Long projectId;
+  private Long resourceTypeId;
+  private Long resourceId;
 
-  public Integer getUserId() { return this.userId; }
+  public Long getUserId() { return this.userId; }
 
-  public Integer getProjectId() { return this.projectId; }
+  public Long getProjectId() { return this.projectId; }
 
-  public Integer getResourceTypeId() { return this.resourceTypeId; }
+  public Long getResourceTypeId() { return this.resourceTypeId; }
 
-  public Integer getResourceId() { return this.resourceId; }
+  public Long getResourceId() { return this.resourceId; }
 
-  public void setUserId(Integer userId) { this.userId = userId; }
+  public void setUserId(Long userId) { this.userId = userId; }
 
-  public void setProjectId(Integer projectId) { this.projectId = projectId; }
+  public void setProjectId(Long projectId) { this.projectId = projectId; }
 
-  public void setResourceTypeId(Integer resourceTypeId) {
+  public void setResourceTypeId(Long resourceTypeId) {
     this.resourceTypeId = resourceTypeId;
   }
 
-  public void setResourceId(Integer resourceId) {
+  public void setResourceId(Long resourceId) {
     this.resourceId = resourceId;
   }
 
@@ -36,28 +36,28 @@ public class ControlLevelQueryDTO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$userId = this.getUserId();
-    Integer other$userId = other.getUserId();
+    Long this$userId = this.getUserId();
+    Long other$userId = other.getUserId();
     if (this$userId == null ? other$userId != null
                             : !((Object)this$userId).equals(other$userId)) {
       return false;
     }
-    Integer this$projectId = this.getProjectId();
-    Integer other$projectId = other.getProjectId();
+    Long this$projectId = this.getProjectId();
+    Long other$projectId = other.getProjectId();
     if (this$projectId == null
             ? other$projectId != null
             : !((Object)this$projectId).equals(other$projectId)) {
       return false;
     }
-    Integer this$resourceTypeId = this.getResourceTypeId();
-    Integer other$resourceTypeId = other.getResourceTypeId();
+    Long this$resourceTypeId = this.getResourceTypeId();
+    Long other$resourceTypeId = other.getResourceTypeId();
     if (this$resourceTypeId == null
             ? other$resourceTypeId != null
             : !((Object)this$resourceTypeId).equals(other$resourceTypeId)) {
       return false;
     }
-    Integer this$resourceId = this.getResourceId();
-    Integer other$resourceId = other.getResourceId();
+    Long this$resourceId = this.getResourceId();
+    Long other$resourceId = other.getResourceId();
     return !(this$resourceId == null
                  ? other$resourceId != null
                  : !((Object)this$resourceId).equals(other$resourceId));
@@ -70,17 +70,17 @@ public class ControlLevelQueryDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $userId = this.getUserId();
+    Long $userId = this.getUserId();
     result =
         result * 59 + ($userId == null ? 43 : ((Object)$userId).hashCode());
-    Integer $projectId = this.getProjectId();
+    Long $projectId = this.getProjectId();
     result = result * 59 +
              ($projectId == null ? 43 : ((Object)$projectId).hashCode());
-    Integer $resourceTypeId = this.getResourceTypeId();
+    Long $resourceTypeId = this.getResourceTypeId();
     result =
         result * 59 +
         ($resourceTypeId == null ? 43 : ((Object)$resourceTypeId).hashCode());
-    Integer $resourceId = this.getResourceId();
+    Long $resourceId = this.getResourceId();
     result = result * 59 +
              ($resourceId == null ? 43 : ((Object)$resourceId).hashCode());
     return result;

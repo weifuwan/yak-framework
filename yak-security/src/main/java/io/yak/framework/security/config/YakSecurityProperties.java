@@ -14,7 +14,7 @@ public class YakSecurityProperties {
   /** 是否启用审计功能。 */
   private boolean auditEnabled = true;
   /** 用于隔离安全数据的应用名称。 */
-  private String applicationName = "default";
+  private String applicationName;
   /** Yak Security 独立数据源配置。 */
   private final DataSourceProperties datasource = new DataSourceProperties();
 

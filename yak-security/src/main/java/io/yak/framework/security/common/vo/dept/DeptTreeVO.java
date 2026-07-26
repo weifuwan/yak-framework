@@ -2,16 +2,16 @@ package io.yak.framework.security.common.vo.dept;
 
 import java.util.List;
 public class DeptTreeVO {
-  private Integer id;
+  private Long id;
   private String deptName;
   private String description;
-  private Integer parentId;
+  private Long parentId;
   private Boolean leaf;
   private List<DeptTreeVO> childList;
 
   public DeptTreeVO() {}
 
-  DeptTreeVO(Integer id, String deptName, String description, Integer parentId,
+  DeptTreeVO(Long id, String deptName, String description, Long parentId,
              Boolean leaf, List<DeptTreeVO> childList) {
     this.id = id;
     this.deptName = deptName;
@@ -23,19 +23,19 @@ public class DeptTreeVO {
 
   public static DeptTreeVOBuilder builder() { return new DeptTreeVOBuilder(); }
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getDeptName() { return this.deptName; }
 
   public String getDescription() { return this.description; }
 
-  public Integer getParentId() { return this.parentId; }
+  public Long getParentId() { return this.parentId; }
 
   public Boolean getLeaf() { return this.leaf; }
 
   public List<DeptTreeVO> getChildList() { return this.childList; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setDeptName(String deptName) { this.deptName = deptName; }
 
@@ -43,7 +43,7 @@ public class DeptTreeVO {
     this.description = description;
   }
 
-  public void setParentId(Integer parentId) { this.parentId = parentId; }
+  public void setParentId(Long parentId) { this.parentId = parentId; }
 
   public void setLeaf(Boolean leaf) { this.leaf = leaf; }
 
@@ -62,14 +62,14 @@ public class DeptTreeVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
     }
-    Integer this$parentId = this.getParentId();
-    Integer other$parentId = other.getParentId();
+    Long this$parentId = this.getParentId();
+    Long other$parentId = other.getParentId();
     if (this$parentId == null
             ? other$parentId != null
             : !((Object)this$parentId).equals(other$parentId)) {
@@ -108,9 +108,9 @@ public class DeptTreeVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
-    Integer $parentId = this.getParentId();
+    Long $parentId = this.getParentId();
     result =
         result * 59 + ($parentId == null ? 43 : ((Object)$parentId).hashCode());
     Boolean $leaf = this.getLeaf();
@@ -135,16 +135,16 @@ public class DeptTreeVO {
   }
 
   public static class DeptTreeVOBuilder {
-    private Integer id;
+    private Long id;
     private String deptName;
     private String description;
-    private Integer parentId;
+    private Long parentId;
     private Boolean leaf;
     private List<DeptTreeVO> childList;
 
     DeptTreeVOBuilder() {}
 
-    public DeptTreeVOBuilder id(Integer id) {
+    public DeptTreeVOBuilder id(Long id) {
       this.id = id;
       return this;
     }
@@ -159,7 +159,7 @@ public class DeptTreeVO {
       return this;
     }
 
-    public DeptTreeVOBuilder parentId(Integer parentId) {
+    public DeptTreeVOBuilder parentId(Long parentId) {
       this.parentId = parentId;
       return this;
     }

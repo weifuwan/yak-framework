@@ -1,29 +1,29 @@
 package io.yak.framework.security.common.dto.resource;
 
 public class ResourceDTO {
-  private Integer resourceId;
+  private Long resourceId;
   private String resourceName;
-  private Integer projectId;
-  private Integer resourceTypeId;
+  private Long projectId;
+  private Long resourceTypeId;
 
   public ResourceDTO() {}
 
-  public ResourceDTO(Integer projectId, Integer resourceTypeId,
-                     Integer resourceId) {
+  public ResourceDTO(Long projectId, Long resourceTypeId,
+                     Long resourceId) {
     this.projectId = projectId;
     this.resourceTypeId = resourceTypeId;
     this.resourceId = resourceId;
   }
 
-  public Integer getResourceId() { return this.resourceId; }
+  public Long getResourceId() { return this.resourceId; }
 
   public String getResourceName() { return this.resourceName; }
 
-  public Integer getProjectId() { return this.projectId; }
+  public Long getProjectId() { return this.projectId; }
 
-  public Integer getResourceTypeId() { return this.resourceTypeId; }
+  public Long getResourceTypeId() { return this.resourceTypeId; }
 
-  public void setResourceId(Integer resourceId) {
+  public void setResourceId(Long resourceId) {
     this.resourceId = resourceId;
   }
 
@@ -31,9 +31,9 @@ public class ResourceDTO {
     this.resourceName = resourceName;
   }
 
-  public void setProjectId(Integer projectId) { this.projectId = projectId; }
+  public void setProjectId(Long projectId) { this.projectId = projectId; }
 
-  public void setResourceTypeId(Integer resourceTypeId) {
+  public void setResourceTypeId(Long resourceTypeId) {
     this.resourceTypeId = resourceTypeId;
   }
 
@@ -48,22 +48,22 @@ public class ResourceDTO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$resourceId = this.getResourceId();
-    Integer other$resourceId = other.getResourceId();
+    Long this$resourceId = this.getResourceId();
+    Long other$resourceId = other.getResourceId();
     if (this$resourceId == null
             ? other$resourceId != null
             : !((Object)this$resourceId).equals(other$resourceId)) {
       return false;
     }
-    Integer this$projectId = this.getProjectId();
-    Integer other$projectId = other.getProjectId();
+    Long this$projectId = this.getProjectId();
+    Long other$projectId = other.getProjectId();
     if (this$projectId == null
             ? other$projectId != null
             : !((Object)this$projectId).equals(other$projectId)) {
       return false;
     }
-    Integer this$resourceTypeId = this.getResourceTypeId();
-    Integer other$resourceTypeId = other.getResourceTypeId();
+    Long this$resourceTypeId = this.getResourceTypeId();
+    Long other$resourceTypeId = other.getResourceTypeId();
     if (this$resourceTypeId == null
             ? other$resourceTypeId != null
             : !((Object)this$resourceTypeId).equals(other$resourceTypeId)) {
@@ -83,13 +83,13 @@ public class ResourceDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $resourceId = this.getResourceId();
+    Long $resourceId = this.getResourceId();
     result = result * 59 +
              ($resourceId == null ? 43 : ((Object)$resourceId).hashCode());
-    Integer $projectId = this.getProjectId();
+    Long $projectId = this.getProjectId();
     result = result * 59 +
              ($projectId == null ? 43 : ((Object)$projectId).hashCode());
-    Integer $resourceTypeId = this.getResourceTypeId();
+    Long $resourceTypeId = this.getResourceTypeId();
     result =
         result * 59 +
         ($resourceTypeId == null ? 43 : ((Object)$resourceTypeId).hashCode());

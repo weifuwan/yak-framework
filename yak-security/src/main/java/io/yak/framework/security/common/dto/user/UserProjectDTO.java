@@ -1,29 +1,29 @@
 package io.yak.framework.security.common.dto.user;
 
 public class UserProjectDTO {
-  private Integer id;
-  private Integer userId;
+  private Long id;
+  private Long userId;
   private Integer userType;
-  private Integer projectId;
+  private Long projectId;
   private Boolean isDelete;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
-  public Integer getUserId() { return this.userId; }
+  public Long getUserId() { return this.userId; }
 
   public Integer getUserType() { return this.userType; }
 
-  public Integer getProjectId() { return this.projectId; }
+  public Long getProjectId() { return this.projectId; }
 
   public Boolean getIsDelete() { return this.isDelete; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
-  public void setUserId(Integer userId) { this.userId = userId; }
+  public void setUserId(Long userId) { this.userId = userId; }
 
   public void setUserType(Integer userType) { this.userType = userType; }
 
-  public void setProjectId(Integer projectId) { this.projectId = projectId; }
+  public void setProjectId(Long projectId) { this.projectId = projectId; }
 
   public void setIsDelete(Boolean isDelete) { this.isDelete = isDelete; }
 
@@ -38,14 +38,14 @@ public class UserProjectDTO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
     }
-    Integer this$userId = this.getUserId();
-    Integer other$userId = other.getUserId();
+    Long this$userId = this.getUserId();
+    Long other$userId = other.getUserId();
     if (this$userId == null ? other$userId != null
                             : !((Object)this$userId).equals(other$userId)) {
       return false;
@@ -57,8 +57,8 @@ public class UserProjectDTO {
             : !((Object)this$userType).equals(other$userType)) {
       return false;
     }
-    Integer this$projectId = this.getProjectId();
-    Integer other$projectId = other.getProjectId();
+    Long this$projectId = this.getProjectId();
+    Long other$projectId = other.getProjectId();
     if (this$projectId == null
             ? other$projectId != null
             : !((Object)this$projectId).equals(other$projectId)) {
@@ -78,15 +78,15 @@ public class UserProjectDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
-    Integer $userId = this.getUserId();
+    Long $userId = this.getUserId();
     result =
         result * 59 + ($userId == null ? 43 : ((Object)$userId).hashCode());
     Integer $userType = this.getUserType();
     result =
         result * 59 + ($userType == null ? 43 : ((Object)$userType).hashCode());
-    Integer $projectId = this.getProjectId();
+    Long $projectId = this.getProjectId();
     result = result * 59 +
              ($projectId == null ? 43 : ((Object)$projectId).hashCode());
     Boolean $isDelete = this.getIsDelete();

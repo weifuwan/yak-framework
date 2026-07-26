@@ -1,14 +1,14 @@
 package io.yak.framework.security.common.entity;
 
 public class ResourceType {
-  private Integer id;
+  private Long id;
   private String typeName;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getTypeName() { return this.typeName; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setTypeName(String typeName) { this.typeName = typeName; }
 
@@ -23,8 +23,8 @@ public class ResourceType {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -42,7 +42,7 @@ public class ResourceType {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     String $typeName = this.getTypeName();
     result = result * 59 + ($typeName == null ? 43 : $typeName.hashCode());

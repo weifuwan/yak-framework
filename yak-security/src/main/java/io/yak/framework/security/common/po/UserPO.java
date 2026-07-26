@@ -11,7 +11,7 @@ public class UserPO extends BasePO {
   private String realName;
   private String phone;
   private String email;
-  private Integer deptId;
+  private Long deptId;
   /** 1 = active, 2 = disabled. */
   private Integer status = 1;
 
@@ -30,8 +30,8 @@ public class UserPO extends BasePO {
     if (!super.equals(o)) {
       return false;
     }
-    Integer this$deptId = this.getDeptId();
-    Integer other$deptId = other.getDeptId();
+    Long this$deptId = this.getDeptId();
+    Long other$deptId = other.getDeptId();
     if (this$deptId == null ? other$deptId != null
                             : !((Object)this$deptId).equals(other$deptId)) {
       return false;
@@ -80,7 +80,7 @@ public class UserPO extends BasePO {
   public int hashCode() {
     int PRIME = 59;
     int result = super.hashCode();
-    Integer $deptId = this.getDeptId();
+    Long $deptId = this.getDeptId();
     result =
         result * 59 + ($deptId == null ? 43 : ((Object)$deptId).hashCode());
     String $userName = this.getUserName();
@@ -110,7 +110,7 @@ public class UserPO extends BasePO {
 
   public String getEmail() { return this.email; }
 
-  public Integer getDeptId() { return this.deptId; }
+  public Long getDeptId() { return this.deptId; }
 
   public Integer getStatus() { return this.status; }
 
@@ -126,7 +126,7 @@ public class UserPO extends BasePO {
 
   public void setEmail(String email) { this.email = email; }
 
-  public void setDeptId(Integer deptId) { this.deptId = deptId; }
+  public void setDeptId(Long deptId) { this.deptId = deptId; }
 
   public void setStatus(Integer status) { this.status = status; }
 

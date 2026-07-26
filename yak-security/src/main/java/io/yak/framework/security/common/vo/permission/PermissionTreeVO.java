@@ -2,17 +2,17 @@ package io.yak.framework.security.common.vo.permission;
 
 import java.util.List;
 public class PermissionTreeVO {
-  private Integer id;
+  private Long id;
   private Boolean has;
   private String permissionName;
-  private Integer parentId;
+  private Long parentId;
   private Boolean leaf;
   private List<PermissionTreeVO> childList;
 
   public PermissionTreeVO() {}
 
-  PermissionTreeVO(Integer id, Boolean has, String permissionName,
-                   Integer parentId, Boolean leaf,
+  PermissionTreeVO(Long id, Boolean has, String permissionName,
+                   Long parentId, Boolean leaf,
                    List<PermissionTreeVO> childList) {
     this.id = id;
     this.has = has;
@@ -26,19 +26,19 @@ public class PermissionTreeVO {
     return new PermissionTreeVOBuilder();
   }
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public Boolean getHas() { return this.has; }
 
   public String getPermissionName() { return this.permissionName; }
 
-  public Integer getParentId() { return this.parentId; }
+  public Long getParentId() { return this.parentId; }
 
   public Boolean getLeaf() { return this.leaf; }
 
   public List<PermissionTreeVO> getChildList() { return this.childList; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setHas(Boolean has) { this.has = has; }
 
@@ -46,7 +46,7 @@ public class PermissionTreeVO {
     this.permissionName = permissionName;
   }
 
-  public void setParentId(Integer parentId) { this.parentId = parentId; }
+  public void setParentId(Long parentId) { this.parentId = parentId; }
 
   public void setLeaf(Boolean leaf) { this.leaf = leaf; }
 
@@ -65,8 +65,8 @@ public class PermissionTreeVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -77,8 +77,8 @@ public class PermissionTreeVO {
                          : !((Object)this$has).equals(other$has)) {
       return false;
     }
-    Integer this$parentId = this.getParentId();
-    Integer other$parentId = other.getParentId();
+    Long this$parentId = this.getParentId();
+    Long other$parentId = other.getParentId();
     if (this$parentId == null
             ? other$parentId != null
             : !((Object)this$parentId).equals(other$parentId)) {
@@ -111,11 +111,11 @@ public class PermissionTreeVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Boolean $has = this.getHas();
     result = result * 59 + ($has == null ? 43 : ((Object)$has).hashCode());
-    Integer $parentId = this.getParentId();
+    Long $parentId = this.getParentId();
     result =
         result * 59 + ($parentId == null ? 43 : ((Object)$parentId).hashCode());
     Boolean $leaf = this.getLeaf();
@@ -137,16 +137,16 @@ public class PermissionTreeVO {
   }
 
   public static class PermissionTreeVOBuilder {
-    private Integer id;
+    private Long id;
     private Boolean has;
     private String permissionName;
-    private Integer parentId;
+    private Long parentId;
     private Boolean leaf;
     private List<PermissionTreeVO> childList;
 
     PermissionTreeVOBuilder() {}
 
-    public PermissionTreeVOBuilder id(Integer id) {
+    public PermissionTreeVOBuilder id(Long id) {
       this.id = id;
       return this;
     }
@@ -161,7 +161,7 @@ public class PermissionTreeVO {
       return this;
     }
 
-    public PermissionTreeVOBuilder parentId(Integer parentId) {
+    public PermissionTreeVOBuilder parentId(Long parentId) {
       this.parentId = parentId;
       return this;
     }

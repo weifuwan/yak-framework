@@ -37,7 +37,7 @@ public class OplogServiceImpl implements OplogService {
   }
 
   @Override
-  public OplogVO getOplogDetailByOplogId(Integer oplogId) {
+  public OplogVO getOplogDetailByOplogId(Long oplogId) {
     Oplog oplog = this.oplogDao.selectByOplogId(oplogId);
     if (oplog == null) {
       return null;

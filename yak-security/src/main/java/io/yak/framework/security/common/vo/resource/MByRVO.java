@@ -2,29 +2,29 @@ package io.yak.framework.security.common.vo.resource;
 public class MByRVO {
   private Integer adminUserCnt;
   private Integer viewUserCnt;
-  private Integer projectId;
+  private Long projectId;
   private String projectCode;
   private String projectName;
-  private Integer resourceTypeId;
+  private Long resourceTypeId;
   private String resourceTypeName;
-  private Integer resourceId;
+  private Long resourceId;
   private String resourceName;
 
   public Integer getAdminUserCnt() { return this.adminUserCnt; }
 
   public Integer getViewUserCnt() { return this.viewUserCnt; }
 
-  public Integer getProjectId() { return this.projectId; }
+  public Long getProjectId() { return this.projectId; }
 
   public String getProjectCode() { return this.projectCode; }
 
   public String getProjectName() { return this.projectName; }
 
-  public Integer getResourceTypeId() { return this.resourceTypeId; }
+  public Long getResourceTypeId() { return this.resourceTypeId; }
 
   public String getResourceTypeName() { return this.resourceTypeName; }
 
-  public Integer getResourceId() { return this.resourceId; }
+  public Long getResourceId() { return this.resourceId; }
 
   public String getResourceName() { return this.resourceName; }
 
@@ -36,7 +36,7 @@ public class MByRVO {
     this.viewUserCnt = viewUserCnt;
   }
 
-  public void setProjectId(Integer projectId) { this.projectId = projectId; }
+  public void setProjectId(Long projectId) { this.projectId = projectId; }
 
   public void setProjectCode(String projectCode) {
     this.projectCode = projectCode;
@@ -46,7 +46,7 @@ public class MByRVO {
     this.projectName = projectName;
   }
 
-  public void setResourceTypeId(Integer resourceTypeId) {
+  public void setResourceTypeId(Long resourceTypeId) {
     this.resourceTypeId = resourceTypeId;
   }
 
@@ -54,7 +54,7 @@ public class MByRVO {
     this.resourceTypeName = resourceTypeName;
   }
 
-  public void setResourceId(Integer resourceId) {
+  public void setResourceId(Long resourceId) {
     this.resourceId = resourceId;
   }
 
@@ -87,22 +87,22 @@ public class MByRVO {
             : !((Object)this$viewUserCnt).equals(other$viewUserCnt)) {
       return false;
     }
-    Integer this$projectId = this.getProjectId();
-    Integer other$projectId = other.getProjectId();
+    Long this$projectId = this.getProjectId();
+    Long other$projectId = other.getProjectId();
     if (this$projectId == null
             ? other$projectId != null
             : !((Object)this$projectId).equals(other$projectId)) {
       return false;
     }
-    Integer this$resourceTypeId = this.getResourceTypeId();
-    Integer other$resourceTypeId = other.getResourceTypeId();
+    Long this$resourceTypeId = this.getResourceTypeId();
+    Long other$resourceTypeId = other.getResourceTypeId();
     if (this$resourceTypeId == null
             ? other$resourceTypeId != null
             : !((Object)this$resourceTypeId).equals(other$resourceTypeId)) {
       return false;
     }
-    Integer this$resourceId = this.getResourceId();
-    Integer other$resourceId = other.getResourceId();
+    Long this$resourceId = this.getResourceId();
+    Long other$resourceId = other.getResourceId();
     if (this$resourceId == null
             ? other$resourceId != null
             : !((Object)this$resourceId).equals(other$resourceId)) {
@@ -147,14 +147,14 @@ public class MByRVO {
     Integer $viewUserCnt = this.getViewUserCnt();
     result = result * 59 +
              ($viewUserCnt == null ? 43 : ((Object)$viewUserCnt).hashCode());
-    Integer $projectId = this.getProjectId();
+    Long $projectId = this.getProjectId();
     result = result * 59 +
              ($projectId == null ? 43 : ((Object)$projectId).hashCode());
-    Integer $resourceTypeId = this.getResourceTypeId();
+    Long $resourceTypeId = this.getResourceTypeId();
     result =
         result * 59 +
         ($resourceTypeId == null ? 43 : ((Object)$resourceTypeId).hashCode());
-    Integer $resourceId = this.getResourceId();
+    Long $resourceId = this.getResourceId();
     result = result * 59 +
              ($resourceId == null ? 43 : ((Object)$resourceId).hashCode());
     String $projectCode = this.getProjectCode();

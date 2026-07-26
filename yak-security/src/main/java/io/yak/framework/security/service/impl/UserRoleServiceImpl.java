@@ -15,23 +15,23 @@ public class UserRoleServiceImpl implements UserRoleService {
   @Autowired private UserRoleDao userRoleDao;
 
   @Override
-  public List<Integer> getUserIdListByRoleId(Integer roleId) {
+  public List<Long> getUserIdListByRoleId(Long roleId) {
     if (roleId == null) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     return this.userRoleDao.selectUserIdListByRoleId(roleId);
   }
 
   @Override
-  public List<Integer> getRoleIdListByUserId(Integer userId) {
+  public List<Long> getRoleIdListByUserId(Long userId) {
     if (userId == null) {
-      return new ArrayList<Integer>();
+      return new ArrayList<Long>();
     }
     return this.userRoleDao.selectRoleIdListByUserId(userId);
   }
 
   @Override
-  public void updateUserRoleByUserId(Integer userId, List<Integer> roleIdList) {
+  public void updateUserRoleByUserId(Long userId, List<Long> roleIdList) {
     if (userId == null || CollectionUtils.isEmpty(roleIdList)) {
       return;
     }
@@ -41,7 +41,7 @@ public class UserRoleServiceImpl implements UserRoleService {
   }
 
   @Override
-  public void updateUserRoleByRoleId(Integer roleId, List<Integer> userIdList) {
+  public void updateUserRoleByRoleId(Long roleId, List<Long> userIdList) {
     if (roleId == null) {
       return;
     }
@@ -54,7 +54,7 @@ public class UserRoleServiceImpl implements UserRoleService {
   }
 
   @Override
-  public int getUserRoleCountByRoleId(Integer roleId) {
+  public int getUserRoleCountByRoleId(Long roleId) {
     if (roleId == 0) {
       return 0;
     }
@@ -62,24 +62,24 @@ public class UserRoleServiceImpl implements UserRoleService {
   }
 
   @Override
-  public int deleteByUserIdOrRoleId(Integer userId, Integer roleId) {
+  public int deleteByUserIdOrRoleId(Long userId, Long roleId) {
     return this.userRoleDao.deleteByUserIdOrRoleId(userId, roleId);
   }
 
   @Override
-  public List<UserRole> getByRoleIds(List<Integer> roleIds) {
+  public List<UserRole> getByRoleIds(List<Long> roleIds) {
     return CopyBeanUtil.copyList(this.userRoleDao.selectByRoleIds(roleIds),
                                  UserRole.class);
   }
 
   @Override
-  public List<UserRole> getRoleIdListByUserIds(List<Integer> userId) {
+  public List<UserRole> getRoleIdListByUserIds(List<Long> userId) {
     return CopyBeanUtil.copyList(
         this.userRoleDao.getRoleIdListByUserIds(userId), UserRole.class);
   }
 
-  private List<UserRole> getUserRoleList(boolean isUserId, Integer id,
-                                         List<Integer> idList) {
+  private List<UserRole> getUserRoleList(boolean isUserId, Long id,
+                                         List<Long> idList) {
     ArrayList<UserRole> result = new ArrayList<UserRole>();
     for (Integer id2 : idList) {
       result.add(isUserId ? new UserRole(id, id2) : new UserRole(id2, id));

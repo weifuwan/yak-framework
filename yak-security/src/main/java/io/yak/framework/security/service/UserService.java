@@ -28,7 +28,7 @@ public interface UserService {
 
   public User getUserByUserName(String var1);
 
-  public List<UserBriefVO> getUserBriefListByUserIdList(List<Integer> var1);
+  public List<UserBriefVO> getUserBriefListByUserIdList(List<Long> var1);
 
   public List<UserBriefVO> getUserBriefListByDeptId(Integer var1);
 
@@ -41,7 +41,7 @@ public interface UserService {
 
   public List<UserBriefVO> getAllUserBriefListOrderByCreateTime(boolean var1);
 
-  public List<Integer> getUserIdListByUsernameOrRealName(String var1);
+  public List<Long> getUserIdListByUsernameOrRealName(String var1);
 
   public List<UserBriefVO> getAllUserBriefList();
 
@@ -49,7 +49,7 @@ public interface UserService {
 
   public Result<Void> editUser(UserDTO var1, String var2);
 
-  public Result<List<UserVO>> getUserDetailByUserIds(List<Integer> var1);
+  public Result<List<UserVO>> getUserDetailByUserIds(List<Long> var1);
 
-  public List<UserBasicVO> getUserBasicListByUserIdList(List<Integer> var1);
+  public List<UserBasicVO> getUserBasicListByUserIdList(List<Long> var1);
 }

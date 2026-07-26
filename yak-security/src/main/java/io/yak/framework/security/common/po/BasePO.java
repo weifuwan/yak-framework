@@ -7,7 +7,7 @@ import io.yak.framework.security.common.po.AppBasePO;
 import java.util.Date;
 
 public class BasePO extends AppBasePO {
-  @TableId(type = IdType.AUTO) private Integer id;
+  @TableId(type = IdType.AUTO) private Long id;
   private Date createTime;
   private Date updateTime;
   @TableLogic(value = "0", delval = "1") private int isDelete = 0;
@@ -30,8 +30,8 @@ public class BasePO extends AppBasePO {
     if (this.getIsDelete() != other.getIsDelete()) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -60,7 +60,7 @@ public class BasePO extends AppBasePO {
     int PRIME = 59;
     int result = super.hashCode();
     result = result * 59 + this.getIsDelete();
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Date $createTime = this.getCreateTime();
     result = result * 59 +
@@ -71,7 +71,7 @@ public class BasePO extends AppBasePO {
     return result;
   }
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public Date getCreateTime() { return this.createTime; }
 
@@ -79,7 +79,7 @@ public class BasePO extends AppBasePO {
 
   public int getIsDelete() { return this.isDelete; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setCreateTime(Date createTime) { this.createTime = createTime; }
 

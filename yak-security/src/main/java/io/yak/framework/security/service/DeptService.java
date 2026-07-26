@@ -13,9 +13,9 @@ public interface DeptService {
 
   public List<DeptBriefVO> getDeptBriefListByChildId(Integer var1);
 
-  public List<Integer> getDeptIdListByParentId(Integer var1);
+  public List<Long> getDeptIdListByParentId(Integer var1);
 
-  public List<Integer> getDeptIdListByParentIdAndDeptName(Integer var1,
+  public List<Long> getDeptIdListByParentIdAndDeptName(Integer var1,
                                                           String var2);
 
   public Map<Integer, Dept> getAllDeptMap();

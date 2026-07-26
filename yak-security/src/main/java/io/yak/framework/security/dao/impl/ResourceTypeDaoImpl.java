@@ -41,7 +41,7 @@ public class ResourceTypeDaoImpl
   }
 
   @Override
-  public ResourceType selectByResourceTypeId(Integer resourceTypeId) {
+  public ResourceType selectByResourceTypeId(Long resourceTypeId) {
     QueryWrapper queryWrapper = this.getQueryWrapperWithAppName();
     queryWrapper.eq((Object) "id", (Object)resourceTypeId);
     return CopyBeanUtil.copy(

@@ -5,7 +5,7 @@ import io.yak.framework.security.common.vo.permission.PermissionTreeVO;
 import java.util.List;
 
 public interface PermissionService {
-  public PermissionTreeVO buildPermissionTreeWithHas(List<Integer> var1);
+  public PermissionTreeVO buildPermissionTreeWithHas(List<Long> var1);
 
   public PermissionTreeVO buildPermissionTree();
 

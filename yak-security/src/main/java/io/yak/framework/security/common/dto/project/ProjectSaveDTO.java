@@ -2,39 +2,39 @@ package io.yak.framework.security.common.dto.project;
 
 import java.util.List;
 public class ProjectSaveDTO {
-  private Integer id;
+  private Long id;
   private String projectName;
-  private List<Integer> userIdList;
-  private List<Integer> ownerIdList;
+  private List<Long> userIdList;
+  private List<Long> ownerIdList;
   private String description;
   private Boolean running;
-  private Integer deptId;
+  private Long deptId;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getProjectName() { return this.projectName; }
 
-  public List<Integer> getUserIdList() { return this.userIdList; }
+  public List<Long> getUserIdList() { return this.userIdList; }
 
-  public List<Integer> getOwnerIdList() { return this.ownerIdList; }
+  public List<Long> getOwnerIdList() { return this.ownerIdList; }
 
   public String getDescription() { return this.description; }
 
   public Boolean getRunning() { return this.running; }
 
-  public Integer getDeptId() { return this.deptId; }
+  public Long getDeptId() { return this.deptId; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setProjectName(String projectName) {
     this.projectName = projectName;
   }
 
-  public void setUserIdList(List<Integer> userIdList) {
+  public void setUserIdList(List<Long> userIdList) {
     this.userIdList = userIdList;
   }
 
-  public void setOwnerIdList(List<Integer> ownerIdList) {
+  public void setOwnerIdList(List<Long> ownerIdList) {
     this.ownerIdList = ownerIdList;
   }
 
@@ -44,7 +44,7 @@ public class ProjectSaveDTO {
 
   public void setRunning(Boolean running) { this.running = running; }
 
-  public void setDeptId(Integer deptId) { this.deptId = deptId; }
+  public void setDeptId(Long deptId) { this.deptId = deptId; }
 
   public boolean equals(Object o) {
     if (o == this) {
@@ -57,8 +57,8 @@ public class ProjectSaveDTO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -69,8 +69,8 @@ public class ProjectSaveDTO {
                              : !((Object)this$running).equals(other$running)) {
       return false;
     }
-    Integer this$deptId = this.getDeptId();
-    Integer other$deptId = other.getDeptId();
+    Long this$deptId = this.getDeptId();
+    Long other$deptId = other.getDeptId();
     if (this$deptId == null ? other$deptId != null
                             : !((Object)this$deptId).equals(other$deptId)) {
       return false;
@@ -82,15 +82,15 @@ public class ProjectSaveDTO {
             : !this$projectName.equals(other$projectName)) {
       return false;
     }
-    List<Integer> this$userIdList = this.getUserIdList();
-    List<Integer> other$userIdList = other.getUserIdList();
+    List<Long> this$userIdList = this.getUserIdList();
+    List<Long> other$userIdList = other.getUserIdList();
     if (this$userIdList == null
             ? other$userIdList != null
             : !((Object)this$userIdList).equals(other$userIdList)) {
       return false;
     }
-    List<Integer> this$ownerIdList = this.getOwnerIdList();
-    List<Integer> other$ownerIdList = other.getOwnerIdList();
+    List<Long> this$ownerIdList = this.getOwnerIdList();
+    List<Long> other$ownerIdList = other.getOwnerIdList();
     if (this$ownerIdList == null
             ? other$ownerIdList != null
             : !((Object)this$ownerIdList).equals(other$ownerIdList)) {
@@ -110,21 +110,21 @@ public class ProjectSaveDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Boolean $running = this.getRunning();
     result =
         result * 59 + ($running == null ? 43 : ((Object)$running).hashCode());
-    Integer $deptId = this.getDeptId();
+    Long $deptId = this.getDeptId();
     result =
         result * 59 + ($deptId == null ? 43 : ((Object)$deptId).hashCode());
     String $projectName = this.getProjectName();
     result =
         result * 59 + ($projectName == null ? 43 : $projectName.hashCode());
-    List<Integer> $userIdList = this.getUserIdList();
+    List<Long> $userIdList = this.getUserIdList();
     result = result * 59 +
              ($userIdList == null ? 43 : ((Object)$userIdList).hashCode());
-    List<Integer> $ownerIdList = this.getOwnerIdList();
+    List<Long> $ownerIdList = this.getOwnerIdList();
     result = result * 59 +
              ($ownerIdList == null ? 43 : ((Object)$ownerIdList).hashCode());
     String $description = this.getDescription();

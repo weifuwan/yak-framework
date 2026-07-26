@@ -2,21 +2,21 @@ package io.yak.framework.security.common.vo.user;
 
 import java.util.List;
 public class UserBriefVO {
-  private Integer id;
+  private Long id;
   private String userName;
   private String realName;
-  private Integer deptId;
+  private Long deptId;
   private String phone;
   private String email;
   private List<String> roleList;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getUserName() { return this.userName; }
 
   public String getRealName() { return this.realName; }
 
-  public Integer getDeptId() { return this.deptId; }
+  public Long getDeptId() { return this.deptId; }
 
   public String getPhone() { return this.phone; }
 
@@ -24,13 +24,13 @@ public class UserBriefVO {
 
   public List<String> getRoleList() { return this.roleList; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setUserName(String userName) { this.userName = userName; }
 
   public void setRealName(String realName) { this.realName = realName; }
 
-  public void setDeptId(Integer deptId) { this.deptId = deptId; }
+  public void setDeptId(Long deptId) { this.deptId = deptId; }
 
   public void setPhone(String phone) { this.phone = phone; }
 
@@ -49,14 +49,14 @@ public class UserBriefVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
     }
-    Integer this$deptId = this.getDeptId();
-    Integer other$deptId = other.getDeptId();
+    Long this$deptId = this.getDeptId();
+    Long other$deptId = other.getDeptId();
     if (this$deptId == null ? other$deptId != null
                             : !((Object)this$deptId).equals(other$deptId)) {
       return false;
@@ -99,9 +99,9 @@ public class UserBriefVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
-    Integer $deptId = this.getDeptId();
+    Long $deptId = this.getDeptId();
     result =
         result * 59 + ($deptId == null ? 43 : ((Object)$deptId).hashCode());
     String $userName = this.getUserName();

@@ -5,7 +5,7 @@ public class ProjectQueryDTO extends PageParamDTO {
   private String projectName;
   private String projectCode;
   private String chargeUsername;
-  private Integer deptId;
+  private Long deptId;
   private Boolean running;
 
   @Override
@@ -23,8 +23,8 @@ public class ProjectQueryDTO extends PageParamDTO {
     if (!super.equals(o)) {
       return false;
     }
-    Integer this$deptId = this.getDeptId();
-    Integer other$deptId = other.getDeptId();
+    Long this$deptId = this.getDeptId();
+    Long other$deptId = other.getDeptId();
     if (this$deptId == null ? other$deptId != null
                             : !((Object)this$deptId).equals(other$deptId)) {
       return false;
@@ -65,7 +65,7 @@ public class ProjectQueryDTO extends PageParamDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = super.hashCode();
-    Integer $deptId = this.getDeptId();
+    Long $deptId = this.getDeptId();
     result =
         result * 59 + ($deptId == null ? 43 : ((Object)$deptId).hashCode());
     Boolean $running = this.getRunning();
@@ -89,7 +89,7 @@ public class ProjectQueryDTO extends PageParamDTO {
 
   public String getChargeUsername() { return this.chargeUsername; }
 
-  public Integer getDeptId() { return this.deptId; }
+  public Long getDeptId() { return this.deptId; }
 
   public Boolean getRunning() { return this.running; }
 
@@ -105,7 +105,7 @@ public class ProjectQueryDTO extends PageParamDTO {
     this.chargeUsername = chargeUsername;
   }
 
-  public void setDeptId(Integer deptId) { this.deptId = deptId; }
+  public void setDeptId(Long deptId) { this.deptId = deptId; }
 
   public void setRunning(Boolean running) { this.running = running; }
 

@@ -1,13 +1,13 @@
 package io.yak.framework.security.common.entity.dept;
 
 public class DeptBrief {
-  private Integer id;
+  private Long id;
   private String deptName;
   private Boolean leaf;
   private Integer level;
-  private Integer parentId;
+  private Long parentId;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getDeptName() { return this.deptName; }
 
@@ -15,9 +15,9 @@ public class DeptBrief {
 
   public Integer getLevel() { return this.level; }
 
-  public Integer getParentId() { return this.parentId; }
+  public Long getParentId() { return this.parentId; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setDeptName(String deptName) { this.deptName = deptName; }
 
@@ -25,7 +25,7 @@ public class DeptBrief {
 
   public void setLevel(Integer level) { this.level = level; }
 
-  public void setParentId(Integer parentId) { this.parentId = parentId; }
+  public void setParentId(Long parentId) { this.parentId = parentId; }
 
   public boolean equals(Object o) {
     if (o == this) {
@@ -38,8 +38,8 @@ public class DeptBrief {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -56,8 +56,8 @@ public class DeptBrief {
                            : !((Object)this$level).equals(other$level)) {
       return false;
     }
-    Integer this$parentId = this.getParentId();
-    Integer other$parentId = other.getParentId();
+    Long this$parentId = this.getParentId();
+    Long other$parentId = other.getParentId();
     if (this$parentId == null
             ? other$parentId != null
             : !((Object)this$parentId).equals(other$parentId)) {
@@ -76,13 +76,13 @@ public class DeptBrief {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     Boolean $leaf = this.getLeaf();
     result = result * 59 + ($leaf == null ? 43 : ((Object)$leaf).hashCode());
     Integer $level = this.getLevel();
     result = result * 59 + ($level == null ? 43 : ((Object)$level).hashCode());
-    Integer $parentId = this.getParentId();
+    Long $parentId = this.getParentId();
     result =
         result * 59 + ($parentId == null ? 43 : ((Object)$parentId).hashCode());
     String $deptName = this.getDeptName();

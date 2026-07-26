@@ -31,7 +31,7 @@ public class ProjectController {
   @Autowired private ProjectService projectService;
 
   @GetMapping(value = {"/{id}"})
-  public Result<ProjectVO> detail(@PathVariable Integer id) {
+  public Result<ProjectVO> detail(@PathVariable Long id) {
     try {
       ProjectVO projectVO = this.projectService.getProjectDetailByProjectId(id);
       return Result.success(projectVO);
@@ -41,12 +41,12 @@ public class ProjectController {
   }
 
   @GetMapping(value = {"/{id}/exist"})
-  public Result<Boolean> checkExist(@PathVariable Integer id) {
+  public Result<Boolean> checkExist(@PathVariable Long id) {
     return Result.buildSucc(this.projectService.checkProjectExist(id));
   }
 
   @PutMapping(value = {"/switch/{id}"})
-  public Result<String> switched(@PathVariable Integer id,
+  public Result<String> switched(@PathVariable Long id,
                                  HttpServletRequest request) {
     this.projectService.changeProjectStatus(
         id, HttpRequestUtil.getOperator(request));
@@ -80,14 +80,14 @@ public class ProjectController {
   }
 
   @GetMapping(value = {"/delete/check/{id}"})
-  public Result<ProjectDeleteCheckVO> deleteCheck(@PathVariable Integer id) {
+  public Result<ProjectDeleteCheckVO> deleteCheck(@PathVariable Long id) {
     ProjectDeleteCheckVO deleteCheckVO =
         this.projectService.checkBeforeDelete(id);
     return Result.success(deleteCheckVO);
   }
 
   @DeleteMapping(value = {"/{id}"})
-  public Result<String> delete(@PathVariable Integer id,
+  public Result<String> delete(@PathVariable Long id,
                                HttpServletRequest request) {
     this.projectService.deleteProjectByProjectId(
         id, HttpRequestUtil.getOperator(request));
@@ -109,8 +109,8 @@ public class ProjectController {
   }
 
   @PutMapping(value = {"/{id}/owner/{ownerId}"})
-  public Result<String> addProjectOwner(@PathVariable Integer id,
-                                        @PathVariable Integer ownerId,
+  public Result<String> addProjectOwner(@PathVariable Long id,
+                                        @PathVariable Long ownerId,
                                         HttpServletRequest request) {
     try {
       this.projectService.addProjectOwner(id, ownerId,
@@ -122,8 +122,8 @@ public class ProjectController {
   }
 
   @DeleteMapping(value = {"/{id}/owner/{ownerId}"})
-  public Result<String> deleteProjectOwner(@PathVariable Integer id,
-                                           @PathVariable Integer ownerId,
+  public Result<String> deleteProjectOwner(@PathVariable Long id,
+                                           @PathVariable Long ownerId,
                                            HttpServletRequest request) {
     try {
       this.projectService.delProjectOwner(id, ownerId,
@@ -135,8 +135,8 @@ public class ProjectController {
   }
 
   @PutMapping(value = {"/{id}/user/{userId}"})
-  public Result<String> addProjectUser(@PathVariable Integer id,
-                                       @PathVariable Integer userId,
+  public Result<String> addProjectUser(@PathVariable Long id,
+                                       @PathVariable Long userId,
                                        HttpServletRequest request) {
     try {
       this.projectService.addProjectUser(id, userId,
@@ -148,8 +148,8 @@ public class ProjectController {
   }
 
   @DeleteMapping(value = {"/{id}/user/{userId}"})
-  public Result<String> deleteProjectUser(@PathVariable Integer id,
-                                          @PathVariable Integer userId,
+  public Result<String> deleteProjectUser(@PathVariable Long id,
+                                          @PathVariable Long userId,
                                           HttpServletRequest request) {
     try {
       this.projectService.delProjectUser(id, userId,
@@ -162,7 +162,7 @@ public class ProjectController {
 
   @GetMapping(value = {"/unassigned"})
   public Result<List<UserBriefVO>>
-  unassigned(@RequestParam(value = "id") Integer id) {
+  unassigned(@RequestParam(value = "id") Long id) {
     try {
       return this.projectService.unassignedByProjectId(id);
     } catch (YakSecurityException e) {
@@ -172,7 +172,7 @@ public class ProjectController {
 
   @GetMapping(value = {"/user/{userId}"})
   public Result<List<ProjectBriefVO>>
-  getProjectBriefByUserId(@PathVariable(value = "userId") Integer userId) {
+  getProjectBriefByUserId(@PathVariable(value = "userId") Long userId) {
     return this.projectService.getProjectBriefByUserId(userId);
   }
 }

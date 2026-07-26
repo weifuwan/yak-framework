@@ -12,5 +12,5 @@ public interface MessageDao {
 
   public List<Message> selectListByUserIdAndReadTag(Integer var1, Boolean var2);
 
-  public List<Message> selectListByMessageIdList(List<Integer> var1);
+  public List<Message> selectListByMessageIdList(List<Long> var1);
 }

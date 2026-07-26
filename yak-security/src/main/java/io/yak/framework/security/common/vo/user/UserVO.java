@@ -6,7 +6,7 @@ import io.yak.framework.security.common.vo.role.RoleBriefVO;
 import java.util.Date;
 import java.util.List;
 public class UserVO {
-  private Integer id;
+  private Long id;
   private String userName;
   private String realName;
   private String phone;
@@ -17,7 +17,7 @@ public class UserVO {
   private PermissionTreeVO permissionTreeVO;
   private List<ProjectBriefVO> projectList;
 
-  public Integer getId() { return this.id; }
+  public Long getId() { return this.id; }
 
   public String getUserName() { return this.userName; }
 
@@ -39,7 +39,7 @@ public class UserVO {
 
   public List<ProjectBriefVO> getProjectList() { return this.projectList; }
 
-  public void setId(Integer id) { this.id = id; }
+  public void setId(Long id) { this.id = id; }
 
   public void setUserName(String userName) { this.userName = userName; }
 
@@ -76,8 +76,8 @@ public class UserVO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$id = this.getId();
-    Integer other$id = other.getId();
+    Long this$id = this.getId();
+    Long other$id = other.getId();
     if (this$id == null ? other$id != null
                         : !((Object)this$id).equals(other$id)) {
       return false;
@@ -146,7 +146,7 @@ public class UserVO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $id = this.getId();
+    Long $id = this.getId();
     result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
     String $userName = this.getUserName();
     result = result * 59 + ($userName == null ? 43 : $userName.hashCode());

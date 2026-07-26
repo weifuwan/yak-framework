@@ -3,10 +3,10 @@ package io.yak.framework.security.common.dto.message;
 public class MessageDTO {
   private String title;
   private String content;
-  private Integer oplogId;
-  private Integer userId;
+  private Long oplogId;
+  private Long userId;
 
-  public MessageDTO(Integer userId, Integer oplogId) {
+  public MessageDTO(Long userId, Long oplogId) {
     this.userId = userId;
     this.oplogId = oplogId;
   }
@@ -15,17 +15,17 @@ public class MessageDTO {
 
   public String getContent() { return this.content; }
 
-  public Integer getOplogId() { return this.oplogId; }
+  public Long getOplogId() { return this.oplogId; }
 
-  public Integer getUserId() { return this.userId; }
+  public Long getUserId() { return this.userId; }
 
   public void setTitle(String title) { this.title = title; }
 
   public void setContent(String content) { this.content = content; }
 
-  public void setOplogId(Integer oplogId) { this.oplogId = oplogId; }
+  public void setOplogId(Long oplogId) { this.oplogId = oplogId; }
 
-  public void setUserId(Integer userId) { this.userId = userId; }
+  public void setUserId(Long userId) { this.userId = userId; }
 
   public boolean equals(Object o) {
     if (o == this) {
@@ -38,14 +38,14 @@ public class MessageDTO {
     if (!other.canEqual(this)) {
       return false;
     }
-    Integer this$oplogId = this.getOplogId();
-    Integer other$oplogId = other.getOplogId();
+    Long this$oplogId = this.getOplogId();
+    Long other$oplogId = other.getOplogId();
     if (this$oplogId == null ? other$oplogId != null
                              : !((Object)this$oplogId).equals(other$oplogId)) {
       return false;
     }
-    Integer this$userId = this.getUserId();
-    Integer other$userId = other.getUserId();
+    Long this$userId = this.getUserId();
+    Long other$userId = other.getUserId();
     if (this$userId == null ? other$userId != null
                             : !((Object)this$userId).equals(other$userId)) {
       return false;
@@ -69,10 +69,10 @@ public class MessageDTO {
   public int hashCode() {
     int PRIME = 59;
     int result = 1;
-    Integer $oplogId = this.getOplogId();
+    Long $oplogId = this.getOplogId();
     result =
         result * 59 + ($oplogId == null ? 43 : ((Object)$oplogId).hashCode());
-    Integer $userId = this.getUserId();
+    Long $userId = this.getUserId();
     result =
         result * 59 + ($userId == null ? 43 : ((Object)$userId).hashCode());
     String $title = this.getTitle();
