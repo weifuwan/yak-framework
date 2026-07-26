@@ -40,6 +40,7 @@
     <modules>
         <module>yak-common</module>
         <module>yak-security</module>
+        <module>yak-schedule</module>
     </modules>
 
     <dependencyManagement>
