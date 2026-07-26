@@ -1,7 +1,12 @@
 package io.yak.framework.security.web;
 
 import io.yak.framework.security.config.YakSecurityProperties;
+import io.yak.framework.security.common.Result;
+import io.yak.framework.security.common.enums.ResultCode;
+import io.yak.framework.security.extend.CurrentUserProvider;
 import io.yak.framework.security.service.LoginService;
+import io.yak.framework.security.service.RbacPermissionService;
+import io.yak.framework.security.util.JsonUtils;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -19,12 +24,18 @@ public class YakAuthenticationInterceptor implements HandlerInterceptor {
 
   private final LoginService loginService;
   private final YakSecurityProperties properties;
+  private final RbacPermissionService permissionService;
+  private final CurrentUserProvider currentUserProvider;
 
   public YakAuthenticationInterceptor(
           LoginService loginService,
-          YakSecurityProperties properties) {
+          YakSecurityProperties properties,
+          RbacPermissionService permissionService,
+          CurrentUserProvider currentUserProvider) {
     this.loginService = loginService;
     this.properties = properties;
+    this.permissionService = permissionService;
+    this.currentUserProvider = currentUserProvider;
   }
 
   @Override
@@ -45,11 +56,37 @@ public class YakAuthenticationInterceptor implements HandlerInterceptor {
       requestPath = requestPath.substring(contextPath.length());
     }
 
-    return loginService.interceptorCheck(
+    boolean authenticated = loginService.interceptorCheck(
             request,
             response,
             requestPath,
             properties.getPublicPaths());
+    if (!authenticated) {
+      return false;
+    }
+
+    RequiresPermission required = findRequiredPermission(handler);
+    if (required == null || permissionService.hasPermission(
+            currentUserProvider.getCurrentUser(request), required.value())) {
+      return true;
+    }
+
+    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    response.setCharacterEncoding("UTF-8");
+    response.setContentType("application/json");
+    response.getWriter().write(JsonUtils.toJson(Result.fail(ResultCode.NO_PERMISSION)));
+    return false;
+  }
+
+  private RequiresPermission findRequiredPermission(Object handler) {
+    if (!(handler instanceof HandlerMethod)) {
+      return null;
+    }
+    HandlerMethod method = (HandlerMethod) handler;
+    RequiresPermission annotation = AnnotatedElementUtils.findMergedAnnotation(
+            method.getMethod(), RequiresPermission.class);
+    return annotation != null ? annotation : AnnotatedElementUtils.findMergedAnnotation(
+            method.getBeanType(), RequiresPermission.class);
   }
 
   private boolean isPublicEndpoint(Object handler) {

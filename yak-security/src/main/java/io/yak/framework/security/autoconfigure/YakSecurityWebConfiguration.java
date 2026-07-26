@@ -12,6 +12,8 @@ import io.yak.framework.security.controller.v1.RoleController;
 import io.yak.framework.security.controller.v1.UserController;
 import io.yak.framework.security.config.YakSecurityProperties;
 import io.yak.framework.security.service.LoginService;
+import io.yak.framework.security.service.RbacPermissionService;
+import io.yak.framework.security.extend.CurrentUserProvider;
 import io.yak.framework.security.web.YakAuthenticationInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -47,9 +49,13 @@ public class YakSecurityWebConfiguration implements WebMvcConfigurer {
 
   public YakSecurityWebConfiguration(
           LoginService loginService,
-          YakSecurityProperties properties) {
+          YakSecurityProperties properties,
+          RbacPermissionService permissionService,
+          CurrentUserProvider currentUserProvider) {
     this.authenticationInterceptor =
-            new YakAuthenticationInterceptor(loginService, properties);
+            new YakAuthenticationInterceptor(
+                    loginService, properties,
+                    permissionService, currentUserProvider);
   }
 
   @Override
