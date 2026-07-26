@@ -15,6 +15,7 @@ import io.yak.framework.security.extend.impl.DefaultResourceExtendImpl;
 import io.yak.framework.security.extend.impl.InMemoryTokenSessionStore;
 import io.yak.framework.security.extend.impl.NoOpOperationLogExtend;
 import io.yak.framework.security.service.UserService;
+import io.yak.framework.security.config.YakSecurityProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -54,11 +55,13 @@ public class YakSecurityExtendAutoConfiguration {
     @ConditionalOnMissingBean(LoginExtend.class)
     public LoginExtend loginExtend(
             UserService userService,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            YakSecurityProperties properties) {
 
         return new DefaultLoginExtendImpl(
                 userService,
-                passwordEncoder);
+                passwordEncoder,
+                properties);
     }
 
     /**

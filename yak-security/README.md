@@ -108,6 +108,44 @@ yak:
 `yak.security.authentication-enabled` 设为 `false`。本模块使用 Spring Boot 3.3.13 和
 `jakarta.servlet` API 构建，需要 JDK 21。
 
+### 登录与 Session 加固
+
+默认登录实现会同时按规范化用户名和请求源 IP 统计连续失败，任一维度达到阈值都会临时锁定；
+用户不存在与密码错误默认统一返回“密码错误”，避免账号枚举。计数器位于当前 JVM，集群部署应
+自定义 `LoginExtend`，使用 Redis 等共享存储实现原子计数。不要直接信任客户端传入的
+`X-Forwarded-For`；反向代理应先限制可信代理并由容器解析真实 `remoteAddr`。
+
+```yaml
+yak:
+  security:
+    login:
+      max-failure-count: 5
+      lock-duration: 15m
+      hide-account-not-found: true
+    session:
+      timeout: 30m
+```
+
+登录成功时框架会更新 Session ID，并把超时写入该 Session。会话还记录登录时的密码摘要；用户
+密码一旦被管理接口修改，所有旧会话在下一次受保护请求时都会被拒绝并销毁。退出登录也会立即
+销毁当前 Session。
+
+Session Cookie 属于 Servlet 容器配置。生产环境必须启用 HTTPS，并通过 Spring Boot 的标准配置
+设置 `HttpOnly`、`Secure` 和 `SameSite`；`SameSite=Lax` 适合普通同站管理界面，确需跨站发送时
+才使用 `None`，且浏览器要求它同时为 `Secure`：
+
+```yaml
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+        same-site: lax
+```
+
+若在本地纯 HTTP 环境调试，可仅在该环境覆盖 `secure: false`，禁止把此覆盖带入生产环境。
+
 ## 权限缓存
 
 默认使用 Caffeine 按 `applicationName + userId` 缓存用户的权限编码集合，权限判断命中缓存后
