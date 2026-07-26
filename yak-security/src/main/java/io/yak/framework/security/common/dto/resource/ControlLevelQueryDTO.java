@@ -1,9 +1,12 @@
 package io.yak.framework.security.common.dto.resource;
+
+import lombok.Data;
 /**
  * 管控级别查询数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class ControlLevelQueryDTO {
   /** 用户标识。 */
   private Long userId;

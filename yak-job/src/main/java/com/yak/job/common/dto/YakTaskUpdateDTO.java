@@ -7,6 +7,8 @@
  */
 package com.yak.job.common.dto;
 
+import lombok.Data;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -17,6 +19,7 @@ import java.util.List;
  *
  * @author weifuwan
  */
+@Data
 @ApiModel(description = "YakTask \u4efb\u52a1\u7f16\u8f91DTO")
 public class YakTaskUpdateDTO {
     /** 工作节点 IP 列表。 */

@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.dto.role;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.dto.PageParamDTO;
 /**
  * 角色查询数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class RoleQueryDTO extends PageParamDTO {
   /** 角色编码。 */
   private String roleCode;

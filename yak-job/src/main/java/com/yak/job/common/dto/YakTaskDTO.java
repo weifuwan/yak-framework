@@ -7,6 +7,8 @@
  */
 package com.yak.job.common.dto;
 
+import lombok.Data;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,6 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
  *
  * @author weifuwan
  */
+@Data
 @ApiModel(description = "YakTask \u4efb\u52a1\u4fe1\u606f")
 public class YakTaskDTO {
     /** 名称。 */

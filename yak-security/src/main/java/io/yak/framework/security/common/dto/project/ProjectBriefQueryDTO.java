@@ -1,5 +1,7 @@
 package io.yak.framework.security.common.dto.project;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.dto.PageParamDTO;
 import io.yak.framework.security.common.dto.resource.MByRQueryDTO;
 /**
@@ -7,6 +9,7 @@ import io.yak.framework.security.common.dto.resource.MByRQueryDTO;
  *
  * @author weifuwan
  */
+@Data
 public class ProjectBriefQueryDTO extends PageParamDTO {
   /** 项目名称。 */
   private String projectName;

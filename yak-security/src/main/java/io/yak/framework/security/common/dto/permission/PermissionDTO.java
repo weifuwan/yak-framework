@@ -1,5 +1,7 @@
 package io.yak.framework.security.common.dto.permission;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  *
  * @author weifuwan
  */
+@Data
 public class PermissionDTO {
   /** 权限编码。 */
   private String permissionCode;

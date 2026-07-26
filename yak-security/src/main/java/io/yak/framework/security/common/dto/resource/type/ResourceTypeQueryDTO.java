@@ -1,5 +1,7 @@
 package io.yak.framework.security.common.dto.resource.type;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.dto.PageParamDTO;
 import io.yak.framework.security.common.dto.resource.MByRQueryDTO;
 
@@ -8,6 +10,7 @@ import io.yak.framework.security.common.dto.resource.MByRQueryDTO;
  *
  * @author weifuwan
  */
+@Data
 public class ResourceTypeQueryDTO extends PageParamDTO {
   /** 资源类型名称。 */
   private String typeName;

@@ -7,6 +7,8 @@
  */
 package com.yak.job.common.dto;
 
+import lombok.Data;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -17,6 +19,7 @@ import java.sql.Timestamp;
  *
  * @author weifuwan
  */
+@Data
 @ApiModel(description = "YakTask \u4f5c\u4e1a\u65e5\u5fd7\u4fe1\u606f")
 public class YakJobLogDTO {
     /** 作业编码。 */

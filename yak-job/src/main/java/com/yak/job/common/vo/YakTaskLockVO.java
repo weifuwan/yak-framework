@@ -6,6 +6,8 @@
  */
 package com.yak.job.common.vo;
 
+import lombok.Data;
+
 import io.swagger.annotations.ApiModelProperty;
 
 import java.sql.Timestamp;
@@ -15,6 +17,7 @@ import java.sql.Timestamp;
  *
  * @author weifuwan
  */
+@Data
 public class YakTaskLockVO {
     /** 主键标识。 */
     @ApiModelProperty(value = "\u4efb\u52a1\u9501id")

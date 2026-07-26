@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.dto.user;
 
+import lombok.Data;
+
 import java.util.List;
 /**
  * 用户数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class UserDTO {
   /** 用户名。 */
   private String userName;

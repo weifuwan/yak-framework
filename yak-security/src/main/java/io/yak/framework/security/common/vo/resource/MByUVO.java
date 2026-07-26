@@ -1,5 +1,7 @@
 package io.yak.framework.security.common.vo.resource;
 
+import lombok.Data;
+
 import io.yak.framework.security.common.vo.dept.DeptBriefVO;
 import java.util.List;
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  *
  * @author weifuwan
  */
+@Data
 public class MByUVO {
   /** 用户标识。 */
   private Long userId;

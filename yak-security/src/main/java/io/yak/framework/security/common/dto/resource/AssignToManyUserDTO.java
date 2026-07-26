@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.dto.resource;
 
+import lombok.Data;
+
 import java.util.List;
 /**
  * 资源批量分配用户数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class AssignToManyUserDTO {
   /** 项目标识。 */
   private Long projectId;

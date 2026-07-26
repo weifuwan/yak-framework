@@ -1,5 +1,7 @@
 package io.yak.framework.security.common.vo.role;
 
+import lombok.Data;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.yak.framework.security.common.vo.permission.PermissionTreeVO;
 import java.util.Date;
@@ -9,6 +11,7 @@ import java.util.List;
  *
  * @author weifuwan
  */
+@Data
 public class RoleVO {
   /** 主键标识。 */
   private Long id;

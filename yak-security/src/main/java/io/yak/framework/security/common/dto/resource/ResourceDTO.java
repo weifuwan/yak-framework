@@ -1,10 +1,13 @@
 package io.yak.framework.security.common.dto.resource;
 
+import lombok.Data;
+
 /**
  * 资源数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class ResourceDTO {
   /** 资源标识。 */
   private Long resourceId;

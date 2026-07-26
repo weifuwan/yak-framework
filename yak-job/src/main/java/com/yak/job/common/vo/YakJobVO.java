@@ -7,6 +7,8 @@
  */
 package com.yak.job.common.vo;
 
+import lombok.Data;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -17,6 +19,7 @@ import java.sql.Timestamp;
  *
  * @author weifuwan
  */
+@Data
 @ApiModel(description = "YakJobVO \u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1\u8be6\u60c5")
 public class YakJobVO {
     /** 调度任务编码。 */

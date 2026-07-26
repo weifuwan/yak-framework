@@ -1,11 +1,14 @@
 package io.yak.framework.security.common.vo.user;
 
+import lombok.Data;
+
 import java.util.List;
 /**
  * 用户简要信息视图对象。
  *
  * @author weifuwan
  */
+@Data
 public class UserBriefVO {
   /** 主键标识。 */
   private Long id;

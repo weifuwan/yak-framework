@@ -1,9 +1,12 @@
 package io.yak.framework.security.common.dto.config;
+
+import lombok.Data;
 /**
  * 配置数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class ConfigDTO {
   /** 标识。 */
   private Long id;

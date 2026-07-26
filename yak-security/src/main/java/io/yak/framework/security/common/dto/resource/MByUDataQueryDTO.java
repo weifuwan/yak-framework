@@ -1,9 +1,12 @@
 package io.yak.framework.security.common.dto.resource;
+
+import lombok.Data;
 /**
  * 按用户查询授权数据的数据传输对象。
  *
  * @author weifuwan
  */
+@Data
 public class MByUDataQueryDTO {
   /** 用户标识。 */
   private Long userId;

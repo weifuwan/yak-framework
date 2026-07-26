@@ -1,5 +1,7 @@
 package io.yak.framework.security.common.dto.dept;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  *
  * @author weifuwan
  */
+@Data
 public class DeptDTO {
   /** 部门名称。 */
   private String deptName;
