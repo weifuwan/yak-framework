@@ -30,7 +30,6 @@ import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.dao.UserResourceDao;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.extend.ResourceExtend;
-import io.yak.framework.security.extend.ResourceExtendBeanTool;
 import io.yak.framework.security.service.DeptService;
 import io.yak.framework.security.service.ProjectService;
 import io.yak.framework.security.service.ResourceTypeService;
@@ -84,7 +83,7 @@ public class UserResourceServiceImpl
 
   private final ResourceTypeService resourceTypeService;
 
-  private final ResourceExtendBeanTool resourceExtendBeanTool;
+  private final ResourceExtend resourceExtend;
 
   /**
    * 创建用户资源权限服务。
@@ -94,7 +93,7 @@ public class UserResourceServiceImpl
    * @param userService 用户服务
    * @param projectService 项目服务
    * @param resourceTypeService 资源类型服务
-   * @param resourceExtendBeanTool 资源扩展工具
+   * @param resourceExtend 资源扩展
    */
   public UserResourceServiceImpl(
           UserResourceDao userResourceDao,
@@ -102,14 +101,14 @@ public class UserResourceServiceImpl
           UserService userService,
           ProjectService projectService,
           ResourceTypeService resourceTypeService,
-          ResourceExtendBeanTool resourceExtendBeanTool) {
+          ResourceExtend resourceExtend) {
 
     this.userResourceDao = userResourceDao;
     this.deptService = deptService;
     this.userService = userService;
     this.projectService = projectService;
     this.resourceTypeService = resourceTypeService;
-    this.resourceExtendBeanTool = resourceExtendBeanTool;
+    this.resourceExtend = resourceExtend;
   }
 
   /**
@@ -500,7 +499,7 @@ public class UserResourceServiceImpl
 
     if (resourceId == null) {
       ResourceExtend resourceExtend =
-              getResourceExtend();
+              this.resourceExtend;
 
       List<ResourceDTO> extensionResources =
               resourceExtend.getResourceList(
@@ -804,7 +803,7 @@ public class UserResourceServiceImpl
           Long resourceTypeId) {
 
     ResourceExtend resourceExtend =
-            getResourceExtend();
+            this.resourceExtend;
 
     List<ResourceDTO> resourceList =
             resourceExtend.getResourceList(
@@ -873,7 +872,7 @@ public class UserResourceServiceImpl
     }
 
     int totalResourceCount =
-            getResourceExtend().getResourceCnt(
+            resourceExtend.getResourceCnt(
                     projectId,
                     resourceTypeId);
 
@@ -971,7 +970,7 @@ public class UserResourceServiceImpl
             new ArrayList<>();
 
     ResourceExtend resourceExtend =
-            getResourceExtend();
+            this.resourceExtend;
 
     for (Long projectId : projectIdList) {
       if (projectId == null) {
@@ -1122,7 +1121,7 @@ public class UserResourceServiceImpl
     }
 
     int totalResourceCount =
-            getResourceExtend().getResourceCnt(
+            resourceExtend.getResourceCnt(
                     queryDTO.getProjectId(),
                     queryDTO.getResourceTypeId());
 
@@ -1307,7 +1306,7 @@ public class UserResourceServiceImpl
           boolean viewControlEnabled) {
 
     PagingData<ResourceDTO> resourcePage =
-            getResourceExtend().getResourcePage(
+            resourceExtend.getResourcePage(
                     queryDTO.getProjectId(),
                     queryDTO.getResourceTypeId(),
                     queryDTO.getName(),
@@ -1651,22 +1650,6 @@ public class UserResourceServiceImpl
 
     userResourceDao.insertBatch(
             userResourceList);
-  }
-
-  /**
-   * 获取资源扩展实现。
-   */
-  private ResourceExtend getResourceExtend() {
-    ResourceExtend resourceExtend =
-            resourceExtendBeanTool
-                    .getResourceExtendImpl();
-
-    if (resourceExtend == null) {
-      throw new IllegalStateException(
-              "未找到资源扩展实现");
-    }
-
-    return resourceExtend;
   }
 
   /**

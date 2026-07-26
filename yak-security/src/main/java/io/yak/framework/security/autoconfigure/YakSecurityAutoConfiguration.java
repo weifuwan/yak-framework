@@ -30,7 +30,5 @@ public class YakSecurityAutoConfiguration {
     OperationLogExtend operationLogExtend() { return new NoOpOperationLogExtend(); }
     @Bean @ConditionalOnMissingBean
     ResourceExtend resourceExtend() { return new DefaultResourceExtendImpl(); }
-    @Bean @ConditionalOnMissingBean
-    ResourceExtendBeanTool resourceExtendBeanTool(ResourceExtend extend) { return new ResourceExtendBeanTool(extend); }
   }
 }
