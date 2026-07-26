@@ -2,7 +2,7 @@ package io.yak.framework.security.autoconfigure;
 
 import io.yak.framework.security.extend.*;
 import io.yak.framework.security.extend.impl.*;
-import io.yak.framework.security.properties.YakSecurityProperties;
+import io.yak.framework.security.config.YakSecurityProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

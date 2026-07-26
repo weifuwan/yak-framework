@@ -125,7 +125,7 @@ public class UserProjectDaoImpl
   private int addUserProject(UserProject userProject) {
     UserProjectPO userProjectPO =
         CopyBeanUtil.copy(userProject, UserProjectPO.class);
-    userProjectPO.setAppName(this.yakSecurityProperties.getAppName());
+    userProjectPO.setAppName(this.yakSecurityProperties.getApplicationName());
     return this.userProjectMapper.insert(userProjectPO);
   }
 

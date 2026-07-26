@@ -59,7 +59,7 @@ public class UserRoleDaoImpl
       List<UserRolePO> userRolePOList =
           CopyBeanUtil.copyList(userRoleList, UserRolePO.class);
       for (UserRolePO userRolePO : userRolePOList) {
-        userRolePO.setAppName(this.yakSecurityProperties.getAppName());
+        userRolePO.setAppName(this.yakSecurityProperties.getApplicationName());
         this.userRoleMapper.insert(userRolePO);
       }
     }

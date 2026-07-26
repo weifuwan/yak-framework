@@ -1,54 +1,101 @@
 package io.yak.framework.security.config;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import com.zaxxer.hikari.HikariDataSource;
-import io.yak.framework.security.properties.YakSecurityProperties;
+import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import javax.sql.DataSource;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.StringUtils;
 
-@Configuration(value = "yakSecurityDataSourceConfig")
-@MapperScan(value = {"io.yak.framework.security.dao.mapper"})
-/**
- * 安全模块独立数据源与 MyBatis 配置，Mapper
- * 扫描限定在当前模块以避免跨模块数据访问。
- */
+/** 安全模块独立数据源与 MyBatis 配置。 */
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnProperty(prefix = "yak.security", name = "database-enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "yak.security.datasource", name = "enabled", havingValue = "true", matchIfMissing = true)
+@MapperScan(basePackages = "io.yak.framework.security.dao.mapper",
+    sqlSessionTemplateRef = "yakSecuritySqlSessionTemplate")
 public class DataSourceConfig {
-  @Bean
-  @ConditionalOnMissingBean
-  public GlobalConfig globalConfig() {
-    GlobalConfig globalConfig = new GlobalConfig();
-    globalConfig.setBanner(false);
+  @Bean("yakSecurityGlobalConfig")
+  public GlobalConfig yakSecurityGlobalConfig() {
+    GlobalConfig config = new GlobalConfig();
+    config.setBanner(false);
     GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
     dbConfig.setIdType(IdType.AUTO);
-    globalConfig.setDbConfig(dbConfig);
-    return globalConfig;
+    config.setDbConfig(dbConfig);
+    return config;
   }
 
-  @Bean(value = {"yakSecurityDataSource"})
-  @ConditionalOnMissingBean(DataSource.class)
-  public DataSource dataSource(YakSecurityProperties proper) {
-    HikariDataSource dataSource = new HikariDataSource();
-    dataSource.setUsername(proper.getUsername());
-    dataSource.setPassword(proper.getPassword());
-    dataSource.setJdbcUrl(proper.getJdbcUrl());
-    dataSource.setDriverClassName(proper.getDriverClassName());
-    return dataSource;
+  @Bean("yakSecurityDataSource")
+  public DataSource yakSecurityDataSource(YakSecurityProperties properties) {
+    YakSecurityProperties.DataSourceProperties datasource = properties.getDatasource();
+    requireText(datasource.getUrl(), "yak.security.datasource.url");
+    requireText(datasource.getUsername(), "yak.security.datasource.username");
+    requireText(datasource.getDriverClassName(), "yak.security.datasource.driver-class-name");
+
+    DruidDataSource result = new DruidDataSource();
+    result.setUrl(datasource.getUrl());
+    result.setUsername(datasource.getUsername());
+    result.setPassword(datasource.getPassword());
+    result.setDriverClassName(datasource.getDriverClassName());
+    result.setInitialSize(datasource.getInitialSize());
+    result.setMinIdle(datasource.getMinIdle());
+    result.setMaxActive(datasource.getMaxActive());
+    result.setMaxWait(datasource.getMaxWait());
+    result.setValidationQuery(datasource.getValidationQuery());
+    result.setTestWhileIdle(datasource.isTestWhileIdle());
+    result.setTestOnBorrow(datasource.isTestOnBorrow());
+    result.setTestOnReturn(datasource.isTestOnReturn());
+    return result;
   }
 
-  @Bean(value = {"yakSecurityMybatisPlusInterceptor"})
-  @ConditionalOnMissingBean
-  public MybatisPlusInterceptor mybatisPlusInterceptor() {
+  @Bean("yakSecurityMybatisPlusInterceptor")
+  public MybatisPlusInterceptor yakSecurityMybatisPlusInterceptor() {
     MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-    interceptor.addInnerInterceptor(
-        (InnerInterceptor) new PaginationInnerInterceptor(DbType.MARIADB));
+    interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MARIADB));
     return interceptor;
+  }
+
+  @Bean("yakSecuritySqlSessionFactory")
+  public SqlSessionFactory yakSecuritySqlSessionFactory(
+      @Qualifier("yakSecurityDataSource") DataSource dataSource,
+      @Qualifier("yakSecurityGlobalConfig") GlobalConfig globalConfig,
+      @Qualifier("yakSecurityMybatisPlusInterceptor") MybatisPlusInterceptor interceptor)
+      throws Exception {
+    MybatisSqlSessionFactoryBean factory = new MybatisSqlSessionFactoryBean();
+    factory.setDataSource(dataSource);
+    factory.setConfiguration(new MybatisConfiguration());
+    factory.setGlobalConfig(globalConfig);
+    factory.setPlugins(interceptor);
+    return factory.getObject();
+  }
+
+  @Bean("yakSecuritySqlSessionTemplate")
+  public SqlSessionTemplate yakSecuritySqlSessionTemplate(
+      @Qualifier("yakSecuritySqlSessionFactory") SqlSessionFactory factory) {
+    return new SqlSessionTemplate(factory);
+  }
+
+  @Bean("yakSecurityTransactionManager")
+  public PlatformTransactionManager yakSecurityTransactionManager(
+      @Qualifier("yakSecurityDataSource") DataSource dataSource) {
+    return new DataSourceTransactionManager(dataSource);
+  }
+
+  private static void requireText(String value, String key) {
+    if (!StringUtils.hasText(value)) {
+      throw new IllegalStateException("Missing required configuration: " + key);
+    }
   }
 }

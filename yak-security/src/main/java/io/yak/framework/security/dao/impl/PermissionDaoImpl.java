@@ -35,7 +35,7 @@ public class PermissionDaoImpl
     List<PermissionPO> permissionPOList =
         CopyBeanUtil.copyList(permissionList, PermissionPO.class);
     for (PermissionPO permissionPO : permissionPOList) {
-      permissionPO.setAppName(this.yakSecurityProperties.getAppName());
+      permissionPO.setAppName(this.yakSecurityProperties.getApplicationName());
       this.permissionMapper.insert(permissionPO);
     }
   }
