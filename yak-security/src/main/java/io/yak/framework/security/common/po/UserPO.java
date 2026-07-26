@@ -21,13 +21,27 @@ import lombok.ToString;
 @ToString(exclude = {"pw", "salt"})
 @TableName(value = "yak_security_user")
 public class UserPO extends BasePO {
+  /** 用户名。 */
   private String userName;
+
+  /** 密码密文。 */
   private String pw;
+
+  /** 密码盐值。 */
   private String salt;
+
+  /** 用户真实姓名。 */
   private String realName;
+
+  /** 手机号码。 */
   private String phone;
+
+  /** 电子邮箱地址。 */
   private String email;
+
+  /** 所属部门标识。 */
   private Long deptId;
+
   /** 用户状态：1 启用，2 禁用。 */
   private Integer status = 1;
 }
