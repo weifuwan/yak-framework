@@ -688,7 +688,7 @@ public class ProjectServiceImpl
             userService.getAllUserBriefList();
 
     if (CollectionUtils.isEmpty(allUserList)) {
-      return Result.buildSucc(
+      return Result.success(
               new ArrayList<>());
     }
 
@@ -702,7 +702,7 @@ public class ProjectServiceImpl
                                     user.getId()))
                     .collect(Collectors.toList());
 
-    return Result.buildSucc(
+    return Result.success(
             unassignedUserList);
   }
 
@@ -729,7 +729,7 @@ public class ProjectServiceImpl
                                     userId));
 
     if (CollectionUtils.isEmpty(projectIdList)) {
-      return Result.buildSucc(
+      return Result.success(
               new ArrayList<>());
     }
 
@@ -739,7 +739,7 @@ public class ProjectServiceImpl
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
-    return Result.buildSucc(projectList);
+    return Result.success(projectList);
   }
 
   /**

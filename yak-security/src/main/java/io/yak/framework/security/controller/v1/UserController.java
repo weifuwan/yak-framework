@@ -106,7 +106,7 @@ public class UserController {
           @PathVariable("id") Long userId) {
 
     try {
-      return Result.buildSucc(
+      return Result.success(
               userService.getUserDetailByUserId(
                       userId));
     } catch (YakSecurityException exception) {
@@ -142,7 +142,7 @@ public class UserController {
   public Result<List<UserBriefVO>> listByDeptId(
           @PathVariable Long deptId) {
 
-    return Result.buildSucc(
+    return Result.success(
             userService.getUserBriefListByDeptId(
                     deptId));
   }
@@ -158,7 +158,7 @@ public class UserController {
   public Result<List<UserBriefVO>> listByRoleId(
           @PathVariable Long roleId) {
 
-    return Result.buildSucc(
+    return Result.success(
             userService.getUserBriefListByRoleId(
                     roleId));
   }
@@ -175,7 +175,7 @@ public class UserController {
           @PathVariable Long userId) {
 
     try {
-      return Result.buildSucc(
+      return Result.success(
               userService.getAssignInfoListByUserId(
                       userId));
     } catch (YakSecurityException exception) {
@@ -194,7 +194,7 @@ public class UserController {
   public Result<List<UserBriefVO>> listByName(
           @PathVariable String keyword) {
 
-    return Result.buildSucc(
+    return Result.success(
             userService.searchUserBriefList(
                     keyword));
   }

@@ -48,7 +48,7 @@ public class ConfigController {
     public Result<List<ConfigVO>> list(
             @RequestBody ConfigDTO condition) {
 
-        return Result.buildSucc(
+        return Result.success(
                 configService.queryByCondt(condition));
     }
 
@@ -77,7 +77,7 @@ public class ConfigController {
     @Operation(summary = "查询全部配置分组")
     @GetMapping("/group/list")
     public Result<List<String>> groups() {
-        return Result.buildSucc(
+        return Result.success(
                 configService.listGroups());
     }
 
@@ -92,7 +92,7 @@ public class ConfigController {
     public Result<ConfigVO> get(
             @RequestParam("configId") Long configId) {
 
-        return Result.buildSucc(
+        return Result.success(
                 configService.getConfigById(configId));
     }
 

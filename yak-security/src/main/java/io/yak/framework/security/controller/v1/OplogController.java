@@ -72,7 +72,7 @@ public class OplogController {
   public Result<OplogVO> detail(
           @PathVariable("id") Long oplogId) {
 
-    return Result.buildSucc(
+    return Result.success(
             oplogService
                     .getOplogDetailByOplogId(
                             oplogId));
@@ -86,7 +86,7 @@ public class OplogController {
   @Operation(summary = "查询全部操作目标类型")
   @GetMapping("/type/list")
   public Result<List<String>> targetTypeList() {
-    return Result.buildSucc(
+    return Result.success(
             oplogService.listTargetType());
   }
 }

@@ -69,7 +69,7 @@ public class ResourceController {
   @Operation(summary = "查询全部资源类型")
   @GetMapping("/type/list")
   public Result<List<ResourceTypeVO>> typeList() {
-    return Result.buildSucc(
+    return Result.success(
             resourceTypeService.getAllResourceTypeList());
   }
 
@@ -87,7 +87,7 @@ public class ResourceController {
     resourceTypeService.saveResourceType(
             typeNameList);
 
-    return Result.buildSucc(null);
+    return Result.success(null);
   }
 
   /**
@@ -98,7 +98,7 @@ public class ResourceController {
   @Operation(summary = "查询资源查看权限控制状态")
   @GetMapping("/vpc/status")
   public Result<Boolean> vpcStatus() {
-    return Result.buildSucc(
+    return Result.success(
             userResourceService
                     .getViewPermissionControlStatus());
   }
@@ -114,7 +114,7 @@ public class ResourceController {
     userResourceService
             .changeResourceViewControlStatus();
 
-    return Result.buildSucc(null);
+    return Result.success(null);
   }
 
   /**
@@ -129,7 +129,7 @@ public class ResourceController {
           @RequestBody MByUDataQueryDTO queryDTO) {
 
     try {
-      return Result.buildSucc(
+      return Result.success(
               userResourceService
                       .getManagerByUserDataList(
                               queryDTO));
@@ -150,7 +150,7 @@ public class ResourceController {
           @RequestBody MByRDataQueryDTO queryDTO) {
 
     try {
-      return Result.buildSucc(
+      return Result.success(
               userResourceService
                       .getManagerByResourceDataList(
                               queryDTO));
@@ -217,7 +217,7 @@ public class ResourceController {
               .assignResourcePermission(
                       assignDTO);
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -239,7 +239,7 @@ public class ResourceController {
               .assignResourcePermission(
                       assignDTO);
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -261,7 +261,7 @@ public class ResourceController {
               .batchAssignResourcePermission(
                       assignDTO);
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -284,7 +284,7 @@ public class ResourceController {
                       .getControlLevel(
                               queryDTO);
 
-      return Result.buildSucc(
+      return Result.success(
               controlLevel.getType());
     } catch (YakSecurityException exception) {
       return Result.fail(exception);

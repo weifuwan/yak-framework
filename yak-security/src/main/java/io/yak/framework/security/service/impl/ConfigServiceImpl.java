@@ -104,7 +104,7 @@ public class ConfigServiceImpl implements ConfigService {
       throw new IllegalStateException("新增配置失败");
     }
 
-    return Result.buildSucc(configPO.getId());
+    return Result.success(configPO.getId());
   }
 
   /**
@@ -585,7 +585,7 @@ public class ConfigServiceImpl implements ConfigService {
               "配置名称不能为空");
     }
 
-    return Result.buildSucc(null);
+    return Result.success(null);
   }
 
   /**
@@ -610,7 +610,7 @@ public class ConfigServiceImpl implements ConfigService {
               "配置状态只能是正常或禁用");
     }
 
-    return Result.buildSucc(null);
+    return Result.success(null);
   }
 
   /**

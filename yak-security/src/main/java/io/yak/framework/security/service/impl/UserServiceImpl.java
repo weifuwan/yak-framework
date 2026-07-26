@@ -412,7 +412,7 @@ public class UserServiceImpl implements UserService {
      * 导致传入有效 ID 时直接返回空列表。
      */
     if (CollectionUtils.isEmpty(userIds)) {
-      return Result.buildSucc(
+      return Result.success(
               new ArrayList<>());
     }
 
@@ -423,7 +423,7 @@ public class UserServiceImpl implements UserService {
                     .collect(Collectors.toList());
 
     if (distinctUserIds.isEmpty()) {
-      return Result.buildSucc(
+      return Result.success(
               new ArrayList<>());
     }
 
@@ -465,7 +465,7 @@ public class UserServiceImpl implements UserService {
                       Collections.emptyList()));
     }
 
-    return Result.buildSucc(userVOList);
+    return Result.success(userVOList);
   }
 
   /**
@@ -1149,7 +1149,7 @@ public class UserServiceImpl implements UserService {
               "用户密码不能为空");
     }
 
-    return Result.buildSucc(null);
+    return Result.success(null);
   }
 
   /**

@@ -63,7 +63,7 @@ public class LoginController {
                       request,
                       response);
 
-      return Result.buildSucc(currentUser);
+      return Result.success(currentUser);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }

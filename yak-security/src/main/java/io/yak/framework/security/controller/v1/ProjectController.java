@@ -64,7 +64,7 @@ public class ProjectController {
           @PathVariable("id") Long projectId) {
 
     try {
-      return Result.buildSucc(
+      return Result.success(
               projectService
                       .getProjectDetailByProjectId(
                               projectId));
@@ -84,7 +84,7 @@ public class ProjectController {
   public Result<Boolean> checkExist(
           @PathVariable("id") Long projectId) {
 
-    return Result.buildSucc(
+    return Result.success(
             projectService.checkProjectExist(
                     projectId));
   }
@@ -107,7 +107,7 @@ public class ProjectController {
               projectId,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -132,7 +132,7 @@ public class ProjectController {
               projectSaveDTO,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -153,7 +153,7 @@ public class ProjectController {
                   ProjectSaveDTO projectSaveDTO) {
 
     try {
-      return Result.buildSucc(
+      return Result.success(
               projectService.createProject(
                       projectSaveDTO,
                       HttpRequestUtil.getOperator(
@@ -174,7 +174,7 @@ public class ProjectController {
   public Result<ProjectDeleteCheckVO> deleteCheck(
           @PathVariable("id") Long projectId) {
 
-    return Result.buildSucc(
+    return Result.success(
             projectService.checkBeforeDelete(
                     projectId));
   }
@@ -197,7 +197,7 @@ public class ProjectController {
               projectId,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -229,7 +229,7 @@ public class ProjectController {
   @Operation(summary = "查询全部项目简要信息")
   @GetMapping("/list")
   public Result<List<ProjectBriefVO>> list() {
-    return Result.buildSucc(
+    return Result.success(
             projectService.getProjectBriefList());
   }
 
@@ -254,7 +254,7 @@ public class ProjectController {
               ownerId,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -281,7 +281,7 @@ public class ProjectController {
               ownerId,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -308,7 +308,7 @@ public class ProjectController {
               userId,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -335,7 +335,7 @@ public class ProjectController {
               userId,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }

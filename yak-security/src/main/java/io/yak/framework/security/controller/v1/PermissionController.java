@@ -49,7 +49,7 @@ public class PermissionController {
   @Operation(summary = "查询完整权限树")
   @GetMapping("/tree")
   public Result<PermissionTreeVO> tree() {
-    return Result.buildSucc(
+    return Result.success(
             permissionService
                     .buildPermissionTree());
   }
@@ -69,7 +69,7 @@ public class PermissionController {
     permissionService.savePermission(
             permissionDTOList);
 
-    return Result.buildSucc(null);
+    return Result.success(null);
   }
 
   /** 删除权限及其角色关联。 */
@@ -78,6 +78,6 @@ public class PermissionController {
   public Result<Void> deletePermission(
           @PathVariable Long permissionId) {
     permissionService.deletePermissionById(permissionId);
-    return Result.buildSucc(null);
+    return Result.success(null);
   }
 }

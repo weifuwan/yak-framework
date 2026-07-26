@@ -61,7 +61,7 @@ public class RoleController {
   public Result<RoleVO> detail(
           @PathVariable("id") Long roleId) {
 
-    return Result.buildSucc(
+    return Result.success(
             roleService.getRoleDetailByRoleId(
                     roleId));
   }
@@ -84,7 +84,7 @@ public class RoleController {
               roleSaveDTO,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -108,7 +108,7 @@ public class RoleController {
               roleSaveDTO,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -127,7 +127,7 @@ public class RoleController {
   public Result<RoleDeleteCheckVO> check(
           @PathVariable("id") Long roleId) {
 
-    return Result.buildSucc(
+    return Result.success(
             roleService.checkBeforeDelete(
                     roleId));
   }
@@ -153,7 +153,7 @@ public class RoleController {
               userId,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -177,7 +177,7 @@ public class RoleController {
               roleId,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -218,7 +218,7 @@ public class RoleController {
               assignDTO,
               HttpRequestUtil.getOperator(request));
 
-      return Result.buildSucc(null);
+      return Result.success(null);
     } catch (YakSecurityException exception) {
       return Result.fail(exception);
     }
@@ -235,7 +235,7 @@ public class RoleController {
   public Result<List<AssignInfoVO>> assignList(
           @PathVariable Long roleId) {
 
-    return Result.buildSucc(
+    return Result.success(
             roleService.getAssignInfoByRoleId(
                     roleId));
   }
@@ -252,7 +252,7 @@ public class RoleController {
           @PathVariable(required = false)
                   String roleName) {
 
-    return Result.buildSucc(
+    return Result.success(
             roleService
                     .getRoleBriefListByRoleName(
                             roleName));

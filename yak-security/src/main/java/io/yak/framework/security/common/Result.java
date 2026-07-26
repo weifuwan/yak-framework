@@ -63,17 +63,6 @@ public class Result<T> extends BaseResult {
   }
 
   /**
-   * 判断请求是否成功。
-   *
-   * @return 成功返回 {@code true}
-   * @deprecated 方法名存在拼写错误，请使用 {@link #succeeded()}
-   */
-  @Deprecated
-  public boolean successed() {
-    return succeeded();
-  }
-
-  /**
    * 判断资源是否重复。
    *
    * @return 资源重复返回 {@code true}
@@ -229,19 +218,6 @@ public class Result<T> extends BaseResult {
       // 将完整异常消息作为通用失败信息返回。
       return fail(exceptionMessage);
     }
-  }
-
-  /**
-   * 构建成功结果，并携带业务数据。
-   *
-   * @param data 业务数据
-   * @param <T>  返回数据类型
-   * @return 成功结果
-   * @deprecated 请使用 {@link #success(Object)}
-   */
-  @Deprecated
-  public static <T> Result<T> buildSucc(T data) {
-    return success(data);
   }
 
   /**
