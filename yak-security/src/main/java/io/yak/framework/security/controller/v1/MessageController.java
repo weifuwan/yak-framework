@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.Result;
 import io.yak.framework.security.common.vo.message.MessageVO;
-import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.MessageService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,18 +57,15 @@ public class MessageController {
                   Boolean readTag,
           HttpServletRequest request) {
 
-    try {
-      String username =
-              HttpRequestUtil.getOperator(request);
+    String username =
+            HttpRequestUtil.getOperator(request);
 
-      return Result.success(
-              messageService
-                      .getMessageListByUsernameAndReadTag(
-                              username,
-                              readTag));
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(
+            messageService
+                    .getMessageListByUsernameAndReadTag(
+                            username,
+                            readTag));
+
   }
 
   /**

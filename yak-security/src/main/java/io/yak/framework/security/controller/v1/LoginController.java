@@ -6,11 +6,11 @@ import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.Result;
 import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
-import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.LoginService;
 import io.yak.framework.security.web.PublicEndpoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,19 +54,16 @@ public class LoginController {
   public Result<UserBriefVO> login(
           HttpServletRequest request,
           HttpServletResponse response,
-          @RequestBody AccountLoginDTO loginDTO) {
+          @Valid @RequestBody AccountLoginDTO loginDTO) {
 
-    try {
-      UserBriefVO currentUser =
-              loginService.verifyLogin(
-                      loginDTO,
-                      request,
-                      response);
+    UserBriefVO currentUser =
+            loginService.verifyLogin(
+                    loginDTO,
+                    request,
+                    response);
 
-      return Result.success(currentUser);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(currentUser);
+
   }
 
   /**

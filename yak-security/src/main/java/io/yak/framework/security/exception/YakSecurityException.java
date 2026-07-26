@@ -10,11 +10,14 @@ public class YakSecurityException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
+    private final CodeMsg codeMsg;
+
     /**
      * 创建一个不包含错误信息的异常。
      */
     public YakSecurityException() {
         super();
+        this.codeMsg = null;
     }
 
     /**
@@ -30,6 +33,7 @@ public class YakSecurityException extends RuntimeException {
      */
     public YakSecurityException(CodeMsg codeMsg) {
         super(codeMsg.getCode() + "-" + codeMsg.getMessage());
+        this.codeMsg = codeMsg;
     }
 
     /**
@@ -44,6 +48,7 @@ public class YakSecurityException extends RuntimeException {
         super(
                 codeMsg.getCode() + "-" + codeMsg.getMessage(),
                 cause);
+        this.codeMsg = codeMsg;
     }
 
     /**
@@ -53,6 +58,7 @@ public class YakSecurityException extends RuntimeException {
      */
     public YakSecurityException(String message) {
         super(message);
+        this.codeMsg = null;
     }
 
     /**
@@ -65,6 +71,7 @@ public class YakSecurityException extends RuntimeException {
             String message,
             Throwable cause) {
         super(message, cause);
+        this.codeMsg = null;
     }
 
     /**
@@ -74,5 +81,15 @@ public class YakSecurityException extends RuntimeException {
      */
     public YakSecurityException(Throwable cause) {
         super(cause);
+        this.codeMsg = null;
+    }
+
+    /**
+     * 获取结构化错误码定义。
+     *
+     * @return 使用 {@link CodeMsg} 构造时返回对应定义，否则返回 {@code null}
+     */
+    public CodeMsg getCodeMsg() {
+        return codeMsg;
     }
 }

@@ -20,7 +20,6 @@ import io.yak.framework.security.common.vo.resource.MByRVO;
 import io.yak.framework.security.common.vo.resource.MByUDataVO;
 import io.yak.framework.security.common.vo.resource.MByUVO;
 import io.yak.framework.security.common.vo.resource.ResourceTypeVO;
-import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.ResourceTypeService;
 import io.yak.framework.security.service.UserResourceService;
 
@@ -128,14 +127,11 @@ public class ResourceController {
   public Result<List<MByUDataVO>> mbuList(
           @RequestBody MByUDataQueryDTO queryDTO) {
 
-    try {
-      return Result.success(
-              userResourceService
-                      .getManagerByUserDataList(
-                              queryDTO));
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(
+            userResourceService
+                    .getManagerByUserDataList(
+                            queryDTO));
+
   }
 
   /**
@@ -149,14 +145,11 @@ public class ResourceController {
   public Result<List<MByRDataVO>> mbrList(
           @RequestBody MByRDataQueryDTO queryDTO) {
 
-    try {
-      return Result.success(
-              userResourceService
-                      .getManagerByResourceDataList(
-                              queryDTO));
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(
+            userResourceService
+                    .getManagerByResourceDataList(
+                            queryDTO));
+
   }
 
   /**
@@ -170,16 +163,13 @@ public class ResourceController {
   public PagingResult<MByRVO> mbrPage(
           @RequestBody MByRQueryDTO queryDTO) {
 
-    try {
-      PagingData<MByRVO> pagingData =
-              userResourceService
-                      .getManageByResourcePage(
-                              queryDTO);
+    PagingData<MByRVO> pagingData =
+            userResourceService
+                    .getManageByResourcePage(
+                            queryDTO);
 
-      return PagingResult.success(pagingData);
-    } catch (YakSecurityException exception) {
-      return PagingResult.fail(exception);
-    }
+    return PagingResult.success(pagingData);
+
   }
 
   /**
@@ -212,15 +202,12 @@ public class ResourceController {
   public Result<Void> mbrAssign(
           @RequestBody AssignToManyUserDTO assignDTO) {
 
-    try {
-      userResourceService
-              .assignResourcePermission(
-                      assignDTO);
+    userResourceService
+            .assignResourcePermission(
+                    assignDTO);
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -234,15 +221,12 @@ public class ResourceController {
   public Result<Void> mbuAssign(
           @RequestBody AssignToOneUserDTO assignDTO) {
 
-    try {
-      userResourceService
-              .assignResourcePermission(
-                      assignDTO);
+    userResourceService
+            .assignResourcePermission(
+                    assignDTO);
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -256,15 +240,12 @@ public class ResourceController {
   public Result<Void> batchAssign(
           @RequestBody BatchAssignDTO assignDTO) {
 
-    try {
-      userResourceService
-              .batchAssignResourcePermission(
-                      assignDTO);
+    userResourceService
+            .batchAssignResourcePermission(
+                    assignDTO);
 
-      return Result.success(null);
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(null);
+
   }
 
   /**
@@ -278,16 +259,13 @@ public class ResourceController {
   public Result<Integer> getControlLevel(
           @RequestBody ControlLevelQueryDTO queryDTO) {
 
-    try {
-      ControlLevelCode controlLevel =
-              userResourceService
-                      .getControlLevel(
-                              queryDTO);
+    ControlLevelCode controlLevel =
+            userResourceService
+                    .getControlLevel(
+                            queryDTO);
 
-      return Result.success(
-              controlLevel.getType());
-    } catch (YakSecurityException exception) {
-      return Result.fail(exception);
-    }
+    return Result.success(
+            controlLevel.getType());
+
   }
 }
