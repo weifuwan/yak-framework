@@ -80,6 +80,8 @@ Starter 默认生成 OpenAPI 3 接口文档。应用启动后可访问 `/swagger
 或通过 `/v3/api-docs` 获取 OpenAPI JSON。文档端点默认不要求登录；如果宿主应用声明自己的
 `OpenAPI` Bean，Starter 会保留宿主应用提供的标题、版本、服务器等自定义信息。将
 `yak.security.web-enabled` 设置为 `false` 时，安全模块的接口和 OpenAPI 配置会一并关闭。
+嵌入式 Web 容器启动后，日志会打印完整的 Swagger UI 地址，并自动包含实际端口、应用上下文
+路径以及 `springdoc.swagger-ui.path` 的自定义值；禁用 Swagger UI 时不会打印该地址。
 
 ## 统一登录认证
 

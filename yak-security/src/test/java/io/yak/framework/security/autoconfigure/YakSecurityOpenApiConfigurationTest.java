@@ -20,6 +20,7 @@ class YakSecurityOpenApiConfigurationTest {
   void providesDefaultOpenApiMetadata() {
     contextRunner.run(context -> {
       assertThat(context).hasSingleBean(OpenAPI.class);
+      assertThat(context).hasSingleBean(SwaggerUiStartupLogger.class);
       OpenAPI openAPI = context.getBean(OpenAPI.class);
       assertThat(openAPI.getInfo().getTitle()).isEqualTo("Yak Security API");
       assertThat(openAPI.getInfo().getLicense().getName()).isEqualTo("Apache License 2.0");
@@ -42,6 +43,13 @@ class YakSecurityOpenApiConfigurationTest {
     contextRunner
             .withPropertyValues("yak.security.web-enabled=false")
             .run(context -> assertThat(context).doesNotHaveBean(OpenAPI.class));
+  }
+
+  @Test
+  void doesNotRegisterStartupLoggerWhenSwaggerUiIsDisabled() {
+    contextRunner
+            .withPropertyValues("springdoc.swagger-ui.enabled=false")
+            .run(context -> assertThat(context).doesNotHaveBean(SwaggerUiStartupLogger.class));
   }
 
   @Configuration(proxyBeanMethods = false)
