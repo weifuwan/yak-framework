@@ -4,12 +4,15 @@
 
 ## 启用与配置
 
-Spring Boot 2 会通过 `META-INF/spring.factories` 加载自动配置。Mapper XML 位于 `classpath*:mapper/security/*.xml`；数据库可参考 `yak-security-schema.sql` 建表。
+Spring Boot 通过 `AutoConfiguration.imports` 加载自动配置。Mapper XML 位于 `classpath*:mapper/security/*.xml`；数据库可参考 `yak-security-schema.sql` 建表。数据库、MVC 和审计能力均可单独关闭；应用没有配置 `DataSource` 和 MyBatis `SqlSessionFactory` 时，只注册不依赖数据库的密码、令牌和权限服务。
 
 ```yaml
 yak:
   security:
     enabled: true
+    database-enabled: true
+    web-enabled: true
+    audit-enabled: true
     token-header: X-Yak-Token
     token-ttl-seconds: 7200
     password-iterations: 120000
