@@ -5,9 +5,7 @@ import io.yak.framework.security.common.dto.resource.ResourceDTO;
 import io.yak.framework.security.extend.ResourceExtend;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.stereotype.Component;
 
-@Component(value = "yakSecurityDefaultResourceExtendImpl")
 public class DefaultResourceExtendImpl implements ResourceExtend {
   @Override
   public PagingData<ResourceDTO>

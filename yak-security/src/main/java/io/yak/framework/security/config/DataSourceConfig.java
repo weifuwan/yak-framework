@@ -11,6 +11,7 @@ import io.yak.framework.security.properties.YakSecurityProperties;
 import javax.sql.DataSource;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(value = "yakSecurityDataSourceConfig")
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
  */
 public class DataSourceConfig {
   @Bean
+  @ConditionalOnMissingBean
   public GlobalConfig globalConfig() {
     GlobalConfig globalConfig = new GlobalConfig();
     globalConfig.setBanner(false);
@@ -31,6 +33,7 @@ public class DataSourceConfig {
   }
 
   @Bean(value = {"yakSecurityDataSource"})
+  @ConditionalOnMissingBean(DataSource.class)
   public DataSource dataSource(YakSecurityProperties proper) {
     HikariDataSource dataSource = new HikariDataSource();
     dataSource.setUsername(proper.getUsername());
@@ -41,6 +44,7 @@ public class DataSourceConfig {
   }
 
   @Bean(value = {"yakSecurityMybatisPlusInterceptor"})
+  @ConditionalOnMissingBean
   public MybatisPlusInterceptor mybatisPlusInterceptor() {
     MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
     interceptor.addInnerInterceptor(
