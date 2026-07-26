@@ -7,8 +7,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class YakTaskPO
-extends BasePO
-implements Serializable {
+        extends BasePO
+        implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private String taskCode;
@@ -31,69 +31,13 @@ implements Serializable {
         return this.id;
     }
 
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public String getTaskName() {
-        return this.taskName;
-    }
-
-    public String getTaskDesc() {
-        return this.taskDesc;
-    }
-
-    public String getCron() {
-        return this.cron;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public String getParams() {
-        return this.params;
-    }
-
-    public Integer getRetryTimes() {
-        return this.retryTimes;
-    }
-
-    public Timestamp getLastFireTime() {
-        return this.lastFireTime;
-    }
-
-    public Long getTimeout() {
-        return this.timeout;
-    }
-
-    public Integer getStatus() {
-        return this.status;
-    }
-
-    public String getSubTaskCodes() {
-        return this.subTaskCodes;
-    }
-
-    public String getConsensual() {
-        return this.consensual;
-    }
-
-    public String getTaskWorkerStr() {
-        return this.taskWorkerStr;
-    }
-
-    public String getAppName() {
-        return this.appName;
-    }
-
-    public String getOwner() {
-        return this.owner;
-    }
-
     public YakTaskPO setId(Long id) {
         this.id = id;
         return this;
+    }
+
+    public String getTaskCode() {
+        return this.taskCode;
     }
 
     public YakTaskPO setTaskCode(String taskCode) {
@@ -101,9 +45,17 @@ implements Serializable {
         return this;
     }
 
+    public String getTaskName() {
+        return this.taskName;
+    }
+
     public YakTaskPO setTaskName(String taskName) {
         this.taskName = taskName;
         return this;
+    }
+
+    public String getTaskDesc() {
+        return this.taskDesc;
     }
 
     public YakTaskPO setTaskDesc(String taskDesc) {
@@ -111,9 +63,17 @@ implements Serializable {
         return this;
     }
 
+    public String getCron() {
+        return this.cron;
+    }
+
     public YakTaskPO setCron(String cron) {
         this.cron = cron;
         return this;
+    }
+
+    public String getClassName() {
+        return this.className;
     }
 
     public YakTaskPO setClassName(String className) {
@@ -121,9 +81,17 @@ implements Serializable {
         return this;
     }
 
+    public String getParams() {
+        return this.params;
+    }
+
     public YakTaskPO setParams(String params) {
         this.params = params;
         return this;
+    }
+
+    public Integer getRetryTimes() {
+        return this.retryTimes;
     }
 
     public YakTaskPO setRetryTimes(Integer retryTimes) {
@@ -131,9 +99,17 @@ implements Serializable {
         return this;
     }
 
+    public Timestamp getLastFireTime() {
+        return this.lastFireTime;
+    }
+
     public YakTaskPO setLastFireTime(Timestamp lastFireTime) {
         this.lastFireTime = lastFireTime;
         return this;
+    }
+
+    public Long getTimeout() {
+        return this.timeout;
     }
 
     public YakTaskPO setTimeout(Long timeout) {
@@ -141,9 +117,17 @@ implements Serializable {
         return this;
     }
 
+    public Integer getStatus() {
+        return this.status;
+    }
+
     public YakTaskPO setStatus(Integer status) {
         this.status = status;
         return this;
+    }
+
+    public String getSubTaskCodes() {
+        return this.subTaskCodes;
     }
 
     public YakTaskPO setSubTaskCodes(String subTaskCodes) {
@@ -151,9 +135,17 @@ implements Serializable {
         return this;
     }
 
+    public String getConsensual() {
+        return this.consensual;
+    }
+
     public YakTaskPO setConsensual(String consensual) {
         this.consensual = consensual;
         return this;
+    }
+
+    public String getTaskWorkerStr() {
+        return this.taskWorkerStr;
     }
 
     public YakTaskPO setTaskWorkerStr(String taskWorkerStr) {
@@ -161,9 +153,17 @@ implements Serializable {
         return this;
     }
 
+    public String getAppName() {
+        return this.appName;
+    }
+
     public YakTaskPO setAppName(String appName) {
         this.appName = appName;
         return this;
+    }
+
+    public String getOwner() {
+        return this.owner;
     }
 
     public YakTaskPO setOwner(String owner) {
@@ -184,28 +184,28 @@ implements Serializable {
         if (!(o instanceof YakTaskPO)) {
             return false;
         }
-        YakTaskPO other = (YakTaskPO)o;
+        YakTaskPO other = (YakTaskPO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Long this$id = this.getId();
         Long other$id = other.getId();
-        if (this$id == null ? other$id != null : !((Object)this$id).equals(other$id)) {
+        if (this$id == null ? other$id != null : !((Object) this$id).equals(other$id)) {
             return false;
         }
         Integer this$retryTimes = this.getRetryTimes();
         Integer other$retryTimes = other.getRetryTimes();
-        if (this$retryTimes == null ? other$retryTimes != null : !((Object)this$retryTimes).equals(other$retryTimes)) {
+        if (this$retryTimes == null ? other$retryTimes != null : !((Object) this$retryTimes).equals(other$retryTimes)) {
             return false;
         }
         Long this$timeout = this.getTimeout();
         Long other$timeout = other.getTimeout();
-        if (this$timeout == null ? other$timeout != null : !((Object)this$timeout).equals(other$timeout)) {
+        if (this$timeout == null ? other$timeout != null : !((Object) this$timeout).equals(other$timeout)) {
             return false;
         }
         Integer this$status = this.getStatus();
         Integer other$status = other.getStatus();
-        if (this$status == null ? other$status != null : !((Object)this$status).equals(other$status)) {
+        if (this$status == null ? other$status != null : !((Object) this$status).equals(other$status)) {
             return false;
         }
         String this$taskCode = this.getTaskCode();
@@ -240,7 +240,7 @@ implements Serializable {
         }
         Timestamp this$lastFireTime = this.getLastFireTime();
         Timestamp other$lastFireTime = other.getLastFireTime();
-        if (this$lastFireTime == null ? other$lastFireTime != null : !((Object)this$lastFireTime).equals(other$lastFireTime)) {
+        if (this$lastFireTime == null ? other$lastFireTime != null : !((Object) this$lastFireTime).equals(other$lastFireTime)) {
             return false;
         }
         String this$subTaskCodes = this.getSubTaskCodes();
@@ -278,13 +278,13 @@ implements Serializable {
         int PRIME = 59;
         int result = 1;
         Long $id = this.getId();
-        result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
+        result = result * 59 + ($id == null ? 43 : ((Object) $id).hashCode());
         Integer $retryTimes = this.getRetryTimes();
-        result = result * 59 + ($retryTimes == null ? 43 : ((Object)$retryTimes).hashCode());
+        result = result * 59 + ($retryTimes == null ? 43 : ((Object) $retryTimes).hashCode());
         Long $timeout = this.getTimeout();
-        result = result * 59 + ($timeout == null ? 43 : ((Object)$timeout).hashCode());
+        result = result * 59 + ($timeout == null ? 43 : ((Object) $timeout).hashCode());
         Integer $status = this.getStatus();
-        result = result * 59 + ($status == null ? 43 : ((Object)$status).hashCode());
+        result = result * 59 + ($status == null ? 43 : ((Object) $status).hashCode());
         String $taskCode = this.getTaskCode();
         result = result * 59 + ($taskCode == null ? 43 : $taskCode.hashCode());
         String $taskName = this.getTaskName();
@@ -298,7 +298,7 @@ implements Serializable {
         String $params = this.getParams();
         result = result * 59 + ($params == null ? 43 : $params.hashCode());
         Timestamp $lastFireTime = this.getLastFireTime();
-        result = result * 59 + ($lastFireTime == null ? 43 : ((Object)$lastFireTime).hashCode());
+        result = result * 59 + ($lastFireTime == null ? 43 : ((Object) $lastFireTime).hashCode());
         String $subTaskCodes = this.getSubTaskCodes();
         result = result * 59 + ($subTaskCodes == null ? 43 : $subTaskCodes.hashCode());
         String $consensual = this.getConsensual();

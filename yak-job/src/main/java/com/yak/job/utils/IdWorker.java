@@ -9,8 +9,8 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class IdWorker {
-    private static IdentifierGenerator IDENTIFIER_GENERATOR = new DefaultIdentifierGenerator();
     public static final DateTimeFormatter MILLISECOND = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+    private static IdentifierGenerator IDENTIFIER_GENERATOR = new DefaultIdentifierGenerator();
 
     public static long getId() {
         return IdWorker.getId(new Object());

@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.slf4j.Logger
  *  org.slf4j.LoggerFactory
@@ -21,6 +21,7 @@ import com.yak.job.mapper.YakTaskLockMapper;
 import com.yak.job.mapper.YakTaskMapper;
 import com.yak.job.mapper.YakWorkerMapper;
 import com.yak.job.utils.BeanUtil;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 public class BeatManagerImpl
-implements BeatManager {
+        implements BeatManager {
     private static final Logger logger = LoggerFactory.getLogger(BeatManagerImpl.class);
     private JobManager jobManager;
     private YakWorkerMapper yakWorkerMapper;
@@ -90,7 +91,7 @@ implements BeatManager {
                     yakTaskPO.setTaskWorkerStr(BeanUtil.convertToJson(taskWorkers));
                     this.yakTaskMapper.updateTaskWorkStrByCode(yakTaskPO);
                 } catch (Exception e) {
-                    logger.info("class=BeatManagerImpl||method=cleanTask||msg=clean task worker error!", (Throwable)e);
+                    logger.info("class=BeatManagerImpl||method=cleanTask||msg=clean task worker error!", (Throwable) e);
                 }
             }
         }

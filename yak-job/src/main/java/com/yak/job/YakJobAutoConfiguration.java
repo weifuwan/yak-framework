@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.springframework.boot.autoconfigure.AutoConfigureAfter
  *  org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -32,17 +32,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-@ConditionalOnClass(value={Scheduler.class, PlatformTransactionManager.class})
-@EnableConfigurationProperties(value={YakJobProperties.class})
-@AutoConfigureAfter(value={DataSourceAutoConfiguration.class})
-@ComponentScan(basePackages={"com.yak.job"})
+@ConditionalOnClass(value = {Scheduler.class, PlatformTransactionManager.class})
+@EnableConfigurationProperties(value = {YakJobProperties.class})
+@AutoConfigureAfter(value = {DataSourceAutoConfiguration.class})
+@ComponentScan(basePackages = {"com.yak.job"})
 public class YakJobAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public Scheduler quartzScheduler(ApplicationContext applicationContext) {
-        BeatMonitor beatMonitor = (BeatMonitor)applicationContext.getBean(BeatMonitor.class);
-        TaskMonitor taskMonitor = (TaskMonitor)applicationContext.getBean(TaskMonitor.class);
-        MisfireMonitor misfireMonitor = (MisfireMonitor)applicationContext.getBean(MisfireMonitor.class);
+        BeatMonitor beatMonitor = (BeatMonitor) applicationContext.getBean(BeatMonitor.class);
+        TaskMonitor taskMonitor = (TaskMonitor) applicationContext.getBean(TaskMonitor.class);
+        MisfireMonitor misfireMonitor = (MisfireMonitor) applicationContext.getBean(MisfireMonitor.class);
         SimpleScheduler simpleScheduler = new SimpleScheduler(beatMonitor, taskMonitor, misfireMonitor);
         simpleScheduler.startup();
         return simpleScheduler;

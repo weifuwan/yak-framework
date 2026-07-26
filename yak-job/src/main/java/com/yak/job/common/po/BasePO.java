@@ -13,12 +13,12 @@ public class BasePO {
         return this.createTime;
     }
 
-    public Timestamp getUpdateTime() {
-        return this.updateTime;
-    }
-
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    public Timestamp getUpdateTime() {
+        return this.updateTime;
     }
 
     public void setUpdateTime(Timestamp updateTime) {
@@ -32,18 +32,18 @@ public class BasePO {
         if (!(o instanceof BasePO)) {
             return false;
         }
-        BasePO other = (BasePO)o;
+        BasePO other = (BasePO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Timestamp this$createTime = this.getCreateTime();
         Timestamp other$createTime = other.getCreateTime();
-        if (this$createTime == null ? other$createTime != null : !((Object)this$createTime).equals(other$createTime)) {
+        if (this$createTime == null ? other$createTime != null : !((Object) this$createTime).equals(other$createTime)) {
             return false;
         }
         Timestamp this$updateTime = this.getUpdateTime();
         Timestamp other$updateTime = other.getUpdateTime();
-        return !(this$updateTime == null ? other$updateTime != null : !((Object)this$updateTime).equals(other$updateTime));
+        return !(this$updateTime == null ? other$updateTime != null : !((Object) this$updateTime).equals(other$updateTime));
     }
 
     protected boolean canEqual(Object other) {
@@ -54,9 +54,9 @@ public class BasePO {
         int PRIME = 59;
         int result = 1;
         Timestamp $createTime = this.getCreateTime();
-        result = result * 59 + ($createTime == null ? 43 : ((Object)$createTime).hashCode());
+        result = result * 59 + ($createTime == null ? 43 : ((Object) $createTime).hashCode());
         Timestamp $updateTime = this.getUpdateTime();
-        result = result * 59 + ($updateTime == null ? 43 : ((Object)$updateTime).hashCode());
+        result = result * 59 + ($updateTime == null ? 43 : ((Object) $updateTime).hashCode());
         return result;
     }
 

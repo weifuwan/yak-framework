@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.slf4j.Logger
  *  org.slf4j.LoggerFactory
@@ -13,22 +13,24 @@ import com.yak.job.common.domain.YakTask;
 import com.yak.job.common.enums.JobStatusEnum;
 import com.yak.job.core.WorkerSingleton;
 import com.yak.job.utils.IdWorker;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SimpleJobFactory
-implements JobFactory {
+        implements JobFactory {
     private static final Logger logger = LoggerFactory.getLogger(SimpleJobFactory.class);
     private Map<String, Job> jobMap = new HashMap<String, Job>();
 
     @Override
     public void addJob(String className, Job job) {
         this.jobMap.put(className, job);
-        logger.info("class=SimpleJobFactory||method=addJob||className={}||jobMap={}", (Object)className, (Object)this.jobMap.toString());
+        logger.info("class=SimpleJobFactory||method=addJob||className={}||jobMap={}", (Object) className, (Object) this.jobMap.toString());
     }
 
     @Override

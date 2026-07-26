@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.slf4j.Logger
  *  org.slf4j.LoggerFactory
@@ -13,6 +13,7 @@ package com.yak.job.core;
 
 import com.yak.job.common.domain.YakWorker;
 import com.yak.job.utils.ThreadUtil;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
@@ -53,6 +54,20 @@ public class WorkerSingleton {
     private static class Singleton {
         static WorkerSingleton singleton = new WorkerSingleton();
 
+        static {
+            YakWorker yakWorker = new YakWorker();
+            InetAddress inetAddress = null;
+            try {
+                inetAddress = InetAddress.getLocalHost();
+            } catch (UnknownHostException e) {
+                logger.error("class=SimpleWorkerFactory||method=||url=||msg=", (Throwable) e);
+            }
+            yakWorker.setWorkerCode(inetAddress == null ? "INVALID_CODE" : inetAddress.getHostAddress() + "_" + inetAddress.getHostName());
+            yakWorker.setWorkerName(inetAddress == null ? "INVALID_NAME" : inetAddress.getHostName());
+            yakWorker.setIp(inetAddress.getHostAddress());
+            singleton.setYakWorker(yakWorker);
+        }
+
         private Singleton() {
         }
 
@@ -73,35 +88,21 @@ public class WorkerSingleton {
             long idle = ticks[CentralProcessor.TickType.IDLE.getIndex()] - prevTicks[CentralProcessor.TickType.IDLE.getIndex()];
             long totalCpu = user + nice + csys + idle + ioWait + irq + softIrq + steal;
             yakWorker.setCpu(processor.getLogicalProcessorCount());
-            yakWorker.setCpuUsed(totalCpu == 0L ? null : Double.valueOf(1.0 - (double)idle * 1.0 / (double)totalCpu));
+            yakWorker.setCpuUsed(totalCpu == 0L ? null : Double.valueOf(1.0 - (double) idle * 1.0 / (double) totalCpu));
             GlobalMemory memory = systemInfo.getHardware().getMemory();
-            Double totalMemory = (double)memory.getTotal() * 1.0 / 1024.0 / 1024.0;
+            Double totalMemory = (double) memory.getTotal() * 1.0 / 1024.0 / 1024.0;
             DecimalFormat df = new DecimalFormat("#.000");
             yakWorker.setMemory(Double.valueOf(df.format(totalMemory)));
-            Double memoryUsed = (double)(memory.getTotal() - memory.getAvailable()) * 1.0 / (double)memory.getTotal();
+            Double memoryUsed = (double) (memory.getTotal() - memory.getAvailable()) * 1.0 / (double) memory.getTotal();
             yakWorker.setMemoryUsed(Double.valueOf(df.format(memoryUsed)));
             Runtime runtime = Runtime.getRuntime();
-            Double jvmMemory = (double)runtime.totalMemory() * 1.0 / 1024.0 / 1024.0;
+            Double jvmMemory = (double) runtime.totalMemory() * 1.0 / 1024.0 / 1024.0;
             yakWorker.setJvmMemory(Double.valueOf(df.format(jvmMemory)));
-            Double jvmMemoryUsed = (double)(runtime.totalMemory() - runtime.freeMemory()) * 1.0 / (double)runtime.totalMemory();
+            Double jvmMemoryUsed = (double) (runtime.totalMemory() - runtime.freeMemory()) * 1.0 / (double) runtime.totalMemory();
             yakWorker.setJvmMemoryUsed(Double.valueOf(df.format(jvmMemoryUsed)));
             yakWorker.setHeartbeat(new Timestamp(System.currentTimeMillis()));
             singleton.setYakWorker(yakWorker);
             return singleton;
-        }
-
-        static {
-            YakWorker yakWorker = new YakWorker();
-            InetAddress inetAddress = null;
-            try {
-                inetAddress = InetAddress.getLocalHost();
-            } catch (UnknownHostException e) {
-                logger.error("class=SimpleWorkerFactory||method=||url=||msg=", (Throwable)e);
-            }
-            yakWorker.setWorkerCode(inetAddress == null ? "INVALID_CODE" : inetAddress.getHostAddress() + "_" + inetAddress.getHostName());
-            yakWorker.setWorkerName(inetAddress == null ? "INVALID_NAME" : inetAddress.getHostName());
-            yakWorker.setIp(inetAddress.getHostAddress());
-            singleton.setYakWorker(yakWorker);
         }
     }
 }

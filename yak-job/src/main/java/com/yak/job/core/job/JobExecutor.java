@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.springframework.beans.factory.annotation.Autowired
  *  org.springframework.stereotype.Component
@@ -8,11 +8,13 @@
 package com.yak.job.core.job;
 
 import com.yak.job.YakJobProperties;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

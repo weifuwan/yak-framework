@@ -23,20 +23,20 @@ public class JobContext {
         return this.params;
     }
 
-    public List<String> getAllWorkerCodes() {
-        return this.allWorkerCodes;
-    }
-
-    public String getCurrentWorkerCode() {
-        return this.currentWorkerCode;
-    }
-
     public void setParams(String params) {
         this.params = params;
     }
 
+    public List<String> getAllWorkerCodes() {
+        return this.allWorkerCodes;
+    }
+
     public void setAllWorkerCodes(List<String> allWorkerCodes) {
         this.allWorkerCodes = allWorkerCodes;
+    }
+
+    public String getCurrentWorkerCode() {
+        return this.currentWorkerCode;
     }
 
     public void setCurrentWorkerCode(String currentWorkerCode) {
@@ -50,7 +50,7 @@ public class JobContext {
         if (!(o instanceof JobContext)) {
             return false;
         }
-        JobContext other = (JobContext)o;
+        JobContext other = (JobContext) o;
         if (!other.canEqual(this)) {
             return false;
         }
@@ -61,7 +61,7 @@ public class JobContext {
         }
         List<String> this$allWorkerCodes = this.getAllWorkerCodes();
         List<String> other$allWorkerCodes = other.getAllWorkerCodes();
-        if (this$allWorkerCodes == null ? other$allWorkerCodes != null : !((Object)this$allWorkerCodes).equals(other$allWorkerCodes)) {
+        if (this$allWorkerCodes == null ? other$allWorkerCodes != null : !((Object) this$allWorkerCodes).equals(other$allWorkerCodes)) {
             return false;
         }
         String this$currentWorkerCode = this.getCurrentWorkerCode();
@@ -79,7 +79,7 @@ public class JobContext {
         String $params = this.getParams();
         result = result * 59 + ($params == null ? 43 : $params.hashCode());
         List<String> $allWorkerCodes = this.getAllWorkerCodes();
-        result = result * 59 + ($allWorkerCodes == null ? 43 : ((Object)$allWorkerCodes).hashCode());
+        result = result * 59 + ($allWorkerCodes == null ? 43 : ((Object) $allWorkerCodes).hashCode());
         String $currentWorkerCode = this.getCurrentWorkerCode();
         result = result * 59 + ($currentWorkerCode == null ? 43 : $currentWorkerCode.hashCode());
         return result;

@@ -6,8 +6,8 @@ package com.yak.job.common.po;
 import java.io.Serializable;
 
 public class YakTaskLockPO
-extends BasePO
-implements Serializable {
+        extends BasePO
+        implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private String taskCode;
@@ -19,25 +19,13 @@ implements Serializable {
         return this.id;
     }
 
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
-    public Long getExpireTime() {
-        return this.expireTime;
-    }
-
-    public String getAppName() {
-        return this.appName;
-    }
-
     public YakTaskLockPO setId(Long id) {
         this.id = id;
         return this;
+    }
+
+    public String getTaskCode() {
+        return this.taskCode;
     }
 
     public YakTaskLockPO setTaskCode(String taskCode) {
@@ -45,14 +33,26 @@ implements Serializable {
         return this;
     }
 
+    public String getWorkerCode() {
+        return this.workerCode;
+    }
+
     public YakTaskLockPO setWorkerCode(String workerCode) {
         this.workerCode = workerCode;
         return this;
     }
 
+    public Long getExpireTime() {
+        return this.expireTime;
+    }
+
     public YakTaskLockPO setExpireTime(Long expireTime) {
         this.expireTime = expireTime;
         return this;
+    }
+
+    public String getAppName() {
+        return this.appName;
     }
 
     public YakTaskLockPO setAppName(String appName) {
@@ -73,18 +73,18 @@ implements Serializable {
         if (!(o instanceof YakTaskLockPO)) {
             return false;
         }
-        YakTaskLockPO other = (YakTaskLockPO)o;
+        YakTaskLockPO other = (YakTaskLockPO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Long this$id = this.getId();
         Long other$id = other.getId();
-        if (this$id == null ? other$id != null : !((Object)this$id).equals(other$id)) {
+        if (this$id == null ? other$id != null : !((Object) this$id).equals(other$id)) {
             return false;
         }
         Long this$expireTime = this.getExpireTime();
         Long other$expireTime = other.getExpireTime();
-        if (this$expireTime == null ? other$expireTime != null : !((Object)this$expireTime).equals(other$expireTime)) {
+        if (this$expireTime == null ? other$expireTime != null : !((Object) this$expireTime).equals(other$expireTime)) {
             return false;
         }
         String this$taskCode = this.getTaskCode();
@@ -112,9 +112,9 @@ implements Serializable {
         int PRIME = 59;
         int result = 1;
         Long $id = this.getId();
-        result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
+        result = result * 59 + ($id == null ? 43 : ((Object) $id).hashCode());
         Long $expireTime = this.getExpireTime();
-        result = result * 59 + ($expireTime == null ? 43 : ((Object)$expireTime).hashCode());
+        result = result * 59 + ($expireTime == null ? 43 : ((Object) $expireTime).hashCode());
         String $taskCode = this.getTaskCode();
         result = result * 59 + ($taskCode == null ? 43 : $taskCode.hashCode());
         String $workerCode = this.getWorkerCode();

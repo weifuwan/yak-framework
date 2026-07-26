@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.springframework.beans.factory.annotation.Autowired
  */
@@ -12,7 +12,7 @@ import com.yak.job.core.monitor.TaskMonitor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class SimpleScheduler
-implements Scheduler {
+        implements Scheduler {
     private BeatMonitor beatMonitor;
     private TaskMonitor taskMonitor;
     private MisfireMonitor misfireMonitor;

@@ -1,60 +1,61 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  io.swagger.annotations.ApiModelProperty
  */
 package com.yak.job.common.vo;
 
 import io.swagger.annotations.ApiModelProperty;
+
 import java.sql.Timestamp;
 
 public class YakTaskLockVO {
-    @ApiModelProperty(value="\u4efb\u52a1\u9501id")
+    @ApiModelProperty(value = "\u4efb\u52a1\u9501id")
     private Long id;
-    @ApiModelProperty(value="\u4efb\u52a1code")
+    @ApiModelProperty(value = "\u4efb\u52a1code")
     private String taskCode;
-    @ApiModelProperty(value="\u8c03\u5ea6\u5668")
+    @ApiModelProperty(value = "\u8c03\u5ea6\u5668")
     private String workerCode;
-    @ApiModelProperty(value="\u4efb\u52a1\u9501\u521b\u5efa\u65f6\u95f4")
+    @ApiModelProperty(value = "\u4efb\u52a1\u9501\u521b\u5efa\u65f6\u95f4")
     private Timestamp createTime;
-    @ApiModelProperty(value="\u4efb\u52a1\u9501\u66f4\u65b0\u65f6\u95f4")
+    @ApiModelProperty(value = "\u4efb\u52a1\u9501\u66f4\u65b0\u65f6\u95f4")
     private Timestamp updateTime;
 
     public Long getId() {
         return this.id;
     }
 
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
-    public Timestamp getCreateTime() {
-        return this.createTime;
-    }
-
-    public Timestamp getUpdateTime() {
-        return this.updateTime;
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTaskCode() {
+        return this.taskCode;
     }
 
     public void setTaskCode(String taskCode) {
         this.taskCode = taskCode;
     }
 
+    public String getWorkerCode() {
+        return this.workerCode;
+    }
+
     public void setWorkerCode(String workerCode) {
         this.workerCode = workerCode;
     }
 
+    public Timestamp getCreateTime() {
+        return this.createTime;
+    }
+
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    public Timestamp getUpdateTime() {
+        return this.updateTime;
     }
 
     public void setUpdateTime(Timestamp updateTime) {
@@ -68,13 +69,13 @@ public class YakTaskLockVO {
         if (!(o instanceof YakTaskLockVO)) {
             return false;
         }
-        YakTaskLockVO other = (YakTaskLockVO)o;
+        YakTaskLockVO other = (YakTaskLockVO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Long this$id = this.getId();
         Long other$id = other.getId();
-        if (this$id == null ? other$id != null : !((Object)this$id).equals(other$id)) {
+        if (this$id == null ? other$id != null : !((Object) this$id).equals(other$id)) {
             return false;
         }
         String this$taskCode = this.getTaskCode();
@@ -89,12 +90,12 @@ public class YakTaskLockVO {
         }
         Timestamp this$createTime = this.getCreateTime();
         Timestamp other$createTime = other.getCreateTime();
-        if (this$createTime == null ? other$createTime != null : !((Object)this$createTime).equals(other$createTime)) {
+        if (this$createTime == null ? other$createTime != null : !((Object) this$createTime).equals(other$createTime)) {
             return false;
         }
         Timestamp this$updateTime = this.getUpdateTime();
         Timestamp other$updateTime = other.getUpdateTime();
-        return !(this$updateTime == null ? other$updateTime != null : !((Object)this$updateTime).equals(other$updateTime));
+        return !(this$updateTime == null ? other$updateTime != null : !((Object) this$updateTime).equals(other$updateTime));
     }
 
     protected boolean canEqual(Object other) {
@@ -105,15 +106,15 @@ public class YakTaskLockVO {
         int PRIME = 59;
         int result = 1;
         Long $id = this.getId();
-        result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
+        result = result * 59 + ($id == null ? 43 : ((Object) $id).hashCode());
         String $taskCode = this.getTaskCode();
         result = result * 59 + ($taskCode == null ? 43 : $taskCode.hashCode());
         String $workerCode = this.getWorkerCode();
         result = result * 59 + ($workerCode == null ? 43 : $workerCode.hashCode());
         Timestamp $createTime = this.getCreateTime();
-        result = result * 59 + ($createTime == null ? 43 : ((Object)$createTime).hashCode());
+        result = result * 59 + ($createTime == null ? 43 : ((Object) $createTime).hashCode());
         Timestamp $updateTime = this.getUpdateTime();
-        result = result * 59 + ($updateTime == null ? 43 : ((Object)$updateTime).hashCode());
+        result = result * 59 + ($updateTime == null ? 43 : ((Object) $updateTime).hashCode());
         return result;
     }
 

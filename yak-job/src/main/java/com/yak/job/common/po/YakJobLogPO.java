@@ -7,8 +7,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class YakJobLogPO
-extends BasePO
-implements Serializable {
+        extends BasePO
+        implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private String jobCode;
@@ -31,69 +31,13 @@ implements Serializable {
         return this.id;
     }
 
-    public String getJobCode() {
-        return this.jobCode;
-    }
-
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public Long getTaskId() {
-        return this.taskId;
-    }
-
-    public String getTaskName() {
-        return this.taskName;
-    }
-
-    public String getTaskDesc() {
-        return this.taskDesc;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public Integer getTryTimes() {
-        return this.tryTimes;
-    }
-
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
-    public String getWorkerIp() {
-        return this.workerIp;
-    }
-
-    public Timestamp getStartTime() {
-        return this.startTime;
-    }
-
-    public Timestamp getEndTime() {
-        return this.endTime;
-    }
-
-    public Integer getStatus() {
-        return this.status;
-    }
-
-    public String getError() {
-        return this.error;
-    }
-
-    public String getResult() {
-        return this.result;
-    }
-
-    public String getAppName() {
-        return this.appName;
-    }
-
     public YakJobLogPO setId(Long id) {
         this.id = id;
         return this;
+    }
+
+    public String getJobCode() {
+        return this.jobCode;
     }
 
     public YakJobLogPO setJobCode(String jobCode) {
@@ -101,9 +45,17 @@ implements Serializable {
         return this;
     }
 
+    public String getTaskCode() {
+        return this.taskCode;
+    }
+
     public YakJobLogPO setTaskCode(String taskCode) {
         this.taskCode = taskCode;
         return this;
+    }
+
+    public Long getTaskId() {
+        return this.taskId;
     }
 
     public YakJobLogPO setTaskId(Long taskId) {
@@ -111,9 +63,17 @@ implements Serializable {
         return this;
     }
 
+    public String getTaskName() {
+        return this.taskName;
+    }
+
     public YakJobLogPO setTaskName(String taskName) {
         this.taskName = taskName;
         return this;
+    }
+
+    public String getTaskDesc() {
+        return this.taskDesc;
     }
 
     public YakJobLogPO setTaskDesc(String taskDesc) {
@@ -121,9 +81,17 @@ implements Serializable {
         return this;
     }
 
+    public String getClassName() {
+        return this.className;
+    }
+
     public YakJobLogPO setClassName(String className) {
         this.className = className;
         return this;
+    }
+
+    public Integer getTryTimes() {
+        return this.tryTimes;
     }
 
     public YakJobLogPO setTryTimes(Integer tryTimes) {
@@ -131,9 +99,17 @@ implements Serializable {
         return this;
     }
 
+    public String getWorkerCode() {
+        return this.workerCode;
+    }
+
     public YakJobLogPO setWorkerCode(String workerCode) {
         this.workerCode = workerCode;
         return this;
+    }
+
+    public String getWorkerIp() {
+        return this.workerIp;
     }
 
     public YakJobLogPO setWorkerIp(String workerIp) {
@@ -141,9 +117,17 @@ implements Serializable {
         return this;
     }
 
+    public Timestamp getStartTime() {
+        return this.startTime;
+    }
+
     public YakJobLogPO setStartTime(Timestamp startTime) {
         this.startTime = startTime;
         return this;
+    }
+
+    public Timestamp getEndTime() {
+        return this.endTime;
     }
 
     public YakJobLogPO setEndTime(Timestamp endTime) {
@@ -151,9 +135,17 @@ implements Serializable {
         return this;
     }
 
+    public Integer getStatus() {
+        return this.status;
+    }
+
     public YakJobLogPO setStatus(Integer status) {
         this.status = status;
         return this;
+    }
+
+    public String getError() {
+        return this.error;
     }
 
     public YakJobLogPO setError(String error) {
@@ -161,9 +153,17 @@ implements Serializable {
         return this;
     }
 
+    public String getResult() {
+        return this.result;
+    }
+
     public YakJobLogPO setResult(String result) {
         this.result = result;
         return this;
+    }
+
+    public String getAppName() {
+        return this.appName;
     }
 
     public YakJobLogPO setAppName(String appName) {
@@ -184,28 +184,28 @@ implements Serializable {
         if (!(o instanceof YakJobLogPO)) {
             return false;
         }
-        YakJobLogPO other = (YakJobLogPO)o;
+        YakJobLogPO other = (YakJobLogPO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Long this$id = this.getId();
         Long other$id = other.getId();
-        if (this$id == null ? other$id != null : !((Object)this$id).equals(other$id)) {
+        if (this$id == null ? other$id != null : !((Object) this$id).equals(other$id)) {
             return false;
         }
         Long this$taskId = this.getTaskId();
         Long other$taskId = other.getTaskId();
-        if (this$taskId == null ? other$taskId != null : !((Object)this$taskId).equals(other$taskId)) {
+        if (this$taskId == null ? other$taskId != null : !((Object) this$taskId).equals(other$taskId)) {
             return false;
         }
         Integer this$tryTimes = this.getTryTimes();
         Integer other$tryTimes = other.getTryTimes();
-        if (this$tryTimes == null ? other$tryTimes != null : !((Object)this$tryTimes).equals(other$tryTimes)) {
+        if (this$tryTimes == null ? other$tryTimes != null : !((Object) this$tryTimes).equals(other$tryTimes)) {
             return false;
         }
         Integer this$status = this.getStatus();
         Integer other$status = other.getStatus();
-        if (this$status == null ? other$status != null : !((Object)this$status).equals(other$status)) {
+        if (this$status == null ? other$status != null : !((Object) this$status).equals(other$status)) {
             return false;
         }
         String this$jobCode = this.getJobCode();
@@ -245,12 +245,12 @@ implements Serializable {
         }
         Timestamp this$startTime = this.getStartTime();
         Timestamp other$startTime = other.getStartTime();
-        if (this$startTime == null ? other$startTime != null : !((Object)this$startTime).equals(other$startTime)) {
+        if (this$startTime == null ? other$startTime != null : !((Object) this$startTime).equals(other$startTime)) {
             return false;
         }
         Timestamp this$endTime = this.getEndTime();
         Timestamp other$endTime = other.getEndTime();
-        if (this$endTime == null ? other$endTime != null : !((Object)this$endTime).equals(other$endTime)) {
+        if (this$endTime == null ? other$endTime != null : !((Object) this$endTime).equals(other$endTime)) {
             return false;
         }
         String this$error = this.getError();
@@ -278,13 +278,13 @@ implements Serializable {
         int PRIME = 59;
         int result = 1;
         Long $id = this.getId();
-        result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
+        result = result * 59 + ($id == null ? 43 : ((Object) $id).hashCode());
         Long $taskId = this.getTaskId();
-        result = result * 59 + ($taskId == null ? 43 : ((Object)$taskId).hashCode());
+        result = result * 59 + ($taskId == null ? 43 : ((Object) $taskId).hashCode());
         Integer $tryTimes = this.getTryTimes();
-        result = result * 59 + ($tryTimes == null ? 43 : ((Object)$tryTimes).hashCode());
+        result = result * 59 + ($tryTimes == null ? 43 : ((Object) $tryTimes).hashCode());
         Integer $status = this.getStatus();
-        result = result * 59 + ($status == null ? 43 : ((Object)$status).hashCode());
+        result = result * 59 + ($status == null ? 43 : ((Object) $status).hashCode());
         String $jobCode = this.getJobCode();
         result = result * 59 + ($jobCode == null ? 43 : $jobCode.hashCode());
         String $taskCode = this.getTaskCode();
@@ -300,9 +300,9 @@ implements Serializable {
         String $workerIp = this.getWorkerIp();
         result = result * 59 + ($workerIp == null ? 43 : $workerIp.hashCode());
         Timestamp $startTime = this.getStartTime();
-        result = result * 59 + ($startTime == null ? 43 : ((Object)$startTime).hashCode());
+        result = result * 59 + ($startTime == null ? 43 : ((Object) $startTime).hashCode());
         Timestamp $endTime = this.getEndTime();
-        result = result * 59 + ($endTime == null ? 43 : ((Object)$endTime).hashCode());
+        result = result * 59 + ($endTime == null ? 43 : ((Object) $endTime).hashCode());
         String $error = this.getError();
         result = result * 59 + ($error == null ? 43 : $error.hashCode());
         String $result = this.getResult();

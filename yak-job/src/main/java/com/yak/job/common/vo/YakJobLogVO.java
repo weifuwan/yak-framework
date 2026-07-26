@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  io.swagger.annotations.ApiModel
  *  io.swagger.annotations.ApiModelProperty
@@ -9,176 +9,177 @@ package com.yak.job.common.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.sql.Timestamp;
 import java.util.List;
 
-@ApiModel(description="YakJobLogVO \u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1\u8be6\u60c5")
+@ApiModel(description = "YakJobLogVO \u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1\u8be6\u60c5")
 public class YakJobLogVO {
-    @ApiModelProperty(value="\u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1id")
+    @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1id")
     private Long id;
-    @ApiModelProperty(value="\u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1")
+    @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1")
     private String jobCode;
-    @ApiModelProperty(value="\u914d\u7f6e\u7684\u4efb\u52a1")
+    @ApiModelProperty(value = "\u914d\u7f6e\u7684\u4efb\u52a1")
     private String taskCode;
-    @ApiModelProperty(value="\u914d\u7f6e\u7684\u4efb\u52a1Id")
+    @ApiModelProperty(value = "\u914d\u7f6e\u7684\u4efb\u52a1Id")
     private Long taskId;
-    @ApiModelProperty(value="\u914d\u7f6e\u7684\u4efb\u52a1\u540d\u79f0")
+    @ApiModelProperty(value = "\u914d\u7f6e\u7684\u4efb\u52a1\u540d\u79f0")
     private String taskName;
-    @ApiModelProperty(value="\u914d\u7f6e\u7684\u4efb\u52a1\u63cf\u8ff0")
+    @ApiModelProperty(value = "\u914d\u7f6e\u7684\u4efb\u52a1\u63cf\u8ff0")
     private String taskDesc;
-    @ApiModelProperty(value="\u5b9a\u65f6\u4efb\u52a1\u8c03\u5ea6\u6267\u884c\u4ee3\u7801")
+    @ApiModelProperty(value = "\u5b9a\u65f6\u4efb\u52a1\u8c03\u5ea6\u6267\u884c\u4ee3\u7801")
     private String className;
-    @ApiModelProperty(value="\u8c03\u5ea6\u6267\u884c\u7684\u673a\u5668")
+    @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u7684\u673a\u5668")
     private String workerCode;
-    @ApiModelProperty(value="\u4efb\u52a1\u5f00\u59cb\u6267\u884c\u65f6\u95f4")
+    @ApiModelProperty(value = "\u4efb\u52a1\u5f00\u59cb\u6267\u884c\u65f6\u95f4")
     private Timestamp startTime;
-    @ApiModelProperty(value="\u4efb\u52a1\u7ed3\u675f\u6267\u884c\u65f6\u95f4")
+    @ApiModelProperty(value = "\u4efb\u52a1\u7ed3\u675f\u6267\u884c\u65f6\u95f4")
     private Timestamp endTime;
-    @ApiModelProperty(value="\u4efb\u52a1\u88ab\u8c03\u5ea6\u65f6\u95f4")
+    @ApiModelProperty(value = "\u4efb\u52a1\u88ab\u8c03\u5ea6\u65f6\u95f4")
     private Timestamp createTime;
-    @ApiModelProperty(value="\u4efb\u52a1\u88ab\u8c03\u5ea6\u65f6\u95f4")
+    @ApiModelProperty(value = "\u4efb\u52a1\u88ab\u8c03\u5ea6\u65f6\u95f4")
     private Timestamp updateTime;
-    @ApiModelProperty(value="\u4efb\u52a1\u8c03\u5ea6\u7ed3\u679c\uff0c0:\u8c03\u5ea6\u542f\u52a8\u4e2d\u30011:\u8fd0\u884c\u4e2d\u3001 2\uff1a\u6210\u529f\u30013\uff1a\u5931\u8d25\u30014\uff1a\u53d6\u6d88")
+    @ApiModelProperty(value = "\u4efb\u52a1\u8c03\u5ea6\u7ed3\u679c\uff0c0:\u8c03\u5ea6\u542f\u52a8\u4e2d\u30011:\u8fd0\u884c\u4e2d\u3001 2\uff1a\u6210\u529f\u30013\uff1a\u5931\u8d25\u30014\uff1a\u53d6\u6d88")
     private Integer status;
-    @ApiModelProperty(value="\u4efb\u52a1\u6267\u884c\u9519\u8bef")
+    @ApiModelProperty(value = "\u4efb\u52a1\u6267\u884c\u9519\u8bef")
     private String error;
-    @ApiModelProperty(value="\u4efb\u52a1\u6267\u884c\u7ed3\u679c")
+    @ApiModelProperty(value = "\u4efb\u52a1\u6267\u884c\u7ed3\u679c")
     private String result;
-    @ApiModelProperty(value="\u6240\u6709\u53ef\u88ab\u8c03\u5ea6\u7684\u673a\u5668\u5217\u8868")
+    @ApiModelProperty(value = "\u6240\u6709\u53ef\u88ab\u8c03\u5ea6\u7684\u673a\u5668\u5217\u8868")
     private List<String> allWorkerIps;
-    @ApiModelProperty(value="\u8c03\u5ea6\u5230\u7684\u673a\u5668\u5217\u8868")
+    @ApiModelProperty(value = "\u8c03\u5ea6\u5230\u7684\u673a\u5668\u5217\u8868")
     private String workerIp;
 
     public Long getId() {
         return this.id;
     }
 
-    public String getJobCode() {
-        return this.jobCode;
-    }
-
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public Long getTaskId() {
-        return this.taskId;
-    }
-
-    public String getTaskName() {
-        return this.taskName;
-    }
-
-    public String getTaskDesc() {
-        return this.taskDesc;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
-    public Timestamp getStartTime() {
-        return this.startTime;
-    }
-
-    public Timestamp getEndTime() {
-        return this.endTime;
-    }
-
-    public Timestamp getCreateTime() {
-        return this.createTime;
-    }
-
-    public Timestamp getUpdateTime() {
-        return this.updateTime;
-    }
-
-    public Integer getStatus() {
-        return this.status;
-    }
-
-    public String getError() {
-        return this.error;
-    }
-
-    public String getResult() {
-        return this.result;
-    }
-
-    public List<String> getAllWorkerIps() {
-        return this.allWorkerIps;
-    }
-
-    public String getWorkerIp() {
-        return this.workerIp;
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getJobCode() {
+        return this.jobCode;
     }
 
     public void setJobCode(String jobCode) {
         this.jobCode = jobCode;
     }
 
+    public String getTaskCode() {
+        return this.taskCode;
+    }
+
     public void setTaskCode(String taskCode) {
         this.taskCode = taskCode;
+    }
+
+    public Long getTaskId() {
+        return this.taskId;
     }
 
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
     }
 
+    public String getTaskName() {
+        return this.taskName;
+    }
+
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+
+    public String getTaskDesc() {
+        return this.taskDesc;
     }
 
     public void setTaskDesc(String taskDesc) {
         this.taskDesc = taskDesc;
     }
 
+    public String getClassName() {
+        return this.className;
+    }
+
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public String getWorkerCode() {
+        return this.workerCode;
     }
 
     public void setWorkerCode(String workerCode) {
         this.workerCode = workerCode;
     }
 
+    public Timestamp getStartTime() {
+        return this.startTime;
+    }
+
     public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
+    }
+
+    public Timestamp getEndTime() {
+        return this.endTime;
     }
 
     public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;
     }
 
+    public Timestamp getCreateTime() {
+        return this.createTime;
+    }
+
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    public Timestamp getUpdateTime() {
+        return this.updateTime;
     }
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
     }
 
+    public Integer getStatus() {
+        return this.status;
+    }
+
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getError() {
+        return this.error;
     }
 
     public void setError(String error) {
         this.error = error;
     }
 
+    public String getResult() {
+        return this.result;
+    }
+
     public void setResult(String result) {
         this.result = result;
     }
 
+    public List<String> getAllWorkerIps() {
+        return this.allWorkerIps;
+    }
+
     public void setAllWorkerIps(List<String> allWorkerIps) {
         this.allWorkerIps = allWorkerIps;
+    }
+
+    public String getWorkerIp() {
+        return this.workerIp;
     }
 
     public void setWorkerIp(String workerIp) {
@@ -192,23 +193,23 @@ public class YakJobLogVO {
         if (!(o instanceof YakJobLogVO)) {
             return false;
         }
-        YakJobLogVO other = (YakJobLogVO)o;
+        YakJobLogVO other = (YakJobLogVO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Long this$id = this.getId();
         Long other$id = other.getId();
-        if (this$id == null ? other$id != null : !((Object)this$id).equals(other$id)) {
+        if (this$id == null ? other$id != null : !((Object) this$id).equals(other$id)) {
             return false;
         }
         Long this$taskId = this.getTaskId();
         Long other$taskId = other.getTaskId();
-        if (this$taskId == null ? other$taskId != null : !((Object)this$taskId).equals(other$taskId)) {
+        if (this$taskId == null ? other$taskId != null : !((Object) this$taskId).equals(other$taskId)) {
             return false;
         }
         Integer this$status = this.getStatus();
         Integer other$status = other.getStatus();
-        if (this$status == null ? other$status != null : !((Object)this$status).equals(other$status)) {
+        if (this$status == null ? other$status != null : !((Object) this$status).equals(other$status)) {
             return false;
         }
         String this$jobCode = this.getJobCode();
@@ -243,22 +244,22 @@ public class YakJobLogVO {
         }
         Timestamp this$startTime = this.getStartTime();
         Timestamp other$startTime = other.getStartTime();
-        if (this$startTime == null ? other$startTime != null : !((Object)this$startTime).equals(other$startTime)) {
+        if (this$startTime == null ? other$startTime != null : !((Object) this$startTime).equals(other$startTime)) {
             return false;
         }
         Timestamp this$endTime = this.getEndTime();
         Timestamp other$endTime = other.getEndTime();
-        if (this$endTime == null ? other$endTime != null : !((Object)this$endTime).equals(other$endTime)) {
+        if (this$endTime == null ? other$endTime != null : !((Object) this$endTime).equals(other$endTime)) {
             return false;
         }
         Timestamp this$createTime = this.getCreateTime();
         Timestamp other$createTime = other.getCreateTime();
-        if (this$createTime == null ? other$createTime != null : !((Object)this$createTime).equals(other$createTime)) {
+        if (this$createTime == null ? other$createTime != null : !((Object) this$createTime).equals(other$createTime)) {
             return false;
         }
         Timestamp this$updateTime = this.getUpdateTime();
         Timestamp other$updateTime = other.getUpdateTime();
-        if (this$updateTime == null ? other$updateTime != null : !((Object)this$updateTime).equals(other$updateTime)) {
+        if (this$updateTime == null ? other$updateTime != null : !((Object) this$updateTime).equals(other$updateTime)) {
             return false;
         }
         String this$error = this.getError();
@@ -273,7 +274,7 @@ public class YakJobLogVO {
         }
         List<String> this$allWorkerIps = this.getAllWorkerIps();
         List<String> other$allWorkerIps = other.getAllWorkerIps();
-        if (this$allWorkerIps == null ? other$allWorkerIps != null : !((Object)this$allWorkerIps).equals(other$allWorkerIps)) {
+        if (this$allWorkerIps == null ? other$allWorkerIps != null : !((Object) this$allWorkerIps).equals(other$allWorkerIps)) {
             return false;
         }
         String this$workerIp = this.getWorkerIp();
@@ -289,11 +290,11 @@ public class YakJobLogVO {
         int PRIME = 59;
         int result = 1;
         Long $id = this.getId();
-        result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
+        result = result * 59 + ($id == null ? 43 : ((Object) $id).hashCode());
         Long $taskId = this.getTaskId();
-        result = result * 59 + ($taskId == null ? 43 : ((Object)$taskId).hashCode());
+        result = result * 59 + ($taskId == null ? 43 : ((Object) $taskId).hashCode());
         Integer $status = this.getStatus();
-        result = result * 59 + ($status == null ? 43 : ((Object)$status).hashCode());
+        result = result * 59 + ($status == null ? 43 : ((Object) $status).hashCode());
         String $jobCode = this.getJobCode();
         result = result * 59 + ($jobCode == null ? 43 : $jobCode.hashCode());
         String $taskCode = this.getTaskCode();
@@ -307,19 +308,19 @@ public class YakJobLogVO {
         String $workerCode = this.getWorkerCode();
         result = result * 59 + ($workerCode == null ? 43 : $workerCode.hashCode());
         Timestamp $startTime = this.getStartTime();
-        result = result * 59 + ($startTime == null ? 43 : ((Object)$startTime).hashCode());
+        result = result * 59 + ($startTime == null ? 43 : ((Object) $startTime).hashCode());
         Timestamp $endTime = this.getEndTime();
-        result = result * 59 + ($endTime == null ? 43 : ((Object)$endTime).hashCode());
+        result = result * 59 + ($endTime == null ? 43 : ((Object) $endTime).hashCode());
         Timestamp $createTime = this.getCreateTime();
-        result = result * 59 + ($createTime == null ? 43 : ((Object)$createTime).hashCode());
+        result = result * 59 + ($createTime == null ? 43 : ((Object) $createTime).hashCode());
         Timestamp $updateTime = this.getUpdateTime();
-        result = result * 59 + ($updateTime == null ? 43 : ((Object)$updateTime).hashCode());
+        result = result * 59 + ($updateTime == null ? 43 : ((Object) $updateTime).hashCode());
         String $error = this.getError();
         result = result * 59 + ($error == null ? 43 : $error.hashCode());
         String $result = this.getResult();
         result = result * 59 + ($result == null ? 43 : $result.hashCode());
         List<String> $allWorkerIps = this.getAllWorkerIps();
-        result = result * 59 + ($allWorkerIps == null ? 43 : ((Object)$allWorkerIps).hashCode());
+        result = result * 59 + ($allWorkerIps == null ? 43 : ((Object) $allWorkerIps).hashCode());
         String $workerIp = this.getWorkerIp();
         result = result * 59 + ($workerIp == null ? 43 : $workerIp.hashCode());
         return result;

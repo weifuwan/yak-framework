@@ -6,8 +6,8 @@ package com.yak.job.common.po;
 import java.io.Serializable;
 
 public class YakWorkerBlacklistPO
-extends BasePO
-implements Serializable {
+        extends BasePO
+        implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private String workerCode;
@@ -16,13 +16,13 @@ implements Serializable {
         return this.id;
     }
 
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
     public YakWorkerBlacklistPO setId(Long id) {
         this.id = id;
         return this;
+    }
+
+    public String getWorkerCode() {
+        return this.workerCode;
     }
 
     public YakWorkerBlacklistPO setWorkerCode(String workerCode) {
@@ -43,13 +43,13 @@ implements Serializable {
         if (!(o instanceof YakWorkerBlacklistPO)) {
             return false;
         }
-        YakWorkerBlacklistPO other = (YakWorkerBlacklistPO)o;
+        YakWorkerBlacklistPO other = (YakWorkerBlacklistPO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Long this$id = this.getId();
         Long other$id = other.getId();
-        if (this$id == null ? other$id != null : !((Object)this$id).equals(other$id)) {
+        if (this$id == null ? other$id != null : !((Object) this$id).equals(other$id)) {
             return false;
         }
         String this$workerCode = this.getWorkerCode();
@@ -67,7 +67,7 @@ implements Serializable {
         int PRIME = 59;
         int result = 1;
         Long $id = this.getId();
-        result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
+        result = result * 59 + ($id == null ? 43 : ((Object) $id).hashCode());
         String $workerCode = this.getWorkerCode();
         result = result * 59 + ($workerCode == null ? 43 : $workerCode.hashCode());
         return result;

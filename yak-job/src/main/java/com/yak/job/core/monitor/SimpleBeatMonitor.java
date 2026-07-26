@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.slf4j.Logger
  *  org.slf4j.LoggerFactory
@@ -11,7 +11,9 @@ package com.yak.job.core.monitor;
 
 import com.yak.job.core.beat.BeatManager;
 import com.yak.job.utils.ThreadUtil;
+
 import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +21,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SimpleBeatMonitor
-implements BeatMonitor {
+        implements BeatMonitor {
+    public static final long INTERVAL = 10L;
     private static final Logger logger = LoggerFactory.getLogger(SimpleTaskMonitor.class);
     private BeatManager beatManager;
     private Thread monitorThread;
-    public static final long INTERVAL = 10L;
 
     @Autowired
     public SimpleBeatMonitor(BeatManager beatManager) {
@@ -33,7 +35,7 @@ implements BeatMonitor {
     @Override
     public void maintain() {
         this.beatManager.beat();
-        this.monitorThread = new Thread((Runnable)new BeatMonitorThread(), "BeatMonitorThread");
+        this.monitorThread = new Thread((Runnable) new BeatMonitorThread(), "BeatMonitorThread");
         this.monitorThread.start();
     }
 
@@ -46,12 +48,12 @@ implements BeatMonitor {
                 this.monitorThread.interrupt();
             }
         } catch (Exception e) {
-            logger.error("class=SimpleBeatMonitor||method=stop||msg=exception!", (Throwable)e);
+            logger.error("class=SimpleBeatMonitor||method=stop||msg=exception!", (Throwable) e);
         }
     }
 
     class BeatMonitorThread
-    implements Runnable {
+            implements Runnable {
         BeatMonitorThread() {
         }
 
@@ -64,7 +66,7 @@ implements BeatMonitor {
                         SimpleBeatMonitor.this.beatManager.beat();
                     }
                 } catch (Exception e) {
-                    logger.info("class=SimpleBeatMonitor||method=run||msg=exception!", (Throwable)e);
+                    logger.info("class=SimpleBeatMonitor||method=run||msg=exception!", (Throwable) e);
                     continue;
                 }
                 break;

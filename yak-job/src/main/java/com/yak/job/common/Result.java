@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  com.fasterxml.jackson.core.JsonProcessingException
  *  com.fasterxml.jackson.databind.ObjectMapper
@@ -11,41 +11,20 @@ package com.yak.job.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Result<T>
-extends BaseResult
-implements Serializable {
+        extends BaseResult
+        implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Result.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final long serialVersionUID = 3472961240718956029L;
     private T data;
     private String tips;
-
-    public boolean success() {
-        return this.getCode() != null && ResultType.SUCCESS.getCode() == this.getCode().intValue();
-    }
-
-    public boolean duplicate() {
-        return this.getCode() != null && ResultType.DUPLICATION.getCode() == this.getCode().intValue();
-    }
-
-    public boolean failed() {
-        return !this.success();
-    }
-
-    @Override
-    public String toString() {
-        String ret = "null";
-        try {
-            ret = mapper.writeValueAsString((Object)this);
-        } catch (JsonProcessingException e) {
-            logger.error("", (Throwable)e);
-        }
-        return ret;
-    }
 
     public static Result build(ResultType resultType) {
         Result result = new Result();
@@ -147,16 +126,39 @@ implements Serializable {
         return resultT;
     }
 
+    public boolean success() {
+        return this.getCode() != null && ResultType.SUCCESS.getCode() == this.getCode().intValue();
+    }
+
+    public boolean duplicate() {
+        return this.getCode() != null && ResultType.DUPLICATION.getCode() == this.getCode().intValue();
+    }
+
+    public boolean failed() {
+        return !this.success();
+    }
+
+    @Override
+    public String toString() {
+        String ret = "null";
+        try {
+            ret = mapper.writeValueAsString((Object) this);
+        } catch (JsonProcessingException e) {
+            logger.error("", (Throwable) e);
+        }
+        return ret;
+    }
+
     public T getData() {
         return this.data;
     }
 
-    public String getTips() {
-        return this.tips;
-    }
-
     public void setData(T data) {
         this.data = data;
+    }
+
+    public String getTips() {
+        return this.tips;
     }
 
     public void setTips(String tips) {
@@ -171,7 +173,7 @@ implements Serializable {
         if (!(o instanceof Result)) {
             return false;
         }
-        Result other = (Result)o;
+        Result other = (Result) o;
         if (!other.canEqual(this)) {
             return false;
         }

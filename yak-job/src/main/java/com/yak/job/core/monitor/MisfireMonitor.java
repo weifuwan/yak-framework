@@ -4,6 +4,6 @@
 package com.yak.job.core.monitor;
 
 public interface MisfireMonitor
-extends Monitor {
+        extends Monitor {
 }
 

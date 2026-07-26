@@ -11,24 +11,25 @@ public enum ConsensualEnum {
     BROADCAST("\u5e7f\u64ad");
 
     private static Map<String, ConsensualEnum> map;
+
+    static {
+        map = new HashMap<String, ConsensualEnum>(8);
+        map.put(RANDOM.name(), RANDOM);
+        map.put(BROADCAST.name(), BROADCAST);
+    }
+
     private String desc;
 
     private ConsensualEnum(String desc) {
         this.desc = desc;
     }
 
-    public String getDesc() {
-        return this.desc;
-    }
-
     public static ConsensualEnum getByName(String name) {
         return map.get(name);
     }
 
-    static {
-        map = new HashMap<String, ConsensualEnum>(8);
-        map.put(RANDOM.name(), RANDOM);
-        map.put(BROADCAST.name(), BROADCAST);
+    public String getDesc() {
+        return this.desc;
     }
 }
 

@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.slf4j.Logger
  *  org.slf4j.LoggerFactory
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ApplicationCloseListener
-implements ApplicationListener<ContextClosedEvent> {
+        implements ApplicationListener<ContextClosedEvent> {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationCloseListener.class);
     private ApplicationContext applicationContext;
 
@@ -34,7 +34,7 @@ implements ApplicationListener<ContextClosedEvent> {
 
     public void onApplicationEvent(ContextClosedEvent event) {
         logger.error("class=ApplicationCloseListener||method=onApplicationEvent||url=||msg=shutdown auv job!!!");
-        Scheduler scheduler = (Scheduler)this.applicationContext.getBean(Scheduler.class);
+        Scheduler scheduler = (Scheduler) this.applicationContext.getBean(Scheduler.class);
         scheduler.shutdown();
     }
 }

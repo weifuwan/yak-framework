@@ -22,9 +22,9 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 public final class CronExpression
-implements Serializable,
-Cloneable {
-    private static final long serialVersionUID = 12423409423L;
+        implements Serializable,
+        Cloneable {
+    public static final int MAX_YEAR;
     protected static final int SECOND = 0;
     protected static final int MINUTE = 1;
     protected static final int HOUR = 2;
@@ -38,8 +38,32 @@ Cloneable {
     protected static final Integer NO_SPEC = 98;
     protected static final Map<String, Integer> monthMap = new HashMap<String, Integer>(20);
     protected static final Map<String, Integer> dayMap = new HashMap<String, Integer>(60);
+    private static final long serialVersionUID = 12423409423L;
+
+    static {
+        monthMap.put("JAN", 0);
+        monthMap.put("FEB", 1);
+        monthMap.put("MAR", 2);
+        monthMap.put("APR", 3);
+        monthMap.put("MAY", 4);
+        monthMap.put("JUN", 5);
+        monthMap.put("JUL", 6);
+        monthMap.put("AUG", 7);
+        monthMap.put("SEP", 8);
+        monthMap.put("OCT", 9);
+        monthMap.put("NOV", 10);
+        monthMap.put("DEC", 11);
+        dayMap.put("SUN", 1);
+        dayMap.put("MON", 2);
+        dayMap.put("TUE", 3);
+        dayMap.put("WED", 4);
+        dayMap.put("THU", 5);
+        dayMap.put("FRI", 6);
+        dayMap.put("SAT", 7);
+        MAX_YEAR = Calendar.getInstance().get(1) + 100;
+    }
+
     private final String cronExpression;
-    private TimeZone timeZone = null;
     protected transient TreeSet<Integer> seconds;
     protected transient TreeSet<Integer> minutes;
     protected transient TreeSet<Integer> hours;
@@ -53,7 +77,7 @@ Cloneable {
     protected transient boolean nearestWeekday = false;
     protected transient int lastdayOffset = 0;
     protected transient boolean expressionParsed = false;
-    public static final int MAX_YEAR;
+    private TimeZone timeZone = null;
 
     public CronExpression(String cronExpression) throws ParseException {
         if (cronExpression == null) {
@@ -71,8 +95,21 @@ Cloneable {
             throw new AssertionError();
         }
         if (expression.getTimeZone() != null) {
-            this.setTimeZone((TimeZone)expression.getTimeZone().clone());
+            this.setTimeZone((TimeZone) expression.getTimeZone().clone());
         }
+    }
+
+    public static boolean isValidExpression(String cronExpression) {
+        try {
+            new CronExpression(cronExpression);
+        } catch (ParseException pe) {
+            return false;
+        }
+        return true;
+    }
+
+    public static void validateExpression(String cronExpression) throws ParseException {
+        new CronExpression(cronExpression);
     }
 
     public boolean isSatisfiedBy(Date date) {
@@ -117,19 +154,6 @@ Cloneable {
 
     public String toString() {
         return this.cronExpression;
-    }
-
-    public static boolean isValidExpression(String cronExpression) {
-        try {
-            new CronExpression(cronExpression);
-        } catch (ParseException pe) {
-            return false;
-        }
-        return true;
-    }
-
-    public static void validateExpression(String cronExpression) throws ParseException {
-        new CronExpression(cronExpression);
     }
 
     protected void buildExpression(String expression) throws ParseException {
@@ -207,7 +231,8 @@ Cloneable {
         if (!(c < 'A' || c > 'Z' || s.equals("L") || s.equals("LW") || s.matches("^L-[0-9]*[W]?"))) {
             int eval;
             int sval;
-            block42: {
+            block42:
+            {
                 String sub = s.substring(i, i + 3);
                 sval = -1;
                 eval = -1;
@@ -840,7 +865,7 @@ Cloneable {
                             if (++mon > 12) {
                                 mon = 1;
                                 tmon = 3333;
-                                ((Calendar)cl).add(1, 1);
+                                ((Calendar) cl).add(1, 1);
                             }
                             day = 1;
                         }
@@ -1150,29 +1175,6 @@ Cloneable {
     @Deprecated
     public Object clone() {
         return new CronExpression(this);
-    }
-
-    static {
-        monthMap.put("JAN", 0);
-        monthMap.put("FEB", 1);
-        monthMap.put("MAR", 2);
-        monthMap.put("APR", 3);
-        monthMap.put("MAY", 4);
-        monthMap.put("JUN", 5);
-        monthMap.put("JUL", 6);
-        monthMap.put("AUG", 7);
-        monthMap.put("SEP", 8);
-        monthMap.put("OCT", 9);
-        monthMap.put("NOV", 10);
-        monthMap.put("DEC", 11);
-        dayMap.put("SUN", 1);
-        dayMap.put("MON", 2);
-        dayMap.put("TUE", 3);
-        dayMap.put("WED", 4);
-        dayMap.put("THU", 5);
-        dayMap.put("FRI", 6);
-        dayMap.put("SAT", 7);
-        MAX_YEAR = Calendar.getInstance().get(1) + 100;
     }
 
     class ValueSet {

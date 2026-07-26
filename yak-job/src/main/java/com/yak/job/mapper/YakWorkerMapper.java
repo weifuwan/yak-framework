@@ -12,7 +12,9 @@
 package com.yak.job.mapper;
 
 import com.yak.job.common.po.YakWorkerPO;
+
 import java.util.List;
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -22,24 +24,24 @@ import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface YakWorkerMapper {
-    @Insert(value={"INSERT INTO yak_worker(worker_code, worker_name, ip, cpu, cpu_used, memory, memory_used, jvm_memory, jvm_memory_used, job_num, heartbeat, app_name) VALUES(#{workerCode}, #{workerName}, #{ip}, #{cpu}, #{cpuUsed}, #{memory}, #{memoryUsed}, #{jvmMemory}, #{jvmMemoryUsed}, #{jobNum}, #{heartbeat}, #{appName})"})
+    @Insert(value = {"INSERT INTO yak_worker(worker_code, worker_name, ip, cpu, cpu_used, memory, memory_used, jvm_memory, jvm_memory_used, job_num, heartbeat, app_name) VALUES(#{workerCode}, #{workerName}, #{ip}, #{cpu}, #{cpuUsed}, #{memory}, #{memoryUsed}, #{jvmMemory}, #{jvmMemoryUsed}, #{jobNum}, #{heartbeat}, #{appName})"})
     public int insert(YakWorkerPO var1);
 
-    @Update(value={"INSERT INTO yak_worker(worker_code, worker_name, ip, cpu, cpu_used, memory, memory_used, jvm_memory, jvm_memory_used, job_num, heartbeat, app_name) VALUES(#{workerCode}, #{workerName}, #{ip}, #{cpu}, #{cpuUsed}, #{memory}, #{memoryUsed}, #{jvmMemory}, #{jvmMemoryUsed}, #{jobNum}, #{heartbeat}, #{appName}) ON DUPLICATE KEY UPDATE cpu=#{cpu}, worker_name=#{workerName}, ip=#{ip}, cpu_used=#{cpuUsed}, memory=#{memory}, memory_used=#{memoryUsed}, jvm_memory=#{jvmMemory}, jvm_memory_used=#{jvmMemoryUsed}, job_num=#{jobNum}, heartbeat=#{heartbeat}, app_name=#{appName}"})
+    @Update(value = {"INSERT INTO yak_worker(worker_code, worker_name, ip, cpu, cpu_used, memory, memory_used, jvm_memory, jvm_memory_used, job_num, heartbeat, app_name) VALUES(#{workerCode}, #{workerName}, #{ip}, #{cpu}, #{cpuUsed}, #{memory}, #{memoryUsed}, #{jvmMemory}, #{jvmMemoryUsed}, #{jobNum}, #{heartbeat}, #{appName}) ON DUPLICATE KEY UPDATE cpu=#{cpu}, worker_name=#{workerName}, ip=#{ip}, cpu_used=#{cpuUsed}, memory=#{memory}, memory_used=#{memoryUsed}, jvm_memory=#{jvmMemory}, jvm_memory_used=#{jvmMemoryUsed}, job_num=#{jobNum}, heartbeat=#{heartbeat}, app_name=#{appName}"})
     public int saveOrUpdateById(YakWorkerPO var1);
 
-    @Update(value={"update yak_worker set cpu=#{cpu}, worker_name=#{workerName}, ip=#{ip}, cpu_used=#{cpuUsed}, memory=#{memory}, memory_used=#{memoryUsed}, jvm_memory=#{jvmMemory}, jvm_memory_used=#{jvmMemoryUsed}, job_num=#{jobNum}, heartbeat=#{heartbeat}, app_name=#{appName} where worker_code=#{workerCode} and app_name=#{appName}"})
+    @Update(value = {"update yak_worker set cpu=#{cpu}, worker_name=#{workerName}, ip=#{ip}, cpu_used=#{cpuUsed}, memory=#{memory}, memory_used=#{memoryUsed}, jvm_memory=#{jvmMemory}, jvm_memory_used=#{jvmMemoryUsed}, job_num=#{jobNum}, heartbeat=#{heartbeat}, app_name=#{appName} where worker_code=#{workerCode} and app_name=#{appName}"})
     public int updateByCode(YakWorkerPO var1);
 
-    @Select(value={"select id, worker_code, worker_name, ip, cpu, cpu_used, memory, memory_used, jvm_memory, jvm_memory_used, job_num, heartbeat, app_name from yak_worker where worker_code=#{workerCode} and app_name=#{appName}"})
-    public YakWorkerPO selectByCode(@Param(value="workerCode") String var1, @Param(value="appName") String var2);
+    @Select(value = {"select id, worker_code, worker_name, ip, cpu, cpu_used, memory, memory_used, jvm_memory, jvm_memory_used, job_num, heartbeat, app_name from yak_worker where worker_code=#{workerCode} and app_name=#{appName}"})
+    public YakWorkerPO selectByCode(@Param(value = "workerCode") String var1, @Param(value = "appName") String var2);
 
-    @Delete(value={"delete from yak_worker where worker_code=#{workerCode}"})
-    public int deleteByCode(@Param(value="workerCode") String var1);
+    @Delete(value = {"delete from yak_worker where worker_code=#{workerCode}"})
+    public int deleteByCode(@Param(value = "workerCode") String var1);
 
-    @Select(value={"select worker_code, worker_name, ip, cpu, cpu_used, memory, memory_used, jvm_memory,jvm_memory_used, job_num, heartbeat, app_name, update_time from yak_worker where app_name=#{appName}"})
-    public List<YakWorkerPO> selectByAppName(@Param(value="appName") String var1);
+    @Select(value = {"select worker_code, worker_name, ip, cpu, cpu_used, memory, memory_used, jvm_memory,jvm_memory_used, job_num, heartbeat, app_name, update_time from yak_worker where app_name=#{appName}"})
+    public List<YakWorkerPO> selectByAppName(@Param(value = "appName") String var1);
 
-    @Select(value={"select count(1) from yak_worker where app_name=#{appName}"})
-    public int countByAppName(@Param(value="appName") String var1);
+    @Select(value = {"select count(1) from yak_worker where app_name=#{appName}"})
+    public int countByAppName(@Param(value = "appName") String var1);
 }

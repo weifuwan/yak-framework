@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.slf4j.Logger
  *  org.slf4j.LoggerFactory
@@ -8,6 +8,7 @@
 package com.yak.job.utils;
 
 import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class ThreadUtil {
                 }
             }
         } catch (InterruptedException e) {
-            logger.error("class=ThreadUtil||method=sleep||url=||msg={}", (Throwable)e);
+            logger.error("class=ThreadUtil||method=sleep||url=||msg={}", (Throwable) e);
         }
     }
 }

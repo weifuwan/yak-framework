@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  io.swagger.annotations.Api
  *  io.swagger.annotations.ApiOperation
@@ -29,21 +29,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value={"v1/yak-job/job"})
-@Api(tags={"yak-job \u6267\u884c\u751f\u6210\u7684\u4f5c\u4e1a\u76f8\u5173\u63a5\u53e3"})
+@RequestMapping(value = {"v1/yak-job/job"})
+@Api(tags = {"yak-job \u6267\u884c\u751f\u6210\u7684\u4f5c\u4e1a\u76f8\u5173\u63a5\u53e3"})
 public class JobController {
     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
     @Autowired
     private JobManager jobManager;
 
-    @PostMapping(value={"/{jobCode}/stop"})
-    @ApiOperation(value="\u505c\u6b62\u4e00\u4e2a\u4f5c\u4e1a\u7684\u6267\u884c", notes="")
+    @PostMapping(value = {"/{jobCode}/stop"})
+    @ApiOperation(value = "\u505c\u6b62\u4e00\u4e2a\u4f5c\u4e1a\u7684\u6267\u884c", notes = "")
     public Result<Boolean> stop(@PathVariable String jobCode) {
         return Result.buildSucc(this.jobManager.stopByJobCode(jobCode));
     }
 
-    @GetMapping(value={"/runningJobs"})
-    @ApiOperation(value="\u83b7\u53d6\u6240\u6709\u5728\u6267\u884c\u7684\u4f5c\u4e1a", notes="")
+    @GetMapping(value = {"/runningJobs"})
+    @ApiOperation(value = "\u83b7\u53d6\u6240\u6709\u5728\u6267\u884c\u7684\u4f5c\u4e1a", notes = "")
     public Result getRunningJobs() {
         return Result.buildSucc(this.jobManager.getJobs());
     }

@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.slf4j.Logger
  *  org.slf4j.LoggerFactory
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RandomConsensual
-extends AbstractConsensual {
+        extends AbstractConsensual {
     private static final Logger logger = LoggerFactory.getLogger(RandomConsensual.class);
     @Autowired
     private TaskLockService taskLockService;
@@ -32,7 +32,7 @@ extends AbstractConsensual {
     public boolean tryClaim(YakTask yakTask) {
         if (this.taskLockService.tryAcquire(yakTask.getTaskCode()).booleanValue()) {
             yakTask.setTaskCallback(taskCode -> {
-                logger.info("class=RandomConsensual||method=tryClaim||msg=release task lock taskCode {}", (Object)taskCode);
+                logger.info("class=RandomConsensual||method=tryClaim||msg=release task lock taskCode {}", (Object) taskCode);
                 this.taskLockService.tryRelease(taskCode);
             });
             return true;

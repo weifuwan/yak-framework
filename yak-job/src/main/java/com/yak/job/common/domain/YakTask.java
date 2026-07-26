@@ -34,156 +34,156 @@ public class YakTask {
         return this.id;
     }
 
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public String getTaskName() {
-        return this.taskName;
-    }
-
-    public String getTaskDesc() {
-        return this.taskDesc;
-    }
-
-    public String getCron() {
-        return this.cron;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public String getParams() {
-        return this.params;
-    }
-
-    public Integer getRetryTimes() {
-        return this.retryTimes;
-    }
-
-    public Timestamp getLastFireTime() {
-        return this.lastFireTime;
-    }
-
-    public Timestamp getNextFireTime() {
-        return this.nextFireTime;
-    }
-
-    public Long getTimeout() {
-        return this.timeout;
-    }
-
-    public Integer getStatus() {
-        return this.status;
-    }
-
-    public String getSubTaskCodes() {
-        return this.subTaskCodes;
-    }
-
-    public String getConsensual() {
-        return this.consensual;
-    }
-
-    public List<TaskWorker> getTaskWorkers() {
-        return this.taskWorkers;
-    }
-
-    public Timestamp getCreateTime() {
-        return this.createTime;
-    }
-
-    public Timestamp getUpdateTime() {
-        return this.updateTime;
-    }
-
-    public String getAppName() {
-        return this.appName;
-    }
-
-    public String getOwner() {
-        return this.owner;
-    }
-
-    public TaskCallback getTaskCallback() {
-        return this.taskCallback;
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTaskCode() {
+        return this.taskCode;
     }
 
     public void setTaskCode(String taskCode) {
         this.taskCode = taskCode;
     }
 
+    public String getTaskName() {
+        return this.taskName;
+    }
+
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+
+    public String getTaskDesc() {
+        return this.taskDesc;
     }
 
     public void setTaskDesc(String taskDesc) {
         this.taskDesc = taskDesc;
     }
 
+    public String getCron() {
+        return this.cron;
+    }
+
     public void setCron(String cron) {
         this.cron = cron;
+    }
+
+    public String getClassName() {
+        return this.className;
     }
 
     public void setClassName(String className) {
         this.className = className;
     }
 
+    public String getParams() {
+        return this.params;
+    }
+
     public void setParams(String params) {
         this.params = params;
+    }
+
+    public Integer getRetryTimes() {
+        return this.retryTimes;
     }
 
     public void setRetryTimes(Integer retryTimes) {
         this.retryTimes = retryTimes;
     }
 
+    public Timestamp getLastFireTime() {
+        return this.lastFireTime;
+    }
+
     public void setLastFireTime(Timestamp lastFireTime) {
         this.lastFireTime = lastFireTime;
+    }
+
+    public Timestamp getNextFireTime() {
+        return this.nextFireTime;
     }
 
     public void setNextFireTime(Timestamp nextFireTime) {
         this.nextFireTime = nextFireTime;
     }
 
+    public Long getTimeout() {
+        return this.timeout;
+    }
+
     public void setTimeout(Long timeout) {
         this.timeout = timeout;
+    }
+
+    public Integer getStatus() {
+        return this.status;
     }
 
     public void setStatus(Integer status) {
         this.status = status;
     }
 
+    public String getSubTaskCodes() {
+        return this.subTaskCodes;
+    }
+
     public void setSubTaskCodes(String subTaskCodes) {
         this.subTaskCodes = subTaskCodes;
+    }
+
+    public String getConsensual() {
+        return this.consensual;
     }
 
     public void setConsensual(String consensual) {
         this.consensual = consensual;
     }
 
+    public List<TaskWorker> getTaskWorkers() {
+        return this.taskWorkers;
+    }
+
     public void setTaskWorkers(List<TaskWorker> taskWorkers) {
         this.taskWorkers = taskWorkers;
+    }
+
+    public Timestamp getCreateTime() {
+        return this.createTime;
     }
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
     }
 
+    public Timestamp getUpdateTime() {
+        return this.updateTime;
+    }
+
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getAppName() {
+        return this.appName;
     }
 
     public void setAppName(String appName) {
         this.appName = appName;
     }
 
+    public String getOwner() {
+        return this.owner;
+    }
+
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public TaskCallback getTaskCallback() {
+        return this.taskCallback;
     }
 
     public void setTaskCallback(TaskCallback taskCallback) {
@@ -197,28 +197,28 @@ public class YakTask {
         if (!(o instanceof YakTask)) {
             return false;
         }
-        YakTask other = (YakTask)o;
+        YakTask other = (YakTask) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Long this$id = this.getId();
         Long other$id = other.getId();
-        if (this$id == null ? other$id != null : !((Object)this$id).equals(other$id)) {
+        if (this$id == null ? other$id != null : !((Object) this$id).equals(other$id)) {
             return false;
         }
         Integer this$retryTimes = this.getRetryTimes();
         Integer other$retryTimes = other.getRetryTimes();
-        if (this$retryTimes == null ? other$retryTimes != null : !((Object)this$retryTimes).equals(other$retryTimes)) {
+        if (this$retryTimes == null ? other$retryTimes != null : !((Object) this$retryTimes).equals(other$retryTimes)) {
             return false;
         }
         Long this$timeout = this.getTimeout();
         Long other$timeout = other.getTimeout();
-        if (this$timeout == null ? other$timeout != null : !((Object)this$timeout).equals(other$timeout)) {
+        if (this$timeout == null ? other$timeout != null : !((Object) this$timeout).equals(other$timeout)) {
             return false;
         }
         Integer this$status = this.getStatus();
         Integer other$status = other.getStatus();
-        if (this$status == null ? other$status != null : !((Object)this$status).equals(other$status)) {
+        if (this$status == null ? other$status != null : !((Object) this$status).equals(other$status)) {
             return false;
         }
         String this$taskCode = this.getTaskCode();
@@ -253,12 +253,12 @@ public class YakTask {
         }
         Timestamp this$lastFireTime = this.getLastFireTime();
         Timestamp other$lastFireTime = other.getLastFireTime();
-        if (this$lastFireTime == null ? other$lastFireTime != null : !((Object)this$lastFireTime).equals(other$lastFireTime)) {
+        if (this$lastFireTime == null ? other$lastFireTime != null : !((Object) this$lastFireTime).equals(other$lastFireTime)) {
             return false;
         }
         Timestamp this$nextFireTime = this.getNextFireTime();
         Timestamp other$nextFireTime = other.getNextFireTime();
-        if (this$nextFireTime == null ? other$nextFireTime != null : !((Object)this$nextFireTime).equals(other$nextFireTime)) {
+        if (this$nextFireTime == null ? other$nextFireTime != null : !((Object) this$nextFireTime).equals(other$nextFireTime)) {
             return false;
         }
         String this$subTaskCodes = this.getSubTaskCodes();
@@ -273,17 +273,17 @@ public class YakTask {
         }
         List<TaskWorker> this$taskWorkers = this.getTaskWorkers();
         List<TaskWorker> other$taskWorkers = other.getTaskWorkers();
-        if (this$taskWorkers == null ? other$taskWorkers != null : !((Object)this$taskWorkers).equals(other$taskWorkers)) {
+        if (this$taskWorkers == null ? other$taskWorkers != null : !((Object) this$taskWorkers).equals(other$taskWorkers)) {
             return false;
         }
         Timestamp this$createTime = this.getCreateTime();
         Timestamp other$createTime = other.getCreateTime();
-        if (this$createTime == null ? other$createTime != null : !((Object)this$createTime).equals(other$createTime)) {
+        if (this$createTime == null ? other$createTime != null : !((Object) this$createTime).equals(other$createTime)) {
             return false;
         }
         Timestamp this$updateTime = this.getUpdateTime();
         Timestamp other$updateTime = other.getUpdateTime();
-        if (this$updateTime == null ? other$updateTime != null : !((Object)this$updateTime).equals(other$updateTime)) {
+        if (this$updateTime == null ? other$updateTime != null : !((Object) this$updateTime).equals(other$updateTime)) {
             return false;
         }
         String this$appName = this.getAppName();
@@ -309,13 +309,13 @@ public class YakTask {
         int PRIME = 59;
         int result = 1;
         Long $id = this.getId();
-        result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
+        result = result * 59 + ($id == null ? 43 : ((Object) $id).hashCode());
         Integer $retryTimes = this.getRetryTimes();
-        result = result * 59 + ($retryTimes == null ? 43 : ((Object)$retryTimes).hashCode());
+        result = result * 59 + ($retryTimes == null ? 43 : ((Object) $retryTimes).hashCode());
         Long $timeout = this.getTimeout();
-        result = result * 59 + ($timeout == null ? 43 : ((Object)$timeout).hashCode());
+        result = result * 59 + ($timeout == null ? 43 : ((Object) $timeout).hashCode());
         Integer $status = this.getStatus();
-        result = result * 59 + ($status == null ? 43 : ((Object)$status).hashCode());
+        result = result * 59 + ($status == null ? 43 : ((Object) $status).hashCode());
         String $taskCode = this.getTaskCode();
         result = result * 59 + ($taskCode == null ? 43 : $taskCode.hashCode());
         String $taskName = this.getTaskName();
@@ -329,19 +329,19 @@ public class YakTask {
         String $params = this.getParams();
         result = result * 59 + ($params == null ? 43 : $params.hashCode());
         Timestamp $lastFireTime = this.getLastFireTime();
-        result = result * 59 + ($lastFireTime == null ? 43 : ((Object)$lastFireTime).hashCode());
+        result = result * 59 + ($lastFireTime == null ? 43 : ((Object) $lastFireTime).hashCode());
         Timestamp $nextFireTime = this.getNextFireTime();
-        result = result * 59 + ($nextFireTime == null ? 43 : ((Object)$nextFireTime).hashCode());
+        result = result * 59 + ($nextFireTime == null ? 43 : ((Object) $nextFireTime).hashCode());
         String $subTaskCodes = this.getSubTaskCodes();
         result = result * 59 + ($subTaskCodes == null ? 43 : $subTaskCodes.hashCode());
         String $consensual = this.getConsensual();
         result = result * 59 + ($consensual == null ? 43 : $consensual.hashCode());
         List<TaskWorker> $taskWorkers = this.getTaskWorkers();
-        result = result * 59 + ($taskWorkers == null ? 43 : ((Object)$taskWorkers).hashCode());
+        result = result * 59 + ($taskWorkers == null ? 43 : ((Object) $taskWorkers).hashCode());
         Timestamp $createTime = this.getCreateTime();
-        result = result * 59 + ($createTime == null ? 43 : ((Object)$createTime).hashCode());
+        result = result * 59 + ($createTime == null ? 43 : ((Object) $createTime).hashCode());
         Timestamp $updateTime = this.getUpdateTime();
-        result = result * 59 + ($updateTime == null ? 43 : ((Object)$updateTime).hashCode());
+        result = result * 59 + ($updateTime == null ? 43 : ((Object) $updateTime).hashCode());
         String $appName = this.getAppName();
         result = result * 59 + ($appName == null ? 43 : $appName.hashCode());
         String $owner = this.getOwner();
@@ -361,32 +361,42 @@ public class YakTask {
         private String workerCode;
         private String ip;
 
+        public TaskWorker(Integer status, Timestamp lastFireTime, String workerCode, String ip) {
+            this.status = status;
+            this.lastFireTime = lastFireTime;
+            this.workerCode = workerCode;
+            this.ip = ip;
+        }
+
+        public TaskWorker() {
+        }
+
         public Integer getStatus() {
             return this.status;
-        }
-
-        public Timestamp getLastFireTime() {
-            return this.lastFireTime;
-        }
-
-        public String getWorkerCode() {
-            return this.workerCode;
-        }
-
-        public String getIp() {
-            return this.ip;
         }
 
         public void setStatus(Integer status) {
             this.status = status;
         }
 
+        public Timestamp getLastFireTime() {
+            return this.lastFireTime;
+        }
+
         public void setLastFireTime(Timestamp lastFireTime) {
             this.lastFireTime = lastFireTime;
         }
 
+        public String getWorkerCode() {
+            return this.workerCode;
+        }
+
         public void setWorkerCode(String workerCode) {
             this.workerCode = workerCode;
+        }
+
+        public String getIp() {
+            return this.ip;
         }
 
         public void setIp(String ip) {
@@ -400,18 +410,18 @@ public class YakTask {
             if (!(o instanceof TaskWorker)) {
                 return false;
             }
-            TaskWorker other = (TaskWorker)o;
+            TaskWorker other = (TaskWorker) o;
             if (!other.canEqual(this)) {
                 return false;
             }
             Integer this$status = this.getStatus();
             Integer other$status = other.getStatus();
-            if (this$status == null ? other$status != null : !((Object)this$status).equals(other$status)) {
+            if (this$status == null ? other$status != null : !((Object) this$status).equals(other$status)) {
                 return false;
             }
             Timestamp this$lastFireTime = this.getLastFireTime();
             Timestamp other$lastFireTime = other.getLastFireTime();
-            if (this$lastFireTime == null ? other$lastFireTime != null : !((Object)this$lastFireTime).equals(other$lastFireTime)) {
+            if (this$lastFireTime == null ? other$lastFireTime != null : !((Object) this$lastFireTime).equals(other$lastFireTime)) {
                 return false;
             }
             String this$workerCode = this.getWorkerCode();
@@ -432,9 +442,9 @@ public class YakTask {
             int PRIME = 59;
             int result = 1;
             Integer $status = this.getStatus();
-            result = result * 59 + ($status == null ? 43 : ((Object)$status).hashCode());
+            result = result * 59 + ($status == null ? 43 : ((Object) $status).hashCode());
             Timestamp $lastFireTime = this.getLastFireTime();
-            result = result * 59 + ($lastFireTime == null ? 43 : ((Object)$lastFireTime).hashCode());
+            result = result * 59 + ($lastFireTime == null ? 43 : ((Object) $lastFireTime).hashCode());
             String $workerCode = this.getWorkerCode();
             result = result * 59 + ($workerCode == null ? 43 : $workerCode.hashCode());
             String $ip = this.getIp();
@@ -444,16 +454,6 @@ public class YakTask {
 
         public String toString() {
             return "YakTask.TaskWorker(status=" + this.getStatus() + ", lastFireTime=" + this.getLastFireTime() + ", workerCode=" + this.getWorkerCode() + ", ip=" + this.getIp() + ")";
-        }
-
-        public TaskWorker(Integer status, Timestamp lastFireTime, String workerCode, String ip) {
-            this.status = status;
-            this.lastFireTime = lastFireTime;
-            this.workerCode = workerCode;
-            this.ip = ip;
-        }
-
-        public TaskWorker() {
         }
     }
 }

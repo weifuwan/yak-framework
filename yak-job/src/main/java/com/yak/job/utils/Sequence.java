@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.apache.ibatis.logging.Log
  *  org.apache.ibatis.logging.LogFactory
@@ -12,6 +12,7 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.concurrent.ThreadLocalRandom;
+
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.springframework.util.StringUtils;
@@ -49,10 +50,10 @@ public class Sequence {
         StringBuilder mpid = new StringBuilder();
         mpid.append(datacenterId);
         String name = ManagementFactory.getRuntimeMXBean().getName();
-        if (!StringUtils.isEmpty((Object)name)) {
+        if (!StringUtils.isEmpty((Object) name)) {
             mpid.append(name.split("@")[0]);
         }
-        return (long)(mpid.toString().hashCode() & 0xFFFF) % (maxWorkerId + 1L);
+        return (long) (mpid.toString().hashCode() & 0xFFFF) % (maxWorkerId + 1L);
     }
 
     protected static long getDatacenterId(long maxDatacenterId) {
@@ -65,7 +66,7 @@ public class Sequence {
             } else {
                 byte[] mac = network.getHardwareAddress();
                 if (null != mac) {
-                    id = (0xFFL & (long)mac[mac.length - 1] | 0xFF00L & (long)mac[mac.length - 2] << 8) >> 6;
+                    id = (0xFFL & (long) mac[mac.length - 1] | 0xFF00L & (long) mac[mac.length - 2] << 8) >> 6;
                     id %= maxDatacenterId + 1L;
                 }
             }

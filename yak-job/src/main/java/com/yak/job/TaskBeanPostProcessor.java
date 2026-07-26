@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  javax.annotation.PostConstruct
  *  org.slf4j.Logger
@@ -20,6 +20,7 @@ import com.yak.job.core.job.JobFactory;
 import com.yak.job.mapper.YakTaskMapper;
 import com.yak.job.utils.CronExpression;
 import com.yak.job.utils.IdWorker;
+
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TaskBeanPostProcessor
-implements BeanPostProcessor {
+        implements BeanPostProcessor {
     private static final Logger logger = LoggerFactory.getLogger(TaskBeanPostProcessor.class);
     private static Map<String, YakTaskPO> taskMap = new HashMap<String, YakTaskPO>();
     @Autowired
@@ -61,13 +62,13 @@ implements BeanPostProcessor {
             if (!(bean instanceof Job)) {
                 return bean;
             }
-            this.jobFactory.addJob(beanClass.getCanonicalName(), (Job)bean);
+            this.jobFactory.addJob(beanClass.getCanonicalName(), (Job) bean);
             Task taskAnnotation = beanClass.getAnnotation(Task.class);
             if (taskAnnotation == null || !taskAnnotation.autoRegister()) {
                 return bean;
             }
             if (!this.check(taskAnnotation)) {
-                logger.error("class=TaskBeanPostProcessor||method=blacklist||url=||msg=invalid schedule {}", (Object)taskAnnotation.toString());
+                logger.error("class=TaskBeanPostProcessor||method=blacklist||url=||msg=invalid schedule {}", (Object) taskAnnotation.toString());
             }
             if (!this.contains(beanClass.getCanonicalName())) {
                 YakTaskPO task = this.getNewLogTask(beanClass, taskAnnotation);
@@ -80,7 +81,7 @@ implements BeanPostProcessor {
                 this.yakTaskMapper.updateByCode(task);
             }
         } catch (Exception e) {
-            logger.error("class=TaskBeanPostProcessor||method=postProcessAfterInitialization||beanName={}||msg=exception", (Object)beanName, (Object)e);
+            logger.error("class=TaskBeanPostProcessor||method=postProcessAfterInitialization||beanName={}||msg=exception", (Object) beanName, (Object) e);
         }
         return bean;
     }

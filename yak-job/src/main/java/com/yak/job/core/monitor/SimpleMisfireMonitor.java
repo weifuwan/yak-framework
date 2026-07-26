@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.springframework.stereotype.Service
  */
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SimpleMisfireMonitor
-implements MisfireMonitor {
+        implements MisfireMonitor {
     @Override
     public void maintain() {
     }
@@ -20,7 +20,7 @@ implements MisfireMonitor {
     }
 
     class MisfireMonitorThread
-    implements Runnable {
+            implements Runnable {
         MisfireMonitorThread() {
         }
 

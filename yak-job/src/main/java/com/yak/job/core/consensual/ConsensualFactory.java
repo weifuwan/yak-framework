@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.springframework.beans.BeansException
  *  org.springframework.context.ApplicationContext
@@ -11,6 +11,7 @@ package com.yak.job.core.consensual;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -18,9 +19,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ConsensualFactory
-implements ApplicationContextAware {
-    private ApplicationContext applicationContext;
+        implements ApplicationContextAware {
     private static Map<String, Consensual> consensualMap = new HashMap<String, Consensual>();
+    private ApplicationContext applicationContext;
 
     public Consensual getConsensual(String name) {
         this.init();

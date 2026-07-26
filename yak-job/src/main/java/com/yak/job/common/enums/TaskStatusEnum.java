@@ -9,10 +9,6 @@ public enum TaskStatusEnum {
 
     private Integer value;
 
-    public Integer getValue() {
-        return this.value;
-    }
-
     private TaskStatusEnum(Integer value) {
         this.value = value;
     }
@@ -23,6 +19,10 @@ public enum TaskStatusEnum {
             return true;
         }
         return false;
+    }
+
+    public Integer getValue() {
+        return this.value;
     }
 }
 

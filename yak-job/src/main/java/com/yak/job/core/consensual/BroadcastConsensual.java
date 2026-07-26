@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.springframework.stereotype.Service
  */
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BroadcastConsensual
-extends AbstractConsensual {
+        extends AbstractConsensual {
     @Override
     public String getName() {
         return ConsensualEnum.BROADCAST.name();

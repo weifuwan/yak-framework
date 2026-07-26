@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  io.swagger.annotations.ApiModel
  *  io.swagger.annotations.ApiModelProperty
@@ -9,12 +9,13 @@ package com.yak.job.common;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
-@ApiModel(description="\u5206\u9875\u7edf\u4e00\u8fd4\u56de\u683c\u5f0f")
+@ApiModel(description = "\u5206\u9875\u7edf\u4e00\u8fd4\u56de\u683c\u5f0f")
 public class PagingResult<T>
-extends BaseResult {
-    @ApiModelProperty(value="\u8fd4\u56de\u5206\u9875\u57fa\u672c\u4fe1\u606f")
+        extends BaseResult {
+    @ApiModelProperty(value = "\u8fd4\u56de\u5206\u9875\u57fa\u672c\u4fe1\u606f")
     private PagingData<T> data;
 
     public PagingResult(PagingData<T> data) {
@@ -40,7 +41,7 @@ extends BaseResult {
         if (!(o instanceof PagingResult)) {
             return false;
         }
-        PagingResult other = (PagingResult)o;
+        PagingResult other = (PagingResult) o;
         if (!other.canEqual(this)) {
             return false;
         }
@@ -49,7 +50,7 @@ extends BaseResult {
         }
         PagingData<T> this$data = this.getData();
         PagingData<T> other$data = other.getData();
-        return !(this$data == null ? other$data != null : !((Object)this$data).equals(other$data));
+        return !(this$data == null ? other$data != null : !((Object) this$data).equals(other$data));
     }
 
     @Override
@@ -62,7 +63,7 @@ extends BaseResult {
         int PRIME = 59;
         int result = super.hashCode();
         PagingData<T> $data = this.getData();
-        result = result * 59 + ($data == null ? 43 : ((Object)$data).hashCode());
+        result = result * 59 + ($data == null ? 43 : ((Object) $data).hashCode());
         return result;
     }
 

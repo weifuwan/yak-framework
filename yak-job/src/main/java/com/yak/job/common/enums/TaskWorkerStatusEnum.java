@@ -12,11 +12,15 @@ public enum TaskWorkerStatusEnum {
     STOPPED(3);
 
     private static Map<Integer, TaskWorkerStatusEnum> map;
-    private Integer value;
 
-    public Integer getValue() {
-        return this.value;
+    static {
+        map = new HashMap<Integer, TaskWorkerStatusEnum>(8);
+        map.put(WAITING.getValue(), WAITING);
+        map.put(RUNNING.getValue(), RUNNING);
+        map.put(STOPPED.getValue(), STOPPED);
     }
+
+    private Integer value;
 
     private TaskWorkerStatusEnum(Integer value) {
         this.value = value;
@@ -26,11 +30,8 @@ public enum TaskWorkerStatusEnum {
         return map.get(value);
     }
 
-    static {
-        map = new HashMap<Integer, TaskWorkerStatusEnum>(8);
-        map.put(WAITING.getValue(), WAITING);
-        map.put(RUNNING.getValue(), RUNNING);
-        map.put(STOPPED.getValue(), STOPPED);
+    public Integer getValue() {
+        return this.value;
     }
 }
 

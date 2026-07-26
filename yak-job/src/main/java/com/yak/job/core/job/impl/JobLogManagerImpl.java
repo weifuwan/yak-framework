@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.springframework.beans.factory.annotation.Autowired
  *  org.springframework.stereotype.Service
@@ -17,6 +17,7 @@ import com.yak.job.core.job.JobLogManager;
 import com.yak.job.core.task.TaskManager;
 import com.yak.job.mapper.YakJobLogMapper;
 import com.yak.job.utils.BeanUtil;
+
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +29,7 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 public class JobLogManagerImpl
-implements JobLogManager {
-    private TaskManager taskManager;
-    private YakJobLogMapper yakJobLogMapper;
-    private YakJobProperties yakJobProperties;
+        implements JobLogManager {
     private static final String SORT_DESC = "desc";
     private static final String SORT_ASC = "asc";
     private static final String SORT_ID = "id";
@@ -40,6 +38,9 @@ implements JobLogManager {
     private static final String SORT_CREATE_TIME = "create_time";
     private static final String SORT_START_TIME = "start_time";
     private static final String SORT_END_TIME = "end_time";
+    private TaskManager taskManager;
+    private YakJobLogMapper yakJobLogMapper;
+    private YakJobProperties yakJobProperties;
 
     @Autowired
     public JobLogManagerImpl(TaskManager taskManager, YakJobLogMapper yakJobLogMapper, YakJobProperties yakJobProperties) {
@@ -65,7 +66,7 @@ implements JobLogManager {
         }
         return yakJobLogPOS.stream().map(yakJobLogPO -> {
             YakJobLogVO yakJobLogVO = BeanUtil.convertTo(yakJobLogPO, YakJobLogVO.class);
-            YakTask yakTask = (YakTask)longYakTaskMap.get(yakJobLogPO.getTaskId());
+            YakTask yakTask = (YakTask) longYakTaskMap.get(yakJobLogPO.getTaskId());
             if (null == yakTask) {
                 yakTask = this.taskManager.getByCode(yakJobLogPO.getTaskCode());
                 longYakTaskMap.put(yakJobLogPO.getTaskId(), yakTask);

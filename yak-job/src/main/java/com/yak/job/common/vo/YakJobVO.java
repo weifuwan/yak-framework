@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  io.swagger.annotations.ApiModel
  *  io.swagger.annotations.ApiModelProperty
@@ -9,75 +9,76 @@ package com.yak.job.common.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.sql.Timestamp;
 
-@ApiModel(description="YakJobVO \u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1\u8be6\u60c5")
+@ApiModel(description = "YakJobVO \u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1\u8be6\u60c5")
 public class YakJobVO {
-    @ApiModelProperty(value="\u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1")
+    @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u7684\u4efb\u52a1")
     private String jobCode;
-    @ApiModelProperty(value="\u914d\u7f6e\u7684\u4efb\u52a1")
+    @ApiModelProperty(value = "\u914d\u7f6e\u7684\u4efb\u52a1")
     private String taskCode;
-    @ApiModelProperty(value="\u5b9a\u65f6\u4efb\u52a1\u8c03\u5ea6\u6267\u884c\u4ee3\u7801")
+    @ApiModelProperty(value = "\u5b9a\u65f6\u4efb\u52a1\u8c03\u5ea6\u6267\u884c\u4ee3\u7801")
     private String className;
-    @ApiModelProperty(value="\u8c03\u5ea6\u6267\u884c\u7684\u673a\u5668")
+    @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u7684\u673a\u5668")
     private String workerCode;
-    @ApiModelProperty(value="\u4efb\u52a1\u6267\u884c\u9519\u8bef")
+    @ApiModelProperty(value = "\u4efb\u52a1\u6267\u884c\u9519\u8bef")
     private String error;
-    @ApiModelProperty(value="\u4efb\u52a1\u88ab\u8c03\u5ea6\u65f6\u95f4")
+    @ApiModelProperty(value = "\u4efb\u52a1\u88ab\u8c03\u5ea6\u65f6\u95f4")
     private Timestamp createTime;
-    @ApiModelProperty(value="\u4efb\u52a1\u6267\u884c\u7ed3\u679c")
+    @ApiModelProperty(value = "\u4efb\u52a1\u6267\u884c\u7ed3\u679c")
     private String result;
 
     public String getJobCode() {
         return this.jobCode;
     }
 
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
-    public String getError() {
-        return this.error;
-    }
-
-    public Timestamp getCreateTime() {
-        return this.createTime;
-    }
-
-    public String getResult() {
-        return this.result;
-    }
-
     public void setJobCode(String jobCode) {
         this.jobCode = jobCode;
+    }
+
+    public String getTaskCode() {
+        return this.taskCode;
     }
 
     public void setTaskCode(String taskCode) {
         this.taskCode = taskCode;
     }
 
+    public String getClassName() {
+        return this.className;
+    }
+
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public String getWorkerCode() {
+        return this.workerCode;
     }
 
     public void setWorkerCode(String workerCode) {
         this.workerCode = workerCode;
     }
 
+    public String getError() {
+        return this.error;
+    }
+
     public void setError(String error) {
         this.error = error;
     }
 
+    public Timestamp getCreateTime() {
+        return this.createTime;
+    }
+
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    public String getResult() {
+        return this.result;
     }
 
     public void setResult(String result) {
@@ -91,7 +92,7 @@ public class YakJobVO {
         if (!(o instanceof YakJobVO)) {
             return false;
         }
-        YakJobVO other = (YakJobVO)o;
+        YakJobVO other = (YakJobVO) o;
         if (!other.canEqual(this)) {
             return false;
         }
@@ -122,7 +123,7 @@ public class YakJobVO {
         }
         Timestamp this$createTime = this.getCreateTime();
         Timestamp other$createTime = other.getCreateTime();
-        if (this$createTime == null ? other$createTime != null : !((Object)this$createTime).equals(other$createTime)) {
+        if (this$createTime == null ? other$createTime != null : !((Object) this$createTime).equals(other$createTime)) {
             return false;
         }
         String this$result = this.getResult();
@@ -148,7 +149,7 @@ public class YakJobVO {
         String $error = this.getError();
         result = result * 59 + ($error == null ? 43 : $error.hashCode());
         Timestamp $createTime = this.getCreateTime();
-        result = result * 59 + ($createTime == null ? 43 : ((Object)$createTime).hashCode());
+        result = result * 59 + ($createTime == null ? 43 : ((Object) $createTime).hashCode());
         String $result = this.getResult();
         result = result * 59 + ($result == null ? 43 : $result.hashCode());
         return result;

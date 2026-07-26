@@ -77,7 +77,7 @@ public class YakJob {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        YakJob yakJob = (YakJob)o;
+        YakJob yakJob = (YakJob) o;
         return this.jobCode.equals(yakJob.jobCode);
     }
 
@@ -89,148 +89,148 @@ public class YakJob {
         return this.jobCode;
     }
 
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public Long getTaskId() {
-        return this.taskId;
-    }
-
-    public String getTaskName() {
-        return this.taskName;
-    }
-
-    public String getTaskDesc() {
-        return this.taskDesc;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public Integer getRetryTimes() {
-        return this.retryTimes;
-    }
-
-    public Integer getTryTimes() {
-        return this.tryTimes;
-    }
-
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
-    public String getWorkerIp() {
-        return this.workerIp;
-    }
-
-    public Timestamp getStartTime() {
-        return this.startTime;
-    }
-
-    public Timestamp getEndTime() {
-        return this.endTime;
-    }
-
-    public Integer getStatus() {
-        return this.status;
-    }
-
-    public String getError() {
-        return this.error;
-    }
-
-    public Long getTimeout() {
-        return this.timeout;
-    }
-
-    public TaskResult getResult() {
-        return this.result;
-    }
-
-    public Job getJob() {
-        return this.job;
-    }
-
-    public TaskCallback getTaskCallback() {
-        return this.taskCallback;
-    }
-
-    public String getAppName() {
-        return this.appName;
-    }
-
     public void setJobCode(String jobCode) {
         this.jobCode = jobCode;
+    }
+
+    public String getTaskCode() {
+        return this.taskCode;
     }
 
     public void setTaskCode(String taskCode) {
         this.taskCode = taskCode;
     }
 
+    public Long getTaskId() {
+        return this.taskId;
+    }
+
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
+    }
+
+    public String getTaskName() {
+        return this.taskName;
     }
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
     }
 
+    public String getTaskDesc() {
+        return this.taskDesc;
+    }
+
     public void setTaskDesc(String taskDesc) {
         this.taskDesc = taskDesc;
+    }
+
+    public String getClassName() {
+        return this.className;
     }
 
     public void setClassName(String className) {
         this.className = className;
     }
 
+    public Integer getRetryTimes() {
+        return this.retryTimes;
+    }
+
     public void setRetryTimes(Integer retryTimes) {
         this.retryTimes = retryTimes;
+    }
+
+    public Integer getTryTimes() {
+        return this.tryTimes;
     }
 
     public void setTryTimes(Integer tryTimes) {
         this.tryTimes = tryTimes;
     }
 
+    public String getWorkerCode() {
+        return this.workerCode;
+    }
+
     public void setWorkerCode(String workerCode) {
         this.workerCode = workerCode;
+    }
+
+    public String getWorkerIp() {
+        return this.workerIp;
     }
 
     public void setWorkerIp(String workerIp) {
         this.workerIp = workerIp;
     }
 
+    public Timestamp getStartTime() {
+        return this.startTime;
+    }
+
     public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
+    }
+
+    public Timestamp getEndTime() {
+        return this.endTime;
     }
 
     public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;
     }
 
+    public Integer getStatus() {
+        return this.status;
+    }
+
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getError() {
+        return this.error;
     }
 
     public void setError(String error) {
         this.error = error;
     }
 
+    public Long getTimeout() {
+        return this.timeout;
+    }
+
     public void setTimeout(Long timeout) {
         this.timeout = timeout;
+    }
+
+    public TaskResult getResult() {
+        return this.result;
     }
 
     public void setResult(TaskResult result) {
         this.result = result;
     }
 
+    public Job getJob() {
+        return this.job;
+    }
+
     public void setJob(Job job) {
         this.job = job;
     }
 
+    public TaskCallback getTaskCallback() {
+        return this.taskCallback;
+    }
+
     public void setTaskCallback(TaskCallback taskCallback) {
         this.taskCallback = taskCallback;
+    }
+
+    public String getAppName() {
+        return this.appName;
     }
 
     public void setAppName(String appName) {

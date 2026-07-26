@@ -6,15 +6,15 @@ package com.yak.job.common;
 import java.io.Serializable;
 
 public class TaskResult
-implements Serializable {
+        implements Serializable {
     public static final long serialVersionUID = 42L;
-    private int code;
-    private String message;
     public static final int SUCCESS_CODE = 1;
     public static final int RUNNING_CODE = 0;
     public static final int FAIL_CODE = -1;
     public static final TaskResult SUCCESS = new TaskResult(1, "scuucessed");
     public static final TaskResult FAIL = new TaskResult(-1, "failed");
+    private int code;
+    private String message;
 
     public TaskResult() {
     }
@@ -28,12 +28,12 @@ implements Serializable {
         return this.code;
     }
 
-    public String getMessage() {
-        return this.message;
-    }
-
     public void setCode(int code) {
         this.code = code;
+    }
+
+    public String getMessage() {
+        return this.message;
     }
 
     public void setMessage(String message) {
@@ -47,7 +47,7 @@ implements Serializable {
         if (!(o instanceof TaskResult)) {
             return false;
         }
-        TaskResult other = (TaskResult)o;
+        TaskResult other = (TaskResult) o;
         if (!other.canEqual(this)) {
             return false;
         }

@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.slf4j.Logger
  *  org.slf4j.LoggerFactory
@@ -16,9 +16,11 @@ import com.yak.job.common.vo.YakTaskLockVO;
 import com.yak.job.core.WorkerSingleton;
 import com.yak.job.mapper.YakTaskLockMapper;
 import com.yak.job.utils.BeanUtil;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 public class TaskLockServiceImpl
-implements TaskLockService {
+        implements TaskLockService {
     private static final Logger logger = LoggerFactory.getLogger(TaskLockServiceImpl.class);
     private static final Long EXPIRE_TIME_SECONDS = 300L;
     private YakTaskLockMapper yakTaskLockMapper;
@@ -78,9 +80,9 @@ implements TaskLockService {
                 return this.yakTaskLockMapper.insert(taskLock) > 0;
             } catch (Exception e) {
                 if (e.getMessage().contains("Duplicate")) {
-                    logger.info("class=TaskLockServiceImpl||method=tryAcquire||taskCode={}||msg=duplicate key", (Object)taskCode);
+                    logger.info("class=TaskLockServiceImpl||method=tryAcquire||taskCode={}||msg=duplicate key", (Object) taskCode);
                 } else {
-                    logger.error("class=TaskLockServiceImpl||method=tryAcquire||taskCode={}||msg={}", (Object)taskCode, (Object)e.getMessage());
+                    logger.error("class=TaskLockServiceImpl||method=tryAcquire||taskCode={}||msg={}", (Object) taskCode, (Object) e.getMessage());
                 }
                 return false;
             }
@@ -97,7 +99,7 @@ implements TaskLockService {
     public Boolean tryRelease(String taskCode, String workerCode) {
         List<YakTaskLockPO> yakTaskLockPOList = this.yakTaskLockMapper.selectByTaskCodeAndWorkerCode(taskCode, workerCode, this.yakJobProperties.getAppName());
         if (CollectionUtils.isEmpty(yakTaskLockPOList)) {
-            logger.error("class=TaskLockServiceImpl||method=tryRelease||msg=taskCode={}, workerCode={}", (Object)taskCode, (Object)workerCode);
+            logger.error("class=TaskLockServiceImpl||method=tryRelease||msg=taskCode={}, workerCode={}", (Object) taskCode, (Object) workerCode);
             return false;
         }
         long current = System.currentTimeMillis() / 1000L;

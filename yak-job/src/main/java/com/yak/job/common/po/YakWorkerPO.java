@@ -7,8 +7,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class YakWorkerPO
-extends BasePO
-implements Serializable {
+        extends BasePO
+        implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private String workerCode;
@@ -28,57 +28,13 @@ implements Serializable {
         return this.id;
     }
 
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
-    public String getWorkerName() {
-        return this.workerName;
-    }
-
-    public String getIp() {
-        return this.ip;
-    }
-
-    public Integer getCpu() {
-        return this.cpu;
-    }
-
-    public Double getCpuUsed() {
-        return this.cpuUsed;
-    }
-
-    public Double getMemory() {
-        return this.memory;
-    }
-
-    public Double getMemoryUsed() {
-        return this.memoryUsed;
-    }
-
-    public Double getJvmMemory() {
-        return this.jvmMemory;
-    }
-
-    public Double getJvmMemoryUsed() {
-        return this.jvmMemoryUsed;
-    }
-
-    public Integer getJobNum() {
-        return this.jobNum;
-    }
-
-    public Timestamp getHeartbeat() {
-        return this.heartbeat;
-    }
-
-    public String getAppName() {
-        return this.appName;
-    }
-
     public YakWorkerPO setId(Long id) {
         this.id = id;
         return this;
+    }
+
+    public String getWorkerCode() {
+        return this.workerCode;
     }
 
     public YakWorkerPO setWorkerCode(String workerCode) {
@@ -86,9 +42,17 @@ implements Serializable {
         return this;
     }
 
+    public String getWorkerName() {
+        return this.workerName;
+    }
+
     public YakWorkerPO setWorkerName(String workerName) {
         this.workerName = workerName;
         return this;
+    }
+
+    public String getIp() {
+        return this.ip;
     }
 
     public YakWorkerPO setIp(String ip) {
@@ -96,9 +60,17 @@ implements Serializable {
         return this;
     }
 
+    public Integer getCpu() {
+        return this.cpu;
+    }
+
     public YakWorkerPO setCpu(Integer cpu) {
         this.cpu = cpu;
         return this;
+    }
+
+    public Double getCpuUsed() {
+        return this.cpuUsed;
     }
 
     public YakWorkerPO setCpuUsed(Double cpuUsed) {
@@ -106,9 +78,17 @@ implements Serializable {
         return this;
     }
 
+    public Double getMemory() {
+        return this.memory;
+    }
+
     public YakWorkerPO setMemory(Double memory) {
         this.memory = memory;
         return this;
+    }
+
+    public Double getMemoryUsed() {
+        return this.memoryUsed;
     }
 
     public YakWorkerPO setMemoryUsed(Double memoryUsed) {
@@ -116,9 +96,17 @@ implements Serializable {
         return this;
     }
 
+    public Double getJvmMemory() {
+        return this.jvmMemory;
+    }
+
     public YakWorkerPO setJvmMemory(Double jvmMemory) {
         this.jvmMemory = jvmMemory;
         return this;
+    }
+
+    public Double getJvmMemoryUsed() {
+        return this.jvmMemoryUsed;
     }
 
     public YakWorkerPO setJvmMemoryUsed(Double jvmMemoryUsed) {
@@ -126,14 +114,26 @@ implements Serializable {
         return this;
     }
 
+    public Integer getJobNum() {
+        return this.jobNum;
+    }
+
     public YakWorkerPO setJobNum(Integer jobNum) {
         this.jobNum = jobNum;
         return this;
     }
 
+    public Timestamp getHeartbeat() {
+        return this.heartbeat;
+    }
+
     public YakWorkerPO setHeartbeat(Timestamp heartbeat) {
         this.heartbeat = heartbeat;
         return this;
+    }
+
+    public String getAppName() {
+        return this.appName;
     }
 
     public YakWorkerPO setAppName(String appName) {
@@ -154,48 +154,48 @@ implements Serializable {
         if (!(o instanceof YakWorkerPO)) {
             return false;
         }
-        YakWorkerPO other = (YakWorkerPO)o;
+        YakWorkerPO other = (YakWorkerPO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Long this$id = this.getId();
         Long other$id = other.getId();
-        if (this$id == null ? other$id != null : !((Object)this$id).equals(other$id)) {
+        if (this$id == null ? other$id != null : !((Object) this$id).equals(other$id)) {
             return false;
         }
         Integer this$cpu = this.getCpu();
         Integer other$cpu = other.getCpu();
-        if (this$cpu == null ? other$cpu != null : !((Object)this$cpu).equals(other$cpu)) {
+        if (this$cpu == null ? other$cpu != null : !((Object) this$cpu).equals(other$cpu)) {
             return false;
         }
         Double this$cpuUsed = this.getCpuUsed();
         Double other$cpuUsed = other.getCpuUsed();
-        if (this$cpuUsed == null ? other$cpuUsed != null : !((Object)this$cpuUsed).equals(other$cpuUsed)) {
+        if (this$cpuUsed == null ? other$cpuUsed != null : !((Object) this$cpuUsed).equals(other$cpuUsed)) {
             return false;
         }
         Double this$memory = this.getMemory();
         Double other$memory = other.getMemory();
-        if (this$memory == null ? other$memory != null : !((Object)this$memory).equals(other$memory)) {
+        if (this$memory == null ? other$memory != null : !((Object) this$memory).equals(other$memory)) {
             return false;
         }
         Double this$memoryUsed = this.getMemoryUsed();
         Double other$memoryUsed = other.getMemoryUsed();
-        if (this$memoryUsed == null ? other$memoryUsed != null : !((Object)this$memoryUsed).equals(other$memoryUsed)) {
+        if (this$memoryUsed == null ? other$memoryUsed != null : !((Object) this$memoryUsed).equals(other$memoryUsed)) {
             return false;
         }
         Double this$jvmMemory = this.getJvmMemory();
         Double other$jvmMemory = other.getJvmMemory();
-        if (this$jvmMemory == null ? other$jvmMemory != null : !((Object)this$jvmMemory).equals(other$jvmMemory)) {
+        if (this$jvmMemory == null ? other$jvmMemory != null : !((Object) this$jvmMemory).equals(other$jvmMemory)) {
             return false;
         }
         Double this$jvmMemoryUsed = this.getJvmMemoryUsed();
         Double other$jvmMemoryUsed = other.getJvmMemoryUsed();
-        if (this$jvmMemoryUsed == null ? other$jvmMemoryUsed != null : !((Object)this$jvmMemoryUsed).equals(other$jvmMemoryUsed)) {
+        if (this$jvmMemoryUsed == null ? other$jvmMemoryUsed != null : !((Object) this$jvmMemoryUsed).equals(other$jvmMemoryUsed)) {
             return false;
         }
         Integer this$jobNum = this.getJobNum();
         Integer other$jobNum = other.getJobNum();
-        if (this$jobNum == null ? other$jobNum != null : !((Object)this$jobNum).equals(other$jobNum)) {
+        if (this$jobNum == null ? other$jobNum != null : !((Object) this$jobNum).equals(other$jobNum)) {
             return false;
         }
         String this$workerCode = this.getWorkerCode();
@@ -215,7 +215,7 @@ implements Serializable {
         }
         Timestamp this$heartbeat = this.getHeartbeat();
         Timestamp other$heartbeat = other.getHeartbeat();
-        if (this$heartbeat == null ? other$heartbeat != null : !((Object)this$heartbeat).equals(other$heartbeat)) {
+        if (this$heartbeat == null ? other$heartbeat != null : !((Object) this$heartbeat).equals(other$heartbeat)) {
             return false;
         }
         String this$appName = this.getAppName();
@@ -233,21 +233,21 @@ implements Serializable {
         int PRIME = 59;
         int result = 1;
         Long $id = this.getId();
-        result = result * 59 + ($id == null ? 43 : ((Object)$id).hashCode());
+        result = result * 59 + ($id == null ? 43 : ((Object) $id).hashCode());
         Integer $cpu = this.getCpu();
-        result = result * 59 + ($cpu == null ? 43 : ((Object)$cpu).hashCode());
+        result = result * 59 + ($cpu == null ? 43 : ((Object) $cpu).hashCode());
         Double $cpuUsed = this.getCpuUsed();
-        result = result * 59 + ($cpuUsed == null ? 43 : ((Object)$cpuUsed).hashCode());
+        result = result * 59 + ($cpuUsed == null ? 43 : ((Object) $cpuUsed).hashCode());
         Double $memory = this.getMemory();
-        result = result * 59 + ($memory == null ? 43 : ((Object)$memory).hashCode());
+        result = result * 59 + ($memory == null ? 43 : ((Object) $memory).hashCode());
         Double $memoryUsed = this.getMemoryUsed();
-        result = result * 59 + ($memoryUsed == null ? 43 : ((Object)$memoryUsed).hashCode());
+        result = result * 59 + ($memoryUsed == null ? 43 : ((Object) $memoryUsed).hashCode());
         Double $jvmMemory = this.getJvmMemory();
-        result = result * 59 + ($jvmMemory == null ? 43 : ((Object)$jvmMemory).hashCode());
+        result = result * 59 + ($jvmMemory == null ? 43 : ((Object) $jvmMemory).hashCode());
         Double $jvmMemoryUsed = this.getJvmMemoryUsed();
-        result = result * 59 + ($jvmMemoryUsed == null ? 43 : ((Object)$jvmMemoryUsed).hashCode());
+        result = result * 59 + ($jvmMemoryUsed == null ? 43 : ((Object) $jvmMemoryUsed).hashCode());
         Integer $jobNum = this.getJobNum();
-        result = result * 59 + ($jobNum == null ? 43 : ((Object)$jobNum).hashCode());
+        result = result * 59 + ($jobNum == null ? 43 : ((Object) $jobNum).hashCode());
         String $workerCode = this.getWorkerCode();
         result = result * 59 + ($workerCode == null ? 43 : $workerCode.hashCode());
         String $workerName = this.getWorkerName();
@@ -255,7 +255,7 @@ implements Serializable {
         String $ip = this.getIp();
         result = result * 59 + ($ip == null ? 43 : $ip.hashCode());
         Timestamp $heartbeat = this.getHeartbeat();
-        result = result * 59 + ($heartbeat == null ? 43 : ((Object)$heartbeat).hashCode());
+        result = result * 59 + ($heartbeat == null ? 43 : ((Object) $heartbeat).hashCode());
         String $appName = this.getAppName();
         result = result * 59 + ($appName == null ? 43 : $appName.hashCode());
         return result;

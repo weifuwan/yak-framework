@@ -75,7 +75,7 @@ CREATE TABLE `yak_job_log`
     `create_time` DATETIME     DEFAULT NOW() COMMENT '创建时间',
     `update_time` DATETIME     DEFAULT NOW() ON UPDATE NOW() COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    KEY `index_job_code` (`job_code`)
+    KEY           `index_job_code` (`job_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='job执行历史日志';
 
 drop table if exists `yak_worker`;

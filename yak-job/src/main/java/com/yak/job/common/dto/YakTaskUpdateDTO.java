@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  io.swagger.annotations.ApiModel
  *  io.swagger.annotations.ApiModelProperty
@@ -9,25 +9,26 @@ package com.yak.job.common.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
-@ApiModel(description="YakTask \u4efb\u52a1\u7f16\u8f91DTO")
+@ApiModel(description = "YakTask \u4efb\u52a1\u7f16\u8f91DTO")
 public class YakTaskUpdateDTO {
-    @ApiModelProperty(value="\u8c03\u5ea6\u6267\u884c\u5668\u7684ip\u5217\u8868")
+    @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u5668\u7684ip\u5217\u8868")
     private List<String> workerIps;
-    @ApiModelProperty(value="\u8c03\u5ea6\u6267\u884c\u5668\u7684\u53c2\u6570")
+    @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u5668\u7684\u53c2\u6570")
     private String param;
 
     public List<String> getWorkerIps() {
         return this.workerIps;
     }
 
-    public String getParam() {
-        return this.param;
-    }
-
     public void setWorkerIps(List<String> workerIps) {
         this.workerIps = workerIps;
+    }
+
+    public String getParam() {
+        return this.param;
     }
 
     public void setParam(String param) {
@@ -41,13 +42,13 @@ public class YakTaskUpdateDTO {
         if (!(o instanceof YakTaskUpdateDTO)) {
             return false;
         }
-        YakTaskUpdateDTO other = (YakTaskUpdateDTO)o;
+        YakTaskUpdateDTO other = (YakTaskUpdateDTO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         List<String> this$workerIps = this.getWorkerIps();
         List<String> other$workerIps = other.getWorkerIps();
-        if (this$workerIps == null ? other$workerIps != null : !((Object)this$workerIps).equals(other$workerIps)) {
+        if (this$workerIps == null ? other$workerIps != null : !((Object) this$workerIps).equals(other$workerIps)) {
             return false;
         }
         String this$param = this.getParam();
@@ -63,7 +64,7 @@ public class YakTaskUpdateDTO {
         int PRIME = 59;
         int result = 1;
         List<String> $workerIps = this.getWorkerIps();
-        result = result * 59 + ($workerIps == null ? 43 : ((Object)$workerIps).hashCode());
+        result = result * 59 + ($workerIps == null ? 43 : ((Object) $workerIps).hashCode());
         String $param = this.getParam();
         result = result * 59 + ($param == null ? 43 : $param.hashCode());
         return result;

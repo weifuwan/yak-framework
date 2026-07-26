@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  io.swagger.annotations.ApiModel
  *  io.swagger.annotations.ApiModelProperty
@@ -9,13 +9,14 @@ package com.yak.job.common;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 @ApiModel
 public class PagingData<T> {
-    @ApiModelProperty(value="\u8fd4\u56de\u6570\u636e")
+    @ApiModelProperty(value = "\u8fd4\u56de\u6570\u636e")
     private List<T> bizData;
-    @ApiModelProperty(value="\u5206\u9875\u4fe1\u606f")
+    @ApiModelProperty(value = "\u5206\u9875\u4fe1\u606f")
     private Pagination pagination;
 
     public PagingData(List<T> bizData, long total, long pageNo, long pageSize) {
@@ -27,12 +28,12 @@ public class PagingData<T> {
         return this.bizData;
     }
 
-    public Pagination getPagination() {
-        return this.pagination;
-    }
-
     public void setBizData(List<T> bizData) {
         this.bizData = bizData;
+    }
+
+    public Pagination getPagination() {
+        return this.pagination;
     }
 
     public void setPagination(Pagination pagination) {
@@ -46,18 +47,18 @@ public class PagingData<T> {
         if (!(o instanceof PagingData)) {
             return false;
         }
-        PagingData other = (PagingData)o;
+        PagingData other = (PagingData) o;
         if (!other.canEqual(this)) {
             return false;
         }
         List<T> this$bizData = this.getBizData();
         List<T> other$bizData = other.getBizData();
-        if (this$bizData == null ? other$bizData != null : !((Object)this$bizData).equals(other$bizData)) {
+        if (this$bizData == null ? other$bizData != null : !((Object) this$bizData).equals(other$bizData)) {
             return false;
         }
         Pagination this$pagination = this.getPagination();
         Pagination other$pagination = other.getPagination();
-        return !(this$pagination == null ? other$pagination != null : !((Object)this$pagination).equals(other$pagination));
+        return !(this$pagination == null ? other$pagination != null : !((Object) this$pagination).equals(other$pagination));
     }
 
     protected boolean canEqual(Object other) {
@@ -68,9 +69,9 @@ public class PagingData<T> {
         int PRIME = 59;
         int result = 1;
         List<T> $bizData = this.getBizData();
-        result = result * 59 + ($bizData == null ? 43 : ((Object)$bizData).hashCode());
+        result = result * 59 + ($bizData == null ? 43 : ((Object) $bizData).hashCode());
         Pagination $pagination = this.getPagination();
-        result = result * 59 + ($pagination == null ? 43 : ((Object)$pagination).hashCode());
+        result = result * 59 + ($pagination == null ? 43 : ((Object) $pagination).hashCode());
         return result;
     }
 
@@ -78,13 +79,13 @@ public class PagingData<T> {
         return "PagingData(bizData=" + this.getBizData() + ", pagination=" + this.getPagination() + ")";
     }
 
-    @ApiModel(description="\u5206\u9875\u57fa\u672c\u4fe1\u606f")
+    @ApiModel(description = "\u5206\u9875\u57fa\u672c\u4fe1\u606f")
     protected static class Pagination {
-        @ApiModelProperty(value="\u603b\u8bb0\u5f55\u6570")
+        @ApiModelProperty(value = "\u603b\u8bb0\u5f55\u6570")
         private long total;
-        @ApiModelProperty(value="\u5f53\u524d\u9875\u7801")
+        @ApiModelProperty(value = "\u5f53\u524d\u9875\u7801")
         private long pageNo;
-        @ApiModelProperty(value="\u5355\u9875\u5927\u5c0f")
+        @ApiModelProperty(value = "\u5355\u9875\u5927\u5c0f")
         private long pageSize;
 
         Pagination(long total, long pageNo, long pageSize) {
@@ -101,20 +102,20 @@ public class PagingData<T> {
             return this.total;
         }
 
-        public long getPageNo() {
-            return this.pageNo;
-        }
-
-        public long getPageSize() {
-            return this.pageSize;
-        }
-
         public void setTotal(long total) {
             this.total = total;
         }
 
+        public long getPageNo() {
+            return this.pageNo;
+        }
+
         public void setPageNo(long pageNo) {
             this.pageNo = pageNo;
+        }
+
+        public long getPageSize() {
+            return this.pageSize;
         }
 
         public void setPageSize(long pageSize) {
@@ -128,7 +129,7 @@ public class PagingData<T> {
             if (!(o instanceof Pagination)) {
                 return false;
             }
-            Pagination other = (Pagination)o;
+            Pagination other = (Pagination) o;
             if (!other.canEqual(this)) {
                 return false;
             }
@@ -149,11 +150,11 @@ public class PagingData<T> {
             int PRIME = 59;
             int result = 1;
             long $total = this.getTotal();
-            result = result * 59 + (int)($total >>> 32 ^ $total);
+            result = result * 59 + (int) ($total >>> 32 ^ $total);
             long $pageNo = this.getPageNo();
-            result = result * 59 + (int)($pageNo >>> 32 ^ $pageNo);
+            result = result * 59 + (int) ($pageNo >>> 32 ^ $pageNo);
             long $pageSize = this.getPageSize();
-            result = result * 59 + (int)($pageSize >>> 32 ^ $pageSize);
+            result = result * 59 + (int) ($pageSize >>> 32 ^ $pageSize);
             return result;
         }
 

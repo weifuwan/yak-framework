@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.springframework.beans.factory.annotation.Autowired
  *  org.springframework.stereotype.Component
@@ -12,18 +12,20 @@ import com.yak.job.YakJobProperties;
 import com.yak.job.common.Result;
 import com.yak.job.common.po.YakWorkerPO;
 import com.yak.job.mapper.YakWorkerMapper;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 @Component
 public class WorkerManagerImpl
-implements WorkerManager {
+        implements WorkerManager {
     @Autowired
     private YakWorkerMapper yakWorkerMapper;
     @Autowired

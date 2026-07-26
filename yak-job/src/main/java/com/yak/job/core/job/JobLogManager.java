@@ -5,6 +5,7 @@ package com.yak.job.core.job;
 
 import com.yak.job.common.dto.TaskLogPageQueryDTO;
 import com.yak.job.common.vo.YakJobLogVO;
+
 import java.util.List;
 
 public interface JobLogManager {

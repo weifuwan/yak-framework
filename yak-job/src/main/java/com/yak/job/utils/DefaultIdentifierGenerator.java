@@ -4,7 +4,7 @@
 package com.yak.job.utils;
 
 public class DefaultIdentifierGenerator
-implements IdentifierGenerator {
+        implements IdentifierGenerator {
     private final Sequence sequence;
 
     public DefaultIdentifierGenerator() {

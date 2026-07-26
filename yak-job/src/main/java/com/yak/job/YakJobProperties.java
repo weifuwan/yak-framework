@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  org.springframework.boot.context.properties.ConfigurationProperties
  */
@@ -8,7 +8,7 @@ package com.yak.job;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(value="spring.yak-job")
+@ConfigurationProperties(value = "spring.yak-job")
 public class YakJobProperties {
     private String username;
     private String password;
@@ -26,84 +26,84 @@ public class YakJobProperties {
         return this.username;
     }
 
-    public String getPassword() {
-        return this.password;
-    }
-
-    public String getJdbcUrl() {
-        return this.jdbcUrl;
-    }
-
-    public String getDriverClassName() {
-        return this.driverClassName;
-    }
-
-    public Long getMaxLifetime() {
-        return this.maxLifetime;
-    }
-
-    public Boolean getInitSql() {
-        return this.initSql;
-    }
-
-    public Integer getInitThreadNum() {
-        return this.initThreadNum;
-    }
-
-    public Integer getMaxThreadNum() {
-        return this.maxThreadNum;
-    }
-
-    public Integer getLogExpire() {
-        return this.logExpire;
-    }
-
-    public String getAppName() {
-        return this.appName;
-    }
-
-    public Boolean getEnable() {
-        return this.enable;
-    }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public String getJdbcUrl() {
+        return this.jdbcUrl;
+    }
+
     public void setJdbcUrl(String jdbcUrl) {
         this.jdbcUrl = jdbcUrl;
+    }
+
+    public String getDriverClassName() {
+        return this.driverClassName;
     }
 
     public void setDriverClassName(String driverClassName) {
         this.driverClassName = driverClassName;
     }
 
+    public Long getMaxLifetime() {
+        return this.maxLifetime;
+    }
+
     public void setMaxLifetime(Long maxLifetime) {
         this.maxLifetime = maxLifetime;
+    }
+
+    public Boolean getInitSql() {
+        return this.initSql;
     }
 
     public void setInitSql(Boolean initSql) {
         this.initSql = initSql;
     }
 
+    public Integer getInitThreadNum() {
+        return this.initThreadNum;
+    }
+
     public void setInitThreadNum(Integer initThreadNum) {
         this.initThreadNum = initThreadNum;
+    }
+
+    public Integer getMaxThreadNum() {
+        return this.maxThreadNum;
     }
 
     public void setMaxThreadNum(Integer maxThreadNum) {
         this.maxThreadNum = maxThreadNum;
     }
 
+    public Integer getLogExpire() {
+        return this.logExpire;
+    }
+
     public void setLogExpire(Integer logExpire) {
         this.logExpire = logExpire;
     }
 
+    public String getAppName() {
+        return this.appName;
+    }
+
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    public Boolean getEnable() {
+        return this.enable;
     }
 
     public void setEnable(Boolean enable) {
@@ -117,38 +117,38 @@ public class YakJobProperties {
         if (!(o instanceof YakJobProperties)) {
             return false;
         }
-        YakJobProperties other = (YakJobProperties)o;
+        YakJobProperties other = (YakJobProperties) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Long this$maxLifetime = this.getMaxLifetime();
         Long other$maxLifetime = other.getMaxLifetime();
-        if (this$maxLifetime == null ? other$maxLifetime != null : !((Object)this$maxLifetime).equals(other$maxLifetime)) {
+        if (this$maxLifetime == null ? other$maxLifetime != null : !((Object) this$maxLifetime).equals(other$maxLifetime)) {
             return false;
         }
         Boolean this$initSql = this.getInitSql();
         Boolean other$initSql = other.getInitSql();
-        if (this$initSql == null ? other$initSql != null : !((Object)this$initSql).equals(other$initSql)) {
+        if (this$initSql == null ? other$initSql != null : !((Object) this$initSql).equals(other$initSql)) {
             return false;
         }
         Integer this$initThreadNum = this.getInitThreadNum();
         Integer other$initThreadNum = other.getInitThreadNum();
-        if (this$initThreadNum == null ? other$initThreadNum != null : !((Object)this$initThreadNum).equals(other$initThreadNum)) {
+        if (this$initThreadNum == null ? other$initThreadNum != null : !((Object) this$initThreadNum).equals(other$initThreadNum)) {
             return false;
         }
         Integer this$maxThreadNum = this.getMaxThreadNum();
         Integer other$maxThreadNum = other.getMaxThreadNum();
-        if (this$maxThreadNum == null ? other$maxThreadNum != null : !((Object)this$maxThreadNum).equals(other$maxThreadNum)) {
+        if (this$maxThreadNum == null ? other$maxThreadNum != null : !((Object) this$maxThreadNum).equals(other$maxThreadNum)) {
             return false;
         }
         Integer this$logExpire = this.getLogExpire();
         Integer other$logExpire = other.getLogExpire();
-        if (this$logExpire == null ? other$logExpire != null : !((Object)this$logExpire).equals(other$logExpire)) {
+        if (this$logExpire == null ? other$logExpire != null : !((Object) this$logExpire).equals(other$logExpire)) {
             return false;
         }
         Boolean this$enable = this.getEnable();
         Boolean other$enable = other.getEnable();
-        if (this$enable == null ? other$enable != null : !((Object)this$enable).equals(other$enable)) {
+        if (this$enable == null ? other$enable != null : !((Object) this$enable).equals(other$enable)) {
             return false;
         }
         String this$username = this.getUsername();
@@ -184,17 +184,17 @@ public class YakJobProperties {
         int PRIME = 59;
         int result = 1;
         Long $maxLifetime = this.getMaxLifetime();
-        result = result * 59 + ($maxLifetime == null ? 43 : ((Object)$maxLifetime).hashCode());
+        result = result * 59 + ($maxLifetime == null ? 43 : ((Object) $maxLifetime).hashCode());
         Boolean $initSql = this.getInitSql();
-        result = result * 59 + ($initSql == null ? 43 : ((Object)$initSql).hashCode());
+        result = result * 59 + ($initSql == null ? 43 : ((Object) $initSql).hashCode());
         Integer $initThreadNum = this.getInitThreadNum();
-        result = result * 59 + ($initThreadNum == null ? 43 : ((Object)$initThreadNum).hashCode());
+        result = result * 59 + ($initThreadNum == null ? 43 : ((Object) $initThreadNum).hashCode());
         Integer $maxThreadNum = this.getMaxThreadNum();
-        result = result * 59 + ($maxThreadNum == null ? 43 : ((Object)$maxThreadNum).hashCode());
+        result = result * 59 + ($maxThreadNum == null ? 43 : ((Object) $maxThreadNum).hashCode());
         Integer $logExpire = this.getLogExpire();
-        result = result * 59 + ($logExpire == null ? 43 : ((Object)$logExpire).hashCode());
+        result = result * 59 + ($logExpire == null ? 43 : ((Object) $logExpire).hashCode());
         Boolean $enable = this.getEnable();
-        result = result * 59 + ($enable == null ? 43 : ((Object)$enable).hashCode());
+        result = result * 59 + ($enable == null ? 43 : ((Object) $enable).hashCode());
         String $username = this.getUsername();
         result = result * 59 + ($username == null ? 43 : $username.hashCode());
         String $password = this.getPassword();

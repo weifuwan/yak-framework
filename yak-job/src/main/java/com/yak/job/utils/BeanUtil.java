@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  com.fasterxml.jackson.core.JsonProcessingException
  *  com.fasterxml.jackson.databind.JavaType
@@ -16,7 +16,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -32,9 +34,9 @@ public class BeanUtil {
         T tgt = null;
         try {
             tgt = targetClass.newInstance();
-            BeanUtils.copyProperties((Object)source, tgt);
+            BeanUtils.copyProperties((Object) source, tgt);
         } catch (Exception e) {
-            logger.warn("convert obj2Obj error||msg={}", (Object)e.getMessage(), (Object)e);
+            logger.warn("convert obj2Obj error||msg={}", (Object) e.getMessage(), (Object) e);
         }
         return tgt;
     }
@@ -42,9 +44,9 @@ public class BeanUtil {
     public static <T> List<T> convertToList(String source, Class<T> targetClass) {
         try {
             CollectionType javaType = objectMapper.getTypeFactory().constructCollectionType(List.class, targetClass);
-            return (List)objectMapper.readValue(source, (JavaType)javaType);
+            return (List) objectMapper.readValue(source, (JavaType) javaType);
         } catch (Exception e) {
-            logger.error("", (Throwable)e);
+            logger.error("", (Throwable) e);
             return null;
         }
     }
@@ -53,7 +55,7 @@ public class BeanUtil {
         try {
             return source == null ? null : objectMapper.writeValueAsString(source);
         } catch (JsonProcessingException e) {
-            logger.error("source to json error, e->", (Throwable)e);
+            logger.error("source to json error, e->", (Throwable) e);
             return null;
         }
     }

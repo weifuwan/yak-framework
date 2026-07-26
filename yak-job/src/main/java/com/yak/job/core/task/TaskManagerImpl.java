@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  com.google.common.collect.Lists
  *  org.slf4j.Logger
@@ -33,6 +33,7 @@ import com.yak.job.utils.CronExpression;
 import com.yak.job.utils.IdWorker;
 import com.yak.job.utils.ThreadUtil;
 import com.google.common.collect.Lists;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +53,7 @@ import org.springframework.util.StringUtils;
 
 @Service
 public class TaskManagerImpl
-implements TaskManager {
+        implements TaskManager {
     private static final Logger logger = LoggerFactory.getLogger(TaskManagerImpl.class);
     private static final long WAIT_INTERVAL_SECONDS = 10L;
     private WorkerManager workerManager;
@@ -100,9 +101,10 @@ implements TaskManager {
                     Timestamp lastFireTime = taskInfo.getLastFireTime();
                     List<YakTask.TaskWorker> taskWorkers = taskInfo.getTaskWorkers();
                     for (YakTask.TaskWorker taskWorker : taskWorkers) {
-                        if (!Objects.equals(WorkerSingleton.getInstance().getYakWorker().getWorkerCode(), taskWorker.getWorkerCode())) continue;
+                        if (!Objects.equals(WorkerSingleton.getInstance().getYakWorker().getWorkerCode(), taskWorker.getWorkerCode()))
+                            continue;
                         if (Objects.equals(taskWorker.getStatus(), TaskWorkerStatusEnum.WAITING.getValue())) break;
-                        logger.info("class=TaskManagerImpl||method=nextTriggers||msg=has task running! taskCode={}, workerCode={}", (Object)taskInfo.getTaskCode(), (Object)taskWorker.getWorkerCode());
+                        logger.info("class=TaskManagerImpl||method=nextTriggers||msg=has task running! taskCode={}, workerCode={}", (Object) taskInfo.getTaskCode(), (Object) taskWorker.getWorkerCode());
                         return false;
                     }
                     CronExpression cronExpression = new CronExpression(taskInfo.getCron());
@@ -115,7 +117,8 @@ implements TaskManager {
                     List<YakTask.TaskWorker> taskWorkers = taskInfo.getTaskWorkers();
                     Timestamp lastFireTime = new Timestamp(0L);
                     for (YakTask.TaskWorker taskWorker : taskWorkers) {
-                        if (!Objects.equals(WorkerSingleton.getInstance().getYakWorker().getWorkerCode(), taskWorker.getWorkerCode())) continue;
+                        if (!Objects.equals(WorkerSingleton.getInstance().getYakWorker().getWorkerCode(), taskWorker.getWorkerCode()))
+                            continue;
                         lastFireTime = taskWorker.getLastFireTime();
                     }
                     CronExpression cronExpression = new CronExpression(taskInfo.getCron());
@@ -124,9 +127,10 @@ implements TaskManager {
                     Timestamp timestamp = new Timestamp(fromTime + interval * 1000L);
                     if (timestamp.after(new Timestamp(nextTime))) {
                         if (nextTime + 10000L < fromTime && fromTime < nextTime + 20000L) {
-                            logger.info("class=TaskManagerImpl||method=nextTriggers||nextTime={}||fromTime={}||msg=skip broadcast duplicate trigger!", (Object)nextTime, (Object)fromTime);
+                            logger.info("class=TaskManagerImpl||method=nextTriggers||nextTime={}||fromTime={}||msg=skip broadcast duplicate trigger!", (Object) nextTime, (Object) fromTime);
                             for (YakTask.TaskWorker taskWorker : taskWorkers) {
-                                if (!Objects.equals(WorkerSingleton.getInstance().getYakWorker().getWorkerCode(), taskWorker.getWorkerCode())) continue;
+                                if (!Objects.equals(WorkerSingleton.getInstance().getYakWorker().getWorkerCode(), taskWorker.getWorkerCode()))
+                                    continue;
                                 taskWorker.setLastFireTime(new Timestamp(nextTime));
                                 YakTaskPO yakTaskPO = BeanUtil.convertTo(taskInfo, YakTaskPO.class);
                                 yakTaskPO.setTaskWorkerStr(BeanUtil.convertToJson(taskWorkers));
@@ -140,7 +144,7 @@ implements TaskManager {
                 }
                 return false;
             } catch (Exception e) {
-                logger.error("class=TaskManagerImpl||method=nextTriggers||msg=exception!", (Throwable)e);
+                logger.error("class=TaskManagerImpl||method=nextTriggers||msg=exception!", (Throwable) e);
                 return false;
             }
         }).collect(Collectors.toList());
@@ -156,7 +160,7 @@ implements TaskManager {
         for (YakTask yakTask : yakTaskList) {
             Consensual consensual = this.consensualFactory.getConsensual(yakTask.getConsensual());
             if (!consensual.canClaim(yakTask)) continue;
-            this.execute(yakTask, (Boolean)false);
+            this.execute(yakTask, (Boolean) false);
         }
     }
 
@@ -171,7 +175,7 @@ implements TaskManager {
         }
         YakTask yakTask = this.yakTaskPO2YakTask(yakTaskPO);
         yakTask.setTaskCallback(code -> this.taskLockService.tryRelease(code));
-        this.execute(yakTask, (Boolean)false);
+        this.execute(yakTask, (Boolean) false);
         return Result.buildSucc();
     }
 
@@ -183,7 +187,8 @@ implements TaskManager {
         boolean copyTask = CommonUtil.isCopyTask(yakTask.getTaskCode());
         boolean worked = false;
         for (YakTask.TaskWorker taskWorker : taskWorkers) {
-            if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getYakWorker().getWorkerCode())) continue;
+            if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getYakWorker().getWorkerCode()))
+                continue;
             taskWorker.setLastFireTime(lastFireTime);
             taskWorker.setStatus(TaskWorkerStatusEnum.RUNNING.getValue());
             worked = true;
@@ -216,7 +221,7 @@ implements TaskManager {
             return Result.buildFail("stop task error");
         }
         if (TaskStatusEnum.RUNNING.getValue() == status) {
-            this.execute(yakTaskPO.getTaskCode(), (Boolean)false);
+            this.execute(yakTaskPO.getTaskCode(), (Boolean) false);
         }
         yakTaskPO.setStatus(status);
         return Result.buildSucc(this.yakTaskMapper.updateByCode(yakTaskPO) > 0);
@@ -228,7 +233,7 @@ implements TaskManager {
         if (CollectionUtils.isEmpty(yakTaskPOList)) {
             return new ArrayList<YakTask>();
         }
-        return yakTaskPOList.stream().map(p -> this.yakTaskPO2YakTask((YakTaskPO)p)).collect(Collectors.toList());
+        return yakTaskPOList.stream().map(p -> this.yakTaskPO2YakTask((YakTaskPO) p)).collect(Collectors.toList());
     }
 
     @Override
@@ -237,7 +242,7 @@ implements TaskManager {
         if (CollectionUtils.isEmpty(yakTaskPOList)) {
             return new ArrayList<YakTask>();
         }
-        return yakTaskPOList.stream().map(p -> this.yakTaskPO2YakTask((YakTaskPO)p)).collect(Collectors.toList());
+        return yakTaskPOList.stream().map(p -> this.yakTaskPO2YakTask((YakTaskPO) p)).collect(Collectors.toList());
     }
 
     @Override
@@ -319,7 +324,7 @@ implements TaskManager {
         while (!jobFuture.isDone()) {
             ThreadUtil.sleep(10L, TimeUnit.SECONDS);
         }
-        if (!StringUtils.isEmpty((Object)yakTask.getSubTaskCodes())) {
+        if (!StringUtils.isEmpty((Object) yakTask.getSubTaskCodes())) {
             String[] subTaskCodeArray = yakTask.getSubTaskCodes().split(",");
             List<YakTaskPO> subTasks = this.yakTaskMapper.selectByCodes(Arrays.asList(subTaskCodeArray), this.yakJobProperties.getAppName());
             List subYakTaskList = subTasks.stream().map(yakTaskPO -> BeanUtil.convertTo(yakTaskPO, YakTask.class)).collect(Collectors.toList());
@@ -338,7 +343,8 @@ implements TaskManager {
         boolean needUpdate = false;
         if (!CollectionUtils.isEmpty(taskWorkers)) {
             for (YakTask.TaskWorker taskWorker : taskWorkers) {
-                if (!Objects.equals(taskWorker.getWorkerCode(), workerCode) || !Objects.equals(taskWorker.getStatus(), TaskWorkerStatusEnum.RUNNING.getValue())) continue;
+                if (!Objects.equals(taskWorker.getWorkerCode(), workerCode) || !Objects.equals(taskWorker.getStatus(), TaskWorkerStatusEnum.RUNNING.getValue()))
+                    continue;
                 needUpdate = true;
                 taskWorker.setStatus(TaskWorkerStatusEnum.WAITING.getValue());
             }
@@ -357,7 +363,7 @@ implements TaskManager {
         List<YakTask.TaskWorker> tmpTaskWorkers;
         YakTask yakTask = BeanUtil.convertTo(yakTaskPO, YakTask.class);
         List<Object> taskWorkers = Lists.newArrayList();
-        if (!StringUtils.isEmpty((Object)yakTaskPO.getTaskWorkerStr()) && !CollectionUtils.isEmpty(tmpTaskWorkers = BeanUtil.convertToList(yakTaskPO.getTaskWorkerStr(), YakTask.TaskWorker.class))) {
+        if (!StringUtils.isEmpty((Object) yakTaskPO.getTaskWorkerStr()) && !CollectionUtils.isEmpty(tmpTaskWorkers = BeanUtil.convertToList(yakTaskPO.getTaskWorkerStr(), YakTask.TaskWorker.class))) {
             taskWorkers = tmpTaskWorkers;
         }
         yakTask.setTaskWorkers(taskWorkers);

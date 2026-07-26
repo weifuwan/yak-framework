@@ -7,12 +7,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BaseDaoImpl<T> {
-  @Autowired protected YakSecurityProperties yakSecurityProperties;
+    @Autowired
+    protected YakSecurityProperties yakSecurityProperties;
 
-  protected QueryWrapper<T> getQueryWrapperWithAppName() {
-    QueryWrapper queryWrapper = new QueryWrapper();
-    queryWrapper.eq((Object) "app_name",
-                    (Object)this.yakSecurityProperties.getApplicationName());
-    return queryWrapper;
-  }
+    protected QueryWrapper<T> getQueryWrapperWithAppName() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq((Object) "app_name",
+                (Object) this.yakSecurityProperties.getApplicationName());
+        return queryWrapper;
+    }
 }

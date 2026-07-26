@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  com.google.common.cache.Cache
  *  com.google.common.cache.CacheBuilder
@@ -39,6 +39,7 @@ import com.yak.job.utils.BeanUtil;
 import com.yak.job.utils.ThreadUtil;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Timestamp;
@@ -63,13 +64,14 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 public class JobManagerImpl
-implements JobManager {
+        implements JobManager {
     private static final Logger logger = LoggerFactory.getLogger(JobManagerImpl.class);
     private static final int TRY_MAX_TIMES = 3;
     private static final int STOP_SLEEP_SECONDS = 3;
     private static final Long CHECK_BEFORE_INTERVAL = 60L;
     private static final Long RENEW_INTERVAL = 60L;
     private static final Long ONE_HOUR = 3600L;
+    private final Cache<String, String> execuedJob = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(1000L).build();
     private JobFactory jobFactory;
     private YakJobMapper yakJobMapper;
     private YakJobLogMapper yakJobLogMapper;
@@ -80,7 +82,6 @@ implements JobManager {
     private YakTaskLockMapper yakTaskLockMapper;
     private YakJobProperties yakJobProperties;
     private ConcurrentHashMap<YakJob, Future> jobFutureMap = new ConcurrentHashMap();
-    private final Cache<String, String> execuedJob = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(1000L).build();
 
     @Autowired
     public JobManagerImpl(JobFactory jobFactory, YakJobMapper yakJobMapper, YakJobLogMapper yakJobLogMapper, YakTaskMapper yakTaskMapper, YakWorkerMapper yakWorkerMapper, JobExecutor jobExecutor, TaskLockService taskLockService, YakTaskLockMapper yakTaskLockMapper, YakJobProperties yakJobProperties) {
@@ -97,16 +98,16 @@ implements JobManager {
     }
 
     private void initialize() {
-        new Thread((Runnable)new JobFutureHandler(), "JobFutureHandler Thread").start();
-        new Thread((Runnable)new LockRenewHandler(), "LockRenewHandler Thread").start();
-        new Thread((Runnable)new LogCleanHandler(this.yakJobProperties.getLogExpire()), "LogCleanHandler Thread").start();
+        new Thread((Runnable) new JobFutureHandler(), "JobFutureHandler Thread").start();
+        new Thread((Runnable) new LockRenewHandler(), "LockRenewHandler Thread").start();
+        new Thread((Runnable) new LogCleanHandler(this.yakJobProperties.getLogExpire()), "LogCleanHandler Thread").start();
     }
 
     @Override
     public Future<Object> start(YakTask yakTask) {
         YakJob yakJob = this.jobFactory.newJob(yakTask);
         if (null == yakJob) {
-            logger.error("class=JobHandler||method=start||classname={}||msg=yakJob is null", (Object)yakTask.getClassName());
+            logger.error("class=JobHandler||method=start||classname={}||msg=yakJob is null", (Object) yakTask.getClassName());
             return null;
         }
         YakJobPO job = yakJob.getAuvJob();
@@ -164,10 +165,10 @@ implements JobManager {
         return yakJobDTOS;
     }
 
-    @Transactional(rollbackFor={Exception.class})
+    @Transactional(rollbackFor = {Exception.class})
     public void reorganizeFinishedJob(YakJob yakJob) {
         this.jobFutureMap.remove(yakJob);
-        this.execuedJob.put((Object)yakJob.getTaskCode(), (Object)yakJob.getTaskCode());
+        this.execuedJob.put((Object) yakJob.getTaskCode(), (Object) yakJob.getTaskCode());
         if (JobStatusEnum.CANCELED.getValue().equals(yakJob.getStatus())) {
             yakJob.setResult(new TaskResult(-1, "task job be canceld!"));
             yakJob.setError("task job be canceld!");
@@ -186,7 +187,8 @@ implements JobManager {
                 if (TaskWorkerStatusEnum.WAITING.getValue().equals(taskWorker.getStatus()) && taskWorker.getLastFireTime().getTime() + 12L * ONE_HOUR * 1000L < currentTime) {
                     iter.remove();
                 }
-                if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getYakWorker().getWorkerCode())) continue;
+                if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getYakWorker().getWorkerCode()))
+                    continue;
                 taskWorker.setStatus(TaskWorkerStatusEnum.WAITING.getValue());
             }
         }
@@ -220,7 +222,7 @@ implements JobManager {
     }
 
     class LogCleanHandler
-    implements Runnable {
+            implements Runnable {
         private static final long JOB_LOG_DEL_INTERVAL = 3600L;
         private Integer logExpire = 7;
 
@@ -236,9 +238,9 @@ implements JobManager {
                 try {
                     while (true) {
                         ThreadUtil.sleep(3600L, TimeUnit.SECONDS);
-                        logger.info("class=LogCleanHandler||method=run||msg=clean auv_job_log regular time {}", (Object)3600L);
+                        logger.info("class=LogCleanHandler||method=run||msg=clean auv_job_log regular time {}", (Object) 3600L);
                         String appName = JobManagerImpl.this.yakJobProperties.getAppName();
-                        Timestamp deleteTime = new Timestamp(System.currentTimeMillis() - (long)(this.logExpire * 24 * 3600 * 1000));
+                        Timestamp deleteTime = new Timestamp(System.currentTimeMillis() - (long) (this.logExpire * 24 * 3600 * 1000));
                         int deleteRowTotal = JobManagerImpl.this.yakJobLogMapper.selectCountByAppNameAndCreateTime(appName, deleteTime);
                         int deleteRowPerTimes = deleteRowTotal / 60;
                         int deleteRowReal = 0;
@@ -246,10 +248,10 @@ implements JobManager {
                             int count = JobManagerImpl.this.yakJobLogMapper.deleteByCreateTime(deleteTime, appName, deleteRowPerTimes);
                             deleteRowReal += count;
                         }
-                        logger.info("class=LogCleanHandler||method=run||msg=clean log deleteRowTotal={}, deleteRowReal={}", (Object)deleteRowTotal, (Object)deleteRowReal);
+                        logger.info("class=LogCleanHandler||method=run||msg=clean log deleteRowTotal={}, deleteRowReal={}", (Object) deleteRowTotal, (Object) deleteRowReal);
                     }
                 } catch (Exception e) {
-                    logger.error("class=LogCleanHandler||method=run||msg=exception", (Throwable)e);
+                    logger.error("class=LogCleanHandler||method=run||msg=exception", (Throwable) e);
                     continue;
                 }
                 break;
@@ -258,45 +260,47 @@ implements JobManager {
     }
 
     class LockRenewHandler
-    implements Runnable {
+            implements Runnable {
         private static final long JOB_INTERVAL = 10L;
 
         @Override
         public void run() {
             while (true) {
                 try {
-                    logger.info("class=LockRenewHandler||method=run||msg=check need renew lock at regular time {}", (Object)10L);
+                    logger.info("class=LockRenewHandler||method=run||msg=check need renew lock at regular time {}", (Object) 10L);
                     List<YakTaskLockPO> yakTaskLockPOS = JobManagerImpl.this.yakTaskLockMapper.selectByWorkerCode(WorkerSingleton.getInstance().getYakWorker().getWorkerCode(), JobManagerImpl.this.yakJobProperties.getAppName());
                     if (!CollectionUtils.isEmpty(yakTaskLockPOS)) {
                         long current = System.currentTimeMillis() / 1000L;
                         for (YakTaskLockPO yakTaskLockPO : yakTaskLockPOS) {
                             YakTaskPO yakTaskPO;
                             long exTime = yakTaskLockPO.getCreateTime().getTime() / 1000L + yakTaskLockPO.getExpireTime();
-                            if (null != JobManagerImpl.this.execuedJob.getIfPresent((Object)yakTaskLockPO.getTaskCode())) {
+                            if (null != JobManagerImpl.this.execuedJob.getIfPresent((Object) yakTaskLockPO.getTaskCode())) {
                                 if (current >= exTime || current <= exTime - CHECK_BEFORE_INTERVAL) continue;
-                                logger.info("class=TaskLockServiceImpl||method=run||msg=update lock expireTime id={}, expireTime={}", (Object)yakTaskLockPO.getId(), (Object)yakTaskLockPO.getExpireTime());
+                                logger.info("class=TaskLockServiceImpl||method=run||msg=update lock expireTime id={}, expireTime={}", (Object) yakTaskLockPO.getId(), (Object) yakTaskLockPO.getExpireTime());
                                 JobManagerImpl.this.yakTaskLockMapper.update(yakTaskLockPO.getId(), yakTaskLockPO.getExpireTime() + RENEW_INTERVAL);
                                 continue;
                             }
                             if (current > exTime) {
-                                logger.info("class=TaskLockServiceImpl||method=run||msg=lock clean lockInfo={}", (Object)BeanUtil.convertToJson(yakTaskLockPO));
+                                logger.info("class=TaskLockServiceImpl||method=run||msg=lock clean lockInfo={}", (Object) BeanUtil.convertToJson(yakTaskLockPO));
                                 JobManagerImpl.this.yakTaskLockMapper.deleteById(yakTaskLockPO.getId());
                             }
-                            if ((yakTaskPO = JobManagerImpl.this.yakTaskMapper.selectByCode(yakTaskLockPO.getTaskCode(), JobManagerImpl.this.yakJobProperties.getAppName())) == null) continue;
+                            if ((yakTaskPO = JobManagerImpl.this.yakTaskMapper.selectByCode(yakTaskLockPO.getTaskCode(), JobManagerImpl.this.yakJobProperties.getAppName())) == null)
+                                continue;
                             List<YakTask.TaskWorker> taskWorkers = BeanUtil.convertToList(yakTaskPO.getTaskWorkerStr(), YakTask.TaskWorker.class);
                             if (!CollectionUtils.isEmpty(taskWorkers)) {
                                 for (YakTask.TaskWorker taskWorker : taskWorkers) {
-                                    if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getYakWorker().getWorkerCode())) continue;
+                                    if (!Objects.equals(taskWorker.getWorkerCode(), WorkerSingleton.getInstance().getYakWorker().getWorkerCode()))
+                                        continue;
                                     taskWorker.setStatus(TaskWorkerStatusEnum.WAITING.getValue());
                                 }
                             }
                             yakTaskPO.setTaskWorkerStr(BeanUtil.convertToJson(taskWorkers));
-                            logger.info("class=TaskLockServiceImpl||method=run||msg=update task workers status taskInfo={}", (Object)BeanUtil.convertToJson(yakTaskPO));
+                            logger.info("class=TaskLockServiceImpl||method=run||msg=update task workers status taskInfo={}", (Object) BeanUtil.convertToJson(yakTaskPO));
                             JobManagerImpl.this.yakTaskMapper.updateTaskWorkStrByCode(yakTaskPO);
                         }
                     }
                 } catch (Exception e) {
-                    logger.error("class=LockRenewHandler||method=run||msg=exception!", (Throwable)e);
+                    logger.error("class=LockRenewHandler||method=run||msg=exception!", (Throwable) e);
                 }
                 ThreadUtil.sleep(10L, TimeUnit.SECONDS);
             }
@@ -304,7 +308,7 @@ implements JobManager {
     }
 
     class JobFutureHandler
-    implements Runnable {
+            implements Runnable {
         private static final long JOB_FUTURE_CLEAN_INTERVAL = 10L;
 
         @Override
@@ -313,10 +317,10 @@ implements JobManager {
                 try {
                     while (true) {
                         ThreadUtil.sleep(10L, TimeUnit.SECONDS);
-                        logger.info("class=JobFutureHandler||method=run||msg=check running jobs at regular time {}", (Object)10L);
+                        logger.info("class=JobFutureHandler||method=run||msg=check running jobs at regular time {}", (Object) 10L);
                         JobManagerImpl.this.jobFutureMap.forEach((jobInfo, future) -> {
                             if (future.isDone()) {
-                                JobManagerImpl.this.reorganizeFinishedJob((YakJob)jobInfo);
+                                JobManagerImpl.this.reorganizeFinishedJob((YakJob) jobInfo);
                                 return;
                             }
                             Long timeout = jobInfo.getTimeout();
@@ -333,7 +337,7 @@ implements JobManager {
                         });
                     }
                 } catch (Exception e) {
-                    logger.error("class=JobFutureHandler||method=run||msg=exception!", (Throwable)e);
+                    logger.error("class=JobFutureHandler||method=run||msg=exception!", (Throwable) e);
                     continue;
                 }
                 break;
@@ -342,7 +346,7 @@ implements JobManager {
     }
 
     class JobHandler
-    implements Callable {
+            implements Callable {
         private YakJob yakJob;
         private YakTask yakTask;
 
@@ -356,7 +360,7 @@ implements JobManager {
          */
         public Object call() {
             TaskResult object = null;
-            logger.info("class=JobHandler||method=call||msg=start job {} with classname {}", (Object)this.yakJob.getJobCode(), (Object)this.yakJob.getClassName());
+            logger.info("class=JobHandler||method=call||msg=start job {} with classname {}", (Object) this.yakJob.getJobCode(), (Object) this.yakJob.getClassName());
             try {
                 this.yakJob.setStartTime(new Timestamp(System.currentTimeMillis()));
                 this.yakJob.setStatus(JobStatusEnum.SUCCEED.getValue());
@@ -380,13 +384,13 @@ implements JobManager {
                 this.yakJob.setResult(new TaskResult(-1, "task job be canceld!"));
                 String error = JobManagerImpl.this.printStackTraceAsString(e);
                 this.yakJob.setError(JobManagerImpl.this.printStackTraceAsString(e));
-                logger.error("class=JobHandler||method=call||classname={}||msg={}", (Object)this.yakJob.getClassName(), (Object)error);
+                logger.error("class=JobHandler||method=call||classname={}||msg={}", (Object) this.yakJob.getClassName(), (Object) error);
             } catch (Exception e) {
                 this.yakJob.setStatus(JobStatusEnum.FAILED.getValue());
                 this.yakJob.setResult(new TaskResult(-1, "task job has exception when running!" + e));
                 String error = JobManagerImpl.this.printStackTraceAsString(e);
                 this.yakJob.setError(JobManagerImpl.this.printStackTraceAsString(e));
-                logger.error("class=JobHandler||method=call||classname=||msg={}", (Object)this.yakJob.getClassName(), (Object)error);
+                logger.error("class=JobHandler||method=call||classname=||msg={}", (Object) this.yakJob.getClassName(), (Object) error);
             } finally {
                 YakJobLogPO yakJobLogPO = this.yakJob.getAuvJobLog();
                 JobManagerImpl.this.yakJobLogMapper.updateByCode(yakJobLogPO);

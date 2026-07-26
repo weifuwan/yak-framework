@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0.153-SNAPSHOT (a3c0321).
- * 
+ *
  * Could not load the following classes:
  *  io.swagger.annotations.ApiModel
  *  io.swagger.annotations.ApiModelProperty
@@ -10,73 +10,73 @@ package com.yak.job.common.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description="YakTask \u4efb\u52a1\u4fe1\u606f")
+@ApiModel(description = "YakTask \u4efb\u52a1\u4fe1\u606f")
 public class YakTaskDTO {
-    @ApiModelProperty(value="\u4efb\u52a1\u540d\u79f0")
+    @ApiModelProperty(value = "\u4efb\u52a1\u540d\u79f0")
     private String name;
-    @ApiModelProperty(value="\u4efb\u52a1\u63cf\u8ff0")
+    @ApiModelProperty(value = "\u4efb\u52a1\u63cf\u8ff0")
     private String description;
-    @ApiModelProperty(value="\u4efb\u52a1\u8c03\u5ea6\u65f6\u95f4\u8868\u8fbe\u5f0f")
+    @ApiModelProperty(value = "\u4efb\u52a1\u8c03\u5ea6\u65f6\u95f4\u8868\u8fbe\u5f0f")
     private String cron;
-    @ApiModelProperty(value="\u4efb\u52a1\u5bf9\u5e94\u7684\u7c7b\u540d")
+    @ApiModelProperty(value = "\u4efb\u52a1\u5bf9\u5e94\u7684\u7c7b\u540d")
     private String className;
-    @ApiModelProperty(value="\u4efb\u52a1\u6267\u884c\u53c2\u6570")
+    @ApiModelProperty(value = "\u4efb\u52a1\u6267\u884c\u53c2\u6570")
     private String params;
-    @ApiModelProperty(value="\u4efb\u52a1\u91cd\u8bd5\u6b21\u6570")
+    @ApiModelProperty(value = "\u4efb\u52a1\u91cd\u8bd5\u6b21\u6570")
     private Integer retryTimes;
-    @ApiModelProperty(value="\u4efb\u52a1\u62a2\u5360\u6a21\u5f0f")
+    @ApiModelProperty(value = "\u4efb\u52a1\u62a2\u5360\u6a21\u5f0f")
     private String consensual;
 
     public String getName() {
         return this.name;
     }
 
-    public String getDescription() {
-        return this.description;
-    }
-
-    public String getCron() {
-        return this.cron;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public String getParams() {
-        return this.params;
-    }
-
-    public Integer getRetryTimes() {
-        return this.retryTimes;
-    }
-
-    public String getConsensual() {
-        return this.consensual;
-    }
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public String getCron() {
+        return this.cron;
+    }
+
     public void setCron(String cron) {
         this.cron = cron;
+    }
+
+    public String getClassName() {
+        return this.className;
     }
 
     public void setClassName(String className) {
         this.className = className;
     }
 
+    public String getParams() {
+        return this.params;
+    }
+
     public void setParams(String params) {
         this.params = params;
     }
 
+    public Integer getRetryTimes() {
+        return this.retryTimes;
+    }
+
     public void setRetryTimes(Integer retryTimes) {
         this.retryTimes = retryTimes;
+    }
+
+    public String getConsensual() {
+        return this.consensual;
     }
 
     public void setConsensual(String consensual) {
@@ -90,13 +90,13 @@ public class YakTaskDTO {
         if (!(o instanceof YakTaskDTO)) {
             return false;
         }
-        YakTaskDTO other = (YakTaskDTO)o;
+        YakTaskDTO other = (YakTaskDTO) o;
         if (!other.canEqual(this)) {
             return false;
         }
         Integer this$retryTimes = this.getRetryTimes();
         Integer other$retryTimes = other.getRetryTimes();
-        if (this$retryTimes == null ? other$retryTimes != null : !((Object)this$retryTimes).equals(other$retryTimes)) {
+        if (this$retryTimes == null ? other$retryTimes != null : !((Object) this$retryTimes).equals(other$retryTimes)) {
             return false;
         }
         String this$name = this.getName();
@@ -137,7 +137,7 @@ public class YakTaskDTO {
         int PRIME = 59;
         int result = 1;
         Integer $retryTimes = this.getRetryTimes();
-        result = result * 59 + ($retryTimes == null ? 43 : ((Object)$retryTimes).hashCode());
+        result = result * 59 + ($retryTimes == null ? 43 : ((Object) $retryTimes).hashCode());
         String $name = this.getName();
         result = result * 59 + ($name == null ? 43 : $name.hashCode());
         String $description = this.getDescription();

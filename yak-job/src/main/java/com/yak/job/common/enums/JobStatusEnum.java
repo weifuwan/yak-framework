@@ -15,11 +15,17 @@ public enum JobStatusEnum {
     TIMEOUT(5);
 
     private static Map<Integer, JobStatusEnum> map;
-    private Integer value;
 
-    public Integer getValue() {
-        return this.value;
+    static {
+        map = new HashMap<Integer, JobStatusEnum>(8);
+        map.put(STARTED.getValue(), STARTED);
+        map.put(SUCCEED.getValue(), SUCCEED);
+        map.put(FAILED.getValue(), FAILED);
+        map.put(CANCELED.getValue(), CANCELED);
+        map.put(TIMEOUT.getValue(), TIMEOUT);
     }
+
+    private Integer value;
 
     private JobStatusEnum(Integer value) {
         this.value = value;
@@ -29,13 +35,8 @@ public enum JobStatusEnum {
         return map.get(value);
     }
 
-    static {
-        map = new HashMap<Integer, JobStatusEnum>(8);
-        map.put(STARTED.getValue(), STARTED);
-        map.put(SUCCEED.getValue(), SUCCEED);
-        map.put(FAILED.getValue(), FAILED);
-        map.put(CANCELED.getValue(), CANCELED);
-        map.put(TIMEOUT.getValue(), TIMEOUT);
+    public Integer getValue() {
+        return this.value;
     }
 }
 
