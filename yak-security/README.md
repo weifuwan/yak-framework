@@ -30,6 +30,11 @@ Starter 会自动注册 Spring MVC `HandlerInterceptor`。除登录接口
 `/yak-security/api/v1/account/login`、健康检查和公开接口外，所有 MVC 请求都必须具有有效的
 服务端 HTTP Session；未登录或会话中的用户已禁用/不存在时返回 HTTP 401。
 
+当前用户身份仅由服务端登录流程写入 Session。框架不会把客户端传入的
+`X-SSO-USER`、`X-SSO-USER-ID` 请求头或同名 Cookie 当作认证依据。需要接入
+外部认证系统时，应实现 `CurrentUserProvider`，并且只从已完成服务端校验的可信
+认证上下文读取用户信息。
+
 公开接口可以在控制器类或方法上添加 `@PublicEndpoint`，也可以通过配置添加 Ant 风格路径：
 
 ```yaml

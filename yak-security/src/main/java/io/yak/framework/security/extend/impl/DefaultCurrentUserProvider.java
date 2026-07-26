@@ -1,6 +1,7 @@
 package io.yak.framework.security.extend.impl;
 
 import io.yak.framework.security.extend.CurrentUserProvider;
+import io.yak.framework.security.util.SecuritySessionAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.springframework.util.StringUtils;
@@ -17,12 +18,6 @@ import java.util.Objects;
  */
 public class DefaultCurrentUserProvider
         implements CurrentUserProvider {
-
-  /**
-   * Session 中保存用户名的属性名。
-   */
-  private static final String SESSION_USER_NAME =
-          "X-SSO-USER";
 
   /**
    * 获取当前登录用户名。
@@ -46,7 +41,7 @@ public class DefaultCurrentUserProvider
     }
 
     Object operator =
-            session.getAttribute(SESSION_USER_NAME);
+            session.getAttribute(SecuritySessionAttributes.USER_NAME);
 
     if (!(operator instanceof String)) {
       return null;

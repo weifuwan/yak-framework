@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 当前登录用户提供器。
  *
- * <p>用于解除业务模块与具体登录实现、HTTP 工具类之间的耦合。</p>
+ * <p>用于解除业务模块与具体登录实现、HTTP 工具类之间的耦合。自定义实现只能读取
+ * 已由服务端验证的认证上下文，不得直接信任客户端可控的请求头、Cookie 或请求参数。</p>
  *
  * @author weifuwan
  */
