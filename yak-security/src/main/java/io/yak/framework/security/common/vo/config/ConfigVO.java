@@ -1,15 +1,29 @@
 package io.yak.framework.security.common.vo.config;
 
 import java.util.Date;
+/**
+ * 系统配置视图对象。
+ *
+ * @author weifuwan
+ */
 public class ConfigVO {
+  /** 主键标识。 */
   private Long id;
+  /** 配置分组。 */
   private String valueGroup;
+  /** 配置名称。 */
   private String valueName;
+  /** 配置值。 */
   private String value;
+  /** 状态。 */
   private Integer status;
+  /** 备注。 */
   private String memo;
+  /** 创建时间。 */
   private Date createTime;
+  /** 最后更新时间。 */
   private Date updateTime;
+  /** 操作人。 */
   private String operator;
 
   public Long getId() { return this.id; }

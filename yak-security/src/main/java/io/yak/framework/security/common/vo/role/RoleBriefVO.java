@@ -1,6 +1,13 @@
 package io.yak.framework.security.common.vo.role;
+/**
+ * 角色简要信息视图对象。
+ *
+ * @author weifuwan
+ */
 public class RoleBriefVO {
+  /** 主键标识。 */
   private Long id;
+  /** 角色名称。 */
   private String roleName;
 
   public Long getId() { return this.id; }

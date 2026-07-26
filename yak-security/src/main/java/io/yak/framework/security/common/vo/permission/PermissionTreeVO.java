@@ -1,12 +1,23 @@
 package io.yak.framework.security.common.vo.permission;
 
 import java.util.List;
+/**
+ * 权限树节点视图对象。
+ *
+ * @author weifuwan
+ */
 public class PermissionTreeVO {
+  /** 主键标识。 */
   private Long id;
+  /** 是否已分配。 */
   private Boolean has;
+  /** 权限名称。 */
   private String permissionName;
+  /** 父节点标识。 */
   private Long parentId;
+  /** 是否为叶子节点。 */
   private Boolean leaf;
+  /** 子节点列表。 */
   private List<PermissionTreeVO> childList;
 
   public PermissionTreeVO() {}
@@ -136,12 +147,23 @@ public class PermissionTreeVO {
         ", childList=" + this.getChildList() + ")";
   }
 
+  /**
+   * 权限树节点构建器。
+   *
+   * @author weifuwan
+   */
   public static class PermissionTreeVOBuilder {
+    /** 主键标识。 */
     private Long id;
+    /** 是否已分配。 */
     private Boolean has;
+    /** 权限名称。 */
     private String permissionName;
+    /** 父节点标识。 */
     private Long parentId;
+    /** 是否为叶子节点。 */
     private Boolean leaf;
+    /** 子节点列表。 */
     private List<PermissionTreeVO> childList;
 
     PermissionTreeVOBuilder() {}
