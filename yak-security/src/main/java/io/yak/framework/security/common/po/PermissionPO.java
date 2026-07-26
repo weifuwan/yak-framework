@@ -47,4 +47,8 @@ public class PermissionPO extends BasePO {
    * 权限描述。
    */
   private String description;
+
+  private Boolean active;
+
+  private Boolean declared;
 }

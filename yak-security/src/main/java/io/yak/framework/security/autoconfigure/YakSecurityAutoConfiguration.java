@@ -5,6 +5,8 @@ import io.yak.framework.security.config.YakSecurityProperties;
 import io.yak.framework.security.dao.PermissionDao;
 import io.yak.framework.security.extend.*;
 import io.yak.framework.security.extend.impl.*;
+import io.yak.framework.security.permission.PermissionRegistrationInitializer;
+import io.yak.framework.security.permission.PermissionRegistrationService;
 import io.yak.framework.security.service.RolePermissionService;
 import io.yak.framework.security.service.RoleService;
 import io.yak.framework.security.service.UserService;
@@ -22,6 +24,24 @@ import org.springframework.context.annotation.Import;
     YakSecurityDatabaseConfiguration.class, YakSecurityWebConfiguration.class,
     YakSecurityAuditConfiguration.class, YakSecurityOpenApiConfiguration.class})
 public class YakSecurityAutoConfiguration {
+  @Bean
+  @ConditionalOnBean(PermissionDao.class)
+  @ConditionalOnProperty(prefix = "yak.security.permission-registration", name = "enabled",
+      havingValue = "true", matchIfMissing = true)
+  PermissionRegistrationService yakPermissionRegistrationService(PermissionDao permissionDao) {
+    return new PermissionRegistrationService(permissionDao);
+  }
+
+  @Bean
+  @ConditionalOnBean(PermissionDao.class)
+  @ConditionalOnProperty(prefix = "yak.security.permission-registration", name = "enabled",
+      havingValue = "true", matchIfMissing = true)
+  PermissionRegistrationInitializer yakPermissionRegistrationInitializer(
+      org.springframework.beans.factory.ListableBeanFactory beanFactory,
+      PermissionRegistrationService registrationService) {
+    return new PermissionRegistrationInitializer(beanFactory, registrationService);
+  }
+
   @Bean
   @ConditionalOnBean({UserService.class, RoleService.class,
       RolePermissionService.class, PermissionDao.class})

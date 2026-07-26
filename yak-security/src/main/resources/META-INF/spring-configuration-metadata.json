@@ -2,6 +2,7 @@
   "groups": [
     {"name":"yak.security","type":"io.yak.framework.security.config.YakSecurityProperties","sourceType":"io.yak.framework.security.config.YakSecurityProperties"},
     {"name":"yak.security.bootstrap","type":"io.yak.framework.security.config.YakSecurityProperties$BootstrapProperties","sourceType":"io.yak.framework.security.config.YakSecurityProperties"},
+    {"name":"yak.security.permission-registration","type":"io.yak.framework.security.config.YakSecurityProperties$PermissionRegistrationProperties","sourceType":"io.yak.framework.security.config.YakSecurityProperties"},
     {"name":"yak.security.datasource","type":"io.yak.framework.security.config.YakSecurityProperties$DataSourceProperties","sourceType":"io.yak.framework.security.config.YakSecurityProperties"}
   ],
   "properties": [
@@ -14,6 +15,7 @@
     {"name":"yak.security.bootstrap.username","type":"java.lang.String","defaultValue":"admin","description":"初始管理员用户名。"},
     {"name":"yak.security.bootstrap.password","type":"java.lang.String","description":"初始管理员密码；必须通过外部配置（例如环境变量）提供。"},
     {"name":"yak.security.bootstrap.real-name","type":"java.lang.String","defaultValue":"系统管理员","description":"初始管理员真实姓名。"},
+    {"name":"yak.security.permission-registration.enabled","type":"java.lang.Boolean","defaultValue":true,"description":"是否在应用启动时同步声明式权限。"},
     {"name":"yak.security.datasource.enabled","type":"java.lang.Boolean","defaultValue":true,"description":"是否启用 Yak Security 独立数据源。"},
     {"name":"yak.security.datasource.url","type":"java.lang.String","description":"数据库 JDBC 连接地址。"},
     {"name":"yak.security.datasource.username","type":"java.lang.String","description":"数据库登录用户名。"},
