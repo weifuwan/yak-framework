@@ -1,6 +1,6 @@
 package io.yak.framework.security.web;
 
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.Result;
 import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.controller.v1.LoginController;

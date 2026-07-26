@@ -1,6 +1,6 @@
 package io.yak.framework.security.service;
 
-import io.yak.framework.security.common.PagingData;
+import io.yak.framework.common.PagingData;
 import io.yak.framework.security.common.dto.resource.type.ResourceTypeQueryDTO;
 import io.yak.framework.security.common.vo.resource.ResourceTypeVO;
 

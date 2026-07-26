@@ -1,7 +1,5 @@
-package io.yak.framework.security.common;
+package io.yak.framework.common;
 
-import io.yak.framework.security.common.enums.ResultCode;
-import io.yak.framework.security.exception.YakSecurityException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,11 +20,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class PagingResult<T> extends BaseResult {
-
-  /**
-   * 异常消息中错误码与错误信息的分隔符。
-   */
-  private static final String ERROR_MESSAGE_SEPARATOR = "-";
 
   /**
    * 分页业务数据。
@@ -59,7 +52,7 @@ public class PagingResult<T> extends BaseResult {
    * @return 成功返回 {@code true}
    */
   public boolean succeeded() {
-    return ResultCode.SUCCESS.getCode().equals(getCode());
+    return CommonErrorCode.SUCCESS.getCode().equals(getCode());
   }
 
   /**
@@ -68,7 +61,7 @@ public class PagingResult<T> extends BaseResult {
    * @return 资源重复返回 {@code true}
    */
   public boolean duplicate() {
-    return ResultCode.RESOURCE_DUPLICATION.getCode().equals(getCode());
+    return CommonErrorCode.RESOURCE_DUPLICATION.getCode().equals(getCode());
   }
 
   /**
@@ -101,26 +94,26 @@ public class PagingResult<T> extends BaseResult {
    */
   public static <T> PagingResult<T> success() {
     return new PagingResult<>(
-            ResultCode.SUCCESS.getCode(),
-            ResultCode.SUCCESS.getMessage()
+            CommonErrorCode.SUCCESS.getCode(),
+            CommonErrorCode.SUCCESS.getMessage()
     );
   }
 
   /**
    * 根据结果码构建失败结果。
    *
-   * @param resultCode 结果码枚举
+   * @param errorCode 错误码定义
    * @param <T>        分页记录的数据类型
    * @return 失败结果
    */
-  public static <T> PagingResult<T> fail(ResultCode resultCode) {
-    if (resultCode == null) {
+  public static <T> PagingResult<T> fail(ErrorCode errorCode) {
+    if (errorCode == null) {
       return fail();
     }
 
     return new PagingResult<>(
-            resultCode.getCode(),
-            resultCode.getMessage()
+            errorCode.getCode(),
+            errorCode.getMessage()
     );
   }
 
@@ -148,7 +141,7 @@ public class PagingResult<T> extends BaseResult {
    */
   public static <T> PagingResult<T> fail(String message) {
     return new PagingResult<>(
-            ResultCode.COMMON_FAIL.getCode(),
+            CommonErrorCode.COMMON_FAIL.getCode(),
             message
     );
   }
@@ -160,61 +153,29 @@ public class PagingResult<T> extends BaseResult {
    * @return 失败结果
    */
   public static <T> PagingResult<T> fail() {
-    return fail(ResultCode.COMMON_FAIL);
+    return fail(CommonErrorCode.COMMON_FAIL);
   }
 
   /**
    * 根据业务异常构建失败结果。
    *
-   * <p>兼容以下异常消息格式：</p>
-   *
-   * <pre>
-   * 状态码-错误信息
-   * 例如：10001-用户不存在
-   * </pre>
-   *
-   * <p>当异常为空、异常消息为空或消息格式不正确时，
-   * 自动返回通用失败结果，避免出现空指针、数组越界
-   * 或数字格式转换异常。</p>
+   * <p>优先使用异常携带的结构化错误码；只有未提供错误码时才使用异常消息。</p>
    *
    * @param exception 业务异常
-   * @param <T>       分页记录的数据类型
+   * @param <T>       返回数据类型
    * @return 失败结果
    */
-  public static <T> PagingResult<T> fail(
-          YakSecurityException exception) {
-
+  public static <T> PagingResult<T> fail(BusinessException exception) {
     if (exception == null) {
       return fail();
     }
-
-    String exceptionMessage = exception.getMessage();
-    if (exceptionMessage == null
-            || exceptionMessage.trim().isEmpty()) {
-      return fail();
+    if (exception.getErrorCode() != null) {
+      return fail(exception.getErrorCode());
     }
-
-    int separatorIndex =
-            exceptionMessage.indexOf(ERROR_MESSAGE_SEPARATOR);
-
-    if (separatorIndex <= 0
-            || separatorIndex == exceptionMessage.length() - 1) {
-      return fail(exceptionMessage);
-    }
-
-    String codeText =
-            exceptionMessage.substring(0, separatorIndex).trim();
-
-    String message =
-            exceptionMessage.substring(separatorIndex + 1).trim();
-
-    try {
-      return fail(Integer.valueOf(codeText), message);
-    } catch (NumberFormatException ignored) {
-      // 异常消息不符合“状态码-错误信息”格式时，
-      // 将完整异常消息作为通用失败信息返回。
-      return fail(exceptionMessage);
-    }
+    String message = exception.getMessage();
+    return message == null || message.trim().isEmpty()
+            ? fail()
+            : fail(message);
   }
 
   /**
@@ -252,8 +213,8 @@ public class PagingResult<T> extends BaseResult {
     String detail = message == null ? "" : message.trim();
 
     return new PagingResult<>(
-            ResultCode.PARAM_NOT_VALID.getCode(),
-            ResultCode.PARAM_NOT_VALID.getMessage()
+            CommonErrorCode.PARAM_NOT_VALID.getCode(),
+            CommonErrorCode.PARAM_NOT_VALID.getMessage()
                     + (detail.isEmpty() ? "" : "：" + detail)
                     + "，请检查后再提交！"
     );

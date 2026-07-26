@@ -1,6 +1,6 @@
 package io.yak.framework.security.service;
 
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.exception.YakSecurityException;

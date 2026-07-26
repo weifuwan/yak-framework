@@ -3,7 +3,7 @@ package io.yak.framework.security.controller.v1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.security.common.constant.Constants;
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.service.LoginService;

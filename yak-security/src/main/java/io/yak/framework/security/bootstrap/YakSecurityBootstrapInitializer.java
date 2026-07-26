@@ -1,6 +1,6 @@
 package io.yak.framework.security.bootstrap;
 
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.role.RoleSaveDTO;
 import io.yak.framework.security.common.dto.user.UserDTO;
 import io.yak.framework.security.common.entity.Permission;

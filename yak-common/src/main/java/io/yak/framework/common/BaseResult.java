@@ -1,4 +1,4 @@
-package io.yak.framework.security.common;
+package io.yak.framework.common;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package io.yak.framework.security.service;
 
-import io.yak.framework.security.common.PagingData;
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.PagingData;
+import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.project.ProjectBriefQueryDTO;
 import io.yak.framework.security.common.dto.project.ProjectQueryDTO;
 import io.yak.framework.security.common.dto.project.ProjectSaveDTO;

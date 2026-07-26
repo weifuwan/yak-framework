@@ -1,8 +1,8 @@
 package io.yak.framework.security.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.yak.framework.security.common.PagingData;
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.PagingData;
+import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.oplog.OplogDTO;
 import io.yak.framework.security.common.dto.project.ProjectBriefQueryDTO;
 import io.yak.framework.security.common.dto.project.ProjectQueryDTO;

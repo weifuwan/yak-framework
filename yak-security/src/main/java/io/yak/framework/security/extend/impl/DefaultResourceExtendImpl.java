@@ -1,7 +1,7 @@
 package io.yak.framework.security.extend.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.yak.framework.security.common.PagingData;
+import io.yak.framework.common.PagingData;
 import io.yak.framework.security.common.dto.resource.ResourceDTO;
 import io.yak.framework.security.extend.ResourceExtend;
 

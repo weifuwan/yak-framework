@@ -1,6 +1,6 @@
 package io.yak.framework.security.bootstrap;
 
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.Result;
 import io.yak.framework.security.common.entity.Permission;
 import io.yak.framework.security.common.vo.role.RoleBriefVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
