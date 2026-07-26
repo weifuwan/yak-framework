@@ -1,95 +1,35 @@
 package io.yak.framework.security.exception;
 
-/**
- * Yak Security 模块统一运行时异常。
- *
- * <p>用于封装安全模块中的业务异常，例如用户、角色、权限、
- * 登录认证及配置校验等相关异常。</p>
- */
-public class YakSecurityException extends RuntimeException {
+import io.yak.framework.common.BusinessException;
+import io.yak.framework.common.ErrorCode;
 
-    private static final long serialVersionUID = 1L;
+/** 安全模块业务异常；通用行为由 {@link BusinessException} 提供。 */
+public class YakSecurityException extends BusinessException {
 
-    private final CodeMsg codeMsg;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * 创建一个不包含错误信息的异常。
-     */
-    public YakSecurityException() {
-        super();
-        this.codeMsg = null;
-    }
+  public YakSecurityException() {
+    super((String) null);
+  }
 
-    /**
-     * 根据错误码定义创建异常。
-     *
-     * <p>异常消息格式为：</p>
-     *
-     * <pre>
-     * 错误码-错误消息
-     * </pre>
-     *
-     * @param codeMsg 错误码及错误消息定义
-     */
-    public YakSecurityException(CodeMsg codeMsg) {
-        super(codeMsg.getCode() + "-" + codeMsg.getMessage());
-        this.codeMsg = codeMsg;
-    }
+  public YakSecurityException(ErrorCode errorCode) {
+    super(errorCode);
+  }
 
-    /**
-     * 根据错误码定义和原始异常创建异常。
-     *
-     * @param codeMsg 错误码及错误消息定义
-     * @param cause   原始异常
-     */
-    public YakSecurityException(
-            CodeMsg codeMsg,
-            Throwable cause) {
-        super(
-                codeMsg.getCode() + "-" + codeMsg.getMessage(),
-                cause);
-        this.codeMsg = codeMsg;
-    }
+  public YakSecurityException(ErrorCode errorCode, Throwable cause) {
+    super(errorCode, cause);
+  }
 
-    /**
-     * 根据指定错误消息创建异常。
-     *
-     * @param message 异常消息
-     */
-    public YakSecurityException(String message) {
-        super(message);
-        this.codeMsg = null;
-    }
+  public YakSecurityException(String message) {
+    super(message);
+  }
 
-    /**
-     * 根据指定错误消息和原始异常创建异常。
-     *
-     * @param message 异常消息
-     * @param cause   原始异常
-     */
-    public YakSecurityException(
-            String message,
-            Throwable cause) {
-        super(message, cause);
-        this.codeMsg = null;
-    }
+  public YakSecurityException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * 根据原始异常创建异常。
-     *
-     * @param cause 原始异常
-     */
-    public YakSecurityException(Throwable cause) {
-        super(cause);
-        this.codeMsg = null;
-    }
+  public YakSecurityException(Throwable cause) {
+    super(cause);
+  }
 
-    /**
-     * 获取结构化错误码定义。
-     *
-     * @return 使用 {@link CodeMsg} 构造时返回对应定义，否则返回 {@code null}
-     */
-    public CodeMsg getCodeMsg() {
-        return codeMsg;
-    }
 }

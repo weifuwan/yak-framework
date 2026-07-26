@@ -1,7 +1,7 @@
 package io.yak.framework.security.common.enums;
 
-import io.yak.framework.security.exception.CodeMsg;
-public enum ResultCode implements CodeMsg {
+import io.yak.framework.common.ErrorCode;
+public enum ResultCode implements ErrorCode {
   SUCCESS(200, "成功"),
   COMMON_FAIL(999, "失败"),
   PARAM_NOT_VALID(1001, "参数无效"),

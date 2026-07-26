@@ -38,6 +38,13 @@
 
     <dependencies>
 
+        <!-- 跨模块统一返回、分页和异常契约 -->
+        <dependency>
+            <groupId>io.yak.framework</groupId>
+            <artifactId>yak-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- 单体部署的用户权限本地缓存 -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>

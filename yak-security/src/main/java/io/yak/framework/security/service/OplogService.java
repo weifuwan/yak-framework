@@ -1,6 +1,6 @@
 package io.yak.framework.security.service;
 
-import io.yak.framework.security.common.PagingData;
+import io.yak.framework.common.PagingData;
 import io.yak.framework.security.common.dto.oplog.OplogDTO;
 import io.yak.framework.security.common.dto.oplog.OplogQueryDTO;
 import io.yak.framework.security.common.vo.oplog.OplogVO;

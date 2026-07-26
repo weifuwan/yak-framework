@@ -1,6 +1,6 @@
 package io.yak.framework.security.service.impl;
 
-import io.yak.framework.security.common.PagingData;
+import io.yak.framework.common.PagingData;
 import io.yak.framework.security.common.dto.project.ProjectBriefQueryDTO;
 import io.yak.framework.security.common.dto.resource.AssignToManyUserDTO;
 import io.yak.framework.security.common.dto.resource.AssignToOneUserDTO;

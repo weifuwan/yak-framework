@@ -1,8 +1,8 @@
 package io.yak.framework.security.web;
 
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.Result;
 import io.yak.framework.security.common.enums.ResultCode;
-import io.yak.framework.security.exception.CodeMsg;
+import io.yak.framework.common.ErrorCode;
 import io.yak.framework.security.exception.YakSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class YakSecurityExceptionHandler {
   @ExceptionHandler(YakSecurityException.class)
   public ResponseEntity<Result<Void>> handleYakSecurityException(
           YakSecurityException exception) {
-    CodeMsg codeMsg = exception.getCodeMsg();
+    ErrorCode codeMsg = exception.getErrorCode();
     Result<Void> body = codeMsg == null
             ? Result.fail(exception)
             : Result.fail(codeMsg.getCode(), codeMsg.getMessage());
@@ -60,7 +60,7 @@ public class YakSecurityExceptionHandler {
             .body(Result.fail(ResultCode.COMMON_FAIL));
   }
 
-  private HttpStatus resolveStatus(CodeMsg codeMsg) {
+  private HttpStatus resolveStatus(ErrorCode codeMsg) {
     if (!(codeMsg instanceof ResultCode)) {
       return HttpStatus.INTERNAL_SERVER_ERROR;
     }

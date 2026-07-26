@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.web.PublicEndpoint;
 
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.Result;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

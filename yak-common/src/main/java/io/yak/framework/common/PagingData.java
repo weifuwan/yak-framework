@@ -1,4 +1,4 @@
-package io.yak.framework.security.common;
+package io.yak.framework.common;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package io.yak.framework.security.web;
 
 import io.yak.framework.security.config.YakSecurityProperties;
-import io.yak.framework.security.common.Result;
+import io.yak.framework.common.Result;
 import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.extend.CurrentUserProvider;
 import io.yak.framework.security.service.LoginService;
