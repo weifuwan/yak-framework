@@ -176,7 +176,38 @@ java -jar app.jar --spring.profiles.active=yak-security-bootstrap
 
 ## 6. 验证启动与登录
 
-### 6.1 健康检查
+### 6.1 在业务 Service 中获取当前用户
+
+Starter 会自动注册 `CurrentUser` Bean。业务 Service 应优先注入该接口，
+而不是在每层方法中传递 `operator`：
+
+```java
+@Service
+public class JobService {
+    private final CurrentUser currentUser;
+
+    public JobService(CurrentUser currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public void createJob(JobDTO dto) {
+        String operator = currentUser.getUsername();
+        Long userId = currentUser.getUserId();
+        Long projectId = currentUser.getProjectId();
+        List<Long> roleIds = currentUser.getRoleIds();
+    }
+}
+```
+
+非 Spring 管理的代码可使用 `YakSecurityContext.getCurrentUserId()`、
+`getCurrentUsername()`、`getCurrentProjectId()` 和 `getCurrentRoleIds()`。未登录时标量值为
+`null`、角色列表为不可变空列表，`isAuthenticated()` 为 `false`。
+
+用户 ID 和用户名只从服务端已验证的 Session 读取；项目 ID 来自
+`X-YAK-SECURITY-PROJECT-ID` 业务上下文请求头。上下文在请求结束后会自动清理，
+不应将 `CurrentUser` 的值延迟到其他线程中再读取；异步任务应在提交前显式复制所需值。
+
+### 6.2 健康检查
 
 ```bash
 curl -i http://localhost:8080/yak-security/api/v1/common/heart
@@ -184,7 +215,7 @@ curl -i http://localhost:8080/yak-security/api/v1/common/heart
 
 健康检查默认公开，可用于确认 Web 接口已加载。
 
-### 6.2 登录并保存 Session Cookie
+### 6.3 登录并保存 Session Cookie
 
 ```bash
 curl -i \
