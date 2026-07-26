@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -118,7 +119,7 @@ public class UserServiceImpl implements UserService {
           PermissionService permissionService,
           RolePermissionService rolePermissionService,
           DeptService deptService,
-          RoleService roleService,
+          @Lazy RoleService roleService,
           UserRoleService userRoleService,
           UserProjectDao userProjectDao,
           UserResourceDao userResourceDao,
