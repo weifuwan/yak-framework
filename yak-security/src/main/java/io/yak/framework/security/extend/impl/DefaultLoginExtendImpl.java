@@ -10,7 +10,7 @@ import io.yak.framework.security.extend.LoginExtend;
 import io.yak.framework.security.extend.PasswordEncoder;
 import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.util.CopyBeanUtil;
-import javax.servlet.http.Cookie;
+import io.yak.framework.security.util.SecuritySessionAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -37,18 +37,6 @@ public class DefaultLoginExtendImpl
   private static final Logger LOGGER =
           LoggerFactory.getLogger(
                   DefaultLoginExtendImpl.class);
-
-  /**
-   * Session 和兼容 Cookie 中的用户名键。
-   */
-  private static final String USER_NAME_KEY =
-          "X-SSO-USER";
-
-  /**
-   * Session 和兼容 Cookie 中的用户 ID 键。
-   */
-  private static final String USER_ID_KEY =
-          "X-SSO-USER-ID";
 
   /**
    * 用户禁用状态。
@@ -151,7 +139,6 @@ public class DefaultLoginExtendImpl
 
     initLoginContext(
             request,
-            response,
             userName,
             user.getId());
 
@@ -180,7 +167,7 @@ public class DefaultLoginExtendImpl
             response,
             "response must not be null");
 
-    clearLoginContext(request, response);
+    clearLoginContext(request);
 
     return Result.success(Boolean.TRUE);
   }
@@ -285,7 +272,6 @@ public class DefaultLoginExtendImpl
    */
   private void initLoginContext(
           HttpServletRequest request,
-          HttpServletResponse response,
           String userName,
           Long userId) {
 
@@ -303,38 +289,19 @@ public class DefaultLoginExtendImpl
             SESSION_MAX_INACTIVE_INTERVAL);
 
     session.setAttribute(
-            USER_NAME_KEY,
+            SecuritySessionAttributes.USER_NAME,
             userName);
 
     session.setAttribute(
-            USER_ID_KEY,
+            SecuritySessionAttributes.USER_ID,
             userId);
-
-    /*
-     * 下面两个 Cookie 仅作为历史兼容数据使用，
-     * 不能作为认证身份的可信来源。
-     */
-    response.addCookie(
-            createCookie(
-                    request,
-                    USER_NAME_KEY,
-                    userName,
-                    SESSION_MAX_INACTIVE_INTERVAL));
-
-    response.addCookie(
-            createCookie(
-                    request,
-                    USER_ID_KEY,
-                    userId.toString(),
-                    SESSION_MAX_INACTIVE_INTERVAL));
   }
 
   /**
    * 清理登录上下文。
    */
   private void clearLoginContext(
-          HttpServletRequest request,
-          HttpServletResponse response) {
+          HttpServletRequest request) {
 
     HttpSession session =
             request.getSession(false);
@@ -348,19 +315,6 @@ public class DefaultLoginExtendImpl
       }
     }
 
-    response.addCookie(
-            createCookie(
-                    request,
-                    USER_NAME_KEY,
-                    "",
-                    0));
-
-    response.addCookie(
-            createCookie(
-                    request,
-                    USER_ID_KEY,
-                    "",
-                    0));
   }
 
   /**
@@ -370,7 +324,7 @@ public class DefaultLoginExtendImpl
           HttpServletRequest request,
           HttpServletResponse response) {
 
-    clearLoginContext(request, response);
+    clearLoginContext(request);
 
     response.setStatus(
             HttpServletResponse.SC_UNAUTHORIZED);
@@ -412,7 +366,7 @@ public class DefaultLoginExtendImpl
           HttpSession session) {
 
     Object value =
-            session.getAttribute(USER_NAME_KEY);
+            session.getAttribute(SecuritySessionAttributes.USER_NAME);
 
     return value instanceof String
             ? (String) value
@@ -426,7 +380,7 @@ public class DefaultLoginExtendImpl
           HttpSession session) {
 
     Object value =
-            session.getAttribute(USER_ID_KEY);
+            session.getAttribute(SecuritySessionAttributes.USER_ID);
 
     if (value instanceof Long) {
       return (Long) value;
@@ -436,39 +390,7 @@ public class DefaultLoginExtendImpl
       return ((Number) value).longValue();
     }
 
-    if (value instanceof String) {
-      String text = (String) value;
-
-      if (StringUtils.hasText(text)) {
-        try {
-          return Long.valueOf(text);
-        } catch (NumberFormatException ignored) {
-          return null;
-        }
-      }
-    }
-
     return null;
-  }
-
-  /**
-   * 创建兼容 Cookie。
-   */
-  private Cookie createCookie(
-          HttpServletRequest request,
-          String name,
-          String value,
-          int maxAge) {
-
-    Cookie cookie =
-            new Cookie(name, value);
-
-    cookie.setPath("/");
-    cookie.setMaxAge(maxAge);
-    cookie.setHttpOnly(true);
-    cookie.setSecure(request.isSecure());
-
-    return cookie;
   }
 
   /**
