@@ -74,6 +74,25 @@ public class YakSecurityProperties {
   private final DataSourceProperties datasource =
           new DataSourceProperties();
 
+  /** First-user administrator bootstrap settings. */
+  private final BootstrapProperties bootstrap =
+          new BootstrapProperties();
+
+  @Getter
+  @Setter
+  @ToString
+  public static class BootstrapProperties {
+    /** Whether to create an administrator when the user table is empty. */
+    private boolean enabled = false;
+    /** Administrator login name. */
+    private String username = "admin";
+    /** Administrator password. There is deliberately no default value. */
+    @ToString.Exclude
+    private String password;
+    /** Administrator display name. */
+    private String realName = "系统管理员";
+  }
+
   /**
    * 校验数据库相关配置。
    *
