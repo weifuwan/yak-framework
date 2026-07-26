@@ -6,12 +6,15 @@ import io.yak.framework.security.common.dto.oplog.OplogQueryDTO;
 import io.yak.framework.security.common.vo.oplog.OplogVO;
 import java.util.List;
 
+/**
+ * 操作日志服务接口。
+ */
 public interface OplogService {
-  public Integer saveOplog(OplogDTO var1);
+  Integer saveOplog(OplogDTO var1);
 
-  public PagingData<OplogVO> getOplogPage(OplogQueryDTO var1);
+  PagingData<OplogVO> getOplogPage(OplogQueryDTO var1);
 
-  public OplogVO getOplogDetailByOplogId(Long var1);
+  OplogVO getOplogDetailByOplogId(Long var1);
 
-  public List<String> listTargetType();
+  List<String> listTargetType();
 }

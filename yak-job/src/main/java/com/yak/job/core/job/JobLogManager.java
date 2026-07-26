@@ -8,9 +8,12 @@ import com.yak.job.common.vo.YakJobLogVO;
 
 import java.util.List;
 
+/**
+ * 作业日志管理接口。
+ */
 public interface JobLogManager {
-    public List<YakJobLogVO> pageJobLogs(TaskLogPageQueryDTO var1);
+    List<YakJobLogVO> pageJobLogs(TaskLogPageQueryDTO var1);
 
-    public int getJobLogsCount(TaskLogPageQueryDTO var1);
+    int getJobLogsCount(TaskLogPageQueryDTO var1);
 }
 

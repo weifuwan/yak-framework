@@ -4,12 +4,15 @@ import io.yak.framework.security.common.dto.permission.PermissionDTO;
 import io.yak.framework.security.common.vo.permission.PermissionTreeVO;
 import java.util.List;
 
+/**
+ * 权限服务接口。
+ */
 public interface PermissionService {
-  public PermissionTreeVO buildPermissionTreeWithHas(List<Long> var1);
+  PermissionTreeVO buildPermissionTreeWithHas(List<Long> var1);
 
-  public PermissionTreeVO buildPermissionTree();
+  PermissionTreeVO buildPermissionTree();
 
-  public PermissionTreeVO buildPermissionTreeByRoleId(Long var1);
+  PermissionTreeVO buildPermissionTreeByRoleId(Long var1);
 
-  public void savePermission(List<PermissionDTO> var1);
+  void savePermission(List<PermissionDTO> var1);
 }

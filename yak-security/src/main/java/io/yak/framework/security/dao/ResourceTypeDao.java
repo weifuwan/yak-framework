@@ -5,12 +5,15 @@ import io.yak.framework.security.common.dto.resource.type.ResourceTypeQueryDTO;
 import io.yak.framework.security.common.entity.ResourceType;
 import java.util.List;
 
+/**
+ * 资源类型数据访问接口。
+ */
 public interface ResourceTypeDao {
-  public List<ResourceType> selectAll();
+  List<ResourceType> selectAll();
 
-  public IPage<ResourceType> selectPage(ResourceTypeQueryDTO var1);
+  IPage<ResourceType> selectPage(ResourceTypeQueryDTO var1);
 
-  public ResourceType selectByResourceTypeId(Long resourceTypeId);
+  ResourceType selectByResourceTypeId(Long resourceTypeId);
 
-  public void insertBatch(List<ResourceType> var1);
+  void insertBatch(List<ResourceType> var1);
 }

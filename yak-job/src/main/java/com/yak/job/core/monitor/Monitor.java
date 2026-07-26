@@ -3,9 +3,12 @@
  */
 package com.yak.job.core.monitor;
 
+/**
+ * 监控器生命周期接口。
+ */
 public interface Monitor {
-    public void maintain();
+    void maintain();
 
-    public void stop();
+    void stop();
 }
 

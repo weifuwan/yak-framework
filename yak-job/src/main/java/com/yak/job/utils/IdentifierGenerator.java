@@ -3,8 +3,11 @@
  */
 package com.yak.job.utils;
 
+/**
+ * 标识符生成接口。
+ */
 public interface IdentifierGenerator {
-    public Number nextId(Object var1);
+    Number nextId(Object var1);
 
     default public String nextUuid(Object entity) {
         return IdWorker.get32Uuid();

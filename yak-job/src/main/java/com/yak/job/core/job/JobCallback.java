@@ -5,7 +5,10 @@ package com.yak.job.core.job;
 
 import com.yak.job.common.domain.YakJob;
 
+/**
+ * 作业执行回调接口。
+ */
 public interface JobCallback {
-    public void callback(YakJob var1);
+    void callback(YakJob var1);
 }
 

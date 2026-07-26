@@ -5,9 +5,12 @@ package com.yak.job.core.consensual;
 
 import com.yak.job.common.domain.YakTask;
 
+/**
+ * 任务执行共识策略接口。
+ */
 public interface Consensual {
-    public String getName();
+    String getName();
 
-    public boolean canClaim(YakTask var1);
+    boolean canClaim(YakTask var1);
 }
 

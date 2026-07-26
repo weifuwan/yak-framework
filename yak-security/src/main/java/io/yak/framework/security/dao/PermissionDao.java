@@ -3,8 +3,11 @@ package io.yak.framework.security.dao;
 import io.yak.framework.security.common.entity.Permission;
 import java.util.List;
 
+/**
+ * 权限数据访问接口。
+ */
 public interface PermissionDao {
-  public List<Permission> selectAllAndAscOrderByLevel();
+  List<Permission> selectAllAndAscOrderByLevel();
 
-  public void insertBatch(List<Permission> var1);
+  void insertBatch(List<Permission> var1);
 }

@@ -18,14 +18,17 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+/**
+ * 工作节点黑名单 MyBatis 映射接口。
+ */
 public interface YakWorkerBlacklistMapper {
     @Insert(value = {"INSERT INTO yak_worker_blacklist(worker_code) VALUES(#{workerCode})"})
-    public int insert(YakWorkerBlacklistPO var1);
+    int insert(YakWorkerBlacklistPO var1);
 
     @Delete(value = {"delete from yak_worker_blacklist where worker_code=#{workerCode}"})
-    public int deleteByWorkerCode(@Param(value = "workerCode") String var1);
+    int deleteByWorkerCode(@Param(value = "workerCode") String var1);
 
     @Select(value = {"select id, worker_code from yak_worker_blacklist"})
-    public List<YakWorkerBlacklistPO> selectAll();
+    List<YakWorkerBlacklistPO> selectAll();
 }
 

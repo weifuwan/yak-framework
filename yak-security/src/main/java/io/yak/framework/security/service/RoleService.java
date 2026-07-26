@@ -13,39 +13,42 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 角色服务接口。
+ */
 public interface RoleService {
-  public RoleVO getRoleDetailByRoleId(Long var1);
+  RoleVO getRoleDetailByRoleId(Long var1);
 
-  public RoleBriefVO getRoleBriefByRoleId(Long var1);
+  RoleBriefVO getRoleBriefByRoleId(Long var1);
 
-  public PagingData<RoleVO> getRolePage(RoleQueryDTO var1);
+  PagingData<RoleVO> getRolePage(RoleQueryDTO var1);
 
-  public void createRole(RoleSaveDTO var1, HttpServletRequest var2)
+  void createRole(RoleSaveDTO var1, HttpServletRequest var2)
       throws YakSecurityException;
 
-  public void deleteRoleByRoleId(Long var1, HttpServletRequest var2)
+  void deleteRoleByRoleId(Long var1, HttpServletRequest var2)
       throws YakSecurityException;
 
-  public void deleteUserFromRole(Long var1, Long var2,
+  void deleteUserFromRole(Long var1, Long var2,
                                  HttpServletRequest var3)
       throws YakSecurityException;
 
-  public void updateRole(RoleSaveDTO var1, HttpServletRequest var2)
+  void updateRole(RoleSaveDTO var1, HttpServletRequest var2)
       throws YakSecurityException;
 
-  public void assignRoles(RoleAssignDTO var1, HttpServletRequest var2)
+  void assignRoles(RoleAssignDTO var1, HttpServletRequest var2)
       throws YakSecurityException;
 
-  public List<AssignInfoVO> getAssignInfoByRoleId(Long var1);
+  List<AssignInfoVO> getAssignInfoByRoleId(Long var1);
 
-  public List<RoleBriefVO> getRoleBriefListByRoleName(String var1);
+  List<RoleBriefVO> getRoleBriefListByRoleName(String var1);
 
-  public RoleDeleteCheckVO checkBeforeDelete(Long var1);
+  RoleDeleteCheckVO checkBeforeDelete(Long var1);
 
-  public List<RoleBriefVO> getAllRoleBriefList();
+  List<RoleBriefVO> getAllRoleBriefList();
 
-  public List<RoleBriefVO> getRoleBriefListByUserId(Long var1);
+  List<RoleBriefVO> getRoleBriefListByUserId(Long var1);
 
-  public Map<Long, List<RoleBriefVO>>
+  Map<Long, List<RoleBriefVO>>
   getRoleBriefListByUserIds(List<Long> var1);
 }

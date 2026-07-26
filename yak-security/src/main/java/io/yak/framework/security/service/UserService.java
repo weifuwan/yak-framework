@@ -13,43 +13,46 @@ import io.yak.framework.security.common.vo.user.UserVO;
 import io.yak.framework.security.exception.YakSecurityException;
 import java.util.List;
 
+/**
+ * 用户服务接口。
+ */
 public interface UserService {
-  public Result<Void> check(Integer var1, String var2);
+  Result<Void> check(Integer var1, String var2);
 
-  public PagingData<UserVO> getUserPage(UserQueryDTO var1);
+  PagingData<UserVO> getUserPage(UserQueryDTO var1);
 
-  public PagingData<UserBriefVO> getUserBriefPage(UserBriefQueryDTO var1);
+  PagingData<UserBriefVO> getUserBriefPage(UserBriefQueryDTO var1);
 
-  public UserVO getUserDetailByUserId(Long var1);
+  UserVO getUserDetailByUserId(Long var1);
 
-  public Result<Void> deleteByUserId(Long var1);
+  Result<Void> deleteByUserId(Long var1);
 
-  public UserBriefVO getUserBriefByUserName(String var1);
+  UserBriefVO getUserBriefByUserName(String var1);
 
-  public User getUserByUserName(String var1);
+  User getUserByUserName(String var1);
 
-  public List<UserBriefVO> getUserBriefListByUserIdList(List<Long> var1);
+  List<UserBriefVO> getUserBriefListByUserIdList(List<Long> var1);
 
-  public List<UserBriefVO> getUserBriefListByDeptId(Long var1);
+  List<UserBriefVO> getUserBriefListByDeptId(Long var1);
 
-  public List<AssignInfoVO> getAssignDataByUserId(Long var1)
+  List<AssignInfoVO> getAssignDataByUserId(Long var1)
       throws YakSecurityException;
 
-  public List<UserBriefVO> getUserBriefListByRoleId(Long var1);
+  List<UserBriefVO> getUserBriefListByRoleId(Long var1);
 
-  public List<UserBriefVO> getUserBriefListByUsernameOrRealName(String var1);
+  List<UserBriefVO> getUserBriefListByUsernameOrRealName(String var1);
 
-  public List<UserBriefVO> getAllUserBriefListOrderByCreateTime(boolean var1);
+  List<UserBriefVO> getAllUserBriefListOrderByCreateTime(boolean var1);
 
-  public List<Long> getUserIdListByUsernameOrRealName(String var1);
+  List<Long> getUserIdListByUsernameOrRealName(String var1);
 
-  public List<UserBriefVO> getAllUserBriefList();
+  List<UserBriefVO> getAllUserBriefList();
 
-  public Result<Void> addUser(UserDTO var1, String var2);
+  Result<Void> addUser(UserDTO var1, String var2);
 
-  public Result<Void> editUser(UserDTO var1, String var2);
+  Result<Void> editUser(UserDTO var1, String var2);
 
-  public Result<List<UserVO>> getUserDetailByUserIds(List<Long> var1);
+  Result<List<UserVO>> getUserDetailByUserIds(List<Long> var1);
 
-  public List<UserBasicVO> getUserBasicListByUserIdList(List<Long> var1);
+  List<UserBasicVO> getUserBasicListByUserIdList(List<Long> var1);
 }

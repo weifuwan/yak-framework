@@ -19,35 +19,38 @@ import io.yak.framework.security.exception.YakSecurityException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
+/**
+ * 用户资源服务接口。
+ */
 public interface UserResourceService {
-  public int getResourceCntByUserId(Long var1, UserResourceQueryDTO var2);
+  int getResourceCntByUserId(Long var1, UserResourceQueryDTO var2);
 
-  public PagingData<MByRVO> getManageByResourcePage(MByRQueryDTO var1)
+  PagingData<MByRVO> getManageByResourcePage(MByRQueryDTO var1)
       throws YakSecurityException;
 
-  public PagingData<MByUVO> getManageByUserPage(MByUQueryDTO var1);
+  PagingData<MByUVO> getManageByUserPage(MByUQueryDTO var1);
 
-  public void assignResourcePermission(AssignToOneUserDTO var1)
+  void assignResourcePermission(AssignToOneUserDTO var1)
       throws YakSecurityException;
 
-  public void assignResourcePermission(AssignToManyUserDTO var1,
+  void assignResourcePermission(AssignToManyUserDTO var1,
                                        HttpServletRequest var2)
       throws YakSecurityException;
 
-  public void batchAssignResourcePermission(BatchAssignDTO var1,
+  void batchAssignResourcePermission(BatchAssignDTO var1,
                                             HttpServletRequest var2)
       throws YakSecurityException;
 
-  public List<MByUDataVO> getManagerByUserDataList(MByUDataQueryDTO var1)
+  List<MByUDataVO> getManagerByUserDataList(MByUDataQueryDTO var1)
       throws YakSecurityException;
 
-  public List<MByRDataVO> getManagerByResourceDataList(MByRDataQueryDTO var1)
+  List<MByRDataVO> getManagerByResourceDataList(MByRDataQueryDTO var1)
       throws YakSecurityException;
 
-  public boolean getViewPermissionControlStatus();
+  boolean getViewPermissionControlStatus();
 
-  public void changeResourceViewControlStatus();
+  void changeResourceViewControlStatus();
 
-  public ControlLevelCode getControlLevel(ControlLevelQueryDTO var1)
+  ControlLevelCode getControlLevel(ControlLevelQueryDTO var1)
       throws YakSecurityException;
 }

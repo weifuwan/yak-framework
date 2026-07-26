@@ -10,37 +10,40 @@ import com.yak.job.common.dto.TaskPageQueryDTO;
 
 import java.util.List;
 
+/**
+ * 任务管理接口。
+ */
 public interface TaskManager {
-    public Result delete(String var1);
+    Result delete(String var1);
 
-    public boolean update(YakTaskDTO var1);
+    boolean update(YakTaskDTO var1);
 
-    public List<YakTask> nextTriggers(Long var1);
+    List<YakTask> nextTriggers(Long var1);
 
-    public List<YakTask> nextTriggers(Long var1, Long var2);
+    List<YakTask> nextTriggers(Long var1, Long var2);
 
-    public void submit(List<YakTask> var1);
+    void submit(List<YakTask> var1);
 
-    public Result execute(String var1, Boolean var2);
+    Result execute(String var1, Boolean var2);
 
-    public void execute(YakTask var1, Boolean var2);
+    void execute(YakTask var1, Boolean var2);
 
-    public int stopAll();
+    int stopAll();
 
-    public Result<Boolean> updateTaskStatus(String var1, int var2);
+    Result<Boolean> updateTaskStatus(String var1, int var2);
 
-    public Result<Boolean> copy(String var1, String var2, List<String> var3, String var4);
+    Result<Boolean> copy(String var1, String var2, List<String> var3, String var4);
 
-    public Result<Boolean> updateWorkIpsParam(String var1, List<String> var2, String var3);
+    Result<Boolean> updateWorkIpsParam(String var1, List<String> var2, String var3);
 
-    public List<YakTask> getAllRuning();
+    List<YakTask> getAllRuning();
 
-    public int pagineTaskConut(TaskPageQueryDTO var1);
+    int pagineTaskConut(TaskPageQueryDTO var1);
 
-    public List<YakTask> getPagineList(TaskPageQueryDTO var1);
+    List<YakTask> getPagineList(TaskPageQueryDTO var1);
 
-    public Result<Boolean> release(String var1, String var2);
+    Result<Boolean> release(String var1, String var2);
 
-    public YakTask getByCode(String var1);
+    YakTask getByCode(String var1);
 }
 

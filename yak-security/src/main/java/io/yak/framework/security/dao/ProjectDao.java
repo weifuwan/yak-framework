@@ -7,23 +7,26 @@ import io.yak.framework.security.common.entity.project.Project;
 import io.yak.framework.security.common.entity.project.ProjectBrief;
 import java.util.List;
 
+/**
+ * 项目数据访问接口。
+ */
 public interface ProjectDao {
-  public Project selectByProjectId(Long projectId);
+  Project selectByProjectId(Long projectId);
 
-  public void insert(Project var1);
+  void insert(Project var1);
 
-  public IPage<Project> selectPageByDeptIdListAndProjectIdList(
+  IPage<Project> selectPageByDeptIdListAndProjectIdList(
       ProjectQueryDTO var1, List<Long> var2, List<Long> var3);
 
-  public void deleteByProjectId(Long projectId);
+  void deleteByProjectId(Long projectId);
 
-  public int selectCountByProjectNameAndNotProjectId(String projectName, Long projectId);
+  int selectCountByProjectNameAndNotProjectId(String projectName, Long projectId);
 
-  public IPage<ProjectBrief> selectBriefPage(ProjectBriefQueryDTO var1);
+  IPage<ProjectBrief> selectBriefPage(ProjectBriefQueryDTO var1);
 
-  public List<ProjectBrief> selectAllBriefList();
+  List<ProjectBrief> selectAllBriefList();
 
-  public void update(Project var1);
+  void update(Project var1);
 
-  public List<Project> selectProjectBriefByProjectIds(List<Long> var1);
+  List<Project> selectProjectBriefByProjectIds(List<Long> var1);
 }

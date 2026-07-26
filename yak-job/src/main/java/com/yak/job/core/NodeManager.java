@@ -3,6 +3,9 @@
  */
 package com.yak.job.core;
 
+/**
+ * 调度节点管理接口。
+ */
 public interface NodeManager {
 }
 

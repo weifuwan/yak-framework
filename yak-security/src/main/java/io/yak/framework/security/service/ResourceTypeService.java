@@ -5,15 +5,18 @@ import io.yak.framework.security.common.dto.resource.type.ResourceTypeQueryDTO;
 import io.yak.framework.security.common.vo.resource.ResourceTypeVO;
 import java.util.List;
 
+/**
+ * 资源类型服务接口。
+ */
 public interface ResourceTypeService {
-  public List<ResourceTypeVO> getAllResourceTypeList();
+  List<ResourceTypeVO> getAllResourceTypeList();
 
-  public List<Long> getAllResourceTypeIdList();
+  List<Long> getAllResourceTypeIdList();
 
-  public PagingData<ResourceTypeVO>
+  PagingData<ResourceTypeVO>
   getResourceTypePage(ResourceTypeQueryDTO var1);
 
-  public ResourceTypeVO getResourceTypeByResourceTypeId(Long var1);
+  ResourceTypeVO getResourceTypeByResourceTypeId(Long var1);
 
-  public void saveResourceType(List<String> var1);
+  void saveResourceType(List<String> var1);
 }

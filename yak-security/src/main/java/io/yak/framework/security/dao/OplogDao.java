@@ -5,12 +5,15 @@ import io.yak.framework.security.common.dto.oplog.OplogQueryDTO;
 import io.yak.framework.security.common.entity.Oplog;
 import java.util.List;
 
+/**
+ * 操作日志数据访问接口。
+ */
 public interface OplogDao {
-  public IPage<Oplog> selectPageWithoutDetail(OplogQueryDTO var1);
+  IPage<Oplog> selectPageWithoutDetail(OplogQueryDTO var1);
 
-  public Oplog selectByOplogId(Long oplogId);
+  Oplog selectByOplogId(Long oplogId);
 
-  public void insert(Oplog var1);
+  void insert(Oplog var1);
 
-  public List<String> listTargetType();
+  List<String> listTargetType();
 }

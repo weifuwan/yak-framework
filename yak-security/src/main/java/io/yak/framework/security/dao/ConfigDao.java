@@ -5,24 +5,27 @@ import io.yak.framework.security.common.dto.config.ConfigQueryDTO;
 import io.yak.framework.security.common.po.ConfigPO;
 import java.util.List;
 
+/**
+ * 配置数据访问接口。
+ */
 public interface ConfigDao {
-  public int insert(ConfigPO var1);
+  int insert(ConfigPO var1);
 
-  public int updateById(ConfigPO var1);
+  int updateById(ConfigPO var1);
 
-  public int update(ConfigPO var1);
+  int update(ConfigPO var1);
 
-  public int deleteById(Long var1);
+  int deleteById(Long var1);
 
-  public IPage<ConfigPO> selectPage(ConfigQueryDTO var1);
+  IPage<ConfigPO> selectPage(ConfigQueryDTO var1);
 
-  public List<ConfigPO> listByCondition(ConfigPO var1);
+  List<ConfigPO> listByCondition(ConfigPO var1);
 
-  public List<ConfigPO> listConfigByGroup(String var1);
+  List<ConfigPO> listConfigByGroup(String var1);
 
-  public List<String> listDistinctGroup();
+  List<String> listDistinctGroup();
 
-  public ConfigPO getbyId(Long var1);
+  ConfigPO getbyId(Long var1);
 
-  public ConfigPO getByGroupAndName(String var1, String var2);
+  ConfigPO getByGroupAndName(String var1, String var2);
 }

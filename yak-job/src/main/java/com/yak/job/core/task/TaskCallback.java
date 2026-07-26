@@ -3,7 +3,10 @@
  */
 package com.yak.job.core.task;
 
+/**
+ * 任务执行回调接口。
+ */
 public interface TaskCallback {
-    public void callback(String var1);
+    void callback(String var1);
 }
 
