@@ -81,7 +81,7 @@ public class UserRoleServiceImpl implements UserRoleService {
   private List<UserRole> getUserRoleList(boolean isUserId, Long id,
                                          List<Long> idList) {
     ArrayList<UserRole> result = new ArrayList<UserRole>();
-    for (Integer id2 : idList) {
+    for (Long id2 : idList) {
       result.add(isUserId ? new UserRole(id, id2) : new UserRole(id2, id));
     }
     return result;

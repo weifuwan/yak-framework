@@ -34,7 +34,7 @@ public class DeptServiceImpl implements DeptService {
                           .id(0)
                           .childList(new ArrayList<DeptTreeVO>())
                           .build();
-    HashMap<Integer, DeptTreeVO> parentMap = new HashMap<Integer, DeptTreeVO>();
+    HashMap<Long, DeptTreeVO> parentMap = new HashMap<Long, DeptTreeVO>();
     parentMap.put(0, root);
     for (Dept dept : deptList) {
       DeptTreeVO parent;
@@ -54,7 +54,7 @@ public class DeptServiceImpl implements DeptService {
 
   @Override
   public List<DeptBriefVO> getDeptBriefListByChildId(Long deptId) {
-    Map<Integer, Dept> deptMap = this.getAllDeptMap();
+    Map<Long, Dept> deptMap = this.getAllDeptMap();
     return this.getDeptBriefListFromDeptMapByChildId(deptMap, deptId);
   }
 
@@ -96,9 +96,9 @@ public class DeptServiceImpl implements DeptService {
   }
 
   @Override
-  public Map<Integer, Dept> getAllDeptMap() {
+  public Map<Long, Dept> getAllDeptMap() {
     List<Dept> deptList = this.deptDao.selectAllAndAscOrderByLevel();
-    HashMap<Integer, Dept> map = new HashMap<Integer, Dept>();
+    HashMap<Long, Dept> map = new HashMap<Long, Dept>();
     for (Dept dept : deptList) {
       map.put(dept.getId(), dept);
     }
@@ -107,7 +107,7 @@ public class DeptServiceImpl implements DeptService {
 
   @Override
   public List<DeptBriefVO>
-  getDeptBriefListFromDeptMapByChildId(Map<Integer, Dept> deptMap,
+  getDeptBriefListFromDeptMapByChildId(Map<Long, Dept> deptMap,
                                        Long deptId) {
     Dept dept;
     if (deptId == null || deptId == 0 || CollectionUtils.isEmpty(deptMap)) {

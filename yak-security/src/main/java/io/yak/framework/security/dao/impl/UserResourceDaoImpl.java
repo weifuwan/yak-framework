@@ -11,6 +11,7 @@ import io.yak.framework.security.dao.UserResourceDao;
 import io.yak.framework.security.dao.impl.BaseDaoImpl;
 import io.yak.framework.security.dao.mapper.UserResourceMapper;
 import io.yak.framework.security.util.CopyBeanUtil;
+import io.yak.framework.security.util.DatabaseNumberUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -146,7 +147,7 @@ public class UserResourceDaoImpl
         List resourceIdList =
                 this.userResourceMapper.selectObjs((Wrapper) queryWrapper);
         return resourceIdList.stream()
-                .map(Integer.class::cast)
+                .map(DatabaseNumberUtils::toLong)
                 .collect(Collectors.toList());
     }
 
@@ -202,7 +203,7 @@ public class UserResourceDaoImpl
         queryWrapper.select(new String[]{"user_id"}).groupBy((Object) "user_id");
         return this.userResourceMapper.selectObjs((Wrapper) queryWrapper)
                 .stream()
-                .map(Integer.class::cast)
+                .map(DatabaseNumberUtils::toLong)
                 .collect(Collectors.toList());
     }
 

@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
     List<ProjectBriefVO> projects = CopyBeanUtil.copyList(
         this.projectDao.selectProjectBriefByProjectIds(projectIds),
         ProjectBriefVO.class);
-    Map<Integer, ProjectBriefVO> projectId2ProjectMap =
+    Map<Long, ProjectBriefVO> projectId2ProjectMap =
         projects.stream().collect(
             Collectors.toMap(ProjectBriefVO::getId, i -> i));
     Map userId2ProjectListMap =
@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
                                    -> (ProjectBriefVO)projectId2ProjectMap.get(
                                        i.getProjectId()),
                                    Collectors.toSet())));
-    Map<Integer, List<RoleBriefVO>> userId2RoleListMap =
+    Map<Long, List<RoleBriefVO>> userId2RoleListMap =
         this.roleService.getRoleBriefListByUserIds(userIds);
     List userList = pageInfo.getRecords();
     for (User user : userList) {
@@ -212,7 +212,7 @@ public class UserServiceImpl implements UserService {
     List<ProjectBriefVO> projects = CopyBeanUtil.copyList(
         this.projectDao.selectProjectBriefByProjectIds(projectIds),
         ProjectBriefVO.class);
-    Map<Integer, ProjectBriefVO> projectId2ProjectMap =
+    Map<Long, ProjectBriefVO> projectId2ProjectMap =
         projects.stream().collect(
             Collectors.toMap(ProjectBriefVO::getId, i -> i));
     Map userId2ProjectListMap =

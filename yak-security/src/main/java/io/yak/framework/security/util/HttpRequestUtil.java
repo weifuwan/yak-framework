@@ -58,10 +58,10 @@ public class HttpRequestUtil {
     return id;
   }
 
-  public static Integer getOperatorIdFromHeader(HttpServletRequest request) {
+  public static Long getOperatorIdFromHeader(HttpServletRequest request) {
     Long id = HttpRequestUtil.strConvertInteger(request.getHeader(USER_ID));
     if (id == null) {
-      return -1;
+      return -1L;
     }
     return id;
   }
@@ -83,9 +83,9 @@ public class HttpRequestUtil {
     return HttpRequestUtil.strConvertInteger(projectIdStr);
   }
 
-  private static Integer strConvertInteger(String str) {
+  private static Long strConvertInteger(String str) {
     try {
-      return StringUtils.isEmpty((Object)str) ? null : Integer.valueOf(str);
+      return StringUtils.isEmpty((Object)str) ? null : Long.valueOf(str);
     } catch (Exception ignore) {
       return null;
     }

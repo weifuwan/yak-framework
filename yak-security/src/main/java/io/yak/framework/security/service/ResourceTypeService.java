@@ -13,7 +13,7 @@ public interface ResourceTypeService {
   public PagingData<ResourceTypeVO>
   getResourceTypePage(ResourceTypeQueryDTO var1);
 
-  public ResourceTypeVO getResourceTypeByResourceTypeId(Integer var1);
+  public ResourceTypeVO getResourceTypeByResourceTypeId(Long var1);
 
   public void saveResourceType(List<String> var1);
 }

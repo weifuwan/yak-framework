@@ -8,6 +8,7 @@ import io.yak.framework.security.common.po.UserProjectPO;
 import io.yak.framework.security.dao.UserProjectDao;
 import io.yak.framework.security.dao.mapper.UserProjectMapper;
 import io.yak.framework.security.util.CopyBeanUtil;
+import io.yak.framework.security.util.DatabaseNumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -36,7 +37,7 @@ public class UserProjectDaoImpl
         queryWrapper.eq((Object) "user_type", (Object) type);
         List userIdList = this.userProjectMapper.selectObjs((Wrapper) queryWrapper);
         return userIdList.stream()
-                .map(Integer.class::cast)
+                .map(DatabaseNumberUtils::toLong)
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +62,7 @@ public class UserProjectDaoImpl
         List projectIdList =
                 this.userProjectMapper.selectObjs((Wrapper) queryWrapper);
         return projectIdList.stream()
-                .map(Integer.class::cast)
+                .map(DatabaseNumberUtils::toLong)
                 .collect(Collectors.toList());
     }
 

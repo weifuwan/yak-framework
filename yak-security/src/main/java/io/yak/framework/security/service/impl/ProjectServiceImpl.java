@@ -126,7 +126,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.projectDao.selectPageByDeptIdListAndProjectIdList(
             queryDTO, deptIdList, projectIdList);
     ArrayList<ProjectVO> projectVOList = new ArrayList<ProjectVO>();
-    Map<Integer, Dept> deptMap = this.deptService.getAllDeptMap();
+    Map<Long, Dept> deptMap = this.deptService.getAllDeptMap();
     for (Project project : page.getRecords()) {
       ProjectVO projectVO = CopyBeanUtil.copy(project, ProjectVO.class);
       List<Long> userIdList =
@@ -341,7 +341,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.projectDao.selectPageByDeptIdListAndProjectIdList(
             queryDTO, deptIdList, projectIdList);
     ArrayList<ProjectVO> projectVOList = new ArrayList<ProjectVO>();
-    Map<Integer, Dept> deptMap = this.deptService.getAllDeptMap();
+    Map<Long, Dept> deptMap = this.deptService.getAllDeptMap();
     for (Project project : page.getRecords()) {
       ProjectVO projectVO = CopyBeanUtil.copy(project, ProjectVO.class);
       List<Long> userIdList =
@@ -416,7 +416,7 @@ public class ProjectServiceImpl implements ProjectService {
                                 .collect(Collectors.toList());
     List<UserBasicVO> userBasicListByUserIdList =
         this.userService.getUserBasicListByUserIdList(userIds);
-    Map<Integer, UserBasicVO> userId2UserBasicVOMap =
+    Map<Long, UserBasicVO> userId2UserBasicVOMap =
         userBasicListByUserIdList.stream().collect(
             Collectors.toMap(UserBasicVO::getId, i -> i));
     Consumer<ProjectBriefVOWithUser> projectBriefVOWithUserConsumer =

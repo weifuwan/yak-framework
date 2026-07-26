@@ -14,19 +14,19 @@ import java.util.List;
 import java.util.Map;
 
 public interface RoleService {
-  public RoleVO getRoleDetailByRoleId(Integer var1);
+  public RoleVO getRoleDetailByRoleId(Long var1);
 
-  public RoleBriefVO getRoleBriefByRoleId(Integer var1);
+  public RoleBriefVO getRoleBriefByRoleId(Long var1);
 
   public PagingData<RoleVO> getRolePage(RoleQueryDTO var1);
 
   public void createRole(RoleSaveDTO var1, HttpServletRequest var2)
       throws YakSecurityException;
 
-  public void deleteRoleByRoleId(Integer var1, HttpServletRequest var2)
+  public void deleteRoleByRoleId(Long var1, HttpServletRequest var2)
       throws YakSecurityException;
 
-  public void deleteUserFromRole(Integer var1, Integer var2,
+  public void deleteUserFromRole(Long var1, Long var2,
                                  HttpServletRequest var3)
       throws YakSecurityException;
 
@@ -36,16 +36,16 @@ public interface RoleService {
   public void assignRoles(RoleAssignDTO var1, HttpServletRequest var2)
       throws YakSecurityException;
 
-  public List<AssignInfoVO> getAssignInfoByRoleId(Integer var1);
+  public List<AssignInfoVO> getAssignInfoByRoleId(Long var1);
 
   public List<RoleBriefVO> getRoleBriefListByRoleName(String var1);
 
-  public RoleDeleteCheckVO checkBeforeDelete(Integer var1);
+  public RoleDeleteCheckVO checkBeforeDelete(Long var1);
 
   public List<RoleBriefVO> getAllRoleBriefList();
 
-  public List<RoleBriefVO> getRoleBriefListByUserId(Integer var1);
+  public List<RoleBriefVO> getRoleBriefListByUserId(Long var1);
 
-  public Map<Integer, List<RoleBriefVO>>
+  public Map<Long, List<RoleBriefVO>>
   getRoleBriefListByUserIds(List<Long> var1);
 }

@@ -13,11 +13,11 @@ public interface ConfigService {
   public Result<Integer> addConfig(String var1, String var2, String var3,
                                    String var4);
 
-  public Result<Void> delConfig(Integer var1, String var2);
+  public Result<Void> delConfig(Long var1, String var2);
 
   public Result<Void> editConfig(ConfigDTO var1, String var2);
 
-  public Result<Void> switchConfig(Integer var1, Integer var2, String var3);
+  public Result<Void> switchConfig(Long var1, Integer var2, String var3);
 
   public PagingData<ConfigVO> pagingConfig(ConfigQueryDTO var1);
 
@@ -27,7 +27,7 @@ public interface ConfigService {
 
   public List<ConfigVO> listConfigByGroup(String var1);
 
-  public ConfigVO getConfigById(Integer var1);
+  public ConfigVO getConfigById(Long var1);
 
   public String stringSetting(String var1, String var2, String var3);
 

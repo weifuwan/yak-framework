@@ -81,7 +81,7 @@ public class ConfigDaoImpl extends BaseDaoImpl<ConfigPO> implements ConfigDao {
                 .orderByDesc((Object) CREATE_TIME);
         this.configMapper.selectPage((IPage) page, (Wrapper) queryWrapper);
         page.setTotal(
-                (long) this.configMapper.selectCount((Wrapper) queryWrapper).intValue());
+                this.configMapper.selectCount((Wrapper) queryWrapper));
         return page;
     }
 

@@ -8,6 +8,7 @@ import io.yak.framework.security.common.po.DeptPO;
 import io.yak.framework.security.dao.DeptDao;
 import io.yak.framework.security.dao.mapper.DeptMapper;
 import io.yak.framework.security.util.CopyBeanUtil;
+import io.yak.framework.security.util.DatabaseNumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -44,7 +45,7 @@ public class DeptDaoImpl extends BaseDaoImpl<DeptPO> implements DeptDao {
                         (Object) deptName);
         List deptIdList = this.deptMapper.selectObjs((Wrapper) queryWrapper);
         return deptIdList.stream()
-                .map(Integer.class::cast)
+                .map(DatabaseNumberUtils::toLong)
                 .collect(Collectors.toList());
     }
 
@@ -62,7 +63,7 @@ public class DeptDaoImpl extends BaseDaoImpl<DeptPO> implements DeptDao {
         queryWrapper.select(new String[]{"id"});
         List deptIdList = this.deptMapper.selectObjs((Wrapper) queryWrapper);
         return deptIdList.stream()
-                .map(Integer.class::cast)
+                .map(DatabaseNumberUtils::toLong)
                 .collect(Collectors.toList());
     }
 
@@ -73,7 +74,7 @@ public class DeptDaoImpl extends BaseDaoImpl<DeptPO> implements DeptDao {
                 .eq((Object) "parent_id", (Object) deptId);
         List deptIdList = this.deptMapper.selectObjs((Wrapper) queryWrapper);
         return deptIdList.stream()
-                .map(Integer.class::cast)
+                .map(DatabaseNumberUtils::toLong)
                 .collect(Collectors.toList());
     }
 
