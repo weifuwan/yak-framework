@@ -2,7 +2,11 @@ package io.yak.framework.security.autoconfigure;
 
 import io.yak.framework.security.bootstrap.YakSecurityBootstrapInitializer;
 import io.yak.framework.security.config.YakSecurityProperties;
+import io.yak.framework.security.context.CurrentUser;
+import io.yak.framework.security.context.DefaultCurrentUser;
+import io.yak.framework.security.context.YakSecurityContextFilter;
 import io.yak.framework.security.dao.PermissionDao;
+import io.yak.framework.security.dao.UserRoleDao;
 import io.yak.framework.security.extend.*;
 import io.yak.framework.security.extend.impl.*;
 import io.yak.framework.security.permission.PermissionRegistrationInitializer;
@@ -16,6 +20,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 
 @org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(YakSecurityProperties.class)
@@ -61,6 +67,15 @@ public class YakSecurityAutoConfiguration {
     PermissionExtend permissionExtend() { return new DefaultPermissionExtend(); }
     @Bean @ConditionalOnMissingBean
     CurrentUserProvider currentUserProvider() { return new DefaultCurrentUserProvider(); }
+    @Bean @ConditionalOnMissingBean(CurrentUser.class)
+    CurrentUser currentUser() { return new DefaultCurrentUser(); }
+    @Bean
+    @ConditionalOnMissingBean(YakSecurityContextFilter.class)
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+    YakSecurityContextFilter yakSecurityContextFilter(
+            ObjectProvider<UserRoleDao> userRoleDaoProvider) {
+      return new YakSecurityContextFilter(userRoleDaoProvider);
+    }
     @Bean @ConditionalOnMissingBean
     TokenSessionStore tokenSessionStore() { return new InMemoryTokenSessionStore(); }
     @Bean @ConditionalOnMissingBean
