@@ -8,7 +8,7 @@ import io.yak.framework.security.common.dto.config.ConfigQueryDTO;
 import io.yak.framework.security.common.vo.config.ConfigVO;
 import io.yak.framework.security.service.ConfigService;
 import io.yak.framework.security.util.HttpRequestUtil;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

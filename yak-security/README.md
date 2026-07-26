@@ -52,8 +52,8 @@ yak:
 ```
 
 `OPTIONS` CORS 预检请求会被直接放行。若宿主应用需要完全接管认证，可将
-`yak.security.authentication-enabled` 设为 `false`。本模块使用 Spring Boot 2.7 和
-`javax.servlet` API 构建，支持 JDK 8。
+`yak.security.authentication-enabled` 设为 `false`。本模块使用 Spring Boot 3.3.13 和
+`jakarta.servlet` API 构建，需要 JDK 21。
 
 ## 数据库迁移与应用隔离
 

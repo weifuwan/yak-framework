@@ -12,7 +12,7 @@ import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.ProjectService;
 import io.yak.framework.security.util.HttpRequestUtil;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 

@@ -6,8 +6,8 @@ import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.extend.LoginExtend;
 import io.yak.framework.security.service.LoginService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
