@@ -12,22 +12,35 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.sql.Timestamp;
 
+/**
+ * 作业数据传输对象。
+ *
+ * @author weifuwan
+ */
 @ApiModel(description = "YakTask \u4f5c\u4e1a\u4fe1\u606f")
 public class YakJobDTO {
+    /** 作业编码。 */
     @ApiModelProperty(value = "\u4f5c\u4e1acode")
     private String code;
+    /** 所属任务编码。 */
     @ApiModelProperty(value = "\u4f5c\u4e1a\u6240\u5c5e\u4efb\u52a1code")
     private String taskCode;
+    /** 任务处理类名。 */
     @ApiModelProperty(value = "\u4f5c\u4e1a\u6240\u5c5e\u4efb\u52a1\u7684\u7c7b\u4fe1\u606f")
     private String className;
+    /** 重试次数。 */
     @ApiModelProperty(value = "\u4f5c\u4e1a\u91cd\u8bd5\u6b21\u6570")
     private Integer tryTimes;
+    /** 工作节点编码。 */
     @ApiModelProperty(value = "\u8c03\u5ea6\u5668\u5730\u5740")
     private String workerCode;
+    /** 开始时间。 */
     @ApiModelProperty(value = "\u4f5c\u4e1a\u5f00\u59cb\u6267\u884c\u65f6\u95f4")
     private Timestamp startTime;
+    /** 创建时间。 */
     @ApiModelProperty(value = "\u4f5c\u4e1a\u521b\u5efa\u65f6\u95f4")
     private Timestamp createTime;
+    /** 更新时间。 */
     @ApiModelProperty(value = "\u4f5c\u4e1a\u66f4\u65b0\u65f6\u95f4")
     private Timestamp updateTime;
 

@@ -2,10 +2,19 @@ package io.yak.framework.security.common.dto.permission;
 
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * 权限数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class PermissionDTO {
+  /** 权限编码。 */
   private String permissionCode;
+  /** 权限名称。 */
   private String permissionName;
+  /** 描述。 */
   private String description;
+  /** 子权限列表。 */
   private List<PermissionDTO> childPermissionDTOList;
 
   public List<PermissionDTO> getChildPermissionDTOList() {

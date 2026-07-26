@@ -3,7 +3,13 @@ package io.yak.framework.security.common.dto.resource.type;
 import io.yak.framework.security.common.dto.PageParamDTO;
 import io.yak.framework.security.common.dto.resource.MByRQueryDTO;
 
+/**
+ * 资源类型查询数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class ResourceTypeQueryDTO extends PageParamDTO {
+  /** 资源类型名称。 */
   private String typeName;
 
   public ResourceTypeQueryDTO(MByRQueryDTO queryDTO) {

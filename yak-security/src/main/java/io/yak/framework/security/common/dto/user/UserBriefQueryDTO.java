@@ -3,10 +3,19 @@ package io.yak.framework.security.common.dto.user;
 import io.yak.framework.security.common.dto.PageParamDTO;
 import io.yak.framework.security.common.dto.resource.MByUQueryDTO;
 
+/**
+ * 用户简要查询数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class UserBriefQueryDTO extends PageParamDTO {
+  /** 用户名。 */
   private String userName;
+  /** 真实姓名。 */
   private String realName;
+  /** 所属部门标识。 */
   private Long deptId;
+  /** 部门名称。 */
   private String deptName;
 
   public UserBriefQueryDTO(MByUQueryDTO queryDTO) {

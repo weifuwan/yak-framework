@@ -1,11 +1,23 @@
 package io.yak.framework.security.common.dto.config;
+/**
+ * 配置数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class ConfigDTO {
+  /** 标识。 */
   private Long id;
+  /** 配置分组。 */
   private String valueGroup;
+  /** 配置名称。 */
   private String valueName;
+  /** 配置值。 */
   private String value;
+  /** 状态。 */
   private Integer status;
+  /** 备注。 */
   private String memo;
+  /** 操作人。 */
   private String operator;
 
   public Long getId() { return this.id; }

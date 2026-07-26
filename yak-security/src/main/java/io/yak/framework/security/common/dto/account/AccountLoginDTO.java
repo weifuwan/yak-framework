@@ -1,6 +1,13 @@
 package io.yak.framework.security.common.dto.account;
+/**
+ * 账号登录数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class AccountLoginDTO {
+  /** 用户名。 */
   private String userName;
+  /** 密码。 */
   private String pw;
 
   public String getUserName() { return this.userName; }

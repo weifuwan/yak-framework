@@ -1,9 +1,18 @@
 package io.yak.framework.security.common.dto.resource;
 
+/**
+ * 用户资源查询数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class UserResourceQueryDTO {
+  /** 管控级别。 */
   private int controlLevel;
+  /** 项目标识。 */
   private Long projectId;
+  /** 资源类型标识。 */
   private Long resourceTypeId;
+  /** 资源标识。 */
   private Long resourceId;
 
   public UserResourceQueryDTO(int controlLevel, Long projectId,

@@ -1,6 +1,13 @@
 package io.yak.framework.security.common.dto;
+/**
+ * 分页参数数据传输对象。
+ *
+ * @author weifuwan
+ */
 public class PageParamDTO {
+  /** 当前页码。 */
   private int page = 1;
+  /** 每页记录数。 */
   private int size = 10;
 
   public int getPage() { return this.page; }
