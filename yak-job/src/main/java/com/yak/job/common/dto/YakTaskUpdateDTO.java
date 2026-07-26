@@ -29,43 +29,4 @@ public class YakTaskUpdateDTO {
     @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u5668\u7684\u53c2\u6570")
     private String param;
 
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof YakTaskUpdateDTO)) {
-            return false;
-        }
-        YakTaskUpdateDTO other = (YakTaskUpdateDTO) o;
-        if (!other.canEqual(this)) {
-            return false;
-        }
-        List<String> this$workerIps = this.getWorkerIps();
-        List<String> other$workerIps = other.getWorkerIps();
-        if (this$workerIps == null ? other$workerIps != null : !((Object) this$workerIps).equals(other$workerIps)) {
-            return false;
-        }
-        String this$param = this.getParam();
-        String other$param = other.getParam();
-        return !(this$param == null ? other$param != null : !this$param.equals(other$param));
-    }
-
-    protected boolean canEqual(Object other) {
-        return other instanceof YakTaskUpdateDTO;
-    }
-
-    public int hashCode() {
-        int PRIME = 59;
-        int result = 1;
-        List<String> $workerIps = this.getWorkerIps();
-        result = result * 59 + ($workerIps == null ? 43 : ((Object) $workerIps).hashCode());
-        String $param = this.getParam();
-        result = result * 59 + ($param == null ? 43 : $param.hashCode());
-        return result;
-    }
-
-    public String toString() {
-        return "YakTaskUpdateDTO(workerIps=" + this.getWorkerIps() + ", param=" + this.getParam() + ")";
-    }
 }
-
