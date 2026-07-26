@@ -1,6 +1,6 @@
 package io.yak.framework.security.util;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.springframework.web.context.request.RequestAttributes;

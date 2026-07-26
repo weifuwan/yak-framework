@@ -1,6 +1,6 @@
 package io.yak.framework.security.extend;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 当前登录用户提供器。

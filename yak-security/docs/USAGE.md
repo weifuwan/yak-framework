@@ -16,8 +16,8 @@ Yak Security 提供：
 
 运行环境：
 
-- JDK 8 或更高版本；
-- Spring Boot 2.7.x（使用 `javax.servlet` API）；
+- JDK 21 或更高版本；
+- Spring Boot 3.3.13（使用 `jakarta.servlet` API）；
 - MariaDB 10.6 或更高版本；
 - Maven 3.6 或更高版本。
 
