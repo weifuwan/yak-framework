@@ -32,30 +32,6 @@ public class YakTaskCopyDTO {
     @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u5668\u7684\u53c2\u6570")
     private String param;
 
-    public String getTaskDesc() {
-        return this.taskDesc;
-    }
-
-    public void setTaskDesc(String taskDesc) {
-        this.taskDesc = taskDesc;
-    }
-
-    public List<String> getWorkerIps() {
-        return this.workerIps;
-    }
-
-    public void setWorkerIps(List<String> workerIps) {
-        this.workerIps = workerIps;
-    }
-
-    public String getParam() {
-        return this.param;
-    }
-
-    public void setParam(String param) {
-        this.param = param;
-    }
-
     public boolean equals(Object o) {
         if (o == this) {
             return true;

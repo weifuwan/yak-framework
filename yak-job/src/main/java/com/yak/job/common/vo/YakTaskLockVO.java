@@ -35,46 +35,6 @@ public class YakTaskLockVO {
     @ApiModelProperty(value = "\u4efb\u52a1\u9501\u66f4\u65b0\u65f6\u95f4")
     private Timestamp updateTime;
 
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public void setTaskCode(String taskCode) {
-        this.taskCode = taskCode;
-    }
-
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
-    public void setWorkerCode(String workerCode) {
-        this.workerCode = workerCode;
-    }
-
-    public Timestamp getCreateTime() {
-        return this.createTime;
-    }
-
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
-    }
-
-    public Timestamp getUpdateTime() {
-        return this.updateTime;
-    }
-
-    public void setUpdateTime(Timestamp updateTime) {
-        this.updateTime = updateTime;
-    }
-
     public boolean equals(Object o) {
         if (o == this) {
             return true;

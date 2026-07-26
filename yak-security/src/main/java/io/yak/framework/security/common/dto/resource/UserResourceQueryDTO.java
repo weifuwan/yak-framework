@@ -45,28 +45,6 @@ public class UserResourceQueryDTO {
     return new UserResourceQueryDTO(0, 0, 0, 0);
   }
 
-  public int getControlLevel() { return this.controlLevel; }
-
-  public Long getProjectId() { return this.projectId; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public Long getResourceId() { return this.resourceId; }
-
-  public void setControlLevel(int controlLevel) {
-    this.controlLevel = controlLevel;
-  }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
-  public void setResourceId(Long resourceId) {
-    this.resourceId = resourceId;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

@@ -39,54 +39,6 @@ public class TaskPageQueryDTO {
     @ApiModelProperty(value = "\u4efb\u52a1\u72b6\u6001", dataType = "Integer", required = false)
     private Integer taskStatus;
 
-    public Integer getPage() {
-        return this.page;
-    }
-
-    public void setPage(Integer page) {
-        this.page = page;
-    }
-
-    public Integer getSize() {
-        return this.size;
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
-    }
-
-    public Long getTaskId() {
-        return this.taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public String getTaskDesc() {
-        return this.taskDesc;
-    }
-
-    public void setTaskDesc(String taskDesc) {
-        this.taskDesc = taskDesc;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public Integer getTaskStatus() {
-        return this.taskStatus;
-    }
-
-    public void setTaskStatus(Integer taskStatus) {
-        this.taskStatus = taskStatus;
-    }
-
     public boolean equals(Object o) {
         if (o == this) {
             return true;

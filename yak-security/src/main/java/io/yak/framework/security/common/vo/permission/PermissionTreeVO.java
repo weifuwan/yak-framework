@@ -40,34 +40,6 @@ public class PermissionTreeVO {
     return new PermissionTreeVOBuilder();
   }
 
-  public Long getId() { return this.id; }
-
-  public Boolean getHas() { return this.has; }
-
-  public String getPermissionName() { return this.permissionName; }
-
-  public Long getParentId() { return this.parentId; }
-
-  public Boolean getLeaf() { return this.leaf; }
-
-  public List<PermissionTreeVO> getChildList() { return this.childList; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setHas(Boolean has) { this.has = has; }
-
-  public void setPermissionName(String permissionName) {
-    this.permissionName = permissionName;
-  }
-
-  public void setParentId(Long parentId) { this.parentId = parentId; }
-
-  public void setLeaf(Boolean leaf) { this.leaf = leaf; }
-
-  public void setChildList(List<PermissionTreeVO> childList) {
-    this.childList = childList;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

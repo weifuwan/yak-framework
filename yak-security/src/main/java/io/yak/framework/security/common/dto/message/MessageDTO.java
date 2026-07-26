@@ -23,22 +23,6 @@ public class MessageDTO {
     this.oplogId = oplogId;
   }
 
-  public String getTitle() { return this.title; }
-
-  public String getContent() { return this.content; }
-
-  public Long getOplogId() { return this.oplogId; }
-
-  public Long getUserId() { return this.userId; }
-
-  public void setTitle(String title) { this.title = title; }
-
-  public void setContent(String content) { this.content = content; }
-
-  public void setOplogId(Long oplogId) { this.oplogId = oplogId; }
-
-  public void setUserId(Long userId) { this.userId = userId; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

@@ -13,14 +13,6 @@ public class RoleBriefVO {
   /** 角色名称。 */
   private String roleName;
 
-  public Long getId() { return this.id; }
-
-  public String getRoleName() { return this.roleName; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setRoleName(String roleName) { this.roleName = roleName; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

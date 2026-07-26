@@ -21,34 +21,6 @@ public class MByUDataQueryDTO {
   /** 是否批量查询。 */
   private Boolean batch;
 
-  public Long getUserId() { return this.userId; }
-
-  public Long getProjectId() { return this.projectId; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public Integer getShowLevel() { return this.showLevel; }
-
-  public Integer getControlLevel() { return this.controlLevel; }
-
-  public Boolean getBatch() { return this.batch; }
-
-  public void setUserId(Long userId) { this.userId = userId; }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
-  public void setShowLevel(Integer showLevel) { this.showLevel = showLevel; }
-
-  public void setControlLevel(Integer controlLevel) {
-    this.controlLevel = controlLevel;
-  }
-
-  public void setBatch(Boolean batch) { this.batch = batch; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

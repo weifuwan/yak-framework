@@ -125,42 +125,6 @@ public class OplogQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public String getOperateType() { return this.operateType; }
-
-  public String getDetail() { return this.detail; }
-
-  public String getOperator() { return this.operator; }
-
-  public String getTarget() { return this.target; }
-
-  public String getTargetType() { return this.targetType; }
-
-  public String getOperationMethods() { return this.operationMethods; }
-
-  public Long getStartTime() { return this.startTime; }
-
-  public Long getEndTime() { return this.endTime; }
-
-  public void setOperateType(String operateType) {
-    this.operateType = operateType;
-  }
-
-  public void setDetail(String detail) { this.detail = detail; }
-
-  public void setOperator(String operator) { this.operator = operator; }
-
-  public void setTarget(String target) { this.target = target; }
-
-  public void setTargetType(String targetType) { this.targetType = targetType; }
-
-  public void setOperationMethods(String operationMethods) {
-    this.operationMethods = operationMethods;
-  }
-
-  public void setStartTime(Long startTime) { this.startTime = startTime; }
-
-  public void setEndTime(Long endTime) { this.endTime = endTime; }
-
   @Override
   public String toString() {
     return "OplogQueryDTO(operateType=" + this.getOperateType() +

@@ -44,62 +44,6 @@ public class YakJobVO {
     @ApiModelProperty(value = "\u4efb\u52a1\u6267\u884c\u7ed3\u679c")
     private String result;
 
-    public String getJobCode() {
-        return this.jobCode;
-    }
-
-    public void setJobCode(String jobCode) {
-        this.jobCode = jobCode;
-    }
-
-    public String getTaskCode() {
-        return this.taskCode;
-    }
-
-    public void setTaskCode(String taskCode) {
-        this.taskCode = taskCode;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public String getWorkerCode() {
-        return this.workerCode;
-    }
-
-    public void setWorkerCode(String workerCode) {
-        this.workerCode = workerCode;
-    }
-
-    public String getError() {
-        return this.error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
-    }
-
-    public Timestamp getCreateTime() {
-        return this.createTime;
-    }
-
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getResult() {
-        return this.result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
-
     public boolean equals(Object o) {
         if (o == this) {
             return true;

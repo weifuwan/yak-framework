@@ -96,32 +96,6 @@ public class ProjectQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public String getProjectName() { return this.projectName; }
-
-  public String getProjectCode() { return this.projectCode; }
-
-  public String getChargeUsername() { return this.chargeUsername; }
-
-  public Long getDeptId() { return this.deptId; }
-
-  public Boolean getRunning() { return this.running; }
-
-  public void setProjectName(String projectName) {
-    this.projectName = projectName;
-  }
-
-  public void setProjectCode(String projectCode) {
-    this.projectCode = projectCode;
-  }
-
-  public void setChargeUsername(String chargeUsername) {
-    this.chargeUsername = chargeUsername;
-  }
-
-  public void setDeptId(Long deptId) { this.deptId = deptId; }
-
-  public void setRunning(Boolean running) { this.running = running; }
-
   @Override
   public String toString() {
     return "ProjectQueryDTO(projectName=" + this.getProjectName() +

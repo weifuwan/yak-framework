@@ -24,36 +24,6 @@ public class MByUVO {
   /** 具有查看权限的资源数量。 */
   private Integer viewResourceCnt;
 
-  public Long getUserId() { return this.userId; }
-
-  public String getUserName() { return this.userName; }
-
-  public String getRealName() { return this.realName; }
-
-  public List<DeptBriefVO> getDeptList() { return this.deptList; }
-
-  public Integer getAdminResourceCnt() { return this.adminResourceCnt; }
-
-  public Integer getViewResourceCnt() { return this.viewResourceCnt; }
-
-  public void setUserId(Long userId) { this.userId = userId; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setRealName(String realName) { this.realName = realName; }
-
-  public void setDeptList(List<DeptBriefVO> deptList) {
-    this.deptList = deptList;
-  }
-
-  public void setAdminResourceCnt(Integer adminResourceCnt) {
-    this.adminResourceCnt = adminResourceCnt;
-  }
-
-  public void setViewResourceCnt(Integer viewResourceCnt) {
-    this.viewResourceCnt = viewResourceCnt;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

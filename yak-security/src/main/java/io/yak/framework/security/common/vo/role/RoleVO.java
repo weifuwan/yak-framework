@@ -35,58 +35,6 @@ public class RoleVO {
   /** 权限树。 */
   private PermissionTreeVO permissionTreeVO;
 
-  public Long getId() { return this.id; }
-
-  public String getRoleName() { return this.roleName; }
-
-  public String getRoleCode() { return this.roleCode; }
-
-  public String getDescription() { return this.description; }
-
-  public Integer getAuthedUserCnt() { return this.authedUserCnt; }
-
-  public List<String> getAuthedUsers() { return this.authedUsers; }
-
-  public String getLastReviser() { return this.lastReviser; }
-
-  public Date getCreateTime() { return this.createTime; }
-
-  public Date getUpdateTime() { return this.updateTime; }
-
-  public PermissionTreeVO getPermissionTreeVO() {
-    return this.permissionTreeVO;
-  }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setRoleName(String roleName) { this.roleName = roleName; }
-
-  public void setRoleCode(String roleCode) { this.roleCode = roleCode; }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setAuthedUserCnt(Integer authedUserCnt) {
-    this.authedUserCnt = authedUserCnt;
-  }
-
-  public void setAuthedUsers(List<String> authedUsers) {
-    this.authedUsers = authedUsers;
-  }
-
-  public void setLastReviser(String lastReviser) {
-    this.lastReviser = lastReviser;
-  }
-
-  public void setCreateTime(Date createTime) { this.createTime = createTime; }
-
-  public void setUpdateTime(Date updateTime) { this.updateTime = updateTime; }
-
-  public void setPermissionTreeVO(PermissionTreeVO permissionTreeVO) {
-    this.permissionTreeVO = permissionTreeVO;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

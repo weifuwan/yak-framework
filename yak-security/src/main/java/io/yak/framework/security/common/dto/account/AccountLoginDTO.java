@@ -13,14 +13,6 @@ public class AccountLoginDTO {
   /** 密码。 */
   private String pw;
 
-  public String getUserName() { return this.userName; }
-
-  public String getPw() { return this.pw; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setPw(String pw) { this.pw = pw; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

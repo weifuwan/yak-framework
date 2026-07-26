@@ -15,18 +15,6 @@ public class AssignInfoVO {
   /** 是否已分配。 */
   private Boolean has;
 
-  public Long getId() { return this.id; }
-
-  public String getName() { return this.name; }
-
-  public Boolean getHas() { return this.has; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setName(String name) { this.name = name; }
-
-  public void setHas(Boolean has) { this.has = has; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

@@ -15,22 +15,6 @@ public class ProjectBriefVO {
   /** 项目名称。 */
   private String projectName;
 
-  public Long getId() { return this.id; }
-
-  public String getProjectCode() { return this.projectCode; }
-
-  public String getProjectName() { return this.projectName; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setProjectCode(String projectCode) {
-    this.projectCode = projectCode;
-  }
-
-  public void setProjectName(String projectName) {
-    this.projectName = projectName;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

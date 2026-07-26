@@ -17,18 +17,6 @@ public class RoleAssignDTO {
   /** 操作标记。 */
   private Boolean flag;
 
-  public Long getId() { return this.id; }
-
-  public List<Long> getIdList() { return this.idList; }
-
-  public Boolean getFlag() { return this.flag; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setIdList(List<Long> idList) { this.idList = idList; }
-
-  public void setFlag(Boolean flag) { this.flag = flag; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

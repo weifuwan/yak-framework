@@ -29,44 +29,6 @@ public class OplogVO {
   /** 最后更新时间。 */
   private Date updateTime;
 
-  public Long getId() { return this.id; }
-
-  public String getOperatorIp() { return this.operatorIp; }
-
-  public String getOperator() { return this.operator; }
-
-  public String getOperateType() { return this.operateType; }
-
-  public String getTarget() { return this.target; }
-
-  public String getTargetType() { return this.targetType; }
-
-  public String getDetail() { return this.detail; }
-
-  public Date getCreateTime() { return this.createTime; }
-
-  public Date getUpdateTime() { return this.updateTime; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setOperatorIp(String operatorIp) { this.operatorIp = operatorIp; }
-
-  public void setOperator(String operator) { this.operator = operator; }
-
-  public void setOperateType(String operateType) {
-    this.operateType = operateType;
-  }
-
-  public void setTarget(String target) { this.target = target; }
-
-  public void setTargetType(String targetType) { this.targetType = targetType; }
-
-  public void setDetail(String detail) { this.detail = detail; }
-
-  public void setCreateTime(Date createTime) { this.createTime = createTime; }
-
-  public void setUpdateTime(Date updateTime) { this.updateTime = updateTime; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

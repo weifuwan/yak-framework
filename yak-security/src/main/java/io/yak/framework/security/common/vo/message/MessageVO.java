@@ -21,30 +21,6 @@ public class MessageVO {
   /** 关联的操作日志标识。 */
   private Long oplogId;
 
-  public Long getId() { return this.id; }
-
-  public String getTitle() { return this.title; }
-
-  public String getContent() { return this.content; }
-
-  public Boolean getReadTag() { return this.readTag; }
-
-  public Long getCreateTime() { return this.createTime; }
-
-  public Long getOplogId() { return this.oplogId; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setTitle(String title) { this.title = title; }
-
-  public void setContent(String content) { this.content = content; }
-
-  public void setReadTag(Boolean readTag) { this.readTag = readTag; }
-
-  public void setCreateTime(Long createTime) { this.createTime = createTime; }
-
-  public void setOplogId(Long oplogId) { this.oplogId = oplogId; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

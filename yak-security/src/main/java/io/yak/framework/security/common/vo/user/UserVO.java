@@ -35,54 +35,6 @@ public class UserVO {
   /** 项目列表。 */
   private List<ProjectBriefVO> projectList;
 
-  public Long getId() { return this.id; }
-
-  public String getUserName() { return this.userName; }
-
-  public String getRealName() { return this.realName; }
-
-  public String getPhone() { return this.phone; }
-
-  public String getEmail() { return this.email; }
-
-  public Date getUpdateTime() { return this.updateTime; }
-
-  public Date getCreateTime() { return this.createTime; }
-
-  public List<RoleBriefVO> getRoleList() { return this.roleList; }
-
-  public PermissionTreeVO getPermissionTreeVO() {
-    return this.permissionTreeVO;
-  }
-
-  public List<ProjectBriefVO> getProjectList() { return this.projectList; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setRealName(String realName) { this.realName = realName; }
-
-  public void setPhone(String phone) { this.phone = phone; }
-
-  public void setEmail(String email) { this.email = email; }
-
-  public void setUpdateTime(Date updateTime) { this.updateTime = updateTime; }
-
-  public void setCreateTime(Date createTime) { this.createTime = createTime; }
-
-  public void setRoleList(List<RoleBriefVO> roleList) {
-    this.roleList = roleList;
-  }
-
-  public void setPermissionTreeVO(PermissionTreeVO permissionTreeVO) {
-    this.permissionTreeVO = permissionTreeVO;
-  }
-
-  public void setProjectList(List<ProjectBriefVO> projectList) {
-    this.projectList = projectList;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

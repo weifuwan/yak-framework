@@ -79,22 +79,6 @@ public class UserQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public Long getId() { return this.id; }
-
-  public Long getRoleId() { return this.roleId; }
-
-  public String getUserName() { return this.userName; }
-
-  public String getRealName() { return this.realName; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setRoleId(Long roleId) { this.roleId = roleId; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setRealName(String realName) { this.realName = realName; }
-
   @Override
   public String toString() {
     return "UserQueryDTO(id=" + this.getId() + ", roleId=" + this.getRoleId() +

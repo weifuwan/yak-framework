@@ -27,58 +27,6 @@ public class MByRVO {
   /** 资源名称。 */
   private String resourceName;
 
-  public Integer getAdminUserCnt() { return this.adminUserCnt; }
-
-  public Integer getViewUserCnt() { return this.viewUserCnt; }
-
-  public Long getProjectId() { return this.projectId; }
-
-  public String getProjectCode() { return this.projectCode; }
-
-  public String getProjectName() { return this.projectName; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public String getResourceTypeName() { return this.resourceTypeName; }
-
-  public Long getResourceId() { return this.resourceId; }
-
-  public String getResourceName() { return this.resourceName; }
-
-  public void setAdminUserCnt(Integer adminUserCnt) {
-    this.adminUserCnt = adminUserCnt;
-  }
-
-  public void setViewUserCnt(Integer viewUserCnt) {
-    this.viewUserCnt = viewUserCnt;
-  }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setProjectCode(String projectCode) {
-    this.projectCode = projectCode;
-  }
-
-  public void setProjectName(String projectName) {
-    this.projectName = projectName;
-  }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
-  public void setResourceTypeName(String resourceTypeName) {
-    this.resourceTypeName = resourceTypeName;
-  }
-
-  public void setResourceId(Long resourceId) {
-    this.resourceId = resourceId;
-  }
-
-  public void setResourceName(String resourceName) {
-    this.resourceName = resourceName;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

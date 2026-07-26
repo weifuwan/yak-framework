@@ -21,16 +21,6 @@ public class ProjectDeleteCheckVO {
     this.resourceNameList = resourceNameList;
   }
 
-  public Long getProjectId() { return this.projectId; }
-
-  public List<String> getResourceNameList() { return this.resourceNameList; }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceNameList(List<String> resourceNameList) {
-    this.resourceNameList = resourceNameList;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

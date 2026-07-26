@@ -91,30 +91,6 @@ public class UserDTO {
     return result;
   }
 
-  public String getUserName() { return this.userName; }
-
-  public String getPw() { return this.pw; }
-
-  public String getRealName() { return this.realName; }
-
-  public String getPhone() { return this.phone; }
-
-  public String getEmail() { return this.email; }
-
-  public List<Long> getRoleIds() { return this.roleIds; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setPw(String pw) { this.pw = pw; }
-
-  public void setRealName(String realName) { this.realName = realName; }
-
-  public void setPhone(String phone) { this.phone = phone; }
-
-  public void setEmail(String email) { this.email = email; }
-
-  public void setRoleIds(List<Long> roleIds) { this.roleIds = roleIds; }
-
   public String toString() {
     return "UserDTO(userName=" + this.getUserName() + ", realName=" + this.getRealName() + ", phone=" + this.getPhone() +
         ", email=" + this.getEmail() + ", roleIds=" + this.getRoleIds() + ")";

@@ -39,30 +39,6 @@ public class PermissionDTO {
     this.description = permissionName;
   }
 
-
-  public String getPermissionCode() { return this.permissionCode; }
-
-  public void setPermissionCode(String permissionCode) {
-    this.permissionCode = permissionCode;
-  }
-
-  public String getPermissionName() { return this.permissionName; }
-
-  public String getDescription() { return this.description; }
-
-  public void setPermissionName(String permissionName) {
-    this.permissionName = permissionName;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void
-  setChildPermissionDTOList(List<PermissionDTO> childPermissionDTOList) {
-    this.childPermissionDTOList = childPermissionDTOList;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

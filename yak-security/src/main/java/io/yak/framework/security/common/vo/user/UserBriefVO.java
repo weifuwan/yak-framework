@@ -25,34 +25,6 @@ public class UserBriefVO {
   /** 角色列表。 */
   private List<String> roleList;
 
-  public Long getId() { return this.id; }
-
-  public String getUserName() { return this.userName; }
-
-  public String getRealName() { return this.realName; }
-
-  public Long getDeptId() { return this.deptId; }
-
-  public String getPhone() { return this.phone; }
-
-  public String getEmail() { return this.email; }
-
-  public List<String> getRoleList() { return this.roleList; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setRealName(String realName) { this.realName = realName; }
-
-  public void setDeptId(Long deptId) { this.deptId = deptId; }
-
-  public void setPhone(String phone) { this.phone = phone; }
-
-  public void setEmail(String email) { this.email = email; }
-
-  public void setRoleList(List<String> roleList) { this.roleList = roleList; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

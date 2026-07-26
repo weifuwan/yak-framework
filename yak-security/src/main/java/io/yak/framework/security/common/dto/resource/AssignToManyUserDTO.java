@@ -23,40 +23,6 @@ public class AssignToManyUserDTO {
   /** 管控级别。 */
   private Integer controlLevel;
 
-  public Long getProjectId() { return this.projectId; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public Long getResourceId() { return this.resourceId; }
-
-  public List<Long> getUserIdList() { return this.userIdList; }
-
-  public List<Long> getExcludeUserIdList() { return this.excludeUserIdList; }
-
-  public Integer getControlLevel() { return this.controlLevel; }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
-  public void setResourceId(Long resourceId) {
-    this.resourceId = resourceId;
-  }
-
-  public void setUserIdList(List<Long> userIdList) {
-    this.userIdList = userIdList;
-  }
-
-  public void setExcludeUserIdList(List<Long> excludeUserIdList) {
-    this.excludeUserIdList = excludeUserIdList;
-  }
-
-  public void setControlLevel(Integer controlLevel) {
-    this.controlLevel = controlLevel;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

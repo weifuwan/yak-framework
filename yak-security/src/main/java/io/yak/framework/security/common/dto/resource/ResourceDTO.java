@@ -27,28 +27,6 @@ public class ResourceDTO {
     this.resourceId = resourceId;
   }
 
-  public Long getResourceId() { return this.resourceId; }
-
-  public String getResourceName() { return this.resourceName; }
-
-  public Long getProjectId() { return this.projectId; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public void setResourceId(Long resourceId) {
-    this.resourceId = resourceId;
-  }
-
-  public void setResourceName(String resourceName) {
-    this.resourceName = resourceName;
-  }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

@@ -19,32 +19,6 @@ public class MByRDataQueryDTO {
   /** 是否批量查询。 */
   private Boolean batch;
 
-  public Long getProjectId() { return this.projectId; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public Long getResourceId() { return this.resourceId; }
-
-  public Integer getControlLevel() { return this.controlLevel; }
-
-  public Boolean getBatch() { return this.batch; }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
-  public void setResourceId(Long resourceId) {
-    this.resourceId = resourceId;
-  }
-
-  public void setControlLevel(Integer controlLevel) {
-    this.controlLevel = controlLevel;
-  }
-
-  public void setBatch(Boolean batch) { this.batch = batch; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;
