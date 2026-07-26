@@ -42,6 +42,8 @@
         <module>yak-security</module>
         <module>yak-schedule</module>
         <module>yak-notification</module>
+        <module>yak-file</module>
+
     </modules>
 
     <dependencyManagement>
