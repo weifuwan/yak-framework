@@ -1,7 +1,5 @@
 package io.yak.framework.security.exception;
 
-import java.io.Serial;
-
 /**
  * Yak Security 模块统一运行时异常。
  *
@@ -10,7 +8,6 @@ import java.io.Serial;
  */
 public class YakSecurityException extends RuntimeException {
 
-    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

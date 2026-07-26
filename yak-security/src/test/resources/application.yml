@@ -24,9 +24,9 @@ yak:
     application-name: ${YAK_SECURITY_APPLICATION_NAME:yak-security-demo}
     datasource:
       enabled: true
-      url: ${YAK_SECURITY_DATASOURCE_URL:jdbc:mariadb://127.0.0.1:3306/yak_security?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai}
+      url: ${YAK_SECURITY_DATASOURCE_URL:jdbc:mariadb://127.0.0.1:3306/yak_security?useUnicode=true&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai}
       username: ${YAK_SECURITY_DATASOURCE_USERNAME:root}
-      password: ${YAK_SECURITY_DATASOURCE_PASSWORD:root}
+      password: ${YAK_SECURITY_DATASOURCE_PASSWORD:123456}
       driver-class-name: org.mariadb.jdbc.Driver
       initial-size: 1
       min-idle: 1

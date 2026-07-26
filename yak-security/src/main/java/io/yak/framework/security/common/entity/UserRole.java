@@ -1,5 +1,6 @@
 package io.yak.framework.security.common.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * @author weifuwan
  */
 @Data
+@AllArgsConstructor
 public class UserRole {
   /** 用户标识。 */
   private Long userId;
