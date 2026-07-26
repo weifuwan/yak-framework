@@ -20,26 +20,6 @@ public class UserProjectDTO {
   /** 是否删除。 */
   private Boolean isDelete;
 
-  public Long getId() { return this.id; }
-
-  public Long getUserId() { return this.userId; }
-
-  public Integer getUserType() { return this.userType; }
-
-  public Long getProjectId() { return this.projectId; }
-
-  public Boolean getIsDelete() { return this.isDelete; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setUserId(Long userId) { this.userId = userId; }
-
-  public void setUserType(Integer userType) { this.userType = userType; }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setIsDelete(Boolean isDelete) { this.isDelete = isDelete; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

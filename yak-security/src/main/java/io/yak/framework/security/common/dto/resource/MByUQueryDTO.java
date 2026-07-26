@@ -79,22 +79,6 @@ public class MByUQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public Long getDeptId() { return this.deptId; }
-
-  public String getDeptName() { return this.deptName; }
-
-  public String getUserName() { return this.userName; }
-
-  public String getRealName() { return this.realName; }
-
-  public void setDeptId(Long deptId) { this.deptId = deptId; }
-
-  public void setDeptName(String deptName) { this.deptName = deptName; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setRealName(String realName) { this.realName = realName; }
-
   @Override
   public String toString() {
     return "MByUQueryDTO(deptId=" + this.getDeptId() +

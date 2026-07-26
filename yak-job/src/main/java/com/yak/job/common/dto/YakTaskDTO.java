@@ -42,62 +42,6 @@ public class YakTaskDTO {
     @ApiModelProperty(value = "\u4efb\u52a1\u62a2\u5360\u6a21\u5f0f")
     private String consensual;
 
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCron() {
-        return this.cron;
-    }
-
-    public void setCron(String cron) {
-        this.cron = cron;
-    }
-
-    public String getClassName() {
-        return this.className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public String getParams() {
-        return this.params;
-    }
-
-    public void setParams(String params) {
-        this.params = params;
-    }
-
-    public Integer getRetryTimes() {
-        return this.retryTimes;
-    }
-
-    public void setRetryTimes(Integer retryTimes) {
-        this.retryTimes = retryTimes;
-    }
-
-    public String getConsensual() {
-        return this.consensual;
-    }
-
-    public void setConsensual(String consensual) {
-        this.consensual = consensual;
-    }
-
     public boolean equals(Object o) {
         if (o == this) {
             return true;

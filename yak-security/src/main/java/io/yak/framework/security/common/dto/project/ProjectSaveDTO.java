@@ -25,42 +25,6 @@ public class ProjectSaveDTO {
   /** 所属部门标识。 */
   private Long deptId;
 
-  public Long getId() { return this.id; }
-
-  public String getProjectName() { return this.projectName; }
-
-  public List<Long> getUserIdList() { return this.userIdList; }
-
-  public List<Long> getOwnerIdList() { return this.ownerIdList; }
-
-  public String getDescription() { return this.description; }
-
-  public Boolean getRunning() { return this.running; }
-
-  public Long getDeptId() { return this.deptId; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setProjectName(String projectName) {
-    this.projectName = projectName;
-  }
-
-  public void setUserIdList(List<Long> userIdList) {
-    this.userIdList = userIdList;
-  }
-
-  public void setOwnerIdList(List<Long> ownerIdList) {
-    this.ownerIdList = ownerIdList;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setRunning(Boolean running) { this.running = running; }
-
-  public void setDeptId(Long deptId) { this.deptId = deptId; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

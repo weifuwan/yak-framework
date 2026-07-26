@@ -80,24 +80,6 @@ public class RoleQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public String getRoleCode() { return this.roleCode; }
-
-  public Long getId() { return this.id; }
-
-  public String getRoleName() { return this.roleName; }
-
-  public String getDescription() { return this.description; }
-
-  public void setRoleCode(String roleCode) { this.roleCode = roleCode; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setRoleName(String roleName) { this.roleName = roleName; }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   @Override
   public String toString() {
     return "RoleQueryDTO(roleCode=" + this.getRoleCode() +

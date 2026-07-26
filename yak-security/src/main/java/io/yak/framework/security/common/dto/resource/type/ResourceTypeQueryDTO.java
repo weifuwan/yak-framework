@@ -56,10 +56,6 @@ public class ResourceTypeQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public String getTypeName() { return this.typeName; }
-
-  public void setTypeName(String typeName) { this.typeName = typeName; }
-
   @Override
   public String toString() {
     return "ResourceTypeQueryDTO(typeName=" + this.getTypeName() + ")";

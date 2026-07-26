@@ -90,22 +90,6 @@ public class UserBriefQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public String getUserName() { return this.userName; }
-
-  public String getRealName() { return this.realName; }
-
-  public Long getDeptId() { return this.deptId; }
-
-  public String getDeptName() { return this.deptName; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setRealName(String realName) { this.realName = realName; }
-
-  public void setDeptId(Long deptId) { this.deptId = deptId; }
-
-  public void setDeptName(String deptName) { this.deptName = deptName; }
-
   @Override
   public String toString() {
     return "UserBriefQueryDTO(userName=" + this.getUserName() +

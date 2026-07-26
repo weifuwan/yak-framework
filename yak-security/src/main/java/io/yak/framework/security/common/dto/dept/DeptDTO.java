@@ -25,20 +25,6 @@ public class DeptDTO {
     return this.childDeptDTOList;
   }
 
-  public String getDeptName() { return this.deptName; }
-
-  public String getDescription() { return this.description; }
-
-  public void setDeptName(String deptName) { this.deptName = deptName; }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setChildDeptDTOList(List<DeptDTO> childDeptDTOList) {
-    this.childDeptDTOList = childDeptDTOList;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

@@ -23,38 +23,6 @@ public class BatchAssignDTO {
   /** 分配标记。 */
   private Boolean assignFlag;
 
-  public List<Long> getUserIdList() { return this.userIdList; }
-
-  public Long getProjectId() { return this.projectId; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public List<Long> getIdList() { return this.idList; }
-
-  public Integer getControlLevel() { return this.controlLevel; }
-
-  public Boolean getAssignFlag() { return this.assignFlag; }
-
-  public void setUserIdList(List<Long> userIdList) {
-    this.userIdList = userIdList;
-  }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
-  public void setIdList(List<Long> idList) { this.idList = idList; }
-
-  public void setControlLevel(Integer controlLevel) {
-    this.controlLevel = controlLevel;
-  }
-
-  public void setAssignFlag(Boolean assignFlag) {
-    this.assignFlag = assignFlag;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

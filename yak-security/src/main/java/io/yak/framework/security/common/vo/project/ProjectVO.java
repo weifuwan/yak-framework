@@ -34,58 +34,6 @@ public class ProjectVO {
   /** 创建时间。 */
   private Date createTime;
 
-  public Long getId() { return this.id; }
-
-  public String getProjectCode() { return this.projectCode; }
-
-  public String getProjectName() { return this.projectName; }
-
-  public List<UserBriefVO> getUserList() { return this.userList; }
-
-  public List<UserBriefVO> getOwnerList() { return this.ownerList; }
-
-  public String getDescription() { return this.description; }
-
-  public Boolean getRunning() { return this.running; }
-
-  public List<DeptBriefVO> getDeptList() { return this.deptList; }
-
-  public Long getDeptId() { return this.deptId; }
-
-  public Date getCreateTime() { return this.createTime; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setProjectCode(String projectCode) {
-    this.projectCode = projectCode;
-  }
-
-  public void setProjectName(String projectName) {
-    this.projectName = projectName;
-  }
-
-  public void setUserList(List<UserBriefVO> userList) {
-    this.userList = userList;
-  }
-
-  public void setOwnerList(List<UserBriefVO> ownerList) {
-    this.ownerList = ownerList;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setRunning(Boolean running) { this.running = running; }
-
-  public void setDeptList(List<DeptBriefVO> deptList) {
-    this.deptList = deptList;
-  }
-
-  public void setDeptId(Long deptId) { this.deptId = deptId; }
-
-  public void setCreateTime(Date createTime) { this.createTime = createTime; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

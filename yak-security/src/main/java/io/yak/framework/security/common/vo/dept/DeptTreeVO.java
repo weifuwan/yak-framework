@@ -37,34 +37,6 @@ public class DeptTreeVO {
 
   public static DeptTreeVOBuilder builder() { return new DeptTreeVOBuilder(); }
 
-  public Long getId() { return this.id; }
-
-  public String getDeptName() { return this.deptName; }
-
-  public String getDescription() { return this.description; }
-
-  public Long getParentId() { return this.parentId; }
-
-  public Boolean getLeaf() { return this.leaf; }
-
-  public List<DeptTreeVO> getChildList() { return this.childList; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setDeptName(String deptName) { this.deptName = deptName; }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setParentId(Long parentId) { this.parentId = parentId; }
-
-  public void setLeaf(Boolean leaf) { this.leaf = leaf; }
-
-  public void setChildList(List<DeptTreeVO> childList) {
-    this.childList = childList;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

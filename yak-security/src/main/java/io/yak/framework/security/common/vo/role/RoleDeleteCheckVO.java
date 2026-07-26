@@ -15,16 +15,6 @@ public class RoleDeleteCheckVO {
   /** 关联的用户名列表。 */
   private List<String> userNameList;
 
-  public Long getRoleId() { return this.roleId; }
-
-  public List<String> getUserNameList() { return this.userNameList; }
-
-  public void setRoleId(Long roleId) { this.roleId = roleId; }
-
-  public void setUserNameList(List<String> userNameList) {
-    this.userNameList = userNameList;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

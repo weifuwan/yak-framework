@@ -23,34 +23,6 @@ public class ConfigDTO {
   /** 操作人。 */
   private String operator;
 
-  public Long getId() { return this.id; }
-
-  public String getValueGroup() { return this.valueGroup; }
-
-  public String getValueName() { return this.valueName; }
-
-  public String getValue() { return this.value; }
-
-  public Integer getStatus() { return this.status; }
-
-  public String getMemo() { return this.memo; }
-
-  public String getOperator() { return this.operator; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setValueGroup(String valueGroup) { this.valueGroup = valueGroup; }
-
-  public void setValueName(String valueName) { this.valueName = valueName; }
-
-  public void setValue(String value) { this.value = value; }
-
-  public void setStatus(Integer status) { this.status = status; }
-
-  public void setMemo(String memo) { this.memo = memo; }
-
-  public void setOperator(String operator) { this.operator = operator; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

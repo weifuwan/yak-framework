@@ -13,14 +13,6 @@ public class ResourceTypeVO {
   /** 资源类型名称。 */
   private String typeName;
 
-  public Long getId() { return this.id; }
-
-  public String getTypeName() { return this.typeName; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setTypeName(String typeName) { this.typeName = typeName; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

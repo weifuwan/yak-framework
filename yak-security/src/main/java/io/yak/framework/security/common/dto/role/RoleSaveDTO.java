@@ -19,26 +19,6 @@ public class RoleSaveDTO {
   /** 权限标识列表。 */
   private List<Long> permissionIdList;
 
-  public Long getId() { return this.id; }
-
-  public String getRoleName() { return this.roleName; }
-
-  public String getDescription() { return this.description; }
-
-  public List<Long> getPermissionIdList() { return this.permissionIdList; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setRoleName(String roleName) { this.roleName = roleName; }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setPermissionIdList(List<Long> permissionIdList) {
-    this.permissionIdList = permissionIdList;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

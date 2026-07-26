@@ -15,18 +15,6 @@ public class DeptBriefVO {
   /** 父节点标识。 */
   private Long parentId;
 
-  public Long getId() { return this.id; }
-
-  public String getDeptName() { return this.deptName; }
-
-  public Long getParentId() { return this.parentId; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setDeptName(String deptName) { this.deptName = deptName; }
-
-  public void setParentId(Long parentId) { this.parentId = parentId; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

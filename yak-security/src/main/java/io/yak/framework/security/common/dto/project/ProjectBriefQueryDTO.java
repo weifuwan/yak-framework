@@ -57,12 +57,6 @@ public class ProjectBriefQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public String getProjectName() { return this.projectName; }
-
-  public void setProjectName(String projectName) {
-    this.projectName = projectName;
-  }
-
   @Override
   public String toString() {
     return "ProjectBriefQueryDTO(projectName=" + this.getProjectName() + ")";

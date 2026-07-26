@@ -17,22 +17,6 @@ public class MByRDataVO {
   /** 授权级别。 */
   private Integer hasLevel;
 
-  public Long getUserId() { return this.userId; }
-
-  public String getUserName() { return this.userName; }
-
-  public String getRealName() { return this.realName; }
-
-  public Integer getHasLevel() { return this.hasLevel; }
-
-  public void setUserId(Long userId) { this.userId = userId; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setRealName(String realName) { this.realName = realName; }
-
-  public void setHasLevel(Integer hasLevel) { this.hasLevel = hasLevel; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

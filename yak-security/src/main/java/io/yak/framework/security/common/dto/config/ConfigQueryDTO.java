@@ -89,26 +89,6 @@ public class ConfigQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public String getValueGroup() { return this.valueGroup; }
-
-  public String getValueName() { return this.valueName; }
-
-  public Integer getStatus() { return this.status; }
-
-  public String getMemo() { return this.memo; }
-
-  public String getOperator() { return this.operator; }
-
-  public void setValueGroup(String valueGroup) { this.valueGroup = valueGroup; }
-
-  public void setValueName(String valueName) { this.valueName = valueName; }
-
-  public void setStatus(Integer status) { this.status = status; }
-
-  public void setMemo(String memo) { this.memo = memo; }
-
-  public void setOperator(String operator) { this.operator = operator; }
-
   @Override
   public String toString() {
     return "ConfigQueryDTO(valueGroup=" + this.getValueGroup() +

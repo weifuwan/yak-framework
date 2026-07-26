@@ -17,22 +17,6 @@ public class UserBasicVO {
   /** 部门标识。 */
   private Long deptId;
 
-  public Long getId() { return this.id; }
-
-  public String getUserName() { return this.userName; }
-
-  public String getRealName() { return this.realName; }
-
-  public Long getDeptId() { return this.deptId; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  public void setRealName(String realName) { this.realName = realName; }
-
-  public void setDeptId(Long deptId) { this.deptId = deptId; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

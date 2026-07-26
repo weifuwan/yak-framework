@@ -13,14 +13,6 @@ public class PageParamDTO {
   /** 每页记录数。 */
   private int size = 10;
 
-  public int getPage() { return this.page; }
-
-  public int getSize() { return this.size; }
-
-  public void setPage(int page) { this.page = page; }
-
-  public void setSize(int size) { this.size = size; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

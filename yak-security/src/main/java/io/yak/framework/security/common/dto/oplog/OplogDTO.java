@@ -51,34 +51,6 @@ public class OplogDTO {
     this.target = target;
   }
 
-  public String getOperator() { return this.operator; }
-
-  public String getOperateType() { return this.operateType; }
-
-  public String getTargetType() { return this.targetType; }
-
-  public String getTarget() { return this.target; }
-
-  public String getDetail() { return this.detail; }
-
-  public String getOperationMethods() { return this.operationMethods; }
-
-  public void setOperator(String operator) { this.operator = operator; }
-
-  public void setOperateType(String operateType) {
-    this.operateType = operateType;
-  }
-
-  public void setTargetType(String targetType) { this.targetType = targetType; }
-
-  public void setTarget(String target) { this.target = target; }
-
-  public void setDetail(String detail) { this.detail = detail; }
-
-  public void setOperationMethods(String operationMethods) {
-    this.operationMethods = operationMethods;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

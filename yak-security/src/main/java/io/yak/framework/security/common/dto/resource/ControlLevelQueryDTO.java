@@ -17,26 +17,6 @@ public class ControlLevelQueryDTO {
   /** 资源标识。 */
   private Long resourceId;
 
-  public Long getUserId() { return this.userId; }
-
-  public Long getProjectId() { return this.projectId; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public Long getResourceId() { return this.resourceId; }
-
-  public void setUserId(Long userId) { this.userId = userId; }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
-  public void setResourceId(Long resourceId) {
-    this.resourceId = resourceId;
-  }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;

@@ -85,24 +85,6 @@ public class MByRQueryDTO extends PageParamDTO {
     return result;
   }
 
-  public Long getProjectId() { return this.projectId; }
-
-  public Long getResourceTypeId() { return this.resourceTypeId; }
-
-  public Integer getShowLevel() { return this.showLevel; }
-
-  public String getName() { return this.name; }
-
-  public void setProjectId(Long projectId) { this.projectId = projectId; }
-
-  public void setResourceTypeId(Long resourceTypeId) {
-    this.resourceTypeId = resourceTypeId;
-  }
-
-  public void setShowLevel(Integer showLevel) { this.showLevel = showLevel; }
-
-  public void setName(String name) { this.name = name; }
-
   @Override
   public String toString() {
     return "MByRQueryDTO(projectId=" + this.getProjectId() +

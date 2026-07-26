@@ -22,18 +22,6 @@ public class MByUDataVO {
     this.name = name;
   }
 
-  public Long getId() { return this.id; }
-
-  public String getName() { return this.name; }
-
-  public Integer getHasLevel() { return this.hasLevel; }
-
-  public void setId(Long id) { this.id = id; }
-
-  public void setName(String name) { this.name = name; }
-
-  public void setHasLevel(Integer hasLevel) { this.hasLevel = hasLevel; }
-
   public boolean equals(Object o) {
     if (o == this) {
       return true;
