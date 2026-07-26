@@ -60,8 +60,10 @@ GRANT ALL PRIVILEGES ON yak_security.* TO 'yak_security'@'%';
 FLUSH PRIVILEGES;
 ```
 
-应用启动时，模块使用 Flyway 自动执行 `V1__init_yak_security.sql` 和
-`V2__init_yak_security_data.sql`，无需手工导入表结构。生产环境应由数据库管理员按最小权限原则
+应用启动时，模块使用 Flyway 从专属的 `classpath:yak-security/db/migration` 路径自动执行
+`V1__init_yak_security.sql`、`V2__init_yak_security_data.sql` 和后续版本脚本，无需手工导入表结构。
+该路径不会扫描宿主应用默认的 `db/migration` 目录，避免业务库迁移脚本被安全模块独立数据源误执行。
+生产环境应由数据库管理员按最小权限原则
 调整账号权限；如果运行账号没有 DDL 权限，可在发布阶段使用迁移账号预先执行 Flyway。
 
 不要重复执行旧版 `yak-security.sql`、`schema.sql` 或自建初始化脚本，否则可能与 Flyway 历史记录

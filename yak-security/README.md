@@ -166,8 +166,10 @@ yak:
 
 ## 数据库迁移与应用隔离
 
-模块启动时由 Flyway 依次执行 `db/migration/V1__init_yak_security.sql` 和
-`V2__init_yak_security_data.sql`。旧的覆盖式 `yak-security.sql` 已移除，生产环境不得再通过
+模块启动时由 Flyway 从模块专属目录 `yak-security/db/migration` 依次执行
+`V1__init_yak_security.sql`、`V2__init_yak_security_data.sql` 和后续版本脚本。该专属目录可避免
+安全模块的独立数据源扫描并执行宿主应用 `db/migration` 下的业务迁移。旧的覆盖式
+`yak-security.sql` 已移除，生产环境不得再通过
 `schema.sql` 或初始化脚本重复加载表结构。目标数据库为 MariaDB 10.6 及以上版本。
 
 `yak.security.application-name` 是**必填、非空且无默认值**的应用级数据隔离键。

@@ -56,6 +56,9 @@ import java.util.Collections;
 )
 public class DataSourceConfig {
 
+    static final String FLYWAY_MIGRATION_LOCATION =
+            "classpath:yak-security/db/migration";
+
     /**
      * MyBatis-Plus 全局配置。
      */
@@ -214,8 +217,8 @@ public class DataSourceConfig {
 
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations(
-                        "classpath:db/migration")
+                // 使用模块专属目录，避免独立数据源误执行宿主应用的迁移脚本。
+                .locations(FLYWAY_MIGRATION_LOCATION)
                 .placeholders(Collections.singletonMap(
                         "appName",
                         properties.getApplicationName()))
