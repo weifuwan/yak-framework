@@ -1,0 +1,54 @@
+{
+  "groups": [
+    {
+      "name": "spring.logi-security",
+      "type": "com.yak.security.properties.LogiSecurityProper",
+      "sourceType": "com.yak.security.properties.LogiSecurityProper"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.logi-security.app-name",
+      "type": "java.lang.String",
+      "description": "应用名称",
+      "sourceType": "com.yak.security.properties.LogiSecurityProper"
+    },
+    {
+      "name": "spring.logi-security.driver-class-name",
+      "type": "java.lang.String",
+      "description": "数据库信息",
+      "sourceType": "com.yak.security.properties.LogiSecurityProper"
+    },
+    {
+      "name": "spring.logi-security.jdbc-url",
+      "type": "java.lang.String",
+      "description": "数据库信息",
+      "sourceType": "com.yak.security.properties.LogiSecurityProper"
+    },
+    {
+      "name": "spring.logi-security.login-extend-bean-name",
+      "type": "java.lang.String",
+      "description": "用户需要实现loginExtend接口，并在spring容器中的bean name 对应 配置文件[logi.security.login-extend-bean-name] 配置 项",
+      "sourceType": "com.yak.security.properties.LogiSecurityProper"
+    },
+    {
+      "name": "spring.logi-security.password",
+      "type": "java.lang.String",
+      "description": "数据库信息",
+      "sourceType": "com.yak.security.properties.LogiSecurityProper"
+    },
+    {
+      "name": "spring.logi-security.resource-extend-bean-name",
+      "type": "java.lang.String",
+      "description": "用户需要实现resourceExtend接口，并在spring容器中的bean name",
+      "sourceType": "com.yak.security.properties.LogiSecurityProper"
+    },
+    {
+      "name": "spring.logi-security.username",
+      "type": "java.lang.String",
+      "description": "数据库信息",
+      "sourceType": "com.yak.security.properties.LogiSecurityProper"
+    }
+  ],
+  "hints": []
+}
