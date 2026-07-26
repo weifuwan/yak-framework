@@ -12,6 +12,7 @@ import io.yak.framework.security.common.dto.user.UserQueryDTO;
 import io.yak.framework.security.common.vo.role.AssignInfoVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.common.vo.user.UserVO;
+import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import io.yak.framework.security.util.JsonUtils;
