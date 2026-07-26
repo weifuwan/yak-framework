@@ -18,9 +18,9 @@
 
 ```java
 @Bean("billing")
-ScheduleTaskHandler billing() {
-  return parameters -> billingService.settle(parameters.get("tenant"));
-}
+ScheduleTaskHandler billing(){
+        return parameters->billingService.settle(parameters.get("tenant"));
+        }
 ```
 
 通过 `ScheduleTaskService.save(...)` 注册任务，或调用

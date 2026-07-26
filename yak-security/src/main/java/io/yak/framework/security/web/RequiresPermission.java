@@ -1,10 +1,6 @@
 package io.yak.framework.security.web;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Marks an MVC endpoint as requiring an RBAC permission.
@@ -19,10 +15,10 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface RequiresPermission {
 
-  /**
-   * Required permission code.
-   *
-   * @return permission code
-   */
-  String value();
+    /**
+     * Required permission code.
+     *
+     * @return permission code
+     */
+    String value();
 }

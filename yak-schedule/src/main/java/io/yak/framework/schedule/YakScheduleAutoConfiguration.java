@@ -15,24 +15,36 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnProperty(prefix = "yak.schedule", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(YakScheduleProperties.class)
 public class YakScheduleAutoConfiguration {
-  @Bean @ConditionalOnMissingBean
-  CurrentOperatorProvider currentOperatorProvider() { return () -> "SYSTEM"; }
-  @Bean @ConditionalOnMissingBean
-  ScheduleExecutionLogRepository scheduleExecutionLogRepository(YakScheduleProperties properties) {
-    return new InMemoryScheduleExecutionLogRepository(properties.getLogCapacity());
-  }
-  @Bean @ConditionalOnMissingBean
-  ScheduleOperationAuditRepository scheduleOperationAuditRepository(YakScheduleProperties properties) {
-    return new InMemoryScheduleOperationAuditRepository(properties.getLogCapacity());
-  }
-  @Bean @ConditionalOnMissingBean
-  ScheduleTaskService scheduleTaskService(Scheduler scheduler, CurrentOperatorProvider operatorProvider,
-      ScheduleExecutionLogRepository logRepository, ScheduleOperationAuditRepository auditRepository) {
-    return new ScheduleTaskService(scheduler, operatorProvider, logRepository, auditRepository);
-  }
-  @Bean
-  @ConditionalOnMissingBean
-  @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-  @ConditionalOnProperty(prefix = "yak.schedule", name = "web-enabled", havingValue = "true", matchIfMissing = true)
-  ScheduleTaskController scheduleTaskController(ScheduleTaskService service) { return new ScheduleTaskController(service); }
+    @Bean
+    @ConditionalOnMissingBean
+    CurrentOperatorProvider currentOperatorProvider() {
+        return () -> "SYSTEM";
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    ScheduleExecutionLogRepository scheduleExecutionLogRepository(YakScheduleProperties properties) {
+        return new InMemoryScheduleExecutionLogRepository(properties.getLogCapacity());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    ScheduleOperationAuditRepository scheduleOperationAuditRepository(YakScheduleProperties properties) {
+        return new InMemoryScheduleOperationAuditRepository(properties.getLogCapacity());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    ScheduleTaskService scheduleTaskService(Scheduler scheduler, CurrentOperatorProvider operatorProvider,
+                                            ScheduleExecutionLogRepository logRepository, ScheduleOperationAuditRepository auditRepository) {
+        return new ScheduleTaskService(scheduler, operatorProvider, logRepository, auditRepository);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+    @ConditionalOnProperty(prefix = "yak.schedule", name = "web-enabled", havingValue = "true", matchIfMissing = true)
+    ScheduleTaskController scheduleTaskController(ScheduleTaskService service) {
+        return new ScheduleTaskController(service);
+    }
 }

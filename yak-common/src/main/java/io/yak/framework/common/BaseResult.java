@@ -1,10 +1,6 @@
 package io.yak.framework.common;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * 接口返回结果基础类。
@@ -20,13 +16,13 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class BaseResult {
 
-  /**
-   * 接口执行结果提示信息。
-   */
-  protected String message;
+    /**
+     * 接口执行结果提示信息。
+     */
+    protected String message;
 
-  /**
-   * 接口执行结果状态码。
-   */
-  protected Integer code;
+    /**
+     * 接口执行结果状态码。
+     */
+    protected Integer code;
 }

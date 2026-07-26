@@ -8,4 +8,5 @@ import org.apache.ibatis.annotations.Mapper;
  * 角色权限关系 MyBatis 映射接口。
  */
 @Mapper
-public interface RolePermissionMapper extends BaseMapper<RolePermissionPO> {}
+public interface RolePermissionMapper extends BaseMapper<RolePermissionPO> {
+}

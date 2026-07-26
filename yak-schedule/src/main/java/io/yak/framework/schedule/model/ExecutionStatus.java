@@ -1,3 +1,3 @@
 package io.yak.framework.schedule.model;
 
-public enum ExecutionStatus { RUNNING, SUCCEEDED, FAILED }
+public enum ExecutionStatus {RUNNING, SUCCEEDED, FAILED}

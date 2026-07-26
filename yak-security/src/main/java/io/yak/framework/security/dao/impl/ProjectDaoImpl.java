@@ -31,6 +31,13 @@ public class ProjectDaoImpl
     private final ProjectMapper projectMapper;
 
     /**
+     * 判断集合是否包含数据。
+     */
+    private static boolean hasItems(List<?> values) {
+        return values != null && !values.isEmpty();
+    }
+
+    /**
      * 根据项目主键查询项目。
      *
      * @param projectId 项目主键
@@ -174,8 +181,8 @@ public class ProjectDaoImpl
     /**
      * 根据部门范围、项目范围及查询条件分页查询项目。
      *
-     * @param queryDTO     查询条件
-     * @param deptIdList   部门主键列表
+     * @param queryDTO      查询条件
+     * @param deptIdList    部门主键列表
      * @param projectIdList 项目主键列表
      * @return 项目分页数据
      */
@@ -272,12 +279,5 @@ public class ProjectDaoImpl
                         ProjectPO::getProjectCode,
                         ProjectPO::getProjectName
                 );
-    }
-
-    /**
-     * 判断集合是否包含数据。
-     */
-    private static boolean hasItems(List<?> values) {
-        return values != null && !values.isEmpty();
     }
 }

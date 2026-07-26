@@ -8,4 +8,5 @@ import org.apache.ibatis.annotations.Mapper;
  * 部门 MyBatis 映射接口。
  */
 @Mapper
-public interface DeptMapper extends BaseMapper<DeptPO> {}
+public interface DeptMapper extends BaseMapper<DeptPO> {
+}

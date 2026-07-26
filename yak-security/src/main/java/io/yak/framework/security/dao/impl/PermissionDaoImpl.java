@@ -64,7 +64,9 @@ public class PermissionDaoImpl
                 .forEach(permissionMapper::insert);
     }
 
-    /** 根据权限标识删除权限。 */
+    /**
+     * 根据权限标识删除权限。
+     */
     @Override
     public int deleteById(Long permissionId) {
         if (permissionId == null) {
@@ -98,7 +100,8 @@ public class PermissionDaoImpl
             }
             if (item.getParentCode() != null) {
                 PermissionPO parent = byCode.get(item.getParentCode());
-                if (parent == null) throw new IllegalStateException("Missing permission group: " + item.getParentCode());
+                if (parent == null)
+                    throw new IllegalStateException("Missing permission group: " + item.getParentCode());
                 row.setParentId(parent.getId());
             } else {
                 row.setParentId(0L);
@@ -109,8 +112,8 @@ public class PermissionDaoImpl
         existing.stream().filter(item -> Boolean.TRUE.equals(item.getDeclared()))
                 .filter(item -> !desiredCodes.contains(item.getPermissionCode()))
                 .filter(item -> Boolean.TRUE.equals(item.getActive())).forEach(item -> {
-                    item.setActive(false);
-                    permissionMapper.updateById(item);
-                });
+            item.setActive(false);
+            permissionMapper.updateById(item);
+        });
     }
 }

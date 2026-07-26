@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 用户项目关联数据访问实现。
@@ -26,6 +25,13 @@ public class UserProjectDaoImpl
         implements UserProjectDao {
 
     private final UserProjectMapper userProjectMapper;
+
+    /**
+     * 判断集合是否为空。
+     */
+    private static boolean isEmpty(List<?> values) {
+        return values == null || values.isEmpty();
+    }
 
     /**
      * 根据项目和用户类型查询用户标识。
@@ -238,7 +244,9 @@ public class UserProjectDaoImpl
         );
     }
 
-    /** 删除指定用户的全部项目关联。 */
+    /**
+     * 删除指定用户的全部项目关联。
+     */
     @Override
     public void deleteByUserId(Long userId) {
         if (userId == null) {
@@ -398,12 +406,5 @@ public class UserProjectDaoImpl
                         UserProjectPO::getProjectId,
                         UserProjectPO::getUserType
                 );
-    }
-
-    /**
-     * 判断集合是否为空。
-     */
-    private static boolean isEmpty(List<?> values) {
-        return values == null || values.isEmpty();
     }
 }

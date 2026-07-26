@@ -8,4 +8,5 @@ import org.apache.ibatis.annotations.Mapper;
  * 消息 MyBatis 映射接口。
  */
 @Mapper
-public interface MessageMapper extends BaseMapper<MessagePO> {}
+public interface MessageMapper extends BaseMapper<MessagePO> {
+}

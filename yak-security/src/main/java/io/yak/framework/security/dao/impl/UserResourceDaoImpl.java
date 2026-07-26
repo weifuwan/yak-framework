@@ -29,6 +29,20 @@ public class UserResourceDaoImpl
     private final UserResourceMapper userResourceMapper;
 
     /**
+     * 将 MyBatis-Plus 的统计结果转换为整数。
+     */
+    private static int toInt(Long value) {
+        return Math.toIntExact(value == null ? 0L : value);
+    }
+
+    /**
+     * 判断集合是否为空。
+     */
+    private static boolean isEmpty(List<?> values) {
+        return values == null || values.isEmpty();
+    }
+
+    /**
      * 根据用户及资源条件统计权限数量。
      *
      * @param userId   用户标识，可为空
@@ -301,7 +315,7 @@ public class UserResourceDaoImpl
     /**
      * 删除除指定用户外符合条件的资源权限。
      *
-     * @param queryDTO         查询条件
+     * @param queryDTO          查询条件
      * @param excludeUserIdList 排除的用户标识列表
      */
     @Override
@@ -506,19 +520,5 @@ public class UserResourceDaoImpl
                         UserResourcePO::getResourceId,
                         queryDTO.getResourceId()
                 );
-    }
-
-    /**
-     * 将 MyBatis-Plus 的统计结果转换为整数。
-     */
-    private static int toInt(Long value) {
-        return Math.toIntExact(value == null ? 0L : value);
-    }
-
-    /**
-     * 判断集合是否为空。
-     */
-    private static boolean isEmpty(List<?> values) {
-        return values == null || values.isEmpty();
     }
 }

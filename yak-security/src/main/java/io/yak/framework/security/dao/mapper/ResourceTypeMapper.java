@@ -8,4 +8,5 @@ import org.apache.ibatis.annotations.Mapper;
  * 资源类型 MyBatis 映射接口。
  */
 @Mapper
-public interface ResourceTypeMapper extends BaseMapper<ResourceTypePO> {}
+public interface ResourceTypeMapper extends BaseMapper<ResourceTypePO> {
+}

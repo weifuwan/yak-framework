@@ -1,7 +1,22 @@
 {
   "properties": [
-    {"name": "yak.schedule.enabled", "type": "java.lang.Boolean", "defaultValue": true, "description": "Enable Yak Schedule."},
-    {"name": "yak.schedule.web-enabled", "type": "java.lang.Boolean", "defaultValue": true, "description": "Expose schedule management HTTP endpoints."},
-    {"name": "yak.schedule.log-capacity", "type": "java.lang.Integer", "defaultValue": 10000, "description": "Maximum in-memory execution and audit records."}
+    {
+      "name": "yak.schedule.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable Yak Schedule."
+    },
+    {
+      "name": "yak.schedule.web-enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Expose schedule management HTTP endpoints."
+    },
+    {
+      "name": "yak.schedule.log-capacity",
+      "type": "java.lang.Integer",
+      "defaultValue": 10000,
+      "description": "Maximum in-memory execution and audit records."
+    }
   ]
 }

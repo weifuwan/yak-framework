@@ -22,10 +22,14 @@ import java.util.List;
 @Data
 @ApiModel(description = "YakTask \u4efb\u52a1\u7f16\u8f91DTO")
 public class YakTaskUpdateDTO {
-    /** 工作节点 IP 列表。 */
+    /**
+     * 工作节点 IP 列表。
+     */
     @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u5668\u7684ip\u5217\u8868")
     private List<String> workerIps;
-    /** 任务参数。 */
+    /**
+     * 任务参数。
+     */
     @ApiModelProperty(value = "\u8c03\u5ea6\u6267\u884c\u5668\u7684\u53c2\u6570")
     private String param;
 

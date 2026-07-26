@@ -1,7 +1,7 @@
 package io.yak.framework.security.dao.impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.yak.framework.security.common.dto.oplog.OplogQueryDTO;
@@ -26,6 +26,15 @@ public class OplogDaoImpl
         implements OplogDao {
 
     private final OplogMapper oplogMapper;
+
+    /**
+     * 将毫秒时间戳转换为数据库时间类型。
+     */
+    private static Timestamp toTimestamp(Long timeMillis) {
+        return timeMillis == null
+                ? null
+                : new Timestamp(timeMillis);
+    }
 
     /**
      * 分页查询操作日志，不返回操作详情。
@@ -155,14 +164,5 @@ public class OplogDaoImpl
                 .map(OplogPO::getTargetType)
                 .filter(StringUtils::hasText)
                 .collect(java.util.stream.Collectors.toList());
-    }
-
-    /**
-     * 将毫秒时间戳转换为数据库时间类型。
-     */
-    private static Timestamp toTimestamp(Long timeMillis) {
-        return timeMillis == null
-                ? null
-                : new Timestamp(timeMillis);
     }
 }

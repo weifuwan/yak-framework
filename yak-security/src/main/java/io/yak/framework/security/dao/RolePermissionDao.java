@@ -1,19 +1,20 @@
 package io.yak.framework.security.dao;
 
 import io.yak.framework.security.common.entity.RolePermission;
+
 import java.util.List;
 
 /**
  * 角色权限关系数据访问接口。
  */
 public interface RolePermissionDao {
-  void insertBatch(List<RolePermission> var1);
+    void insertBatch(List<RolePermission> var1);
 
-  void deleteByRoleId(Long roleId);
+    void deleteByRoleId(Long roleId);
 
-  void deleteByPermissionId(Long permissionId);
+    void deleteByPermissionId(Long permissionId);
 
-  List<Long> selectPermissionIdListByRoleId(Long roleId);
+    List<Long> selectPermissionIdListByRoleId(Long roleId);
 
-  List<Long> selectPermissionIdListByRoleIdList(List<Long> var1);
+    List<Long> selectPermissionIdListByRoleIdList(List<Long> var1);
 }

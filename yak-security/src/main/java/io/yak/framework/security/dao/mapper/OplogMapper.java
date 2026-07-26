@@ -8,4 +8,5 @@ import org.apache.ibatis.annotations.Mapper;
  * 操作日志 MyBatis 映射接口。
  */
 @Mapper
-public interface OplogMapper extends BaseMapper<OplogPO> {}
+public interface OplogMapper extends BaseMapper<OplogPO> {
+}

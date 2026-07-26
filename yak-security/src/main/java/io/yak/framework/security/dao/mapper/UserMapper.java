@@ -8,4 +8,5 @@ import org.apache.ibatis.annotations.Mapper;
  * 用户 MyBatis 映射接口。
  */
 @Mapper
-public interface UserMapper extends BaseMapper<UserPO> {}
+public interface UserMapper extends BaseMapper<UserPO> {
+}

@@ -6,6 +6,7 @@ import io.yak.framework.security.common.dto.user.UserQueryDTO;
 import io.yak.framework.security.common.entity.user.User;
 import io.yak.framework.security.common.entity.user.UserBrief;
 import io.yak.framework.security.common.po.UserPO;
+
 import java.util.List;
 
 /**
@@ -16,41 +17,41 @@ import java.util.List;
  * @author weifuwan
  */
 public interface UserDao {
-  int addUser(UserPO userPO);
+    int addUser(UserPO userPO);
 
-  int editUser(UserPO userPO);
+    int editUser(UserPO userPO);
 
-  IPage<User> selectPageByUserIdList(UserQueryDTO queryDTO,
-                                     List<Long> userIdList);
+    IPage<User> selectPageByUserIdList(UserQueryDTO queryDTO,
+                                       List<Long> userIdList);
 
-  IPage<UserBrief> selectBriefPageByDeptIdList(UserBriefQueryDTO queryDTO,
-                                               List<Long> deptIdList);
+    IPage<UserBrief> selectBriefPageByDeptIdList(UserBriefQueryDTO queryDTO,
+                                                 List<Long> deptIdList);
 
-  User selectByUserId(Long userId);
+    User selectByUserId(Long userId);
 
-  User selectByUserMail(String email);
+    User selectByUserMail(String email);
 
-  User selectByUserPhone(String phone);
+    User selectByUserPhone(String phone);
 
-  boolean deleteByUserId(Long userId);
+    boolean deleteByUserId(Long userId);
 
-  List<UserBrief> selectBriefListByUserIdList(List<Long> userIdList);
+    List<UserBrief> selectBriefListByUserIdList(List<Long> userIdList);
 
-  List<UserBrief> selectBriefListByNameAndDescOrderByCreateTime(String name);
+    List<UserBrief> selectBriefListByNameAndDescOrderByCreateTime(String name);
 
-  List<UserBrief> selectBriefListByDeptIdList(List<Long> deptIdList);
+    List<UserBrief> selectBriefListByDeptIdList(List<Long> deptIdList);
 
-  List<UserBrief> selectBriefListOrderByCreateTime(boolean ascending);
+    List<UserBrief> selectBriefListOrderByCreateTime(boolean ascending);
 
-  List<UserBrief> selectAllBriefList();
+    List<UserBrief> selectAllBriefList();
 
-  /**
-   * 根据用户名或真实姓名模糊查询用户 ID。
-   *
-   * @param name 用户名或真实姓名关键字
-   * @return 匹配的用户 ID 列表，关键字为空时返回空列表
-   */
-  List<Long> selectUserIdListByUsernameOrRealName(String name);
+    /**
+     * 根据用户名或真实姓名模糊查询用户 ID。
+     *
+     * @param name 用户名或真实姓名关键字
+     * @return 匹配的用户 ID 列表，关键字为空时返回空列表
+     */
+    List<Long> selectUserIdListByUsernameOrRealName(String name);
 
-  User selectByUsername(String username);
+    User selectByUsername(String username);
 }

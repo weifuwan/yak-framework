@@ -8,9 +8,13 @@ package io.yak.framework.common;
  */
 public interface ErrorCode {
 
-  /** 返回稳定的错误码。 */
-  Integer getCode();
+    /**
+     * 返回稳定的错误码。
+     */
+    Integer getCode();
 
-  /** 返回可展示的错误信息。 */
-  String getMessage();
+    /**
+     * 返回可展示的错误信息。
+     */
+    String getMessage();
 }

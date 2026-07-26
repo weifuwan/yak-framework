@@ -12,7 +12,6 @@ Yak Framework 使用小型 Maven 模块保持能力边界清晰：
 
 - `yak-file`：兼容 Java 8 的本地、MinIO、OSS 统一文件服务。
 
-
 `yak-common` 不接收业务 DTO、实体或领域工具，新增内容前应确认它确实是所有业务模块共享的稳定契约。
 
 新增模块应继承统一父 POM，而不是直接继承 Spring Boot Parent：

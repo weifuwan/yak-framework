@@ -8,4 +8,5 @@ import org.apache.ibatis.annotations.Mapper;
  * 用户资源 MyBatis 映射接口。
  */
 @Mapper
-public interface UserResourceMapper extends BaseMapper<UserResourcePO> {}
+public interface UserResourceMapper extends BaseMapper<UserResourcePO> {
+}

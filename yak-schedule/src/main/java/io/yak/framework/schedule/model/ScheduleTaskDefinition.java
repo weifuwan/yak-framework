@@ -1,28 +1,71 @@
 package io.yak.framework.schedule.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 import java.time.ZoneId;
 import java.util.Map;
 
-/** Complete, project-scoped definition of a scheduled task. */
-public record ScheduleTaskDefinition(
-    String project,
-    String name,
-    String description,
-    String handler,
-    String cron,
-    ZoneId zoneId,
-    ConcurrencyPolicy concurrencyPolicy,
-    int maxRetries,
-    Map<String, String> parameters) {
+/**
+ * 调度任务定义。
+ *
+ * <p>描述一个项目范围内的完整调度任务，包括处理器、Cron 表达式、
+ * 时区、并发策略、重试次数以及运行参数。</p>
+ *
+ * @author weifuwan
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+public class ScheduleTaskDefinition {
 
-  public ScheduleTaskDefinition {
-    if (project == null || project.isBlank()) throw new IllegalArgumentException("project must not be blank");
-    if (name == null || name.isBlank()) throw new IllegalArgumentException("name must not be blank");
-    if (handler == null || handler.isBlank()) throw new IllegalArgumentException("handler must not be blank");
-    if (cron == null || cron.isBlank()) throw new IllegalArgumentException("cron must not be blank");
-    if (maxRetries < 0) throw new IllegalArgumentException("maxRetries must not be negative");
-    zoneId = zoneId == null ? ZoneId.systemDefault() : zoneId;
-    concurrencyPolicy = concurrencyPolicy == null ? ConcurrencyPolicy.FORBID : concurrencyPolicy;
-    parameters = parameters == null ? Map.of() : Map.copyOf(parameters);
-  }
+    /**
+     * 所属项目。
+     */
+    private String project;
+
+    /**
+     * 任务名称。
+     */
+    private String name;
+
+    /**
+     * 任务描述。
+     */
+    private String description;
+
+    /**
+     * 任务处理器名称。
+     */
+    private String handler;
+
+    /**
+     * Cron 表达式。
+     */
+    private String cron;
+
+    /**
+     * 调度时区。
+     */
+    private ZoneId zoneId;
+
+    /**
+     * 并发执行策略。
+     */
+    private ConcurrencyPolicy concurrencyPolicy;
+
+    /**
+     * 最大重试次数。
+     */
+    private int maxRetries;
+
+    /**
+     * 任务运行参数。
+     */
+    private Map<String, String> parameters;
+
+
 }

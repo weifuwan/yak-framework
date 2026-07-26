@@ -8,4 +8,5 @@ import org.apache.ibatis.annotations.Mapper;
  * 权限 MyBatis 映射接口。
  */
 @Mapper
-public interface PermissionMapper extends BaseMapper<PermissionPO> {}
+public interface PermissionMapper extends BaseMapper<PermissionPO> {
+}
