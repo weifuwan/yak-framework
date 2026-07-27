@@ -113,6 +113,34 @@ public final class NetworkUtil {
     }
 
     /**
+     * 获取当前请求的客户端 IP。
+     *
+     * <p>当调用线程不存在 HTTP 请求上下文时，返回指定默认值，
+     * 适用于系统初始化、定时任务和消息消费等场景。</p>
+     *
+     * @param defaultIpAddress 不存在 HTTP 请求时使用的默认 IP
+     * @return 客户端 IP 或默认 IP
+     */
+    public static String getRealIpAddressOrDefault(
+            String defaultIpAddress) {
+
+        RequestAttributes requestAttributes =
+                RequestContextHolder.getRequestAttributes();
+
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            ServletRequestAttributes servletRequestAttributes =
+                    (ServletRequestAttributes) requestAttributes;
+
+            return getRealIpAddress(
+                    servletRequestAttributes.getRequest());
+        }
+
+        return isNotOk(defaultIpAddress)
+                ? LOCAL_IPV4
+                : defaultIpAddress.trim();
+    }
+
+    /**
      * 从多级代理 IP 地址中获取第一个有效地址。
      *
      * @param ipAddress 原始 IP 地址

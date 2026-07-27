@@ -34,6 +34,11 @@ public class OplogPO extends BasePO {
   private String operateType;
 
   /**
+   * 操作页面。
+   */
+  private String operatePage;
+
+  /**
    * 操作方法。
    *
    * <p>对应数据库字段 {@code operation_methods}。</p>

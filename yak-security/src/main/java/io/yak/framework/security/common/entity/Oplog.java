@@ -15,6 +15,8 @@ public class Oplog extends BaseEntity {
   private String operatorIp;
   /** 操作人。 */
   private String operator;
+  /** 操作页面。 */
+  private String operatePage;
   /** 操作类型。 */
   private String operateType;
   /** 操作目标类型。 */

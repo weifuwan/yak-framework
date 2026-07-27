@@ -19,9 +19,16 @@ yak:
     web-enabled: true
     # 本地联调先关闭登录拦截，方便直接验证各接口。
     # 发布或接入业务系统时建议开启。
-    authentication-enabled: false
+    authentication-enabled: true
     audit-enabled: true
     application-name: ${YAK_SECURITY_APPLICATION_NAME:yak-security-demo}
+
+    bootstrap:
+      enabled: true
+      username: root
+      password: Root@123456
+      real-name: 系统管理员
+
     datasource:
       enabled: true
       url: ${YAK_SECURITY_DATASOURCE_URL:jdbc:mariadb://127.0.0.1:3306/yak_security?useUnicode=true&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai}

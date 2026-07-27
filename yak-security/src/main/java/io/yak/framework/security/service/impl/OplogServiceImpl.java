@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 /**
  * 操作日志服务实现类。
  *
@@ -30,6 +31,16 @@ import java.util.stream.Collectors;
  */
 @Service("yakSecurityOplogServiceImpl")
 public class OplogServiceImpl implements OplogService {
+
+    /**
+     * 非 HTTP 系统操作使用的 IP 标识。
+     */
+    private static final String SYSTEM_OPERATOR_IP =
+            "0.0.0.0";
+
+    private static final String DEFAULT_OPERATE_PAGE = "SYSTEM";
+
+    private static final String DEFAULT_OPERATION_METHOD = "SERVICE";
 
     private final OplogDao oplogDao;
 
@@ -174,20 +185,32 @@ public class OplogServiceImpl implements OplogService {
         oplog.setOperator(
                 sanitize(oplogDTO.getOperator()));
 
+        oplog.setOperatePage(
+                sanitize(defaultIfBlank(
+                        oplogDTO.getOperatePage(),
+                        DEFAULT_OPERATE_PAGE)));
+
+        oplog.setOperateType(
+                sanitize(oplogDTO.getOperateType()));
+
         oplog.setTarget(
                 sanitize(oplogDTO.getTarget()));
+
+        oplog.setTargetType(
+                sanitize(oplogDTO.getTargetType()));
 
         oplog.setDetail(
                 sanitize(oplogDTO.getDetail()));
 
         oplog.setOperationMethods(
-                sanitize(
-                        oplogDTO.getOperationMethods()));
+                sanitize(defaultIfBlank(
+                        oplogDTO.getOperationMethods(),
+                        DEFAULT_OPERATION_METHOD)));
 
         oplog.setOperatorIp(
                 sanitize(
-                        NetworkUtil
-                                .getRealIpAddress()));
+                        NetworkUtil.getRealIpAddressOrDefault(
+                                SYSTEM_OPERATOR_IP)));
 
 
         oplogDao.insert(oplog);
@@ -231,6 +254,15 @@ public class OplogServiceImpl implements OplogService {
                 oplog.getUpdateTime());
 
         return oplogVO;
+    }
+
+    private static String defaultIfBlank(
+            String value,
+            String defaultValue) {
+
+        return StringUtils.hasText(value)
+                ? value
+                : defaultValue;
     }
 
     /**

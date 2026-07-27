@@ -63,11 +63,30 @@ public class DataSourceConfig {
      * MyBatis-Plus 全局配置。
      */
     @Bean("yakSecurityGlobalConfig")
-    public GlobalConfig yakSecurityGlobalConfig() {
+    public GlobalConfig yakSecurityGlobalConfig(
+            YakSecurityProperties properties) {
+
+        requireText(
+                properties.getApplicationName(),
+                "yak.security.application-name"
+        );
+
         GlobalConfig globalConfig = new GlobalConfig();
         globalConfig.setBanner(false);
 
-        GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
+        /*
+         * AppBasePO.appName 使用 FieldFill.INSERT，
+         * 必须为自定义 SqlSessionFactory 显式注册填充器。
+         */
+        globalConfig.setMetaObjectHandler(
+                new YakSecurityMetaObjectHandler(
+                        properties.getApplicationName()
+                )
+        );
+
+        GlobalConfig.DbConfig dbConfig =
+                new GlobalConfig.DbConfig();
+
         dbConfig.setIdType(IdType.AUTO);
 
         globalConfig.setDbConfig(dbConfig);
