@@ -5,17 +5,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.account.AccountLoginDTO;
+import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
+import io.yak.framework.security.context.CurrentUser;
+import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.LoginService;
+import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.web.PublicEndpoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 登录账户管理接口。
@@ -28,16 +29,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
   private final LoginService loginService;
+  private final UserService userService;
+  private final CurrentUser currentUser;
 
-  /**
-   * 创建登录账户管理接口。
-   *
-   * @param loginService 登录服务
-   */
   public LoginController(
-          LoginService loginService) {
-
+          LoginService loginService,
+          UserService userService,
+          CurrentUser currentUser) {
     this.loginService = loginService;
+    this.userService = userService;
+    this.currentUser = currentUser;
   }
 
   /**
@@ -64,6 +65,26 @@ public class LoginController {
 
     return Result.success(currentUser);
 
+  }
+
+  @Operation(summary = "获取当前登录用户")
+  @GetMapping("/current")
+  public Result<UserBriefVO> current() {
+    if (!currentUser.isAuthenticated()) {
+      throw new YakSecurityException(
+              ResultCode.USER_NOT_LOGIN);
+    }
+
+    UserBriefVO user =
+            userService.getUserBriefByUsername(
+                    currentUser.getUsername());
+
+    if (user == null) {
+      throw new YakSecurityException(
+              ResultCode.USER_NOT_EXISTS);
+    }
+
+    return Result.success(user);
   }
 
   /**
