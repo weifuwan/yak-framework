@@ -22,6 +22,9 @@ import java.util.Set;
 @Service
 public class RbacPermissionServiceImpl implements RbacPermissionService {
 
+  private static final String ROOT_PERMISSION =
+          "security:root";
+
   private final UserService userService;
   private final UserRoleDao userRoleDao;
   private final RolePermissionDao rolePermissionDao;
@@ -55,7 +58,8 @@ public class RbacPermissionServiceImpl implements RbacPermissionService {
     if (user != null && user.getId() != null) {
       Set<String> permissionCodes = permissionCache.get(
               user.getId(), () -> loadPermissionCodes(user.getId()));
-      if (permissionCodes.contains(permissionCode)) {
+      if (permissionCodes.contains(ROOT_PERMISSION)
+              || permissionCodes.contains(permissionCode)) {
         return true;
       }
     }
