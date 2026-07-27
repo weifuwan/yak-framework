@@ -14,25 +14,166 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 部门数据访问实现。
  */
 @Repository
 @RequiredArgsConstructor
-public class DeptDaoImpl
-        implements DeptDao {
+public class DeptDaoImpl implements DeptDao {
 
     private final DeptMapper deptMapper;
 
     @Override
     public List<Dept> selectAllAndAscOrderByLevel() {
-        List<DeptPO> departments = deptMapper.selectList(
-                Wrappers.<DeptPO>lambdaQuery()
-                        .orderByAsc(DeptPO::getLevel)
-        );
+        List<DeptPO> departments =
+                deptMapper.selectList(
+                        Wrappers.<DeptPO>lambdaQuery()
+                                .orderByAsc(DeptPO::getLevel)
+                                .orderByAsc(DeptPO::getId));
 
-        return CopyBeanUtil.copyList(departments, Dept.class);
+        return CopyBeanUtil.copyList(
+                departments,
+                Dept.class);
+    }
+
+    @Override
+    public Dept selectByDeptId(Long deptId) {
+        if (deptId == null) {
+            return null;
+        }
+
+        return CopyBeanUtil.copy(
+                deptMapper.selectById(deptId),
+                Dept.class);
+    }
+
+    @Override
+    public List<Dept> selectListByParentId(
+            Long parentId) {
+
+        List<DeptPO> departmentList =
+                deptMapper.selectList(
+                        Wrappers.<DeptPO>lambdaQuery()
+                                .eq(
+                                        DeptPO::getParentId,
+                                        parentId)
+                                .orderByAsc(DeptPO::getLevel)
+                                .orderByAsc(DeptPO::getId));
+
+        return CopyBeanUtil.copyList(
+                departmentList,
+                Dept.class);
+    }
+
+    @Override
+    public int countByParentId(Long parentId) {
+        Long count =
+                deptMapper.selectCount(
+                        Wrappers.<DeptPO>lambdaQuery()
+                                .eq(
+                                        DeptPO::getParentId,
+                                        parentId));
+
+        return Math.toIntExact(count);
+    }
+
+    @Override
+    public int countByNameAndParentId(
+            String deptName,
+            Long parentId,
+            Long excludedDeptId) {
+
+        Long count =
+                deptMapper.selectCount(
+                        Wrappers.<DeptPO>lambdaQuery()
+                                .eq(
+                                        DeptPO::getDeptName,
+                                        deptName)
+                                .eq(
+                                        DeptPO::getParentId,
+                                        parentId)
+                                .ne(
+                                        excludedDeptId != null,
+                                        DeptPO::getId,
+                                        excludedDeptId));
+
+        return Math.toIntExact(count);
+    }
+
+    @Override
+    public void insert(Dept dept) {
+        if (dept == null) {
+            return;
+        }
+
+        DeptPO deptPO =
+                CopyBeanUtil.copy(
+                        dept,
+                        DeptPO.class);
+
+        deptMapper.insert(deptPO);
+
+        dept.setId(deptPO.getId());
+    }
+
+    @Override
+    public void update(Dept dept) {
+        if (dept == null || dept.getId() == null) {
+            return;
+        }
+
+        deptMapper.updateById(
+                CopyBeanUtil.copy(
+                        dept,
+                        DeptPO.class));
+    }
+
+    @Override
+    public void updateLeaf(
+            Long deptId,
+            boolean leaf) {
+
+        if (deptId == null) {
+            return;
+        }
+
+        deptMapper.update(
+                null,
+                Wrappers.<DeptPO>lambdaUpdate()
+                        .eq(
+                                DeptPO::getId,
+                                deptId)
+                        .set(
+                                DeptPO::getLeaf,
+                                leaf));
+    }
+
+    @Override
+    public void updateLevel(
+            Long deptId,
+            int level) {
+
+        if (deptId == null) {
+            return;
+        }
+
+        deptMapper.update(
+                null,
+                Wrappers.<DeptPO>lambdaUpdate()
+                        .eq(
+                                DeptPO::getId,
+                                deptId)
+                        .set(
+                                DeptPO::getLevel,
+                                level));
+    }
+
+    @Override
+    public boolean deleteByDeptId(Long deptId) {
+        return deptId != null
+                && deptMapper.deleteById(deptId) > 0;
     }
 
     @Override
@@ -45,31 +186,32 @@ public class DeptDaoImpl
                         .like(
                                 StringUtils.hasText(deptName),
                                 DeptPO::getDeptName,
-                                deptName
-                        );
+                                deptName);
 
         return selectIdList(wrapper);
     }
 
     @Override
-    public DeptBrief selectBriefByDeptId(Long deptId) {
-        DeptPO department = deptMapper.selectOne(
-                briefQuery()
-                        .eq(DeptPO::getId, deptId)
-        );
+    public DeptBrief selectBriefByDeptId(
+            Long deptId) {
+
+        DeptPO department =
+                deptMapper.selectOne(
+                        briefQuery()
+                                .eq(
+                                        DeptPO::getId,
+                                        deptId));
 
         return CopyBeanUtil.copy(
                 department,
-                DeptBrief.class
-        );
+                DeptBrief.class);
     }
 
     @Override
     public List<Long> selectAllDeptIdList() {
         return selectIdList(
                 Wrappers.<DeptPO>lambdaQuery()
-                        .select(DeptPO::getId)
-        );
+                        .select(DeptPO::getId));
     }
 
     @Override
@@ -79,8 +221,9 @@ public class DeptDaoImpl
         return selectIdList(
                 Wrappers.<DeptPO>lambdaQuery()
                         .select(DeptPO::getId)
-                        .eq(DeptPO::getParentId, parentId)
-        );
+                        .eq(
+                                DeptPO::getParentId,
+                                parentId));
     }
 
     @Override
@@ -89,19 +232,23 @@ public class DeptDaoImpl
             return;
         }
 
-        CopyBeanUtil.copyList(deptList, DeptPO.class)
+        CopyBeanUtil.copyList(
+                deptList,
+                DeptPO.class)
                 .forEach(deptMapper::insert);
     }
 
     @Override
     public List<DeptBrief> selectAllDeptBriefList() {
         List<DeptPO> departments =
-                deptMapper.selectList(briefQuery());
+                deptMapper.selectList(
+                        briefQuery()
+                                .orderByAsc(DeptPO::getLevel)
+                                .orderByAsc(DeptPO::getId));
 
         return CopyBeanUtil.copyList(
                 departments,
-                DeptBrief.class
-        );
+                DeptBrief.class);
     }
 
     /**
@@ -115,8 +262,7 @@ public class DeptDaoImpl
                         DeptPO::getDescription,
                         DeptPO::getParentId,
                         DeptPO::getLeaf,
-                        DeptPO::getLevel
-                );
+                        DeptPO::getLevel);
     }
 
     /**
@@ -128,6 +274,6 @@ public class DeptDaoImpl
         return deptMapper.selectObjs(wrapper)
                 .stream()
                 .map(DatabaseNumberUtils::toLong)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 }
