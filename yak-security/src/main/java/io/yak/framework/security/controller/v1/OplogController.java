@@ -2,11 +2,12 @@ package io.yak.framework.security.controller.v1;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.dto.oplog.OplogQueryDTO;
+import io.yak.framework.security.common.vo.oplog.OplogOptionsVO;
 import io.yak.framework.security.common.vo.oplog.OplogVO;
 import io.yak.framework.security.service.OplogService;
 
@@ -31,62 +32,43 @@ public class OplogController {
 
   private final OplogService oplogService;
 
-  /**
-   * 创建操作日志管理接口。
-   *
-   * @param oplogService 操作日志服务
-   */
-  public OplogController(
-          OplogService oplogService) {
-
+  public OplogController(OplogService oplogService) {
     this.oplogService = oplogService;
   }
 
-  /**
-   * 分页查询操作日志。
-   *
-   * @param queryDTO 查询条件
-   * @return 操作日志分页结果
-   */
+  /** 分页查询操作日志。 */
   @Operation(summary = "分页查询操作日志")
   @PostMapping("/page")
   public PagingResult<OplogVO> page(
-          @RequestBody OplogQueryDTO queryDTO) {
+          @RequestBody(required = false)
+                  OplogQueryDTO queryDTO) {
 
     PagingData<OplogVO> pagingData =
-            oplogService.getOplogPage(
-                    queryDTO);
-
-    return PagingResult.success(
-            pagingData);
+            oplogService.getOplogPage(queryDTO);
+    return PagingResult.success(pagingData);
   }
 
-  /**
-   * 根据操作日志 ID 查询日志详情。
-   *
-   * @param oplogId 操作日志 ID
-   * @return 操作日志详情
-   */
+  /** 查询操作日志筛选选项。 */
+  @Operation(summary = "查询操作日志筛选选项")
+  @GetMapping("/options")
+  public Result<OplogOptionsVO> options() {
+    return Result.success(oplogService.getOptions());
+  }
+
+  /** 根据操作日志 ID 查询日志详情。 */
   @Operation(summary = "根据操作日志 ID 查询日志详情")
   @GetMapping("/{id}")
   public Result<OplogVO> detail(
           @PathVariable("id") Long oplogId) {
 
     return Result.success(
-            oplogService
-                    .getOplogDetailByOplogId(
-                            oplogId));
+            oplogService.getOplogDetailByOplogId(oplogId));
   }
 
-  /**
-   * 查询全部操作目标类型。
-   *
-   * @return 操作目标类型列表
-   */
+  /** 查询全部操作目标类型。 */
   @Operation(summary = "查询全部操作目标类型")
   @GetMapping("/type/list")
   public Result<List<String>> targetTypeList() {
-    return Result.success(
-            oplogService.listTargetType());
+    return Result.success(oplogService.listTargetType());
   }
 }
