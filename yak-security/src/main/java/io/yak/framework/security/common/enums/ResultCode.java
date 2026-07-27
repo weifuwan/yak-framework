@@ -1,7 +1,6 @@
 package io.yak.framework.security.common.enums;
 
 import io.yak.framework.common.ErrorCode;
-
 public enum ResultCode implements ErrorCode {
   SUCCESS(200, "成功"),
   COMMON_FAIL(999, "失败"),
@@ -36,56 +35,74 @@ public enum ResultCode implements ErrorCode {
   NO_PERMISSION(3001, "没有权限"),
   ROLE_BUSINESS_ERROR(4001, "内部错误"),
   ROLE_NOT_EXISTS(4002, "角色不存在"),
-  ROLE_USER_AUTHED(4003, "有用户已绑定该角色"),
+  ROLE_USER_AUTHED(4003,
+                   "有用户已绑定该角色"),
   ROLE_NAME_ALREADY_EXISTS(4004, "角色名已存在"),
   ROLE_NAME_CANNOT_BE_BLANK(4005, "角色名不可为空"),
-  ROLE_DEPT_CANNOT_BE_BLANK(4006, "角色描述不可为空"),
-  ROLE_PERMISSION_CANNOT_BE_NULL(4007, "角色权限不可为空"),
-  ROLE_ASSIGN_FLAG_IS_NULL(4008, "角色分配flag不可为空"),
+  ROLE_DEPT_CANNOT_BE_BLANK(4006,
+                            "角色描述不可为空"),
+  ROLE_PERMISSION_CANNOT_BE_NULL(
+      4007, "角色权限不可为空"),
+  ROLE_ASSIGN_FLAG_IS_NULL(
+      4008, "角色分配flag不可为空"),
   ROLE_ID_CANNOT_BE_NULL(4009, "角色id不可为空"),
   PROJECT_NAME_ALREADY_EXISTS(5001, "项目名已存在"),
   PROJECT_NOT_EXISTS(5002, "项目不存在"),
   PROJECT_UN_RUNNING(5003, "项目未运行"),
   PROJECT_ID_CANNOT_BE_NULL(5004, "项目id不可为空"),
-  PROJECT_NAME_CANNOT_BE_BLANK(5005, "项目名不可为空"),
-  PROJECT_DES_CANNOT_BE_BLANK(5006, "项目描述不可为空"),
-  PROJECT_DEPT_CANNOT_BE_NULL(5007, "项目使用部门不可为空"),
-  PROJECT_CHARGE_USER_CANNOT_BE_NULL(5008, "项目负责人不可为空"),
-  PROJECT_DEL_RESOURCE_NOT_NULL(5009, "项目存在所属资源，不能删除该项目"),
+  PROJECT_NAME_CANNOT_BE_BLANK(5005,
+                               "项目名不可为空"),
+  PROJECT_DES_CANNOT_BE_BLANK(
+      5006, "项目描述不可为空"),
+  PROJECT_DEPT_CANNOT_BE_NULL(
+      5007, "项目使用部门不可为空"),
+  PROJECT_CHARGE_USER_CANNOT_BE_NULL(
+      5008, "项目负责人不可为空"),
+  PROJECT_DEL_RESOURCE_NOT_NULL(
+      5009, "项目存在所属资源，不能删除该项目"),
   OPLOG_NOT_EXIST(6001, "操作日志不存在"),
   MESSAGE_NOT_EXIST(7001, "消息不存在"),
-  PERMISSION_DATA_ERROR(8001, "获取权限数据异常"),
-  DEPT_DATA_ERROR(9001, "获取部门数据异常，请检查部门表数据"),
+  PERMISSION_DATA_ERROR(8001,
+                        "获取权限数据异常"),
+  DEPT_DATA_ERROR(9001,
+                  "获取部门数据异常，请检查部门表数据"),
   DEPT_NOT_EXISTS(9002, "部门不存在"),
-  DEPT_NAME_CANNOT_BE_BLANK(9003, "部门名称不可为空"),
-  DEPT_PARENT_NOT_EXISTS(9004, "上级部门不存在"),
-  DEPT_NAME_ALREADY_EXISTS(9005, "同一上级部门下部门名称已存在"),
-  DEPT_HAS_CHILDREN(9006, "部门存在子部门，不能删除"),
-  DEPT_HAS_USERS(9007, "部门存在关联用户，不能删除"),
-  DEPT_PARENT_INVALID(9008, "上级部门不能是当前部门或其下级部门"),
-  RESOURCE_ASSIGN_ERROR(10001,
-          "资源权限分配异常，具体资源id不为null，则资源类别id不可为null"),
+  DEPT_NAME_CANNOT_BE_BLANK(9003,
+                            "部门名称不可为空"),
+  DEPT_PARENT_NOT_EXISTS(9004,
+                         "上级部门不存在"),
+  DEPT_NAME_ALREADY_EXISTS(9005,
+                           "同一上级部门下部门名称已存在"),
+  DEPT_HAS_CHILDREN(9006,
+                    "部门存在子部门，不能删除"),
+  DEPT_HAS_USERS(9007,
+                 "部门存在关联用户，不能删除"),
+  DEPT_PARENT_INVALID(9008,
+                      "上级部门不能是当前部门或其下级部门"),
+  RESOURCE_ASSIGN_ERROR(
+      10001, "资源权限分配异常，具体资源id不为null，则资源类别id不可为null"),
   RESOURCE_ASSIGN_ERROR_2(10002,
-          "资源权限分配异常，资源类别id不为null，则项目id不可为null"),
-  RESOURCE_INVALID_SHOW_LEVEL(10003,
-          "请输入有效的展示级别（1 <= showLevel <= 3）"),
-  RESOURCE_SHOW_LEVEL_ERROR(10004,
-          "2级展示级别，项目id不可为空"),
-  RESOURCE_SHOW_LEVEL_ERROR_2(10005,
-          "3级展示级别，项目id或资源类别id不可为空"),
-  RESOURCE_ASSIGN_BATCH_FLAG_CANNOT_BE_NULL(10006,
-          "资源权限批量分配的标识不可为空"),
-  RESOURCE_INVALID_CONTROL_LEVEL(10007,
-          "请输入有效的资源权限控制级别（1 <= controlLevel <= 2）"),
-  RESOURCE_TYPE_ID_CANNOT_BE_NULL(10008, "资源类别id不可为空"),
-  RESOURCE_ID_CANNOT_BE_NULL(10009, "具体资源id不可为空"),
+                          "资源权限分配异常，资源类别id不为null，则项目id不可为null"),
+  RESOURCE_INVALID_SHOW_LEVEL(
+      10003, "请输入有效的展示级别（1 <= showLevel <= 3）"),
+  RESOURCE_SHOW_LEVEL_ERROR(10004, "2级展示级别，项目id不可为空"),
+  RESOURCE_SHOW_LEVEL_ERROR_2(
+      10005, "3级展示级别，项目id或资源类别id不可为空"),
+  RESOURCE_ASSIGN_BATCH_FLAG_CANNOT_BE_NULL(
+      10006, "资源权限批量分配的标识不可为空"),
+  RESOURCE_INVALID_CONTROL_LEVEL(
+      10007, "请输入有效的资源权限控制级别（1 <= controlLevel <= 2）"),
+  RESOURCE_TYPE_ID_CANNOT_BE_NULL(
+      10008, "资源类别id不可为空"),
+  RESOURCE_ID_CANNOT_BE_NULL(
+      10009, "具体资源id不可为空"),
   RESOURCE_TYPE_NOT_EXISTS(10010, "资源类别不存在"),
   RESOURCE_DUPLICATION(10004, "数据已存在");
 
   private final Integer code;
   private final String message;
 
-  ResultCode(Integer code, String message) {
+  private ResultCode(Integer code, String message) {
     this.code = code;
     this.message = message;
   }
@@ -102,9 +119,9 @@ public enum ResultCode implements ErrorCode {
 
   public static String getMessageByCode(Integer code) {
     for (ResultCode ele : ResultCode.values()) {
-      if (ele.getCode().equals(code)) {
-        return ele.getMessage();
-      }
+      if (!ele.getCode().equals(code))
+        continue;
+      return ele.getMessage();
     }
     return null;
   }
