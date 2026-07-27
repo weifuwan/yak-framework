@@ -498,6 +498,10 @@ public class ResourceAuthorizationService implements UserResourceService {
       throw new IllegalArgumentException(
               "多用户资源分配参数不能为空");
     }
+    if (assignDTO.getProjectId() == null) {
+      throw new YakSecurityException(
+              ResultCode.PROJECT_ID_CANNOT_BE_NULL);
+    }
     validateHierarchy(
             assignDTO.getProjectId(),
             assignDTO.getResourceTypeId(),
