@@ -8,6 +8,7 @@ import io.yak.framework.security.common.dto.user.UserBriefQueryDTO;
 import io.yak.framework.security.common.dto.user.UserDTO;
 import io.yak.framework.security.common.dto.user.UserQueryDTO;
 import io.yak.framework.security.common.entity.BaseEntity;
+import io.yak.framework.security.common.entity.Permission;
 import io.yak.framework.security.common.entity.user.User;
 import io.yak.framework.security.common.entity.user.UserBrief;
 import io.yak.framework.security.common.enums.ResultCode;
@@ -17,13 +18,11 @@ import io.yak.framework.security.common.po.UserProjectPO;
 import io.yak.framework.security.common.vo.project.ProjectBriefVO;
 import io.yak.framework.security.common.vo.role.AssignInfoVO;
 import io.yak.framework.security.common.vo.role.RoleBriefVO;
+import io.yak.framework.security.common.vo.user.CurrentUserVO;
 import io.yak.framework.security.common.vo.user.UserBasicVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.common.vo.user.UserVO;
-import io.yak.framework.security.dao.ProjectDao;
-import io.yak.framework.security.dao.UserDao;
-import io.yak.framework.security.dao.UserProjectDao;
-import io.yak.framework.security.dao.UserResourceDao;
+import io.yak.framework.security.dao.*;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.extend.PasswordEncoder;
 import io.yak.framework.security.service.DeptService;
@@ -99,6 +98,8 @@ public class UserServiceImpl implements UserService {
 
   private final PasswordEncoder passwordEncoder;
 
+  private final PermissionDao permissionDao;
+
   /**
    * 创建用户服务。
    *
@@ -123,7 +124,9 @@ public class UserServiceImpl implements UserService {
           UserProjectDao userProjectDao,
           UserResourceDao userResourceDao,
           ProjectDao projectDao,
-          PasswordEncoder passwordEncoder) {
+          PasswordEncoder passwordEncoder,
+          PermissionDao permissionDao
+          ) {
 
     this.userDao = userDao;
     this.permissionService = permissionService;
@@ -135,6 +138,73 @@ public class UserServiceImpl implements UserService {
     this.userResourceDao = userResourceDao;
     this.projectDao = projectDao;
     this.passwordEncoder = passwordEncoder;
+    this.permissionDao = permissionDao;
+  }
+
+  @Override
+  public CurrentUserVO getCurrentUserByUsername(
+          String username) {
+
+    UserBriefVO basic =
+            getUserBriefByUsername(username);
+
+    if (basic == null) {
+      return null;
+    }
+
+    CurrentUserVO currentUser =
+            CopyBeanUtil.copy(
+                    basic,
+                    CurrentUserVO.class);
+
+    if (currentUser == null) {
+      throw new IllegalStateException(
+              "当前用户对象转换失败");
+    }
+
+    List<Long> roleIds =
+            userRoleService.getRoleIdListByUserId(
+                    basic.getId());
+
+    if (CollectionUtils.isEmpty(roleIds)) {
+      currentUser.setPermissionCodes(
+              Collections.emptyList());
+      return currentUser;
+    }
+
+    List<Long> permissionIds =
+            rolePermissionService
+                    .getPermissionIdListByRoleIdList(
+                            roleIds);
+
+    if (CollectionUtils.isEmpty(permissionIds)) {
+      currentUser.setPermissionCodes(
+              Collections.emptyList());
+      return currentUser;
+    }
+
+    Set<Long> permissionIdSet =
+            new HashSet<>(permissionIds);
+
+    List<String> permissionCodes =
+            permissionDao
+                    .selectAllAndAscOrderByLevel()
+                    .stream()
+                    .filter(permission ->
+                            permissionIdSet.contains(
+                                    permission.getId()))
+                    .filter(permission ->
+                            Boolean.TRUE.equals(
+                                    permission.getActive()))
+                    .map(Permission::getPermissionCode)
+                    .filter(StringUtils::hasText)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+    currentUser.setPermissionCodes(
+            permissionCodes);
+
+    return currentUser;
   }
 
   /**
@@ -396,6 +466,8 @@ public class UserServiceImpl implements UserService {
                     userIds),
             UserBasicVO.class);
   }
+
+
 
   /**
    * 根据用户 ID 集合批量查询用户详情。

@@ -6,6 +6,7 @@ import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.enums.ResultCode;
+import io.yak.framework.security.common.vo.user.CurrentUserVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.context.CurrentUser;
 import io.yak.framework.security.exception.YakSecurityException;
@@ -69,14 +70,15 @@ public class LoginController {
 
   @Operation(summary = "获取当前登录用户")
   @GetMapping("/current")
-  public Result<UserBriefVO> current() {
+  public Result<CurrentUserVO> current() {
+
     if (!currentUser.isAuthenticated()) {
       throw new YakSecurityException(
               ResultCode.USER_NOT_LOGIN);
     }
 
-    UserBriefVO user =
-            userService.getUserBriefByUsername(
+    CurrentUserVO user =
+            userService.getCurrentUserByUsername(
                     currentUser.getUsername());
 
     if (user == null) {

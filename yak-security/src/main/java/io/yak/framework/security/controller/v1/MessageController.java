@@ -84,4 +84,24 @@ public class MessageController {
 
     return Result.success(null);
   }
+
+  @Operation(summary = "查询当前用户未读消息数量")
+  @GetMapping("/unread-count")
+  public Result<Integer> unreadCount(
+          HttpServletRequest request) {
+
+    String username =
+            HttpRequestUtil.getOperator(request);
+
+    List<MessageVO> unreadMessages =
+            messageService
+                    .getMessageListByUsernameAndReadTag(
+                            username,
+                            false);
+
+    return Result.success(
+            unreadMessages == null
+                    ? 0
+                    : unreadMessages.size());
+  }
 }

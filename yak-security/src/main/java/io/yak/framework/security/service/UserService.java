@@ -7,6 +7,7 @@ import io.yak.framework.security.common.dto.user.UserDTO;
 import io.yak.framework.security.common.dto.user.UserQueryDTO;
 import io.yak.framework.security.common.entity.user.User;
 import io.yak.framework.security.common.vo.role.AssignInfoVO;
+import io.yak.framework.security.common.vo.user.CurrentUserVO;
 import io.yak.framework.security.common.vo.user.UserBasicVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.common.vo.user.UserVO;
@@ -199,4 +200,7 @@ public interface UserService {
    */
   List<UserBasicVO> getUserBasicListByUserIds(
           List<Long> userIds);
+
+  CurrentUserVO getCurrentUserByUsername(
+          String username);
 }
