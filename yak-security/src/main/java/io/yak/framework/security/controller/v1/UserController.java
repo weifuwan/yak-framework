@@ -2,24 +2,23 @@ package io.yak.framework.security.controller.v1;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
-import io.yak.framework.security.common.enums.ResultCode;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.dto.user.UserDTO;
+import io.yak.framework.security.common.dto.user.UserPasswordResetDTO;
 import io.yak.framework.security.common.dto.user.UserQueryDTO;
+import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.vo.role.AssignInfoVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.common.vo.user.UserVO;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.UserService;
+import io.yak.framework.security.service.impl.UserAdministrationService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import io.yak.framework.security.util.JsonUtils;
 import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.List;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 用户管理接口。
@@ -41,23 +42,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
   private final UserService userService;
+  private final UserAdministrationService userAdministrationService;
 
-  /**
-   * 创建用户管理接口。
-   *
-   * @param userService 用户服务
-   */
-  public UserController(UserService userService) {
+  public UserController(
+          UserService userService,
+          UserAdministrationService userAdministrationService) {
+
     this.userService = userService;
+    this.userAdministrationService =
+            userAdministrationService;
   }
 
-  /**
-   * 校验用户字段是否可用。
-   *
-   * @param type 校验类型
-   * @param value 校验值
-   * @return 校验结果
-   */
   @Operation(summary = "校验用户字段是否可用")
   @GetMapping("/{type}/{value}/check")
   public Result<Void> check(
@@ -67,28 +62,17 @@ public class UserController {
     return userService.check(type, value);
   }
 
-  /**
-   * 根据用户 ID 集合批量查询用户详情。
-   *
-   * <p>ids 参数格式示例：{@code [1, 2, 3]}。
-   *
-   * @param ids 用户 ID JSON 数组
-   * @return 用户详情列表
-   */
   @Operation(summary = "根据用户 ID 集合批量查询用户详情")
   @GetMapping
   public Result<List<UserVO>> detailList(
           @RequestParam("ids") String ids) {
 
     try {
-      /*
-       * 用户 ID 类型是 Long，不能再解析为 Integer。
-       */
       List<Long> userIds =
               JsonUtils.toList(ids, Long.class);
 
-      return userService.getUserDetailsByUserIds(
-              userIds);
+      return userService
+              .getUserDetailsByUserIds(userIds);
     } catch (Exception exception) {
       throw new YakSecurityException(
               ResultCode.PARAM_NOT_VALID,
@@ -96,12 +80,6 @@ public class UserController {
     }
   }
 
-  /**
-   * 根据用户 ID 查询用户详情。
-   *
-   * @param userId 用户 ID
-   * @return 用户详情
-   */
   @Operation(summary = "根据用户 ID 查询用户详情")
   @GetMapping("/{id}")
   public Result<UserVO> detail(
@@ -110,15 +88,8 @@ public class UserController {
     return Result.success(
             userService.getUserDetailByUserId(
                     userId));
-
   }
 
-  /**
-   * 分页查询用户。
-   *
-   * @param queryDTO 查询条件
-   * @return 用户分页结果
-   */
   @Operation(summary = "分页查询用户")
   @PostMapping("/page")
   public PagingResult<UserVO> page(
@@ -130,61 +101,39 @@ public class UserController {
     return PagingResult.success(pagingData);
   }
 
-  /**
-   * 根据部门 ID 查询用户。
-   *
-   * @param deptId 部门 ID
-   * @return 用户简要信息列表
-   */
   @Operation(summary = "根据部门 ID 查询用户")
   @GetMapping("/list/dept/{deptId}")
   public Result<List<UserBriefVO>> listByDeptId(
           @PathVariable Long deptId) {
 
     return Result.success(
-            userService.getUserBriefListByDeptId(
-                    deptId));
+            userService
+                    .getUserBriefListByDeptId(
+                            deptId));
   }
 
-  /**
-   * 根据角色 ID 查询用户。
-   *
-   * @param roleId 角色 ID
-   * @return 用户简要信息列表
-   */
   @Operation(summary = "根据角色 ID 查询用户")
   @GetMapping("/list/role/{roleId}")
   public Result<List<UserBriefVO>> listByRoleId(
           @PathVariable Long roleId) {
 
     return Result.success(
-            userService.getUserBriefListByRoleId(
-                    roleId));
+            userService
+                    .getUserBriefListByRoleId(
+                            roleId));
   }
 
-  /**
-   * 查询用户的角色分配信息。
-   *
-   * @param userId 用户 ID
-   * @return 角色分配信息列表
-   */
   @Operation(summary = "查询用户的角色分配信息")
   @GetMapping("/assign/list/{userId}")
   public Result<List<AssignInfoVO>> assignList(
           @PathVariable Long userId) {
 
     return Result.success(
-            userService.getAssignInfoListByUserId(
-                    userId));
-
+            userService
+                    .getAssignInfoListByUserId(
+                            userId));
   }
 
-  /**
-   * 根据用户名或真实姓名模糊查询用户。
-   *
-   * @param keyword 查询关键字
-   * @return 用户简要信息列表
-   */
   @Operation(summary = "根据用户名或真实姓名模糊查询用户")
   @GetMapping("/list/{keyword}")
   public Result<List<UserBriefVO>> listByName(
@@ -199,10 +148,6 @@ public class UserController {
    * 新增用户。
    *
    * <p>保留原有 PUT 请求方式，避免影响现有前端调用。
-   *
-   * @param request HTTP 请求
-   * @param userDTO 用户信息
-   * @return 新增结果
    */
   @Operation(summary = "新增用户")
   @PutMapping("/add")
@@ -215,13 +160,6 @@ public class UserController {
             HttpRequestUtil.getOperator(request));
   }
 
-  /**
-   * 编辑用户。
-   *
-   * @param request HTTP 请求
-   * @param userDTO 用户信息
-   * @return 编辑结果
-   */
   @Operation(summary = "编辑用户")
   @PostMapping("/edit")
   public Result<Void> edit(
@@ -234,15 +172,36 @@ public class UserController {
   }
 
   /**
-   * 根据用户 ID 删除用户。
+   * 管理员重置用户密码。
    *
-   * @param userId 用户 ID
-   * @return 删除结果
+   * <p>该接口仅更新密码字段，不再通过完整用户编辑接口间接重置，
+   * 避免覆盖并发发生的资料及角色变更。
    */
+  @Operation(summary = "管理员重置用户密码")
+  @PutMapping("/{id}/password")
+  public Result<Void> resetPassword(
+          HttpServletRequest request,
+          @PathVariable("id") Long userId,
+          @RequestBody
+                  UserPasswordResetDTO resetDTO) {
+
+    userAdministrationService.resetPassword(
+            userId,
+            resetDTO,
+            HttpRequestUtil.getOperator(request));
+
+    return Result.success();
+  }
+
   @Operation(summary = "根据用户 ID 删除用户")
   @DeleteMapping("/{id}")
   public Result<Void> delete(
+          HttpServletRequest request,
           @PathVariable("id") Long userId) {
+
+    userAdministrationService.validateDelete(
+            userId,
+            HttpRequestUtil.getOperatorId(request));
 
     return userService.deleteByUserId(userId);
   }
