@@ -12,6 +12,8 @@ import java.util.List;
 public class ProjectDeleteCheckVO {
   /** 项目标识。 */
   private Long projectId;
+  /** 是否允许删除。 */
+  private boolean deletable;
   /** 关联的资源名称列表。 */
   private List<String> resourceNameList;
 
@@ -19,6 +21,8 @@ public class ProjectDeleteCheckVO {
                               List<String> resourceNameList) {
     this.projectId = projectId;
     this.resourceNameList = resourceNameList;
+    this.deletable = resourceNameList == null
+            || resourceNameList.isEmpty();
   }
 
 }

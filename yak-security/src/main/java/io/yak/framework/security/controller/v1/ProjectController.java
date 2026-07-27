@@ -8,6 +8,8 @@ import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.project.ProjectQueryDTO;
 import io.yak.framework.security.common.dto.project.ProjectSaveDTO;
+import io.yak.framework.security.common.dto.project.ProjectStatusDTO;
+import io.yak.framework.security.common.dto.project.ProjectUserAssignDTO;
 import io.yak.framework.security.common.vo.project.ProjectBriefVO;
 import io.yak.framework.security.common.vo.project.ProjectDeleteCheckVO;
 import io.yak.framework.security.common.vo.project.ProjectVO;
@@ -17,6 +19,7 @@ import io.yak.framework.security.util.HttpRequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -104,6 +107,47 @@ public class ProjectController {
 
     return Result.success(null);
 
+  }
+
+  /**
+   * 按目标值更新项目状态。
+   *
+   * <p>与切换接口不同，本接口具备幂等语义，适用于前端开关控件和请求重试。
+   *
+   * @param request HTTP 请求
+   * @param projectId 项目 ID
+   * @param statusDTO 目标状态
+   * @return 状态更新结果
+   */
+  @Operation(summary = "按目标值更新项目状态")
+  @PutMapping("/{id}/status")
+  public Result<Void> updateStatus(
+          HttpServletRequest request,
+          @PathVariable("id") Long projectId,
+          @RequestBody ProjectStatusDTO statusDTO) {
+
+    if (statusDTO == null
+            || statusDTO.getRunning() == null) {
+
+      throw new IllegalArgumentException(
+              "项目状态不能为空");
+    }
+
+    ProjectVO project =
+            projectService
+                    .getProjectDetailByProjectId(
+                            projectId);
+
+    if (!Objects.equals(
+            project.getRunning(),
+            statusDTO.getRunning())) {
+
+      projectService.changeProjectStatus(
+              projectId,
+              HttpRequestUtil.getOperator(request));
+    }
+
+    return Result.success(null);
   }
 
   /**
@@ -215,6 +259,70 @@ public class ProjectController {
   public Result<List<ProjectBriefVO>> list() {
     return Result.success(
             projectService.getProjectBriefList());
+  }
+
+  /**
+   * 全量更新项目负责人。
+   *
+   * <p>用户列表为空时，清空项目的全部负责人。
+   *
+   * @param request HTTP 请求
+   * @param projectId 项目 ID
+   * @param assignDTO 用户分配参数
+   * @return 更新结果
+   */
+  @Operation(summary = "全量更新项目负责人")
+  @PutMapping("/{id}/owners")
+  public Result<Void> replaceProjectOwners(
+          HttpServletRequest request,
+          @PathVariable("id") Long projectId,
+          @RequestBody ProjectUserAssignDTO assignDTO) {
+
+    ProjectSaveDTO projectSaveDTO =
+            buildRelationUpdateDTO(projectId);
+
+    projectSaveDTO.setOwnerIdList(
+            assignDTO == null
+                    ? null
+                    : assignDTO.getUserIdList());
+
+    projectService.updateProject(
+            projectSaveDTO,
+            HttpRequestUtil.getOperator(request));
+
+    return Result.success(null);
+  }
+
+  /**
+   * 全量更新项目成员。
+   *
+   * <p>用户列表为空时，清空项目的全部普通成员。
+   *
+   * @param request HTTP 请求
+   * @param projectId 项目 ID
+   * @param assignDTO 用户分配参数
+   * @return 更新结果
+   */
+  @Operation(summary = "全量更新项目成员")
+  @PutMapping("/{id}/users")
+  public Result<Void> replaceProjectUsers(
+          HttpServletRequest request,
+          @PathVariable("id") Long projectId,
+          @RequestBody ProjectUserAssignDTO assignDTO) {
+
+    ProjectSaveDTO projectSaveDTO =
+            buildRelationUpdateDTO(projectId);
+
+    projectSaveDTO.setUserIdList(
+            assignDTO == null
+                    ? null
+                    : assignDTO.getUserIdList());
+
+    projectService.updateProject(
+            projectSaveDTO,
+            HttpRequestUtil.getOperator(request));
+
+    return Result.success(null);
   }
 
   /**
@@ -345,5 +453,26 @@ public class ProjectController {
     return projectService
             .getProjectBriefByUserId(
                     userId);
+  }
+
+  /**
+   * 构建仅更新用户关系所需的项目参数。
+   */
+  private ProjectSaveDTO buildRelationUpdateDTO(
+          Long projectId) {
+
+    ProjectVO project =
+            projectService
+                    .getProjectDetailByProjectId(
+                            projectId);
+
+    ProjectSaveDTO projectSaveDTO =
+            new ProjectSaveDTO();
+
+    projectSaveDTO.setId(projectId);
+    projectSaveDTO.setProjectName(
+            project.getProjectName());
+
+    return projectSaveDTO;
   }
 }
