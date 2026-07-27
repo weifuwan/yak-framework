@@ -5,8 +5,11 @@ import io.yak.framework.common.PagingData;
 import io.yak.framework.security.common.dto.oplog.OplogDTO;
 import io.yak.framework.security.common.dto.oplog.OplogQueryDTO;
 import io.yak.framework.security.common.entity.Oplog;
+import io.yak.framework.security.common.enums.ResultCode;
+import io.yak.framework.security.common.vo.oplog.OplogOptionsVO;
 import io.yak.framework.security.common.vo.oplog.OplogVO;
 import io.yak.framework.security.dao.OplogDao;
+import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.OplogService;
 import io.yak.framework.security.util.CopyBeanUtil;
 import io.yak.framework.security.util.NetworkUtil;
@@ -20,68 +23,49 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 /**
  * 操作日志服务实现类。
  *
  * <p>负责保存操作者、操作目标、操作内容及客户端 IP，
- * 用于安全审计和操作追踪。
+ * 用于安全审计和操作追踪。</p>
  *
  * @author weifuwan
  */
 @Service("yakSecurityOplogServiceImpl")
 public class OplogServiceImpl implements OplogService {
 
-    /**
-     * 非 HTTP 系统操作使用的 IP 标识。
-     */
-    private static final String SYSTEM_OPERATOR_IP =
-            "0.0.0.0";
-
+    private static final String SYSTEM_OPERATOR_IP = "0.0.0.0";
     private static final String DEFAULT_OPERATE_PAGE = "SYSTEM";
-
     private static final String DEFAULT_OPERATION_METHOD = "SERVICE";
+    private static final int DEFAULT_PAGE = 1;
+    private static final int DEFAULT_PAGE_SIZE = 10;
+    private static final int MAX_PAGE_SIZE = 200;
 
     private final OplogDao oplogDao;
 
-    /**
-     * 创建操作日志服务。
-     *
-     * @param oplogDao 操作日志数据访问对象
-     */
-    public OplogServiceImpl(
-            OplogDao oplogDao) {
-
+    public OplogServiceImpl(OplogDao oplogDao) {
         this.oplogDao = oplogDao;
     }
 
-    /**
-     * 分页查询操作日志。
-     *
-     * @param queryDTO 查询条件
-     * @return 操作日志分页数据
-     */
     @Override
     public PagingData<OplogVO> getOplogPage(
             OplogQueryDTO queryDTO) {
 
         if (queryDTO == null) {
-            throw new IllegalArgumentException(
-                    "操作日志查询条件不能为空");
+            queryDTO = new OplogQueryDTO();
         }
 
+        normalizeQuery(queryDTO);
+
         IPage<Oplog> oplogPage =
-                oplogDao.selectPageWithoutDetail(
-                        queryDTO);
+                oplogDao.selectPageWithoutDetail(queryDTO);
 
         if (oplogPage == null) {
             throw new IllegalStateException(
                     "查询操作日志分页数据失败");
         }
 
-        List<Oplog> oplogList =
-                oplogPage.getRecords();
-
+        List<Oplog> oplogList = oplogPage.getRecords();
         if (CollectionUtils.isEmpty(oplogList)) {
             return new PagingData<>(
                     new ArrayList<>(),
@@ -92,9 +76,7 @@ public class OplogServiceImpl implements OplogService {
                 new ArrayList<>(oplogList.size());
 
         for (Oplog oplog : oplogList) {
-            OplogVO oplogVO =
-                    convertToVO(oplog);
-
+            OplogVO oplogVO = convertToVO(oplog);
             if (oplogVO != null) {
                 oplogVOList.add(oplogVO);
             }
@@ -105,74 +87,57 @@ public class OplogServiceImpl implements OplogService {
                 oplogPage);
     }
 
-    /**
-     * 根据操作日志 ID 查询日志详情。
-     *
-     * @param oplogId 操作日志 ID
-     * @return 操作日志详情
-     */
     @Override
     public OplogVO getOplogDetailByOplogId(
             Long oplogId) {
 
         if (oplogId == null) {
-            return null;
+            throw new YakSecurityException(
+                    ResultCode.OPLOG_NOT_EXIST);
         }
 
-        Oplog oplog =
-                oplogDao.selectByOplogId(
-                        oplogId);
+        Oplog oplog = oplogDao.selectByOplogId(oplogId);
+        if (oplog == null) {
+            throw new YakSecurityException(
+                    ResultCode.OPLOG_NOT_EXIST);
+        }
 
         return convertToVO(oplog);
     }
 
-    /**
-     * 查询全部操作目标类型。
-     *
-     * @return 操作目标类型列表
-     */
     @Override
-    public List<String> listTargetType() {
-        List<String> targetTypeList =
-                oplogDao.listTargetType();
-
-        if (CollectionUtils.isEmpty(
-                targetTypeList)) {
-
-            return new ArrayList<>();
-        }
-
-        return targetTypeList.stream()
-                .filter(StringUtils::hasText)
-                .map(String::trim)
-                .distinct()
-                .collect(Collectors.toList());
+    public OplogOptionsVO getOptions() {
+        OplogOptionsVO options = new OplogOptionsVO();
+        options.setOperateTypes(
+                cleanOptions(oplogDao.listOperateType()));
+        options.setOperatePages(
+                cleanOptions(oplogDao.listOperatePage()));
+        options.setOperationMethods(
+                cleanOptions(oplogDao.listOperationMethods()));
+        options.setTargetTypes(
+                cleanOptions(oplogDao.listTargetType()));
+        return options;
     }
 
-    /**
-     * 保存操作日志。
-     *
-     * @param oplogDTO 操作日志信息
-     * @return 操作日志 ID
-     */
+    @Override
+    public List<String> listTargetType() {
+        return cleanOptions(oplogDao.listTargetType());
+    }
+
     @Override
     @Transactional(
             transactionManager =
                     "yakSecurityTransactionManager",
             rollbackFor = Exception.class)
-    public Long saveOplog(
-            OplogDTO oplogDTO) {
-
+    public Long saveOplog(OplogDTO oplogDTO) {
         if (oplogDTO == null) {
             throw new IllegalArgumentException(
                     "操作日志信息不能为空");
         }
 
-        Oplog oplog =
-                CopyBeanUtil.copy(
-                        oplogDTO,
-                        Oplog.class);
-
+        Oplog oplog = CopyBeanUtil.copy(
+                oplogDTO,
+                Oplog.class);
         if (oplog == null) {
             throw new IllegalStateException(
                     "操作日志对象转换失败");
@@ -184,38 +149,28 @@ public class OplogServiceImpl implements OplogService {
          */
         oplog.setOperator(
                 sanitize(oplogDTO.getOperator()));
-
         oplog.setOperatePage(
                 sanitize(defaultIfBlank(
                         oplogDTO.getOperatePage(),
                         DEFAULT_OPERATE_PAGE)));
-
         oplog.setOperateType(
                 sanitize(oplogDTO.getOperateType()));
-
         oplog.setTarget(
                 sanitize(oplogDTO.getTarget()));
-
         oplog.setTargetType(
                 sanitize(oplogDTO.getTargetType()));
-
         oplog.setDetail(
                 sanitize(oplogDTO.getDetail()));
-
         oplog.setOperationMethods(
                 sanitize(defaultIfBlank(
                         oplogDTO.getOperationMethods(),
                         DEFAULT_OPERATION_METHOD)));
-
         oplog.setOperatorIp(
                 sanitize(
                         NetworkUtil.getRealIpAddressOrDefault(
                                 SYSTEM_OPERATOR_IP)));
 
-
         oplogDao.insert(oplog);
-
-
         if (oplog.getId() == null) {
             throw new IllegalStateException(
                     "保存操作日志后未生成日志 ID");
@@ -224,59 +179,71 @@ public class OplogServiceImpl implements OplogService {
         return oplog.getId();
     }
 
-    /**
-     * 将操作日志实体转换为视图对象。
-     *
-     * @param oplog 操作日志实体
-     * @return 操作日志视图对象
-     */
-    private OplogVO convertToVO(
-            Oplog oplog) {
+    private void normalizeQuery(OplogQueryDTO queryDTO) {
+        if (queryDTO.getPage() < 1) {
+            queryDTO.setPage(DEFAULT_PAGE);
+        }
 
+        if (queryDTO.getSize() < 1) {
+            queryDTO.setSize(DEFAULT_PAGE_SIZE);
+        } else if (queryDTO.getSize() > MAX_PAGE_SIZE) {
+            queryDTO.setSize(MAX_PAGE_SIZE);
+        }
+
+        Long startTime = queryDTO.getStartTime();
+        Long endTime = queryDTO.getEndTime();
+        if (startTime != null
+                && endTime != null
+                && startTime > endTime) {
+            throw new YakSecurityException(
+                    ResultCode.PARAM_ERROR);
+        }
+    }
+
+    private OplogVO convertToVO(Oplog oplog) {
         if (oplog == null) {
             return null;
         }
 
-        OplogVO oplogVO =
-                CopyBeanUtil.copy(
-                        oplog,
-                        OplogVO.class);
-
+        OplogVO oplogVO = CopyBeanUtil.copy(
+                oplog,
+                OplogVO.class);
         if (oplogVO == null) {
             throw new IllegalStateException(
                     "操作日志视图对象转换失败");
         }
 
-        oplogVO.setCreateTime(
-                oplog.getCreateTime());
-
-        oplogVO.setUpdateTime(
-                oplog.getUpdateTime());
-
+        oplogVO.setCreateTime(oplog.getCreateTime());
+        oplogVO.setUpdateTime(oplog.getUpdateTime());
         return oplogVO;
+    }
+
+    private List<String> cleanOptions(List<String> values) {
+        if (CollectionUtils.isEmpty(values)) {
+            return new ArrayList<>();
+        }
+
+        return values.stream()
+                .filter(StringUtils::hasText)
+                .map(String::trim)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     private static String defaultIfBlank(
             String value,
             String defaultValue) {
-
         return StringUtils.hasText(value)
                 ? value
                 : defaultValue;
     }
 
-    /**
-     * 清理可能包含敏感内容的字符串。
-     *
-     * @param value 原始内容
-     * @return 清理后的内容
-     */
     private String sanitize(String value) {
         if (value == null) {
             return null;
         }
 
-        return SensitiveDataSanitizer.sanitize(
-                value);
+        return SensitiveDataSanitizer.sanitize(value);
     }
 }
