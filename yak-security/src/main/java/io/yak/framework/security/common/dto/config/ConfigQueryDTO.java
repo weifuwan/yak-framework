@@ -1,9 +1,9 @@
 package io.yak.framework.security.common.dto.config;
 
+import io.yak.framework.security.common.dto.PageParamDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import io.yak.framework.security.common.dto.PageParamDTO;
 /**
  * 配置查询数据传输对象。
  *
@@ -12,6 +12,8 @@ import io.yak.framework.security.common.dto.PageParamDTO;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ConfigQueryDTO extends PageParamDTO {
+  /** 配置 ID。 */
+  private Long id;
   /** 配置分组。 */
   private String valueGroup;
   /** 配置名称。 */
@@ -22,5 +24,4 @@ public class ConfigQueryDTO extends PageParamDTO {
   private String memo;
   /** 操作人。 */
   private String operator;
-
 }
