@@ -201,7 +201,8 @@ public class UserController {
 
     userAdministrationService.validateDelete(
             userId,
-            HttpRequestUtil.getOperatorId(request));
+            HttpRequestUtil.getOperatorId(request),
+            HttpRequestUtil.getOperator(request));
 
     return userService.deleteByUserId(userId);
   }
