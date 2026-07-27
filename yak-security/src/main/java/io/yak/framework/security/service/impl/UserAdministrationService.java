@@ -53,19 +53,39 @@ public class UserAdministrationService {
    *
    * @param targetUserId 待删除用户 ID
    * @param operatorId 当前登录用户 ID
+   * @param operator 当前登录用户名
    */
   public void validateDelete(
           Long targetUserId,
-          Long operatorId) {
+          Long operatorId,
+          String operator) {
 
     if (targetUserId == null) {
       throw new YakSecurityException(
               ResultCode.USER_ID_CANNOT_BE_NULL);
     }
 
-    if (operatorId != null
-            && Objects.equals(targetUserId, operatorId)) {
+    User targetUser =
+            userDao.selectByUserId(targetUserId);
 
+    if (targetUser == null) {
+      throw new YakSecurityException(
+              ResultCode.USER_NOT_EXISTS);
+    }
+
+    boolean deletingSelfById =
+            operatorId != null
+                    && Objects.equals(
+                    targetUserId,
+                    operatorId);
+
+    boolean deletingSelfByName =
+            StringUtils.hasText(operator)
+                    && Objects.equals(
+                    targetUser.getUserName(),
+                    operator);
+
+    if (deletingSelfById || deletingSelfByName) {
       throw new YakSecurityException(
               "不能删除当前登录用户");
     }
