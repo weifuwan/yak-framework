@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
@@ -41,9 +42,14 @@ public final class CopyBeanUtil {
       T newInstance = target.getDeclaredConstructor().newInstance();
       BeanUtils.copyProperties(source, newInstance);
       return newInstance;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+    } catch (ReflectiveOperationException e) {
+      throw new IllegalStateException(
+              "Bean copy failed: "
+                      + source.getClass().getName()
+                      + " -> "
+                      + target.getName()
+                      + ". Target class must provide a no-args constructor.",
+              e);
     }
   }
 
@@ -65,6 +71,7 @@ public final class CopyBeanUtil {
     }
 
     return source.stream()
+            .filter(Objects::nonNull)
             .map(element -> CopyBeanUtil.copy(element, target))
             .collect(Collectors.toList());
   }
