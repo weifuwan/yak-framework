@@ -48,6 +48,7 @@ public class ConfigController {
     public Result<List<ConfigVO>> list(
             @RequestBody(required = false) ConfigDTO condition) {
 
+        normalizeConfig(condition);
         return Result.success(
                 configService.queryByCondt(condition));
     }
@@ -69,9 +70,6 @@ public class ConfigController {
         return Result.success(configService.listGroups());
     }
 
-    /**
-     * 推荐使用的配置详情接口。
-     */
     @Operation(summary = "根据配置 ID 查询配置详情")
     @GetMapping("/{id}")
     public Result<ConfigVO> detail(
@@ -80,9 +78,6 @@ public class ConfigController {
         return getConfigResult(configId);
     }
 
-    /**
-     * 兼容旧版前端的查询方式。
-     */
     @Operation(summary = "根据配置 ID 查询配置详情（兼容接口）")
     @GetMapping("/get")
     public Result<ConfigVO> get(
@@ -91,9 +86,6 @@ public class ConfigController {
         return getConfigResult(configId);
     }
 
-    /**
-     * 推荐使用的新增接口。
-     */
     @Operation(summary = "新增配置")
     @PostMapping
     public Result<Long> create(
@@ -103,9 +95,6 @@ public class ConfigController {
         return addConfig(request, configDTO);
     }
 
-    /**
-     * 兼容旧版前端保留 PUT /add。
-     */
     @Operation(summary = "新增配置（兼容接口）")
     @PutMapping("/add")
     public Result<Long> add(
@@ -115,9 +104,6 @@ public class ConfigController {
         return addConfig(request, configDTO);
     }
 
-    /**
-     * 推荐使用的编辑接口。
-     */
     @Operation(summary = "编辑配置")
     @PutMapping
     public Result<Void> update(
@@ -127,9 +113,6 @@ public class ConfigController {
         return editConfig(request, configDTO);
     }
 
-    /**
-     * 兼容旧版前端保留 POST /edit。
-     */
     @Operation(summary = "编辑配置（兼容接口）")
     @PostMapping("/edit")
     public Result<Void> edit(
@@ -139,9 +122,6 @@ public class ConfigController {
         return editConfig(request, configDTO);
     }
 
-    /**
-     * 推荐使用的状态切换接口。
-     */
     @Operation(summary = "切换配置状态")
     @PutMapping("/{id}/status")
     public Result<Void> updateStatus(
@@ -155,9 +135,6 @@ public class ConfigController {
                 HttpRequestUtil.getOperator(request));
     }
 
-    /**
-     * 兼容旧版前端保留 POST /switch。
-     */
     @Operation(summary = "切换配置状态（兼容接口）")
     @PostMapping("/switch")
     public Result<Void> switchConfig(
@@ -170,9 +147,6 @@ public class ConfigController {
                 HttpRequestUtil.getOperator(request));
     }
 
-    /**
-     * 推荐使用的删除接口。
-     */
     @Operation(summary = "删除配置")
     @DeleteMapping("/{id}")
     public Result<Void> deleteById(
@@ -182,9 +156,6 @@ public class ConfigController {
         return deleteConfig(request, configId);
     }
 
-    /**
-     * 兼容旧版前端保留 DELETE /del?id=。
-     */
     @Operation(summary = "删除配置（兼容接口）")
     @DeleteMapping("/del")
     public Result<Void> delete(
@@ -211,6 +182,7 @@ public class ConfigController {
             HttpServletRequest request,
             ConfigDTO configDTO) {
 
+        normalizeConfig(configDTO);
         return configService.addConfig(
                 configDTO,
                 HttpRequestUtil.getOperator(request));
@@ -220,6 +192,17 @@ public class ConfigController {
             HttpServletRequest request,
             ConfigDTO configDTO) {
 
+        if (configDTO == null) {
+            return Result.buildParamIllegal("配置信息不能为空");
+        }
+        if (configDTO.getId() == null) {
+            return Result.buildParamIllegal("配置 ID 不能为空");
+        }
+        if (configService.getConfigById(configDTO.getId()) == null) {
+            return Result.buildNotExist("配置不存在");
+        }
+
+        normalizeConfig(configDTO);
         return configService.editConfig(
                 configDTO,
                 HttpRequestUtil.getOperator(request));
@@ -243,7 +226,25 @@ public class ConfigController {
         query.setSize(query.getSize() <= 0
                 ? DEFAULT_PAGE_SIZE
                 : Math.min(query.getSize(), MAX_PAGE_SIZE));
+        query.setValueGroup(trim(query.getValueGroup()));
+        query.setValueName(trim(query.getValueName()));
+        query.setMemo(trim(query.getMemo()));
+        query.setOperator(trim(query.getOperator()));
 
         return query;
+    }
+
+    private void normalizeConfig(ConfigDTO configDTO) {
+        if (configDTO == null) {
+            return;
+        }
+
+        configDTO.setValueGroup(trim(configDTO.getValueGroup()));
+        configDTO.setValueName(trim(configDTO.getValueName()));
+        configDTO.setMemo(trim(configDTO.getMemo()));
+    }
+
+    private String trim(String value) {
+        return value == null ? null : value.trim();
     }
 }
