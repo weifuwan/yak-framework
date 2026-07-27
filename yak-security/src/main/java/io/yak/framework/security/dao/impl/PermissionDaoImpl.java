@@ -26,6 +26,9 @@ public class PermissionDaoImpl
     /**
      * 查询全部权限，并按照权限层级升序排列。
      *
+     * <p>权限管理树需要同时展示启用和停用记录。具体的访问鉴权逻辑
+     * 应在调用方根据 active 字段过滤，不能在 DAO 层提前丢弃停用权限。
+     *
      * @return 权限列表
      */
     @Override
@@ -34,7 +37,6 @@ public class PermissionDaoImpl
                 permissionMapper.selectList(
                         Wrappers.<PermissionPO>lambdaQuery()
                                 .orderByAsc(PermissionPO::getLevel)
-                                .eq(PermissionPO::getActive, true)
                                 .orderByAsc(PermissionPO::getId)
                 );
 
@@ -100,8 +102,10 @@ public class PermissionDaoImpl
             }
             if (item.getParentCode() != null) {
                 PermissionPO parent = byCode.get(item.getParentCode());
-                if (parent == null)
-                    throw new IllegalStateException("Missing permission group: " + item.getParentCode());
+                if (parent == null) {
+                    throw new IllegalStateException(
+                            "Missing permission group: " + item.getParentCode());
+                }
                 row.setParentId(parent.getId());
             } else {
                 row.setParentId(0L);
@@ -112,8 +116,8 @@ public class PermissionDaoImpl
         existing.stream().filter(item -> Boolean.TRUE.equals(item.getDeclared()))
                 .filter(item -> !desiredCodes.contains(item.getPermissionCode()))
                 .filter(item -> Boolean.TRUE.equals(item.getActive())).forEach(item -> {
-            item.setActive(false);
-            permissionMapper.updateById(item);
-        });
+                    item.setActive(false);
+                    permissionMapper.updateById(item);
+                });
     }
 }
