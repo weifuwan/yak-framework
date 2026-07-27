@@ -62,9 +62,16 @@ public class DeptDaoImpl implements DeptDao {
             return null;
         }
 
-        return CopyBeanUtil.copy(
+        Dept department = CopyBeanUtil.copy(
                 deptMapper.selectById(deptId),
                 Dept.class);
+
+        if (department != null
+                && !StringUtils.hasText(department.getDeptName())) {
+            department.setDeptName(
+                    "部门 ID " + department.getId());
+        }
+        return department;
     }
 
     @Override
