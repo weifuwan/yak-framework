@@ -5,6 +5,7 @@ import io.yak.framework.security.common.po.MenuPO;
 import io.yak.framework.security.common.po.RoleMenuPO;
 import io.yak.framework.security.dao.mapper.MenuMapper;
 import io.yak.framework.security.dao.mapper.RoleMenuMapper;
+import io.yak.framework.security.service.RolePermissionService;
 import io.yak.framework.security.service.UserRoleService;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,12 +24,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Resolves effective menu grants for one user.
+ * 解析用户的有效菜单授权。
  *
- * <p>A checked directory grants its active descendants. A checked page also
- * brings its parent directories into the returned menu-code set. This makes
- * the backend authoritative even when a tree client submits only directory
- * keys or only leaf keys.</p>
+ * <p>显式菜单授权会展开启用的后代页面；按钮权限会自动补齐所属菜单；
+ * 任一页面授权都会补齐父级目录。菜单只隐含页面读取权限，不会授予按钮。</p>
  */
 @Service("yakSecurityUserMenuGrantService")
 public class UserMenuGrantService {
@@ -36,39 +35,38 @@ public class UserMenuGrantService {
   private final MenuMapper menuMapper;
   private final RoleMenuMapper roleMenuMapper;
   private final UserRoleService userRoleService;
+  private final RolePermissionService rolePermissionService;
+  private final PermissionMenuRelationService permissionMenuRelationService;
 
   public UserMenuGrantService(
-          MenuMapper menuMapper,
-          RoleMenuMapper roleMenuMapper,
-          UserRoleService userRoleService) {
+      MenuMapper menuMapper,
+      RoleMenuMapper roleMenuMapper,
+      UserRoleService userRoleService,
+      RolePermissionService rolePermissionService,
+      PermissionMenuRelationService permissionMenuRelationService) {
     this.menuMapper = menuMapper;
     this.roleMenuMapper = roleMenuMapper;
     this.userRoleService = userRoleService;
+    this.rolePermissionService = rolePermissionService;
+    this.permissionMenuRelationService = permissionMenuRelationService;
   }
 
-  /** Resolve effective menu codes and menu-implied permission codes. */
+  /** 解析有效菜单编码和菜单隐含的读取权限编码。 */
   public MenuGrant resolve(Long userId) {
     if (userId == null) {
       return MenuGrant.empty();
     }
 
     List<Long> roleIds = normalizeIds(
-            userRoleService.getRoleIdListByUserId(userId));
+        userRoleService.getRoleIdListByUserId(userId));
     if (roleIds.isEmpty()) {
       return MenuGrant.empty();
     }
 
-    List<RoleMenuPO> relations = roleMenuMapper.selectList(
-            Wrappers.<RoleMenuPO>lambdaQuery()
-                    .in(RoleMenuPO::getRoleId, roleIds));
-    if (CollectionUtils.isEmpty(relations)) {
-      return MenuGrant.empty();
-    }
-
     List<MenuPO> menus = menuMapper.selectList(
-            Wrappers.<MenuPO>lambdaQuery()
-                    .orderByAsc(MenuPO::getSortOrder)
-                    .orderByAsc(MenuPO::getId));
+        Wrappers.<MenuPO>lambdaQuery()
+            .orderByAsc(MenuPO::getSortOrder)
+            .orderByAsc(MenuPO::getId));
     if (CollectionUtils.isEmpty(menus)) {
       return MenuGrant.empty();
     }
@@ -79,60 +77,77 @@ public class UserMenuGrantService {
 
     for (MenuPO menu : menus) {
       if (menu == null
-              || menu.getId() == null
-              || !StringUtils.hasText(menu.getMenuCode())) {
+          || menu.getId() == null
+          || !StringUtils.hasText(menu.getMenuCode())) {
         continue;
       }
       byId.put(menu.getId(), menu);
       byCode.put(menu.getMenuCode(), menu);
       if (StringUtils.hasText(menu.getParentCode())) {
         childrenByParentCode
-                .computeIfAbsent(
-                        menu.getParentCode(),
-                        ignored -> new ArrayList<>())
-                .add(menu);
+            .computeIfAbsent(
+                menu.getParentCode(),
+                ignored -> new ArrayList<>())
+            .add(menu);
       }
     }
 
+    Set<Long> selectedMenuIds = new LinkedHashSet<>();
+    List<RoleMenuPO> relations = roleMenuMapper.selectList(
+        Wrappers.<RoleMenuPO>lambdaQuery()
+            .in(RoleMenuPO::getRoleId, roleIds));
+    if (!CollectionUtils.isEmpty(relations)) {
+      relations.stream()
+          .map(RoleMenuPO::getMenuId)
+          .filter(Objects::nonNull)
+          .filter(id -> id > 0L)
+          .forEach(selectedMenuIds::add);
+    }
+
+    // 运行时兜底：按钮权限本身即可推导所属菜单，不依赖角色菜单关系是否完整。
+    List<Long> permissionIds =
+        rolePermissionService.getPermissionIdListByRoleIdList(roleIds);
+    selectedMenuIds.addAll(
+        permissionMenuRelationService.inferMenuIds(permissionIds));
+
+    if (selectedMenuIds.isEmpty()) {
+      return MenuGrant.empty();
+    }
+
     Set<String> effectiveCodes = new LinkedHashSet<>();
-    for (RoleMenuPO relation : relations) {
-      if (relation == null || relation.getMenuId() == null) {
-        continue;
-      }
-      MenuPO selected = byId.get(relation.getMenuId());
+    for (Long menuId : selectedMenuIds) {
+      MenuPO selected = byId.get(menuId);
       if (!isActive(selected)) {
         continue;
       }
       addDescendants(
-              selected,
-              childrenByParentCode,
-              effectiveCodes,
-              new HashSet<>());
+          selected,
+          childrenByParentCode,
+          effectiveCodes,
+          new HashSet<>());
     }
 
     Set<String> snapshot = new LinkedHashSet<>(effectiveCodes);
     for (String code : snapshot) {
       addParents(
-              byCode.get(code),
-              byCode,
-              effectiveCodes,
-              new HashSet<>());
+          byCode.get(code),
+          byCode,
+          effectiveCodes,
+          new HashSet<>());
     }
 
     Set<String> permissionCodes = new LinkedHashSet<>();
     for (String code : effectiveCodes) {
       MenuPO menu = byCode.get(code);
       if (isActive(menu)
-              && StringUtils.hasText(
-              menu.getRequiredPermissionCode())) {
-        permissionCodes.add(
-                menu.getRequiredPermissionCode());
+          && StringUtils.hasText(menu.getRequiredPermissionCode())) {
+        permissionCodes.add(menu.getRequiredPermissionCode());
       }
     }
 
     return new MenuGrant(
-            new ArrayList<>(effectiveCodes),
-            new ArrayList<>(permissionCodes));
+        new ArrayList<>(effectiveCodes),
+        new ArrayList<>(permissionCodes));
   }
 
   public List<String> getMenuCodesByUserId(Long userId) {
@@ -144,50 +159,46 @@ public class UserMenuGrantService {
   }
 
   private void addDescendants(
-          MenuPO menu,
-          Map<String, List<MenuPO>> childrenByParentCode,
-          Set<String> result,
-          Set<String> visited) {
-    if (!isActive(menu)
-            || !visited.add(menu.getMenuCode())) {
+      MenuPO menu,
+      Map<String, List<MenuPO>> childrenByParentCode,
+      Set<String> result,
+      Set<String> visited) {
+    if (!isActive(menu) || !visited.add(menu.getMenuCode())) {
       return;
     }
 
     result.add(menu.getMenuCode());
     for (MenuPO child : childrenByParentCode.getOrDefault(
-            menu.getMenuCode(),
-            Collections.emptyList())) {
+        menu.getMenuCode(),
+        Collections.emptyList())) {
       addDescendants(
-              child,
-              childrenByParentCode,
-              result,
-              visited);
+          child,
+          childrenByParentCode,
+          result,
+          visited);
     }
   }
 
   private void addParents(
-          MenuPO menu,
-          Map<String, MenuPO> byCode,
-          Set<String> result,
-          Set<String> visited) {
+      MenuPO menu,
+      Map<String, MenuPO> byCode,
+      Set<String> result,
+      Set<String> visited) {
     MenuPO current = menu;
     while (isActive(current)
-            && visited.add(current.getMenuCode())) {
+        && visited.add(current.getMenuCode())) {
       result.add(current.getMenuCode());
       current = StringUtils.hasText(current.getParentCode())
-              ? byCode.get(current.getParentCode())
-              : null;
+          ? byCode.get(current.getParentCode())
+          : null;
     }
   }
 
-  /**
-   * Visibility controls sidebar rendering, not authorization. Hidden pages such
-   * as knowledge management must still be resolvable when explicitly granted.
-   */
+  /** visible 只控制侧边栏展示，隐藏页面仍可参与授权。 */
   private boolean isActive(MenuPO menu) {
     return menu != null
-            && Boolean.TRUE.equals(menu.getActive())
-            && StringUtils.hasText(menu.getMenuCode());
+        && Boolean.TRUE.equals(menu.getActive())
+        && StringUtils.hasText(menu.getMenuCode());
   }
 
   private List<Long> normalizeIds(Collection<Long> values) {
@@ -195,30 +206,30 @@ public class UserMenuGrantService {
       return new ArrayList<>();
     }
     return values.stream()
-            .filter(Objects::nonNull)
-            .filter(value -> value > 0L)
-            .distinct()
-            .collect(Collectors.toList());
+        .filter(Objects::nonNull)
+        .filter(value -> value > 0L)
+        .distinct()
+        .collect(Collectors.toList());
   }
 
-  /** Effective grants returned as immutable value lists. */
+  /** 有效授权结果。 */
   public static final class MenuGrant {
     private final List<String> menuCodes;
     private final List<String> permissionCodes;
 
     private MenuGrant(
-            List<String> menuCodes,
-            List<String> permissionCodes) {
+        List<String> menuCodes,
+        List<String> permissionCodes) {
       this.menuCodes = Collections.unmodifiableList(
-              new ArrayList<>(menuCodes));
+          new ArrayList<>(menuCodes));
       this.permissionCodes = Collections.unmodifiableList(
-              new ArrayList<>(permissionCodes));
+          new ArrayList<>(permissionCodes));
     }
 
     public static MenuGrant empty() {
       return new MenuGrant(
-              Collections.emptyList(),
-              Collections.emptyList());
+          Collections.emptyList(),
+          Collections.emptyList());
     }
 
     public List<String> getMenuCodes() {
