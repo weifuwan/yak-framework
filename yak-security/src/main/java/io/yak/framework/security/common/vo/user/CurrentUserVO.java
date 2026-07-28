@@ -33,4 +33,10 @@ public class CurrentUserVO {
      */
     private List<String> permissionCodes =
             new ArrayList<>();
+
+    /**
+     * 当前用户通过角色获得的菜单编码。
+     */
+    private List<String> menuCodes =
+            new ArrayList<>();
 }
