@@ -59,6 +59,7 @@ VALUES
 ('operations','运维中心',NULL,NULL,'monitor',1,50,1,1,NULL,'运行运维入口','${appName}'),
 ('metrics','运行监控','operations','/metrics','monitor',2,10,1,1,'operations:metrics:read','运行指标监控','${appName}'),
 ('alarm','告警管理','operations','/alarm','alarm',2,20,1,1,'operations:alarm:read','告警管理','${appName}'),
+('knowledge-management','知识管理',NULL,'/knowledge-management','knowledge',2,55,1,1,'knowledge:read','知识管理隐藏入口','${appName}'),
 ('system','系统管理',NULL,NULL,'system',1,60,1,1,NULL,'安全与系统管理入口','${appName}'),
 ('system-users','用户管理','system','/system/users','system',2,10,1,1,'security:user:read','用户管理','${appName}'),
 ('system-roles','角色管理','system','/system/roles','system',2,20,1,1,'security:role:read','角色及授权管理','${appName}'),
