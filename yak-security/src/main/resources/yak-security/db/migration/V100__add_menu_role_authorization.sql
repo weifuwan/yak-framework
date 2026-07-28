@@ -70,7 +70,7 @@ VALUES
 ('system-operation-logs','操作日志','system','/system/oplogs','system',2,80,1,1,'security:operation-log:read','操作日志查询','${appName}');
 
 -- 兼容已有角色：按已有读取权限回填角色菜单关系，升级后不会突然丢失菜单。
-INSERT INTO yak_security_role_menu(role_id,menu_id,app_name)
+INSERT IGNORE INTO yak_security_role_menu(role_id,menu_id,app_name)
 SELECT DISTINCT rp.role_id,m.id,rp.app_name
 FROM yak_security_role_permission rp
 JOIN yak_security_permission p
@@ -80,6 +80,21 @@ JOIN yak_security_permission p
 JOIN yak_security_menu m
   ON m.required_permission_code=p.permission_code
  AND m.app_name=rp.app_name
+ AND m.is_delete=0
+WHERE rp.app_name='${appName}'
+  AND rp.is_delete=0;
+
+-- 只授予 security:root 的超级角色同样保留全部菜单，防止升级后管理员被锁在系统外。
+INSERT IGNORE INTO yak_security_role_menu(role_id,menu_id,app_name)
+SELECT DISTINCT rp.role_id,m.id,rp.app_name
+FROM yak_security_role_permission rp
+JOIN yak_security_permission p
+  ON p.id=rp.permission_id
+ AND p.app_name=rp.app_name
+ AND p.permission_code='security:root'
+ AND p.is_delete=0
+JOIN yak_security_menu m
+  ON m.app_name=rp.app_name
  AND m.is_delete=0
 WHERE rp.app_name='${appName}'
   AND rp.is_delete=0;
