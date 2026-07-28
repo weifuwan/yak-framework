@@ -17,7 +17,7 @@ import io.yak.framework.security.web.PublicEndpoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,17 +33,20 @@ public class LoginController {
   private final LoginService loginService;
   private final UserService userService;
   private final CurrentUser currentUser;
-  private final MenuAuthorizationService menuAuthorizationService;
+  private final ObjectProvider<MenuAuthorizationService>
+          menuAuthorizationServiceProvider;
 
   public LoginController(
           LoginService loginService,
           UserService userService,
           CurrentUser currentUser,
-          MenuAuthorizationService menuAuthorizationService) {
+          ObjectProvider<MenuAuthorizationService>
+                  menuAuthorizationServiceProvider) {
     this.loginService = loginService;
     this.userService = userService;
     this.currentUser = currentUser;
-    this.menuAuthorizationService = menuAuthorizationService;
+    this.menuAuthorizationServiceProvider =
+            menuAuthorizationServiceProvider;
   }
 
   /**
@@ -90,9 +93,13 @@ public class LoginController {
               ResultCode.USER_NOT_EXISTS);
     }
 
-    user.setMenuCodes(
-            menuAuthorizationService
-                    .getMenuCodesByUserId(user.getId()));
+    MenuAuthorizationService menuAuthorizationService =
+            menuAuthorizationServiceProvider.getIfAvailable();
+    if (menuAuthorizationService != null) {
+      user.setMenuCodes(
+              menuAuthorizationService
+                      .getMenuCodesByUserId(user.getId()));
+    }
 
     return Result.success(user);
   }
