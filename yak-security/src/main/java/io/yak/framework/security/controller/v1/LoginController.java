@@ -12,6 +12,7 @@ import io.yak.framework.security.context.CurrentUser;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.LoginService;
 import io.yak.framework.security.service.UserService;
+import io.yak.framework.security.service.impl.MenuAuthorizationService;
 import io.yak.framework.security.web.PublicEndpoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,14 +33,17 @@ public class LoginController {
   private final LoginService loginService;
   private final UserService userService;
   private final CurrentUser currentUser;
+  private final MenuAuthorizationService menuAuthorizationService;
 
   public LoginController(
           LoginService loginService,
           UserService userService,
-          CurrentUser currentUser) {
+          CurrentUser currentUser,
+          MenuAuthorizationService menuAuthorizationService) {
     this.loginService = loginService;
     this.userService = userService;
     this.currentUser = currentUser;
+    this.menuAuthorizationService = menuAuthorizationService;
   }
 
   /**
@@ -85,6 +89,10 @@ public class LoginController {
       throw new YakSecurityException(
               ResultCode.USER_NOT_EXISTS);
     }
+
+    user.setMenuCodes(
+            menuAuthorizationService
+                    .getMenuCodesByUserId(user.getId()));
 
     return Result.success(user);
   }
