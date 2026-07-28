@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import;
     UserProjectDaoImpl.class, UserResourceDaoImpl.class, UserRoleDaoImpl.class,
     CaffeinePermissionCache.class, ConfigServiceImpl.class, DeptServiceImpl.class,
     LoginServiceImpl.class, MenuAuthorizationService.class,
+    PermissionMenuRelationService.class,
     MenuAwarePermissionService.class, MenuAwareRolePermissionService.class,
     UserMenuGrantService.class,
     MessageServiceImpl.class, OplogExtraServiceImpl.class, OplogServiceImpl.class,
