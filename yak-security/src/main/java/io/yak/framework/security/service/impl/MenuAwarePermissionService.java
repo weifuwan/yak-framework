@@ -3,6 +3,7 @@ package io.yak.framework.security.service.impl;
 import io.yak.framework.security.common.dto.permission.PermissionDTO;
 import io.yak.framework.security.common.vo.permission.PermissionTreeVO;
 import io.yak.framework.security.service.PermissionService;
+import io.yak.framework.security.service.RolePermissionService;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -19,15 +20,18 @@ import org.springframework.stereotype.Service;
 public class MenuAwarePermissionService implements PermissionService {
 
   private final PermissionService delegate;
+  private final RolePermissionService rolePermissionService;
   private final MenuAuthorizationService menuAuthorizationService;
   private final PermissionMenuRelationService permissionMenuRelationService;
 
   public MenuAwarePermissionService(
       @Qualifier("yakSecurityPermissionServiceImpl")
           PermissionService delegate,
+      RolePermissionService rolePermissionService,
       MenuAuthorizationService menuAuthorizationService,
       PermissionMenuRelationService permissionMenuRelationService) {
     this.delegate = delegate;
+    this.rolePermissionService = rolePermissionService;
     this.menuAuthorizationService = menuAuthorizationService;
     this.permissionMenuRelationService = permissionMenuRelationService;
   }
@@ -45,22 +49,33 @@ public class MenuAwarePermissionService implements PermissionService {
         .buildPermissionTreeWithHas(normalPermissionIds);
     return mergeMenuTree(
         root,
-        MenuSelectionCodec.extractMenuIds(permissionIdList));
+        MenuSelectionCodec.extractMenuIds(permissionIdList),
+        normalPermissionIds);
   }
 
   @Override
   public PermissionTreeVO buildPermissionTree() {
     return mergeMenuTree(
         delegate.buildPermissionTree(),
+        Collections.emptyList(),
         Collections.emptyList());
   }
 
   @Override
   public PermissionTreeVO buildPermissionTreeByRoleId(Long roleId) {
-    PermissionTreeVO root = delegate.buildPermissionTreeByRoleId(roleId);
+    List<Long> permissionIds = roleId == null
+        ? Collections.emptyList()
+        : rolePermissionService.getPermissionIdListByRoleId(roleId);
+    List<Long> normalPermissionIds =
+        MenuSelectionCodec.extractPermissionIds(permissionIds);
+    Set<Long> menuManagedPermissionIds =
+        menuAuthorizationService.getMenuBoundPermissionIds();
+    normalPermissionIds.removeIf(menuManagedPermissionIds::contains);
+
     return mergeMenuTree(
-        root,
-        menuAuthorizationService.getMenuIdsByRoleId(roleId));
+        delegate.buildPermissionTreeWithHas(normalPermissionIds),
+        menuAuthorizationService.getMenuIdsByRoleId(roleId),
+        normalPermissionIds);
   }
 
   @Override
@@ -75,7 +90,8 @@ public class MenuAwarePermissionService implements PermissionService {
 
   private PermissionTreeVO mergeMenuTree(
       PermissionTreeVO root,
-      Collection<Long> selectedMenuIds) {
+      Collection<Long> selectedMenuIds,
+      Collection<Long> selectedPermissionIds) {
     Set<String> menuBoundPermissionCodes =
         menuAuthorizationService.getMenuBoundPermissionCodes();
     filterMenuBoundPermissionNodes(
@@ -87,7 +103,8 @@ public class MenuAwarePermissionService implements PermissionService {
         menuAuthorizationService.buildMenuTree(selectedMenuIds);
     return permissionMenuRelationService.mergeCapabilityTree(
         root,
-        menuTree);
+        menuTree,
+        selectedPermissionIds);
   }
 
   private boolean filterMenuBoundPermissionNodes(
