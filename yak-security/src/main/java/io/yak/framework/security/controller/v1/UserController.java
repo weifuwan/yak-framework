@@ -6,6 +6,7 @@ import io.yak.framework.common.PagingData;
 import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.constant.Constants;
+import io.yak.framework.security.common.constant.SecurityPermissionCode;
 import io.yak.framework.security.common.dto.user.UserDTO;
 import io.yak.framework.security.common.dto.user.UserPasswordResetDTO;
 import io.yak.framework.security.common.dto.user.UserQueryDTO;
@@ -14,10 +15,12 @@ import io.yak.framework.security.common.vo.role.AssignInfoVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.common.vo.user.UserVO;
 import io.yak.framework.security.exception.YakSecurityException;
+import io.yak.framework.security.permission.YakPermission;
 import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.service.impl.UserAdministrationService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import io.yak.framework.security.util.JsonUtils;
+import io.yak.framework.security.web.RequiresPermission;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +42,13 @@ import java.util.List;
 @Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "用户管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/user")
+@RequiresPermission(SecurityPermissionCode.User.READ)
+@YakPermission(
+        code = SecurityPermissionCode.User.READ,
+        name = "查看用户管理",
+        group = SecurityPermissionCode.GROUP_NAME,
+        groupCode = SecurityPermissionCode.GROUP_CODE,
+        description = "查看用户列表、详情及角色分配信息")
 public class UserController {
 
   private final UserService userService;
@@ -151,6 +161,13 @@ public class UserController {
    */
   @Operation(summary = "新增用户")
   @PutMapping("/add")
+  @RequiresPermission(SecurityPermissionCode.User.CREATE)
+  @YakPermission(
+          code = SecurityPermissionCode.User.CREATE,
+          name = "新增用户",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          description = "创建系统用户")
   public Result<Void> add(
           HttpServletRequest request,
           @RequestBody UserDTO userDTO) {
@@ -162,6 +179,13 @@ public class UserController {
 
   @Operation(summary = "编辑用户")
   @PostMapping("/edit")
+  @RequiresPermission(SecurityPermissionCode.User.UPDATE)
+  @YakPermission(
+          code = SecurityPermissionCode.User.UPDATE,
+          name = "编辑用户",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          description = "编辑用户基本资料")
   public Result<Void> edit(
           HttpServletRequest request,
           @RequestBody UserDTO userDTO) {
@@ -179,6 +203,13 @@ public class UserController {
    */
   @Operation(summary = "管理员重置用户密码")
   @PutMapping("/{id}/password")
+  @RequiresPermission(SecurityPermissionCode.User.RESET_PASSWORD)
+  @YakPermission(
+          code = SecurityPermissionCode.User.RESET_PASSWORD,
+          name = "重置用户密码",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          description = "管理员重置指定用户密码")
   public Result<Void> resetPassword(
           HttpServletRequest request,
           @PathVariable("id") Long userId,
@@ -195,6 +226,13 @@ public class UserController {
 
   @Operation(summary = "根据用户 ID 删除用户")
   @DeleteMapping("/{id}")
+  @RequiresPermission(SecurityPermissionCode.User.DELETE)
+  @YakPermission(
+          code = SecurityPermissionCode.User.DELETE,
+          name = "删除用户",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          description = "删除系统用户并清理关联授权")
   public Result<Void> delete(
           HttpServletRequest request,
           @PathVariable("id") Long userId) {
