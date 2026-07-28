@@ -33,4 +33,11 @@ public class CurrentUserVO {
      */
     private List<String> permissionCodes =
             new ArrayList<>();
+
+    /**
+     * 当前用户通过角色获得的菜单编码。
+     *
+     * <p>null 表示当前部署未启用菜单授权能力；空列表表示已启用但用户没有菜单。
+     */
+    private List<String> menuCodes;
 }

@@ -1,6 +1,9 @@
 package io.yak.framework.security.autoconfigure;
 
 import io.yak.framework.security.service.impl.CaffeinePermissionCache;
+import io.yak.framework.security.service.impl.MenuAuthorizationService;
+import io.yak.framework.security.service.impl.MenuAwarePermissionService;
+import io.yak.framework.security.service.impl.MenuAwareRolePermissionService;
 import io.yak.framework.security.service.impl.PermissionAdministrationService;
 import io.yak.framework.security.service.impl.RbacPermissionServiceImpl;
 import io.yak.framework.security.service.impl.UserAdministrationService;
@@ -24,6 +27,9 @@ class YakSecurityDatabaseConfigurationTest {
             RbacPermissionServiceImpl.class,
             CaffeinePermissionCache.class,
             PermissionAdministrationService.class,
-            UserAdministrationService.class);
+            UserAdministrationService.class,
+            MenuAuthorizationService.class,
+            MenuAwarePermissionService.class,
+            MenuAwareRolePermissionService.class);
   }
 }
