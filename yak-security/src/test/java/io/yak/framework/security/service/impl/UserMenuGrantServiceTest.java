@@ -2,6 +2,7 @@ package io.yak.framework.security.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -123,9 +124,10 @@ class UserMenuGrantServiceTest {
     private final UserMenuGrantService service;
 
     private Fixture() {
-      when(rolePermissionService.getPermissionIdListByRoleIdList(any()))
+      lenient().when(
+          rolePermissionService.getPermissionIdListByRoleIdList(any()))
           .thenReturn(Collections.emptyList());
-      when(permissionMenuRelationService.inferMenuIds(any()))
+      lenient().when(permissionMenuRelationService.inferMenuIds(any()))
           .thenReturn(Collections.emptyList());
       service = new UserMenuGrantService(
           menuMapper,
