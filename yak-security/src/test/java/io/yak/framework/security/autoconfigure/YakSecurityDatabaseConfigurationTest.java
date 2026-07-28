@@ -7,6 +7,7 @@ import io.yak.framework.security.service.impl.MenuAwareRolePermissionService;
 import io.yak.framework.security.service.impl.PermissionAdministrationService;
 import io.yak.framework.security.service.impl.RbacPermissionServiceImpl;
 import io.yak.framework.security.service.impl.UserAdministrationService;
+import io.yak.framework.security.service.impl.UserMenuGrantService;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
 
@@ -30,6 +31,7 @@ class YakSecurityDatabaseConfigurationTest {
             UserAdministrationService.class,
             MenuAuthorizationService.class,
             MenuAwarePermissionService.class,
-            MenuAwareRolePermissionService.class);
+            MenuAwareRolePermissionService.class,
+            UserMenuGrantService.class);
   }
 }
