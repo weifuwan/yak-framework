@@ -16,5 +16,8 @@ public @interface YakPermission {
   /** Stable group code. When empty, the part of {@link #code()} before ':' is used. */
   String groupCode() default "";
 
+  /** Stable menu code containing this action permission. */
+  String menuCode() default "";
+
   String description() default "";
 }
