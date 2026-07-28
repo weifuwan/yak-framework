@@ -29,6 +29,7 @@
         <mybatis-plus.version>3.5.16</mybatis-plus.version>
         <druid.version>1.2.28</druid.version>
         <springdoc.version>2.6.0</springdoc.version>
+        <checker-qual.version>3.37.0</checker-qual.version>
 
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
@@ -66,6 +67,11 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid</artifactId>
                 <version>${druid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.checkerframework</groupId>
+                <artifactId>checker-qual</artifactId>
+                <version>${checker-qual.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springdoc</groupId>
