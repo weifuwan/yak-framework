@@ -9,7 +9,6 @@ import io.yak.framework.security.dao.mapper.PermissionMapper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -96,12 +95,13 @@ public class PermissionMenuRelationService {
     return new ArrayList<>(result);
   }
 
-  /**
-   * 将菜单和按钮整理成统一的“目录 → 菜单 → 按钮”能力树。
-   */
+  /** 将菜单和按钮整理成统一的“目录 → 菜单 → 按钮”能力树。 */
   public PermissionTreeVO mergeCapabilityTree(
       PermissionTreeVO permissionRoot,
-      PermissionTreeVO menuTree) {
+      PermissionTreeVO menuTree,
+      Collection<Long> selectedPermissionIds) {
+    Set<Long> selected = new HashSet<>(
+        normalizePositiveIds(selectedPermissionIds));
     PermissionTreeVO root = permissionRoot == null
         ? PermissionTreeVO.builder()
             .id(0L)
@@ -160,6 +160,7 @@ public class PermissionMenuRelationService {
       action.setParentId(menu.getId());
       action.setLeaf(Boolean.TRUE);
       action.setChildList(null);
+      action.setHas(action.getId() != null && selected.contains(action.getId()));
       if (menu.getChildList() == null) {
         menu.setChildList(new ArrayList<>());
       }
@@ -167,7 +168,7 @@ public class PermissionMenuRelationService {
       menu.setLeaf(Boolean.FALSE);
     }
 
-    markRemainingPermissionNodes(root, true);
+    markRemainingPermissionNodes(root, true, selected);
     if (root.getChildList() == null) {
       root.setChildList(new ArrayList<>());
     }
@@ -270,19 +271,24 @@ public class PermissionMenuRelationService {
 
   private void markRemainingPermissionNodes(
       PermissionTreeVO node,
-      boolean root) {
+      boolean root,
+      Set<Long> selected) {
     if (node == null) {
       return;
     }
     if (!root) {
-      node.setNodeType(
-          node.getChildList() != null && !node.getChildList().isEmpty()
-              ? NODE_TYPE_PERMISSION_GROUP
-              : NODE_TYPE_ACTION);
+      boolean group = node.getChildList() != null
+          && !node.getChildList().isEmpty();
+      node.setNodeType(group
+          ? NODE_TYPE_PERMISSION_GROUP
+          : NODE_TYPE_ACTION);
+      node.setHas(!group
+          && node.getId() != null
+          && selected.contains(node.getId()));
     }
     if (node.getChildList() != null) {
       for (PermissionTreeVO child : node.getChildList()) {
-        markRemainingPermissionNodes(child, false);
+        markRemainingPermissionNodes(child, false, selected);
       }
     }
   }
