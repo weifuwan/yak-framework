@@ -1,12 +1,10 @@
 package io.yak.framework.security.common.vo.permission;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.checkerframework.common.aliasing.qual.NonLeaked;
-
-import java.util.List;
 
 /**
  * 权限树节点视图对象。
@@ -43,6 +41,12 @@ public class PermissionTreeVO {
 
   /** 是否为声明式权限。 */
   private Boolean declared;
+
+  /** 所属稳定菜单编码。 */
+  private String menuCode;
+
+  /** ROOT、MENU_GROUP、MENU、PERMISSION_GROUP 或 ACTION。 */
+  private String nodeType;
 
   /** 子节点列表。 */
   private List<PermissionTreeVO> childList;
