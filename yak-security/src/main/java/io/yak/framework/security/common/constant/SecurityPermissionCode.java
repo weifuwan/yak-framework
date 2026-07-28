@@ -9,6 +9,7 @@ public final class SecurityPermissionCode {
 
   public static final String GROUP_CODE = "security";
   public static final String GROUP_NAME = "系统管理";
+  public static final String ROOT = "security:root";
 
   private SecurityPermissionCode() {
   }
@@ -44,6 +45,46 @@ public final class SecurityPermissionCode {
     public static final String DELETE = "security:permission:delete";
 
     private Permission() {
+    }
+  }
+
+  /** 部门管理权限。 */
+  public static final class Department {
+    public static final String READ = "security:department:read";
+
+    private Department() {
+    }
+  }
+
+  /** 安全项目管理权限。 */
+  public static final class Project {
+    public static final String READ = "security:project:read";
+
+    private Project() {
+    }
+  }
+
+  /** 资源授权管理权限。 */
+  public static final class ResourcePermission {
+    public static final String READ = "security:resource-permission:read";
+
+    private ResourcePermission() {
+    }
+  }
+
+  /** 系统配置管理权限。 */
+  public static final class Config {
+    public static final String READ = "security:config:read";
+
+    private Config() {
+    }
+  }
+
+  /** 操作日志查询权限。 */
+  public static final class OperationLog {
+    public static final String READ = "security:operation-log:read";
+
+    private OperationLog() {
     }
   }
 }
