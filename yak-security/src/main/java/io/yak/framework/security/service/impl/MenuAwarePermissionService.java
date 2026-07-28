@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +19,11 @@ import org.springframework.stereotype.Service;
 public class MenuAwarePermissionService
         implements PermissionService {
 
-  private final PermissionService delegate;
+  private final PermissionServiceImpl delegate;
   private final MenuAuthorizationService menuAuthorizationService;
 
   public MenuAwarePermissionService(
-          @Qualifier("yakSecurityPermissionServiceImpl")
-                  PermissionService delegate,
+          PermissionServiceImpl delegate,
           MenuAuthorizationService menuAuthorizationService) {
 
     this.delegate = delegate;
@@ -39,9 +37,11 @@ public class MenuAwarePermissionService
     List<Long> normalPermissionIds =
             MenuSelectionCodec.extractPermissionIds(
                     permissionIdList);
-    normalPermissionIds.removeIf(
+    Set<Long> menuManagedPermissionIds =
             menuAuthorizationService
-                    .getMenuBoundPermissionIds()::contains);
+                    .getMenuBoundPermissionIds();
+    normalPermissionIds.removeIf(
+            menuManagedPermissionIds::contains);
 
     PermissionTreeVO root = delegate
             .buildPermissionTreeWithHas(normalPermissionIds);
