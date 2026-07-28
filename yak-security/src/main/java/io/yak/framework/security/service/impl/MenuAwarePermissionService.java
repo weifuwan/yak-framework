@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +20,12 @@ import org.springframework.stereotype.Service;
 public class MenuAwarePermissionService
         implements PermissionService {
 
-  private final PermissionServiceImpl delegate;
+  private final PermissionService delegate;
   private final MenuAuthorizationService menuAuthorizationService;
 
   public MenuAwarePermissionService(
-          PermissionServiceImpl delegate,
+          @Qualifier("yakSecurityPermissionServiceImpl")
+                  PermissionService delegate,
           MenuAuthorizationService menuAuthorizationService) {
 
     this.delegate = delegate;
