@@ -1,7 +1,9 @@
 package io.yak.framework.security.autoconfigure;
 
 import io.yak.framework.security.service.impl.CaffeinePermissionCache;
+import io.yak.framework.security.service.impl.PermissionAdministrationService;
 import io.yak.framework.security.service.impl.RbacPermissionServiceImpl;
+import io.yak.framework.security.service.impl.UserAdministrationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
 
@@ -18,6 +20,10 @@ class YakSecurityDatabaseConfigurationTest {
 
     assertThat(importedBeans).isNotNull();
     assertThat(Arrays.asList(importedBeans.value()))
-        .contains(RbacPermissionServiceImpl.class, CaffeinePermissionCache.class);
+        .contains(
+            RbacPermissionServiceImpl.class,
+            CaffeinePermissionCache.class,
+            PermissionAdministrationService.class,
+            UserAdministrationService.class);
   }
 }

@@ -17,9 +17,11 @@ import org.springframework.context.annotation.Import;
     UserProjectDaoImpl.class, UserResourceDaoImpl.class, UserRoleDaoImpl.class,
     CaffeinePermissionCache.class, ConfigServiceImpl.class, DeptServiceImpl.class,
     LoginServiceImpl.class, MessageServiceImpl.class, OplogExtraServiceImpl.class, OplogServiceImpl.class,
-    PermissionServiceImpl.class, ProjectServiceImpl.class, RbacPermissionServiceImpl.class,
+    PermissionAdministrationService.class, PermissionServiceImpl.class,
+    ProjectServiceImpl.class, RbacPermissionServiceImpl.class,
     ResourceTypeServiceImpl.class,
     RolePermissionServiceImpl.class, RoleServiceImpl.class, UserProjectServiceImpl.class,
-    UserResourceServiceImpl.class, UserRoleServiceImpl.class, UserServiceImpl.class,
+    UserAdministrationService.class, UserResourceServiceImpl.class,
+    UserRoleServiceImpl.class, UserServiceImpl.class,
     DefaultLoginExtendImpl.class})
 class YakSecurityDatabaseConfiguration {}
