@@ -89,7 +89,7 @@ public class MenuAwarePermissionService
             ? PermissionTreeVO.builder()
                     .id(0L)
                     .leaf(Boolean.FALSE)
-                    .has(Boolean.TRUE)
+                    .has(Boolean.FALSE)
                     .childList(new ArrayList<>())
                     .build()
             : root;
@@ -105,9 +105,12 @@ public class MenuAwarePermissionService
     if (result.getChildList() == null) {
       result.setChildList(new ArrayList<>());
     }
-    result.getChildList().add(0,
-            menuAuthorizationService
-                    .buildMenuTree(selectedMenuIds));
+
+    PermissionTreeVO menuTree = menuAuthorizationService
+            .buildMenuTree(selectedMenuIds);
+    menuTree.setHas(Boolean.FALSE);
+    result.getChildList().add(0, menuTree);
+    result.setHas(Boolean.FALSE);
     result.setLeaf(Boolean.FALSE);
     return result;
   }
