@@ -9,26 +9,20 @@ import org.springframework.core.io.ClassPathResource;
 class MenuMigrationIsolationTest {
 
   @Test
-  void menuSchemaMigrationMustNotContainCatalogData()
+  void consolidatedBaselineMustContainFinalYakSecuritySchemaAndCatalog()
       throws Exception {
 
     String sql = readMigration(
-        "yak-security/db/migration/V100__add_menu_role_authorization.sql");
+        "yak-security/db/migration/V1__init_yak_security.sql");
 
     assertThat(sql)
+        .contains("CREATE TABLE yak_security_permission")
+        .contains("active TINYINT(1) NOT NULL DEFAULT 1")
+        .contains("declared TINYINT(1) NOT NULL DEFAULT 0")
+        .contains("CREATE TABLE yak_security_user_project")
+        .contains("user_type TINYINT NOT NULL DEFAULT 0")
         .contains("CREATE TABLE yak_security_menu")
         .contains("CREATE TABLE yak_security_role_menu")
-        .doesNotContain("INSERT INTO yak_security_menu");
-  }
-
-  @Test
-  void systemCatalogMigrationMustOwnOnlyYakSecurityData()
-      throws Exception {
-
-    String sql = readMigration(
-        "yak-security/db/migration/V1100__init_yak_security_system_catalog.sql");
-
-    assertThat(sql)
         .contains("INSERT INTO yak_security_permission")
         .contains("INSERT INTO yak_security_menu")
         .contains("'security:root'")
@@ -40,6 +34,8 @@ class MenuMigrationIsolationTest {
         .contains("'system-operation-logs'")
         .contains("INSERT IGNORE INTO yak_security_role_permission")
         .contains("INSERT IGNORE INTO yak_security_role_menu")
+        .doesNotContain("ALTER TABLE yak_security_permission")
+        .doesNotContain("ALTER TABLE yak_security_user_project")
         .doesNotContain("'task:batch:read'")
         .doesNotContain("'workflow:definition:read'")
         .doesNotContain("'resource:data-source:read'")
