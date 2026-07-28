@@ -12,11 +12,14 @@ import io.yak.framework.security.context.CurrentUser;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.LoginService;
 import io.yak.framework.security.service.UserService;
-import io.yak.framework.security.service.impl.MenuAuthorizationService;
+import io.yak.framework.security.service.impl.UserMenuGrantService;
 import io.yak.framework.security.web.PublicEndpoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,20 +36,20 @@ public class LoginController {
   private final LoginService loginService;
   private final UserService userService;
   private final CurrentUser currentUser;
-  private final ObjectProvider<MenuAuthorizationService>
-          menuAuthorizationServiceProvider;
+  private final ObjectProvider<UserMenuGrantService>
+          userMenuGrantServiceProvider;
 
   public LoginController(
           LoginService loginService,
           UserService userService,
           CurrentUser currentUser,
-          ObjectProvider<MenuAuthorizationService>
-                  menuAuthorizationServiceProvider) {
+          ObjectProvider<UserMenuGrantService>
+                  userMenuGrantServiceProvider) {
     this.loginService = loginService;
     this.userService = userService;
     this.currentUser = currentUser;
-    this.menuAuthorizationServiceProvider =
-            menuAuthorizationServiceProvider;
+    this.userMenuGrantServiceProvider =
+            userMenuGrantServiceProvider;
   }
 
   /**
@@ -93,12 +96,23 @@ public class LoginController {
               ResultCode.USER_NOT_EXISTS);
     }
 
-    MenuAuthorizationService menuAuthorizationService =
-            menuAuthorizationServiceProvider.getIfAvailable();
-    if (menuAuthorizationService != null) {
-      user.setMenuCodes(
-              menuAuthorizationService
-                      .getMenuCodesByUserId(user.getId()));
+    UserMenuGrantService userMenuGrantService =
+            userMenuGrantServiceProvider.getIfAvailable();
+    if (userMenuGrantService != null) {
+      UserMenuGrantService.MenuGrant menuGrant =
+              userMenuGrantService.resolve(user.getId());
+      user.setMenuCodes(menuGrant.getMenuCodes());
+
+      Set<String> effectivePermissionCodes =
+              new LinkedHashSet<>();
+      if (user.getPermissionCodes() != null) {
+        effectivePermissionCodes.addAll(
+                user.getPermissionCodes());
+      }
+      effectivePermissionCodes.addAll(
+              menuGrant.getPermissionCodes());
+      user.setPermissionCodes(
+              new ArrayList<>(effectivePermissionCodes));
     }
 
     return Result.success(user);
