@@ -28,6 +28,7 @@ public class RbacPermissionServiceImpl implements RbacPermissionService {
   private final UserRoleDao userRoleDao;
   private final RolePermissionService rolePermissionService;
   private final PermissionDao permissionDao;
+  private final UserMenuGrantService userMenuGrantService;
   private final PermissionExtend permissionExtend;
   private final PermissionCache permissionCache;
 
@@ -36,12 +37,14 @@ public class RbacPermissionServiceImpl implements RbacPermissionService {
           UserRoleDao userRoleDao,
           RolePermissionService rolePermissionService,
           PermissionDao permissionDao,
+          UserMenuGrantService userMenuGrantService,
           PermissionExtend permissionExtend,
           PermissionCache permissionCache) {
     this.userService = userService;
     this.userRoleDao = userRoleDao;
     this.rolePermissionService = rolePermissionService;
     this.permissionDao = permissionDao;
+    this.userMenuGrantService = userMenuGrantService;
     this.permissionExtend = permissionExtend;
     this.permissionCache = permissionCache;
   }
@@ -93,6 +96,10 @@ public class RbacPermissionServiceImpl implements RbacPermissionService {
         }
       }
     }
+
+    permissionCodes.addAll(
+            userMenuGrantService
+                    .getPermissionCodesByUserId(userId));
     return permissionCodes;
   }
 }
