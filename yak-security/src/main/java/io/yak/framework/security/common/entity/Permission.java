@@ -23,6 +23,8 @@ public class Permission {
   private Integer level;
   /** 描述。 */
   private String description;
+  /** 该权限所属的稳定菜单编码；为空表示不隶属于具体页面。 */
+  private String menuCode;
 
   /** Parent permission code, used only while synchronizing declarations. */
   private transient String parentCode;
