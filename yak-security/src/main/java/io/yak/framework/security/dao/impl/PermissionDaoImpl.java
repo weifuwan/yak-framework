@@ -9,6 +9,7 @@ import io.yak.framework.security.util.CopyBeanUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 /**
  * 权限数据访问实现。
@@ -76,7 +77,10 @@ public class PermissionDaoImpl implements PermissionDao {
             row.setDescription(item.getDescription());
             row.setLeaf(item.getLeaf());
             row.setLevel(item.getLevel());
-            row.setMenuCode(item.getMenuCode());
+            // 未声明 menuCode 时保留 Flyway 或宿主应用维护的菜单绑定。
+            if (StringUtils.hasText(item.getMenuCode())) {
+              row.setMenuCode(item.getMenuCode());
+            }
             row.setActive(true);
           }
           if (item.getParentCode() != null) {
