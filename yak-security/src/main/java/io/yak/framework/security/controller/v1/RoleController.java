@@ -2,10 +2,11 @@ package io.yak.framework.security.controller.v1;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
+import io.yak.framework.security.common.constant.Constants;
+import io.yak.framework.security.common.constant.SecurityPermissionCode;
 import io.yak.framework.security.common.dto.role.RoleAssignDTO;
 import io.yak.framework.security.common.dto.role.RoleQueryDTO;
 import io.yak.framework.security.common.dto.role.RoleSaveDTO;
@@ -13,8 +14,10 @@ import io.yak.framework.security.common.vo.role.AssignInfoVO;
 import io.yak.framework.security.common.vo.role.RoleBriefVO;
 import io.yak.framework.security.common.vo.role.RoleDeleteCheckVO;
 import io.yak.framework.security.common.vo.role.RoleVO;
+import io.yak.framework.security.permission.YakPermission;
 import io.yak.framework.security.service.RoleService;
 import io.yak.framework.security.util.HttpRequestUtil;
+import io.yak.framework.security.web.RequiresPermission;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
@@ -36,6 +39,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "角色管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/role")
+@RequiresPermission(SecurityPermissionCode.Role.READ)
+@YakPermission(
+        code = SecurityPermissionCode.Role.READ,
+        name = "查看角色管理",
+        group = SecurityPermissionCode.GROUP_NAME,
+        groupCode = SecurityPermissionCode.GROUP_CODE,
+        description = "查看角色列表、详情及用户分配信息")
 public class RoleController {
 
   private final RoleService roleService;
@@ -74,6 +84,13 @@ public class RoleController {
    */
   @Operation(summary = "更新角色")
   @PutMapping
+  @RequiresPermission(SecurityPermissionCode.Role.UPDATE)
+  @YakPermission(
+          code = SecurityPermissionCode.Role.UPDATE,
+          name = "编辑角色",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          description = "编辑角色资料及角色权限")
   public Result<Void> update(
           HttpServletRequest request,
           @RequestBody RoleSaveDTO roleSaveDTO) {
@@ -95,6 +112,13 @@ public class RoleController {
    */
   @Operation(summary = "创建角色")
   @PostMapping
+  @RequiresPermission(SecurityPermissionCode.Role.CREATE)
+  @YakPermission(
+          code = SecurityPermissionCode.Role.CREATE,
+          name = "新增角色",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          description = "创建角色并配置角色权限")
   public Result<Void> create(
           HttpServletRequest request,
           @RequestBody RoleSaveDTO roleSaveDTO) {
@@ -117,6 +141,7 @@ public class RoleController {
    */
   @Operation(summary = "执行角色删除前校验")
   @DeleteMapping("/delete/check/{id}")
+  @RequiresPermission(SecurityPermissionCode.Role.DELETE)
   public Result<RoleDeleteCheckVO> check(
           @PathVariable("id") Long roleId) {
 
@@ -135,6 +160,7 @@ public class RoleController {
    */
   @Operation(summary = "从角色中删除用户")
   @DeleteMapping("/{id}/user/{userId}")
+  @RequiresPermission(SecurityPermissionCode.Role.ASSIGN)
   public Result<Void> deleteUser(
           HttpServletRequest request,
           @PathVariable("id") Long roleId,
@@ -158,6 +184,13 @@ public class RoleController {
    */
   @Operation(summary = "根据角色 ID 删除角色")
   @DeleteMapping("/{id}")
+  @RequiresPermission(SecurityPermissionCode.Role.DELETE)
+  @YakPermission(
+          code = SecurityPermissionCode.Role.DELETE,
+          name = "删除角色",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          description = "删除角色并解除相关授权")
   public Result<Void> delete(
           HttpServletRequest request,
           @PathVariable("id") Long roleId) {
@@ -196,6 +229,13 @@ public class RoleController {
    */
   @Operation(summary = "分配角色或为角色分配用户")
   @PostMapping("/assign")
+  @RequiresPermission(SecurityPermissionCode.Role.ASSIGN)
+  @YakPermission(
+          code = SecurityPermissionCode.Role.ASSIGN,
+          name = "分配用户角色",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          description = "为用户分配角色或为角色分配用户")
   public Result<Void> assign(
           HttpServletRequest request,
           @RequestBody RoleAssignDTO assignDTO) {
