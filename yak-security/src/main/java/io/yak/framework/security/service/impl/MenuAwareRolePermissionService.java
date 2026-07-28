@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MenuAwareRolePermissionService
         implements RolePermissionService {
 
-  private final RolePermissionServiceImpl delegate;
+  private final RolePermissionService delegate;
   private final MenuAuthorizationService menuAuthorizationService;
 
   public MenuAwareRolePermissionService(
-          RolePermissionServiceImpl delegate,
+          @Qualifier("yakSecurityRolePermissionServiceImpl")
+                  RolePermissionService delegate,
           MenuAuthorizationService menuAuthorizationService) {
 
     this.delegate = delegate;
