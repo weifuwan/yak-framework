@@ -24,3 +24,8 @@ Yak Framework 使用小型 Maven 模块保持能力边界清晰：
     <relativePath>../pom.xml</relativePath>
 </parent>
 ```
+
+### 安装到本地
+```shell
+D:\baize-works\baize-tools\apache-maven-3.9.16\bin\mvn clean install -DskipTests -Dspotless.check.skip=true
+```
