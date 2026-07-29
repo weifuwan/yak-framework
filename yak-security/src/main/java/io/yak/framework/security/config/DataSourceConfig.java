@@ -14,6 +14,7 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.StringValue;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -241,7 +242,12 @@ public class DataSourceConfig {
                 .placeholders(Collections.singletonMap(
                         "appName",
                         properties.getApplicationName()))
+                /*
+                 * 宿主模块可能已经在共享 schema 中创建了业务表。
+                 * 默认基线版本 1 会跳过安全模块的 V1 建表脚本，因此显式从 0 开始。
+                 */
                 .baselineOnMigrate(true)
+                .baselineVersion(MigrationVersion.fromVersion("0"))
                 .load();
     }
 
