@@ -62,6 +62,20 @@ public final class SecurityPermissionCode {
     }
   }
 
+  /** 租户管理权限。 */
+  public static final class Tenant {
+    public static final String MENU_CODE = "system-tenants";
+    public static final String READ = "security:tenant:read";
+    public static final String CREATE = "security:tenant:create";
+    public static final String UPDATE = "security:tenant:update";
+    public static final String ASSIGN = "security:tenant:assign";
+    public static final String SYNC = "security:tenant:sync";
+    public static final String DELETE = "security:tenant:delete";
+
+    private Tenant() {
+    }
+  }
+
   /** 安全项目管理权限。 */
   public static final class Project {
     public static final String READ = "security:project:read";
