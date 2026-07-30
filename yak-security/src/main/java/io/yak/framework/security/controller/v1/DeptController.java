@@ -113,9 +113,9 @@ public class DeptController {
    */
   @Operation(summary = "编辑部门")
   @PutMapping
-  @RequiresPermission(SecurityPermissionCode.Department.UPDATE)
+  @RequiresPermission(SecurityPermissionCode.Department.EDIT)
   @YakPermission(
-          code = SecurityPermissionCode.Department.UPDATE,
+          code = SecurityPermissionCode.Department.EDIT,
           name = "编辑部门",
           group = SecurityPermissionCode.GROUP_NAME,
           groupCode = SecurityPermissionCode.GROUP_CODE,
