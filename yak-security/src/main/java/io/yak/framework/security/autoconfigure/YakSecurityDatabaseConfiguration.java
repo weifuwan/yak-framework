@@ -1,6 +1,8 @@
 package io.yak.framework.security.autoconfigure;
 
 import io.yak.framework.security.config.DataSourceConfig;
+import io.yak.framework.security.dao.TenantRepository;
+import io.yak.framework.security.dao.UserTenantRepository;
 import io.yak.framework.security.dao.impl.*;
 import io.yak.framework.security.extend.impl.DefaultLoginExtendImpl;
 import io.yak.framework.security.service.impl.*;
@@ -9,23 +11,55 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "yak.security", name = "database-enabled", havingValue = "true", matchIfMissing = true)
-@Import({DataSourceConfig.class, ConfigDaoImpl.class, DeptDaoImpl.class,
-    MessageDaoImpl.class, OplogDaoImpl.class, OplogExtraDaoImpl.class,
-    PermissionDaoImpl.class, ProjectDaoImpl.class, ResourceTypeDaoImpl.class,
-    RoleDaoImpl.class, RolePermissionDaoImpl.class, UserDaoImpl.class,
-    UserProjectDaoImpl.class, UserResourceDaoImpl.class, UserRoleDaoImpl.class,
-    CaffeinePermissionCache.class, ConfigServiceImpl.class, DeptServiceImpl.class,
-    LoginServiceImpl.class, MenuAuthorizationService.class,
+@ConditionalOnProperty(
+    prefix = "yak.security",
+    name = "database-enabled",
+    havingValue = "true",
+    matchIfMissing = true)
+@Import({
+    DataSourceConfig.class,
+    ConfigDaoImpl.class,
+    DeptDaoImpl.class,
+    MessageDaoImpl.class,
+    OplogDaoImpl.class,
+    OplogExtraDaoImpl.class,
+    PermissionDaoImpl.class,
+    ProjectDaoImpl.class,
+    ResourceTypeDaoImpl.class,
+    RoleDaoImpl.class,
+    RolePermissionDaoImpl.class,
+    UserDaoImpl.class,
+    UserProjectDaoImpl.class,
+    UserResourceDaoImpl.class,
+    UserRoleDaoImpl.class,
+    TenantRepository.class,
+    UserTenantRepository.class,
+    CaffeinePermissionCache.class,
+    ConfigServiceImpl.class,
+    DeptServiceImpl.class,
+    LoginServiceImpl.class,
+    MenuAuthorizationService.class,
     PermissionMenuRelationService.class,
-    MenuAwarePermissionService.class, MenuAwareRolePermissionService.class,
+    MenuAwarePermissionService.class,
+    MenuAwareRolePermissionService.class,
     UserMenuGrantService.class,
-    MessageServiceImpl.class, OplogExtraServiceImpl.class, OplogServiceImpl.class,
-    PermissionAdministrationService.class, PermissionServiceImpl.class,
-    ProjectServiceImpl.class, RbacPermissionServiceImpl.class,
+    MessageServiceImpl.class,
+    OplogExtraServiceImpl.class,
+    OplogServiceImpl.class,
+    PermissionAdministrationService.class,
+    PermissionServiceImpl.class,
+    ProjectServiceImpl.class,
+    RbacPermissionServiceImpl.class,
     ResourceTypeServiceImpl.class,
-    RolePermissionServiceImpl.class, RoleServiceImpl.class, UserProjectServiceImpl.class,
-    UserAdministrationService.class, UserResourceServiceImpl.class,
-    UserRoleServiceImpl.class, UserServiceImpl.class,
-    DefaultLoginExtendImpl.class})
-class YakSecurityDatabaseConfiguration {}
+    RolePermissionServiceImpl.class,
+    RoleServiceImpl.class,
+    TenantServiceImpl.class,
+    UserProjectServiceImpl.class,
+    UserAdministrationService.class,
+    UserResourceServiceImpl.class,
+    UserRoleServiceImpl.class,
+    UserServiceImpl.class,
+    DefaultLoginExtendImpl.class
+})
+class YakSecurityDatabaseConfiguration {
+}
