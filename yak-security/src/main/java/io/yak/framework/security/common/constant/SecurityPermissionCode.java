@@ -40,6 +40,7 @@ public final class SecurityPermissionCode {
 
   /** 权限目录管理权限。 */
   public static final class Permission {
+    public static final String MENU_CODE = "system-permissions";
     public static final String READ = "security:permission:read";
     public static final String IMPORT = "security:permission:import";
     public static final String DELETE = "security:permission:delete";
@@ -50,7 +51,12 @@ public final class SecurityPermissionCode {
 
   /** 部门管理权限。 */
   public static final class Department {
+    public static final String MENU_CODE = "system-departments";
     public static final String READ = "security:department:read";
+    public static final String CREATE = "security:department:create";
+    public static final String UPDATE = "security:department:update";
+    public static final String DELETE = "security:department:delete";
+    public static final String IMPORT = "security:department:import";
 
     private Department() {
     }
