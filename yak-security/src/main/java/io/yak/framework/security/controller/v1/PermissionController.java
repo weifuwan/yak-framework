@@ -35,6 +35,7 @@ import java.util.List;
         name = "查看权限管理",
         group = SecurityPermissionCode.GROUP_NAME,
         groupCode = SecurityPermissionCode.GROUP_CODE,
+        menuCode = SecurityPermissionCode.Permission.MENU_CODE,
         description = "查看权限目录及权限树")
 public class PermissionController {
 
@@ -68,6 +69,7 @@ public class PermissionController {
           name = "导入权限",
           group = SecurityPermissionCode.GROUP_NAME,
           groupCode = SecurityPermissionCode.GROUP_CODE,
+          menuCode = SecurityPermissionCode.Permission.MENU_CODE,
           description = "导入手工维护的权限目录")
   public Result<Void> importPermission(
           @RequestBody
@@ -93,6 +95,7 @@ public class PermissionController {
           name = "删除权限",
           group = SecurityPermissionCode.GROUP_NAME,
           groupCode = SecurityPermissionCode.GROUP_CODE,
+          menuCode = SecurityPermissionCode.Permission.MENU_CODE,
           description = "删除手工权限并解除角色授权")
   public Result<Void> deletePermission(
           @PathVariable Long permissionId) {

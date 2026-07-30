@@ -134,6 +134,7 @@ public class PermissionMenuRelationService {
 
     Map<String, String> requiredPermissionByMenu = listActiveMenus().stream()
         .filter(menu -> StringUtils.hasText(menu.getMenuCode()))
+        .filter(menu -> StringUtils.hasText(menu.getRequiredPermissionCode()))
         .collect(Collectors.toMap(
             MenuPO::getMenuCode,
             MenuPO::getRequiredPermissionCode,
