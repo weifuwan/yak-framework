@@ -54,7 +54,7 @@ public final class SecurityPermissionCode {
     public static final String MENU_CODE = "system-departments";
     public static final String READ = "security:department:read";
     public static final String CREATE = "security:department:create";
-    public static final String UPDATE = "security:department:update";
+    public static final String EDIT = "security:department:edit";
     public static final String DELETE = "security:department:delete";
     public static final String IMPORT = "security:department:import";
 
