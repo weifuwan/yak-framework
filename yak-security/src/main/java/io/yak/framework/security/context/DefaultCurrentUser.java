@@ -29,4 +29,19 @@ public final class DefaultCurrentUser implements CurrentUser {
   public boolean isAuthenticated() {
     return YakSecurityContext.isAuthenticated();
   }
+
+  @Override
+  public Long getTenantId() {
+    return YakSecurityContext.getCurrentTenantId();
+  }
+
+  @Override
+  public String getTenantCode() {
+    return YakSecurityContext.getCurrentTenantCode();
+  }
+
+  @Override
+  public String getTenantName() {
+    return YakSecurityContext.getCurrentTenantName();
+  }
 }
