@@ -18,4 +18,23 @@ public interface CurrentUser {
   List<Long> getRoleIds();
 
   boolean isAuthenticated();
+
+  /**
+   * 当前业务租户标识。
+   *
+   * <p>使用默认方法保持已有宿主实现兼容。
+   */
+  default Long getTenantId() {
+    return null;
+  }
+
+  /** 当前业务租户编码。 */
+  default String getTenantCode() {
+    return null;
+  }
+
+  /** 当前业务租户名称。 */
+  default String getTenantName() {
+    return null;
+  }
 }
