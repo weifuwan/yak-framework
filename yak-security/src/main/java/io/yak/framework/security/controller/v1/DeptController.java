@@ -4,12 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.constant.Constants;
+import io.yak.framework.security.common.constant.SecurityPermissionCode;
 import io.yak.framework.security.common.dto.dept.DeptDTO;
 import io.yak.framework.security.common.dto.dept.DeptSaveDTO;
 import io.yak.framework.security.common.vo.dept.DeptDeleteCheckVO;
 import io.yak.framework.security.common.vo.dept.DeptTreeVO;
 import io.yak.framework.security.common.vo.dept.DeptVO;
+import io.yak.framework.security.permission.YakPermission;
 import io.yak.framework.security.service.DeptService;
+import io.yak.framework.security.web.RequiresPermission;
 
 import java.util.List;
 
@@ -30,6 +33,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "部门管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/dept")
+@RequiresPermission(SecurityPermissionCode.Department.READ)
+@YakPermission(
+        code = SecurityPermissionCode.Department.READ,
+        name = "查看部门管理",
+        group = SecurityPermissionCode.GROUP_NAME,
+        groupCode = SecurityPermissionCode.GROUP_CODE,
+        menuCode = SecurityPermissionCode.Department.MENU_CODE,
+        description = "查看部门树及部门详情")
 public class DeptController {
 
   private final DeptService deptService;
@@ -78,6 +89,14 @@ public class DeptController {
    */
   @Operation(summary = "新增部门")
   @PostMapping
+  @RequiresPermission(SecurityPermissionCode.Department.CREATE)
+  @YakPermission(
+          code = SecurityPermissionCode.Department.CREATE,
+          name = "新增部门",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          menuCode = SecurityPermissionCode.Department.MENU_CODE,
+          description = "创建根部门或子部门")
   public Result<Void> create(
           @RequestBody DeptSaveDTO deptSaveDTO) {
 
@@ -94,6 +113,14 @@ public class DeptController {
    */
   @Operation(summary = "编辑部门")
   @PutMapping
+  @RequiresPermission(SecurityPermissionCode.Department.UPDATE)
+  @YakPermission(
+          code = SecurityPermissionCode.Department.UPDATE,
+          name = "编辑部门",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          menuCode = SecurityPermissionCode.Department.MENU_CODE,
+          description = "修改部门名称、描述及上级部门")
   public Result<Void> update(
           @RequestBody DeptSaveDTO deptSaveDTO) {
 
@@ -112,6 +139,7 @@ public class DeptController {
    */
   @Operation(summary = "删除部门前检查关联数据")
   @DeleteMapping("/delete/check/{id}")
+  @RequiresPermission(SecurityPermissionCode.Department.DELETE)
   public Result<DeptDeleteCheckVO> checkBeforeDelete(
           @PathVariable("id") Long deptId) {
 
@@ -127,6 +155,14 @@ public class DeptController {
    */
   @Operation(summary = "删除部门")
   @DeleteMapping("/{id}")
+  @RequiresPermission(SecurityPermissionCode.Department.DELETE)
+  @YakPermission(
+          code = SecurityPermissionCode.Department.DELETE,
+          name = "删除部门",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          menuCode = SecurityPermissionCode.Department.MENU_CODE,
+          description = "删除没有下级部门和关联用户的部门")
   public Result<Void> delete(
           @PathVariable("id") Long deptId) {
 
@@ -143,6 +179,14 @@ public class DeptController {
    */
   @Operation(summary = "导入部门树")
   @PostMapping("/import")
+  @RequiresPermission(SecurityPermissionCode.Department.IMPORT)
+  @YakPermission(
+          code = SecurityPermissionCode.Department.IMPORT,
+          name = "导入部门",
+          group = SecurityPermissionCode.GROUP_NAME,
+          groupCode = SecurityPermissionCode.GROUP_CODE,
+          menuCode = SecurityPermissionCode.Department.MENU_CODE,
+          description = "批量导入部门树")
   public Result<Void> importDept(
           @RequestBody List<DeptDTO> deptDTOList) {
 
