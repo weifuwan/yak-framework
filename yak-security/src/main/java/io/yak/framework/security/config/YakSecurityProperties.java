@@ -205,7 +205,7 @@ public class YakSecurityProperties {
      * JDBC 驱动类名。
      */
     private String driverClassName =
-            "org.mariadb.jdbc.Driver";
+            "com.mysql.cj.jdbc.Driver";
 
     /**
      * 连接池初始化连接数。
