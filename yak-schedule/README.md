@@ -1,213 +1,210 @@
-# yak-schedule
+# Yak Schedule
 
-Yak Schedule 是面向业务系统的统一任务触发框架。业务模块只依赖稳定的
-`ScheduleManager`、`ScheduleDefinition` 和 `ScheduleHandler`，Quartz、XXL-JOB
-等具体实现通过 `ScheduleEngine` SPI 接入。
+Yak Schedule 是 Yak Framework 的统一调度能力。核心模块只定义调度模型、业务 Handler 和调度引擎 SPI，Quartz、XXL-JOB 等实现作为独立插件自动注册。
 
-## 设计边界
-
-Yak Schedule 负责：
-
-- Cron 和一次性时间触发；
-- 调度计划创建、更新、暂停、恢复、删除和立即运行；
-- 调度引擎路由和能力校验；
-- 调度触发上下文、触发日志和操作审计；
-- 同一业务标识与外部调度引擎之间的绑定。
-
-业务模块负责：
-
-- 创建离线同步、工作流、质量检测等业务执行实例；
-- 业务执行状态机、幂等、重试、超时和失败恢复；
-- Worker、Executor 或资源节点选择；
-- 业务日志、指标和告警。
-
-调度成功表示业务 Handler 已接受本次触发，不表示离线任务或工作流已经最终成功。
-
-## 分层
+## 模块结构
 
 ```text
-io.yak.framework.schedule
-├── api                  稳定业务 API、Handler 和异常
-│   └── model            Provider 无关的调度领域模型
-├── core                 引擎注册、路由、绑定和执行分发
-├── provider.quartz      Quartz Provider
-└── ScheduleTaskService  旧 Cron API 兼容门面
+yak-schedule
+├── yak-schedule-api                 稳定领域模型、ScheduleManager、ScheduleEngine SPI
+├── yak-schedule-core                引擎注册与路由、Handler 分发、默认内存仓库
+├── yak-schedule-plugin-quartz       Quartz 插件
+├── yak-schedule-plugin-xxl-job      XXL-JOB 3.4 插件与 Executor 桥接
+├── yak-schedule-plugin-all          聚合全部内置插件
+└── yak-schedule-spring-boot-starter Core + Plugin All
 ```
 
-当前仍保持单个 starter，先稳定包边界和 API。后续可以不改变业务接口地拆成：
+业务应用通常只需要依赖：
 
-```text
-yak-schedule-api
-yak-schedule-core
-yak-schedule-provider-quartz
-yak-schedule-provider-xxl-job
-yak-schedule-spring-boot-starter
+```xml
+<dependency>
+    <groupId>io.yak.framework</groupId>
+    <artifactId>yak-schedule-spring-boot-starter</artifactId>
+</dependency>
 ```
 
-## 配置
+`plugin-all` 会把 Quartz 和 XXL-JOB 插件都放入 classpath。每个插件通过自己的
+`AutoConfiguration.imports` 注册 `ScheduleEngine` Bean，核心层自动收集插件，并根据
+`yak.schedule.engine` 选择当前实现。
+
+也可以不使用 `plugin-all`，只引入某一个具体插件：
+
+```xml
+<dependency>
+    <groupId>io.yak.framework</groupId>
+    <artifactId>yak-schedule-core</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.yak.framework</groupId>
+    <artifactId>yak-schedule-plugin-quartz</artifactId>
+</dependency>
+```
+
+## Quartz 配置
+
+```yaml
+spring:
+  quartz:
+    job-store-type: memory # 生产环境建议 jdbc
+
+yak:
+  schedule:
+    enabled: true
+    engine: quartz
+```
+
+Quartz 插件支持：
+
+- Cron；
+- 一次性触发；
+- 独立时区；
+- 暂停、恢复、删除和立即执行；
+- `ALLOW`、`FORBID` 并发策略；
+- `IGNORE`、`FIRE_ONCE_NOW` Misfire 策略。
+
+## XXL-JOB 配置
+
+XXL-JOB 插件针对官方 3.4.0：
 
 ```yaml
 yak:
   schedule:
     enabled: true
-    web-enabled: false
-    default-engine: quartz
-    log-capacity: 10000
-
-spring:
-  quartz:
-    auto-startup: true
-    job-store-type: memory
+    engine: xxl-job
+    xxl-job:
+      admin-address: http://127.0.0.1:8080/xxl-job-admin
+      username: admin
+      password: 123456
+      job-group-id: 1
+      author: yak-framework
+      executor:
+        enabled: true
+        app-name: yak-schedule-executor
+        port: 9999
+        access-token: change-me
+        log-path: ./logs/xxl-job
+        log-retention-days: 30
 ```
 
-生产环境应将 Quartz 配置为 JDBC JobStore，并替换默认的内存日志、审计和
-引擎绑定仓库。
+XXL-JOB 插件会：
 
-## 新 API 使用方式
+1. 启动并注册 `XxlJobSpringExecutor`；
+2. 注册唯一通用 Handler：`yakScheduleHandler`；
+3. 通过 Admin 管理端创建、更新、暂停、恢复、删除和立即触发任务；
+4. 将 XXL-JOB 的触发参数还原成 `ScheduleExecutionContext`；
+5. 调用业务应用注册的 `ScheduleHandler`。
 
-### 1. 注册业务 Handler
+XXL-JOB 当前插件支持 Cron、Misfire、暂停/恢复和立即执行；不支持每个任务单独设置时区、一次性计划以及 `ALLOW` 并发策略。保存不支持的定义时，核心层会直接抛出 `UnsupportedScheduleCapabilityException`。
+
+> XXL-JOB 官方目前没有稳定的任务管理 OpenAPI。默认 `XxlJobHttpAdminClient` 对接官方 3.4 管理端表单接口并维护登录 Cookie。若使用定制版本、统一认证或网关，应声明自己的 `XxlJobAdminClient` Bean 覆盖默认实现。
+
+> `xxl-job-core` 使用 GPL-3.0 许可证。发行产品前应根据实际分发方式完成许可证评估。
+
+## 注册业务 Handler
+
+离线同步：
 
 ```java
 @Bean("offlineSyncScheduleHandler")
 ScheduleHandler offlineSyncScheduleHandler(
         OfflineJobExecutionService executionService) {
-
     return context -> {
-        Long definitionId =
-                context.getRequiredLong("definitionId");
-
-        OfflineJobExecutionPO execution =
-                executionService.executeScheduled(
-                        definitionId,
-                        context.getTriggerId());
-
+        Long definitionId = context.requiredLong("definitionId");
+        OfflineJobExecution execution = executionService.executeScheduled(
+                definitionId,
+                context.triggerId());
         return ScheduleExecutionResult.accepted(
                 execution.getId().toString());
     };
 }
 ```
 
-Handler 应尽快创建并持久化业务执行实例，然后返回业务执行 ID。不要在 Quartz
-线程中等待整个离线同步或工作流执行完成。
-
-### 2. 保存调度计划
-
-```java
-ScheduleDefinition definition =
-        new ScheduleDefinition(
-                new ScheduleKey("offline-sync", "job-10001"),
-                "订单离线同步",
-                "每天凌晨同步订单数据",
-                null,
-                ScheduleTrigger.cron(
-                        "0 0 2 * * ?",
-                        ZoneId.of("Asia/Shanghai")),
-                new ScheduleTarget(
-                        "offlineSyncScheduleHandler",
-                        Map.of("definitionId", "10001")),
-                new SchedulePolicy(
-                        ConcurrencyPolicy.FORBID,
-                        MisfirePolicy.FIRE_ONCE_NOW,
-                        1),
-                true,
-                3L,
-                Map.of("businessType", "offline-sync"));
-
-scheduleManager.save(definition);
-```
-
-`engineType` 为空时使用 `yak.schedule.default-engine`。未来接入 XXL-JOB 后，
-可以在定义中传入 `xxl-job`，核心层会先检查 Provider 能力。
-
-### 3. 生命周期控制
-
-```java
-ScheduleKey key =
-        new ScheduleKey("offline-sync", "job-10001");
-
-scheduleManager.pause(key);
-scheduleManager.resume(key);
-scheduleManager.runNow(key);
-scheduleManager.delete(key);
-```
-
-## Yak Ops 接入建议
-
-不同业务使用独立 namespace 和 Handler：
-
-```text
-offline-sync -> offlineSyncScheduleHandler
-workflow     -> workflowScheduleHandler
-quality      -> qualityCheckScheduleHandler
-maintenance  -> maintenanceScheduleHandler
-```
-
-工作流接入示例：
+工作流：
 
 ```java
 @Bean("workflowScheduleHandler")
 ScheduleHandler workflowScheduleHandler(
         WorkflowExecutionService executionService) {
-
     return context -> {
-        Long definitionId =
-                context.getRequiredLong("workflowDefinitionId");
-        Long version =
-                context.getRequiredLong("workflowVersion");
-
-        WorkflowInstance instance =
-                executionService.startScheduled(
-                        definitionId,
-                        version,
-                        context.getTriggerId());
-
+        Long definitionId = context.requiredLong("workflowDefinitionId");
+        WorkflowInstance instance = executionService.startScheduled(
+                definitionId,
+                context.triggerId());
         return ScheduleExecutionResult.accepted(
                 instance.getId().toString());
     };
 }
 ```
 
-`triggerId` 必须传入业务执行服务，并作为幂等键保存。调度器发生恢复或短暂重试时，
-业务模块应保证同一个 `triggerId` 不会创建多个执行实例。
-
-离线同步迁移时建议：
-
-1. 保留现有 `yak_offline_schedule` 和扫描派发器；
-2. 保存任务时同步创建 Yak Schedule 定义；
-3. 对比两套触发记录和幂等行为；
-4. 稳定后关闭旧的 `OfflineScheduleDispatcher`；
-5. 业务重试、Worker 选择和状态对账继续保留在离线模块。
-
-## 旧 API 兼容
-
-原有 `ScheduleTaskService`、`ScheduleTaskDefinition` 和 `ScheduleTaskHandler`
-继续可用，内部已经映射到新的 `ScheduleManager`。旧接口只支持 Cron，新业务应优先
-使用新 API。
+## 创建调度计划
 
 ```java
-@Bean("billing")
-ScheduleTaskHandler billing() {
-    return parameters ->
-            billingService.settle(parameters.get("tenant"));
-}
+ScheduleDefinition definition = new ScheduleDefinition(
+        new ScheduleKey("workflow", "daily-report"),
+        "每日经营报表",
+        ScheduleTrigger.cron(
+                "0 0 2 * * ?",
+                ZoneId.of("Asia/Shanghai")),
+        new ScheduleTarget(
+                "workflowScheduleHandler",
+                Map.of("workflowDefinitionId", 10001L)),
+        new SchedulePolicy(
+                ConcurrencyPolicy.FORBID,
+                MisfirePolicy.FIRE_ONCE_NOW,
+                1),
+        true,
+        Map.of());
+
+scheduleManager.save(definition);
 ```
 
-## 新 Provider 接入
+切换引擎时业务代码不变，只修改：
 
-实现 `ScheduleEngine` 并注册为 Spring Bean：
-
-```java
-@Component
-class XxlJobScheduleEngine implements ScheduleEngine {
-
-    @Override
-    public String engineType() {
-        return "xxl-job";
-    }
-
-    // capabilities、save、pause、resume、delete、runNow、get、list
-}
+```yaml
+yak:
+  schedule:
+    engine: quartz
 ```
 
-Provider 内部负责把通用定义转换为外部调度系统模型，不得向业务层暴露
-Quartz、XXL-JOB 等专用异常和类型。
+或：
+
+```yaml
+yak:
+  schedule:
+    engine: xxl-job
+```
+
+## 设计边界
+
+Yak Schedule 负责：
+
+- 计划定义；
+- 时间触发；
+- 引擎选择；
+- Handler 分发；
+- 调度操作审计；
+- 调度入口调用日志。
+
+业务模块继续负责：
+
+- 离线同步或工作流执行实例；
+- 业务状态机；
+- 业务幂等；
+- 业务失败重试；
+- Worker 或 Executor 资源选择；
+- 状态对账、指标和告警。
+
+默认定义、引擎绑定、日志和审计仓库是内存实现。生产环境应覆盖：
+
+- `ScheduleDefinitionRepository`；
+- `ScheduleEngineBindingRepository`；
+- `ScheduleExecutionLogRepository`；
+- `ScheduleOperationAuditRepository`。
+
+第三方调度引擎只需：
+
+1. 依赖 `yak-schedule-api` 或 `yak-schedule-core`；
+2. 实现 `ScheduleEngine`；
+3. 声明独立 `AutoConfiguration`；
+4. 在 `AutoConfiguration.imports` 中注册；
+5. 由核心 `ScheduleEngineRegistry` 自动发现。

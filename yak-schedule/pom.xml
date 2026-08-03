@@ -1,41 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>io.yak.framework</groupId>
         <artifactId>yak-framework-parent</artifactId>
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>yak-schedule-spring-boot-starter</artifactId>
-    <name>yak-schedule</name>
-    <description>Provider-neutral scheduling starter with Quartz implementation</description>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-quartz</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
+
+    <artifactId>yak-schedule-parent</artifactId>
+    <packaging>pom</packaging>
+    <name>Yak Schedule Parent</name>
+    <description>Yak Framework 调度插件聚合与统一依赖管理</description>
+
+    <properties>
+        <xxl-job.version>3.4.0</xxl-job.version>
+    </properties>
+
+    <modules>
+        <module>yak-schedule-api</module>
+        <module>yak-schedule-core</module>
+        <module>yak-schedule-plugin-quartz</module>
+        <module>yak-schedule-plugin-xxl-job</module>
+        <module>yak-schedule-plugin-all</module>
+        <module>yak-schedule-spring-boot-starter</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.yak.framework</groupId>
+                <artifactId>yak-schedule-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.yak.framework</groupId>
+                <artifactId>yak-schedule-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.yak.framework</groupId>
+                <artifactId>yak-schedule-plugin-quartz</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.yak.framework</groupId>
+                <artifactId>yak-schedule-plugin-xxl-job</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.yak.framework</groupId>
+                <artifactId>yak-schedule-plugin-all</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.yak.framework</groupId>
+                <artifactId>yak-schedule-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

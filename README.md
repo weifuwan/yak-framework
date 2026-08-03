@@ -6,7 +6,7 @@ Yak Framework 使用小型 Maven 模块保持能力边界清晰：
 
 - `yak-common`：跨模块共享的响应、分页、错误码与业务异常契约；
 - `yak-security`：用户、认证、角色、权限和操作审计能力，依赖 `yak-common`。
-- `yak-schedule`：面向多项目的 Quartz 调度、Cron 管理、执行控制、日志、并发、重试和操作人审计能力。
+- `yak-schedule`：插件化统一调度能力，提供稳定 API、核心路由、Quartz 与 XXL-JOB 插件，以及聚合全部插件的 Starter。
 
 - `yak-notification`：Java 8 兼容的通知核心，提供站内信、邮件、Webhook 的统一发送入口、模板和发送记录扩展点。
 
