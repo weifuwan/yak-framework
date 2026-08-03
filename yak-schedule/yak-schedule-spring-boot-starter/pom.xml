@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.yak.framework</groupId>
+        <artifactId>yak-schedule-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>yak-schedule-spring-boot-starter</artifactId>
+    <name>Yak Schedule Spring Boot Starter</name>
+    <description>Yak Schedule 核心与全部内置插件的开箱即用 Starter</description>
+    <dependencies>
+        <dependency>
+            <groupId>io.yak.framework</groupId>
+            <artifactId>yak-schedule-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.yak.framework</groupId>
+            <artifactId>yak-schedule-plugin-all</artifactId>
+        </dependency>
+    </dependencies>
+</project>

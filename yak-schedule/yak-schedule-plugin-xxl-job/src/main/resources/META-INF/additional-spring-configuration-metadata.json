@@ -1,0 +1,16 @@
+{
+  "properties": [
+    {"name":"yak.schedule.xxl-job.admin-address","type":"java.lang.String","description":"XXL-JOB Admin 根地址，例如 http://127.0.0.1:8080/xxl-job-admin。"},
+    {"name":"yak.schedule.xxl-job.username","type":"java.lang.String","defaultValue":"admin","description":"XXL-JOB Admin 登录用户名。"},
+    {"name":"yak.schedule.xxl-job.password","type":"java.lang.String","defaultValue":"123456","description":"XXL-JOB Admin 登录密码。"},
+    {"name":"yak.schedule.xxl-job.job-group-id","type":"java.lang.Integer","description":"XXL-JOB 执行器对应的任务组 ID。"},
+    {"name":"yak.schedule.xxl-job.author","type":"java.lang.String","defaultValue":"yak-framework","description":"自动创建任务时使用的负责人。"},
+    {"name":"yak.schedule.xxl-job.executor.app-name","type":"java.lang.String","defaultValue":"yak-schedule-executor","description":"XXL-JOB Executor AppName。"},
+    {"name":"yak.schedule.xxl-job.executor.address","type":"java.lang.String","description":"Executor 注册地址，留空时自动推导。"},
+    {"name":"yak.schedule.xxl-job.executor.ip","type":"java.lang.String","description":"Executor 注册 IP。"},
+    {"name":"yak.schedule.xxl-job.executor.port","type":"java.lang.Integer","defaultValue":9999,"description":"Executor 内嵌服务端口。"},
+    {"name":"yak.schedule.xxl-job.executor.access-token","type":"java.lang.String","description":"Executor 与 Admin 通信令牌。"},
+    {"name":"yak.schedule.xxl-job.executor.log-path","type":"java.lang.String","defaultValue":"./logs/xxl-job","description":"XXL-JOB 执行日志目录。"},
+    {"name":"yak.schedule.xxl-job.executor.log-retention-days","type":"java.lang.Integer","defaultValue":30,"description":"XXL-JOB 执行日志保留天数。"}
+  ]
+}
