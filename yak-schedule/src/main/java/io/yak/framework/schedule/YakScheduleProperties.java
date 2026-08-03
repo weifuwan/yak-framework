@@ -4,9 +4,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("yak.schedule")
 public class YakScheduleProperties {
+
     private boolean enabled = true;
     private boolean webEnabled = true;
     private int logCapacity = 10_000;
+    private String defaultEngine = "quartz";
 
     public boolean isEnabled() {
         return enabled;
@@ -30,5 +32,13 @@ public class YakScheduleProperties {
 
     public void setLogCapacity(int logCapacity) {
         this.logCapacity = logCapacity;
+    }
+
+    public String getDefaultEngine() {
+        return defaultEngine;
+    }
+
+    public void setDefaultEngine(String defaultEngine) {
+        this.defaultEngine = defaultEngine;
     }
 }
