@@ -105,10 +105,10 @@
             <artifactId>flyway-mysql</artifactId>
         </dependency>
 
-        <!-- MariaDB -->
+        <!-- MySQL -->
         <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
 
