@@ -43,6 +43,7 @@
         <module>yak-common</module>
         <module>yak-security</module>
         <module>yak-schedule</module>
+        <module>yak-workflow-engine</module>
         <module>yak-file</module>
 
     </modules>
