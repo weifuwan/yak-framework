@@ -1,3 +1,4 @@
+-- Yak Security 基础表结构迁移必须先于宿主应用的业务权限目录执行。
 -- 为权限增加所属菜单编码，明确“菜单控制页面、按钮控制操作”的包含关系。
 ALTER TABLE yak_security_permission
   ADD COLUMN menu_code VARCHAR(128) NULL COMMENT '所属稳定菜单编码；按钮权限会自动包含该菜单访问能力' AFTER description;

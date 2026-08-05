@@ -9,9 +9,9 @@ import org.springframework.core.io.ClassPathResource;
 class PermissionMenuMigrationTest {
 
   @Test
-  void migrationLinksSystemActionsToMenusWithoutBusinessCatalog() throws Exception {
+  void migrationLinksSystemActionsToMenusBeforeBusinessCatalogs() throws Exception {
     ClassPathResource resource = new ClassPathResource(
-        "yak-security/db/migration/V1200__link_permissions_to_menus.sql");
+        "yak-security/db/migration/V2__link_permissions_to_menus.sql");
     String sql = resource.getContentAsString(StandardCharsets.UTF_8);
 
     assertThat(sql)
