@@ -137,6 +137,67 @@ class DefaultWorkflowEngineTest {
     }
 
     @Test
+    void manualContinueReleasesBlockedDescendantsWithoutRetryingFailedNode() {
+        engine.registerDefinition(parallelDefinition(
+                WorkflowFailureStrategy.CONTINUE_INDEPENDENT_BRANCHES));
+        WorkflowExecution execution = engine.start("parallel", Map.of());
+        engine.completeNode(execution.id(), "a", Map.of());
+        engine.failNode(execution.id(), "b", "boom");
+        engine.completeNode(execution.id(), "c", Map.of());
+        WorkflowExecution failed = engine.completeNode(execution.id(), "e", Map.of());
+
+        assertEquals(WorkflowExecutionStatus.FAILED, failed.status());
+        assertEquals(NodeExecutionStatus.UPSTREAM_FAILED, failed.node("d").status());
+        assertEquals(1, failed.node("b").attempts().size());
+
+        WorkflowExecution continued = engine.continueAfterFailure(execution.id(), "b");
+
+        assertEquals(WorkflowExecutionStatus.RUNNING, continued.status());
+        assertEquals(NodeExecutionStatus.FAILED, continued.node("b").status());
+        assertTrue(continued.node("b").downstreamContinuationAllowed());
+        assertEquals(1, continued.node("b").attempts().size());
+        assertEquals(NodeExecutionStatus.SUBMITTED, continued.node("d").status());
+        assertEquals(List.of("a", "b", "c", "e", "d"), executor.submittedNodeIds());
+
+        WorkflowExecution completed = engine.completeNode(execution.id(), "d", Map.of());
+        assertEquals(WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS, completed.status());
+        assertEquals(NodeExecutionStatus.FAILED, completed.node("b").status());
+        assertEquals(NodeExecutionStatus.SUCCESS, completed.node("d").status());
+    }
+
+    @Test
+    void manualContinueReleasesJoinAfterOneFailedPredecessorWasBlocked() {
+        WorkflowDefinition definition = new WorkflowDefinition(
+                "join-continue",
+                "join-continue",
+                WorkflowFailureStrategy.CONTINUE_INDEPENDENT_BRANCHES,
+                List.of(
+                        NodeDefinition.task("a"),
+                        NodeDefinition.task("b"),
+                        NodeDefinition.task("c"),
+                        NodeDefinition.task("join")),
+                List.of(
+                        new EdgeDefinition("a", "b"),
+                        new EdgeDefinition("a", "c"),
+                        new EdgeDefinition("b", "join"),
+                        new EdgeDefinition("c", "join")));
+        engine.registerDefinition(definition);
+        WorkflowExecution execution = engine.start("join-continue", Map.of());
+        engine.completeNode(execution.id(), "a", Map.of());
+        engine.failNode(execution.id(), "b", "boom");
+        WorkflowExecution failed = engine.completeNode(execution.id(), "c", Map.of());
+
+        assertEquals(WorkflowExecutionStatus.FAILED, failed.status());
+        assertEquals(NodeExecutionStatus.UPSTREAM_FAILED, failed.node("join").status());
+
+        WorkflowExecution continued = engine.continueAfterFailure(execution.id(), "b");
+        assertEquals(NodeExecutionStatus.SUBMITTED, continued.node("join").status());
+
+        WorkflowExecution completed = engine.completeNode(execution.id(), "join", Map.of());
+        assertEquals(WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS, completed.status());
+    }
+
+    @Test
     void restartCreatesNewExecution() {
         WorkflowDefinition definition = new WorkflowDefinition(
                 "restart", "restart", WorkflowFailureStrategy.FAIL_FAST,

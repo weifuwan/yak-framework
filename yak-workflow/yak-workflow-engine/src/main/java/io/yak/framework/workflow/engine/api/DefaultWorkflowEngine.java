@@ -165,6 +165,47 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     }
 
     @Override
+    public WorkflowExecution continueAfterFailure(String executionId, String nodeId) {
+        return executionLock.execute(executionId, () -> {
+            WorkflowExecution execution = requireExecution(executionId);
+            WorkflowDefinition definition = requireDefinition(execution.definitionId());
+            WorkflowGraph graph = graphBuilder.build(definition);
+            NodeExecution failedNode = execution.node(nodeId);
+            if (failedNode.status() != NodeExecutionStatus.FAILED) {
+                throw new IllegalStateException(
+                        "Only a failed node can continue downstream: " + nodeId);
+            }
+            if (failedNode.downstreamContinuationAllowed()) {
+                return execution.copy();
+            }
+
+            if (execution.status() == WorkflowExecutionStatus.SUCCESS) {
+                throw new IllegalStateException(
+                        "A successful workflow has no failed node to continue");
+            }
+            if (execution.status().isTerminal()) {
+                execution.transitionTo(WorkflowExecutionStatus.RUNNING, now());
+            }
+            execution.resumeScheduling();
+            failedNode.allowDownstreamContinuation();
+
+            for (String descendantId : graph.descendants(nodeId)) {
+                NodeExecution descendant = execution.node(descendantId);
+                if (descendant.status() == NodeExecutionStatus.UPSTREAM_FAILED) {
+                    descendant.resetSyntheticState();
+                }
+            }
+
+            List<NodeExecution> ready = scheduler.advance(
+                    definition, graph, execution, graph.successors(nodeId));
+            dispatchReady(definition, execution, ready);
+            finishIfPossible(execution);
+            save(execution);
+            return execution.copy();
+        });
+    }
+
+    @Override
     public WorkflowExecution cancel(String executionId, String reason) {
         return executionLock.execute(executionId, () -> {
             WorkflowExecution execution = requireExecution(executionId);
