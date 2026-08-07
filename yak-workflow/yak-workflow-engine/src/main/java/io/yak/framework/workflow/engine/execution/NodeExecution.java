@@ -22,6 +22,7 @@ public final class NodeExecution {
     private Map<String, Object> output;
     private String errorMessage;
     private boolean failureHandled;
+    private boolean downstreamContinuationAllowed;
 
     public NodeExecution(
             String id,
@@ -47,6 +48,7 @@ public final class NodeExecution {
         this.output = Collections.unmodifiableMap(new LinkedHashMap<>(source.output));
         this.errorMessage = source.errorMessage;
         this.failureHandled = source.failureHandled;
+        this.downstreamContinuationAllowed = source.downstreamContinuationAllowed;
     }
 
     public String id() {
@@ -85,17 +87,23 @@ public final class NodeExecution {
         return failureHandled;
     }
 
+    public boolean downstreamContinuationAllowed() {
+        return downstreamContinuationAllowed;
+    }
+
     public boolean isEffectiveSuccess() {
         return status == NodeExecutionStatus.SUCCESS
                 || (status == NodeExecutionStatus.FAILED
-                        && failurePolicy == NodeFailurePolicy.IGNORE_FAILURE);
+                        && (failurePolicy == NodeFailurePolicy.IGNORE_FAILURE
+                                || downstreamContinuationAllowed));
     }
 
     public boolean isFailureLike() {
         return status == NodeExecutionStatus.UPSTREAM_FAILED
                 || status == NodeExecutionStatus.CANCELED
                 || (status == NodeExecutionStatus.FAILED
-                        && failurePolicy != NodeFailurePolicy.IGNORE_FAILURE);
+                        && failurePolicy != NodeFailurePolicy.IGNORE_FAILURE
+                        && !downstreamContinuationAllowed);
     }
 
     public void transitionTo(NodeExecutionStatus target) {
@@ -112,6 +120,7 @@ public final class NodeExecution {
         transitionTo(NodeExecutionStatus.SUBMITTED);
         errorMessage = null;
         failureHandled = false;
+        downstreamContinuationAllowed = false;
         return attempt;
     }
 
@@ -131,6 +140,7 @@ public final class NodeExecution {
     public void markFailure(String errorMessage, Instant now) {
         currentAttempt().markFailure(errorMessage, now);
         this.errorMessage = errorMessage;
+        this.downstreamContinuationAllowed = false;
         transitionTo(NodeExecutionStatus.FAILED);
     }
 
@@ -145,10 +155,19 @@ public final class NodeExecution {
         this.failureHandled = true;
     }
 
+    public void allowDownstreamContinuation() {
+        if (status != NodeExecutionStatus.FAILED) {
+            throw new IllegalStateException("Only a failed node can continue downstream");
+        }
+        this.failureHandled = true;
+        this.downstreamContinuationAllowed = true;
+    }
+
     public void resetForManualRetry() {
         transitionTo(NodeExecutionStatus.WAITING);
         errorMessage = null;
         failureHandled = false;
+        downstreamContinuationAllowed = false;
     }
 
     public void resetSyntheticState() {
@@ -160,6 +179,7 @@ public final class NodeExecution {
         transitionTo(NodeExecutionStatus.WAITING);
         errorMessage = null;
         failureHandled = false;
+        downstreamContinuationAllowed = false;
     }
 
     public void markCopiedSuccess(Map<String, Object> copiedOutput) {
