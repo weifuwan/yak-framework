@@ -18,6 +18,8 @@ public interface WorkflowEngine {
 
     WorkflowExecution failNode(String executionId, String nodeId, String errorMessage);
 
+    WorkflowExecution continueAfterFailure(String executionId, String nodeId);
+
     WorkflowExecution cancel(String executionId, String reason);
 
     WorkflowExecution retryFailedNodes(String executionId);
