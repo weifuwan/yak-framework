@@ -29,17 +29,10 @@ public record NodeExecutionContext(
         attemptId = Objects.requireNonNull(attemptId, "attemptId");
         availableAt = Objects.requireNonNull(availableAt, "availableAt");
         executionTimeout = Objects.requireNonNullElse(executionTimeout, Duration.ZERO);
-        workflowInput = immutableMap(workflowInput);
+        workflowInput = ExecutionValueSnapshot.immutableMap(workflowInput);
         predecessorOutputs = immutableNestedMap(predecessorOutputs);
-        nodeInput = immutableMap(nodeInput);
-        nodeConfiguration = immutableMap(nodeConfiguration);
-    }
-
-    private static Map<String, Object> immutableMap(Map<String, Object> source) {
-        if (source == null || source.isEmpty()) {
-            return Map.of();
-        }
-        return Collections.unmodifiableMap(new LinkedHashMap<>(source));
+        nodeInput = ExecutionValueSnapshot.immutableMap(nodeInput);
+        nodeConfiguration = ExecutionValueSnapshot.immutableMap(nodeConfiguration);
     }
 
     private static Map<String, Map<String, Object>> immutableNestedMap(
@@ -48,7 +41,8 @@ public record NodeExecutionContext(
             return Map.of();
         }
         Map<String, Map<String, Object>> copy = new LinkedHashMap<>();
-        source.forEach((nodeId, output) -> copy.put(nodeId, immutableMap(output)));
+        source.forEach((nodeId, output) ->
+                copy.put(nodeId, ExecutionValueSnapshot.immutableMap(output)));
         return Collections.unmodifiableMap(copy);
     }
 }
