@@ -13,8 +13,9 @@ public final class WorkflowCompletionResolver {
         if (execution.nodes().values().stream().anyMatch(node -> !node.status().isTerminal())) {
             return Optional.empty();
         }
-        if (execution.status() == WorkflowExecutionStatus.CANCELED) {
-            return Optional.of(WorkflowExecutionStatus.CANCELED);
+        if (execution.status() == WorkflowExecutionStatus.CANCELED
+                || execution.status() == WorkflowExecutionStatus.TIMED_OUT) {
+            return Optional.of(execution.status());
         }
         boolean fatalFailure = execution.nodes().values().stream()
                 .anyMatch(this::isFatalFailure);
