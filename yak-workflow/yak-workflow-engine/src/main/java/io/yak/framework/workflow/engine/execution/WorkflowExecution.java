@@ -18,6 +18,7 @@ public final class WorkflowExecution {
     private final Instant createdAt;
     private WorkflowExecutionStatus status;
     private boolean schedulingStopped;
+    private Instant runStartedAt;
     private Instant updatedAt;
     private Instant endedAt;
 
@@ -50,6 +51,7 @@ public final class WorkflowExecution {
         this.createdAt = source.createdAt;
         this.status = source.status;
         this.schedulingStopped = source.schedulingStopped;
+        this.runStartedAt = source.runStartedAt;
         this.updatedAt = source.updatedAt;
         this.endedAt = source.endedAt;
     }
@@ -94,6 +96,11 @@ public final class WorkflowExecution {
         return createdAt;
     }
 
+    /** Start of the current active RUNNING segment, used as the workflow timeout anchor. */
+    public Instant runStartedAt() {
+        return runStartedAt;
+    }
+
     public Instant updatedAt() {
         return updatedAt;
     }
@@ -103,9 +110,14 @@ public final class WorkflowExecution {
     }
 
     public void transitionTo(WorkflowExecutionStatus target, Instant now) {
-        WorkflowStateMachine.requireTransition(status, target);
+        WorkflowExecutionStatus previous = status;
+        WorkflowStateMachine.requireTransition(previous, target);
         status = target;
         updatedAt = now;
+        if (target == WorkflowExecutionStatus.RUNNING
+                && previous != WorkflowExecutionStatus.RUNNING) {
+            runStartedAt = now;
+        }
         if (target.isTerminal()) {
             endedAt = now;
         } else {
