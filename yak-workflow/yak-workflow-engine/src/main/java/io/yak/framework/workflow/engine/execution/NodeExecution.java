@@ -5,6 +5,7 @@ import io.yak.framework.workflow.engine.state.NodeAttemptFailureReason;
 import io.yak.framework.workflow.engine.state.NodeAttemptStatus;
 import io.yak.framework.workflow.engine.state.NodeExecutionStatus;
 import io.yak.framework.workflow.engine.state.NodeStateMachine;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,6 +109,14 @@ public final class NodeExecution {
         return currentAttempt().startedAt();
     }
 
+    public Instant currentAttemptDispatchDeadline(Duration dispatchTimeout) {
+        return currentAttempt().dispatchDeadline(dispatchTimeout);
+    }
+
+    public Instant currentAttemptExecutionDeadline(Duration executionTimeout) {
+        return currentAttempt().executionDeadline(executionTimeout);
+    }
+
     public boolean isCurrentAttempt(String attemptId) {
         return !attempts.isEmpty() && Objects.equals(currentAttempt().id(), attemptId);
     }
@@ -150,6 +159,28 @@ public final class NodeExecution {
         transitionTo(NodeExecutionStatus.RUNNING);
     }
 
+    public void markPausing() {
+        currentAttempt().markPausing();
+        transitionTo(NodeExecutionStatus.PAUSING);
+    }
+
+    public void markPaused(Instant now) {
+        currentAttempt().markPaused(now);
+        transitionTo(NodeExecutionStatus.PAUSED);
+    }
+
+    public void markResuming() {
+        currentAttempt().markResuming();
+        transitionTo(NodeExecutionStatus.RESUMING);
+    }
+
+    public void markResumed(Instant now) {
+        NodeAttemptStatus resumedStatus = currentAttempt().markResumed(now);
+        transitionTo(resumedStatus == NodeAttemptStatus.SUBMITTED
+                ? NodeExecutionStatus.SUBMITTED
+                : NodeExecutionStatus.RUNNING);
+    }
+
     public void markSuccess(Map<String, Object> output, Instant now) {
         currentAttempt().markSuccess(now);
         this.output = ExecutionValueSnapshot.immutableMap(output);
@@ -171,7 +202,11 @@ public final class NodeExecution {
     }
 
     public void markCanceled(Instant now) {
-        if (status == NodeExecutionStatus.SUBMITTED || status == NodeExecutionStatus.RUNNING) {
+        if (status == NodeExecutionStatus.SUBMITTED
+                || status == NodeExecutionStatus.RUNNING
+                || status == NodeExecutionStatus.PAUSING
+                || status == NodeExecutionStatus.PAUSED
+                || status == NodeExecutionStatus.RESUMING) {
             currentAttempt().markCanceled(now);
         }
         transitionTo(NodeExecutionStatus.CANCELED);
