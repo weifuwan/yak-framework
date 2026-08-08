@@ -2,6 +2,7 @@ package io.yak.framework.workflow.engine.execution;
 
 import io.yak.framework.workflow.engine.state.WorkflowExecutionStatus;
 import io.yak.framework.workflow.engine.state.WorkflowStateMachine;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -19,6 +20,8 @@ public final class WorkflowExecution {
     private WorkflowExecutionStatus status;
     private boolean schedulingStopped;
     private Instant runStartedAt;
+    private Instant pausedAt;
+    private Duration pausedDuration = Duration.ZERO;
     private Instant updatedAt;
     private Instant endedAt;
 
@@ -50,6 +53,8 @@ public final class WorkflowExecution {
         this.status = source.status;
         this.schedulingStopped = source.schedulingStopped;
         this.runStartedAt = source.runStartedAt;
+        this.pausedAt = source.pausedAt;
+        this.pausedDuration = source.pausedDuration;
         this.updatedAt = source.updatedAt;
         this.endedAt = source.endedAt;
     }
@@ -94,9 +99,24 @@ public final class WorkflowExecution {
         return createdAt;
     }
 
-    /** Start of the current active RUNNING segment, used as the workflow timeout anchor. */
+    /** Start of the current active run segment, used as the workflow timeout anchor. */
     public Instant runStartedAt() {
         return runStartedAt;
+    }
+
+    public Instant pausedAt() {
+        return pausedAt;
+    }
+
+    public Duration pausedDuration() {
+        return pausedDuration;
+    }
+
+    public Instant workflowDeadline(Duration timeout) {
+        if (runStartedAt == null || timeout == null || timeout.isZero()) {
+            return null;
+        }
+        return runStartedAt.plus(timeout).plus(pausedDuration);
     }
 
     public Instant updatedAt() {
@@ -112,9 +132,19 @@ public final class WorkflowExecution {
         WorkflowStateMachine.requireTransition(previous, target);
         status = target;
         updatedAt = now;
+
         if (target == WorkflowExecutionStatus.RUNNING
                 && previous != WorkflowExecutionStatus.RUNNING) {
-            runStartedAt = now;
+            if (previous == WorkflowExecutionStatus.RESUMING) {
+                closePausedInterval(now);
+            } else {
+                runStartedAt = now;
+                pausedAt = null;
+                pausedDuration = Duration.ZERO;
+            }
+        }
+        if (target == WorkflowExecutionStatus.PAUSED && pausedAt == null) {
+            pausedAt = now;
         }
         if (target.isTerminal()) {
             endedAt = now;
@@ -137,5 +167,12 @@ public final class WorkflowExecution {
 
     public WorkflowExecution copy() {
         return new WorkflowExecution(this);
+    }
+
+    private void closePausedInterval(Instant now) {
+        if (pausedAt != null) {
+            pausedDuration = pausedDuration.plus(Duration.between(pausedAt, now));
+            pausedAt = null;
+        }
     }
 }
