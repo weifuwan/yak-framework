@@ -8,7 +8,6 @@ import io.yak.framework.workflow.engine.state.NodeStateMachine;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,7 +46,7 @@ public final class NodeExecution {
         this.failurePolicy = source.failurePolicy;
         this.status = source.status;
         this.attempts = new ArrayList<>(source.attempts.stream().map(NodeAttempt::copy).toList());
-        this.output = Collections.unmodifiableMap(new LinkedHashMap<>(source.output));
+        this.output = source.output;
         this.errorMessage = source.errorMessage;
         this.failureHandled = source.failureHandled;
         this.downstreamContinuationAllowed = source.downstreamContinuationAllowed;
@@ -153,9 +152,7 @@ public final class NodeExecution {
 
     public void markSuccess(Map<String, Object> output, Instant now) {
         currentAttempt().markSuccess(now);
-        this.output = output == null
-                ? Map.of()
-                : Collections.unmodifiableMap(new LinkedHashMap<>(output));
+        this.output = ExecutionValueSnapshot.immutableMap(output);
         transitionTo(NodeExecutionStatus.SUCCESS);
     }
 
@@ -212,9 +209,7 @@ public final class NodeExecution {
     }
 
     public void markCopiedSuccess(Map<String, Object> copiedOutput) {
-        this.output = copiedOutput == null
-                ? Map.of()
-                : Collections.unmodifiableMap(new LinkedHashMap<>(copiedOutput));
+        this.output = ExecutionValueSnapshot.immutableMap(copiedOutput);
         transitionTo(NodeExecutionStatus.SUCCESS);
     }
 
