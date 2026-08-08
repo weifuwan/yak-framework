@@ -1,5 +1,6 @@
 package io.yak.framework.workflow.engine.api;
 
+import io.yak.framework.workflow.engine.command.WorkflowCommand;
 import io.yak.framework.workflow.engine.definition.NodeDefinition;
 import io.yak.framework.workflow.engine.definition.NodeTimeoutPolicy;
 import io.yak.framework.workflow.engine.definition.WorkflowDefinition;
@@ -23,6 +24,7 @@ import io.yak.framework.workflow.engine.scheduler.DefaultWorkflowScheduler;
 import io.yak.framework.workflow.engine.scheduler.WorkflowCompletionResolver;
 import io.yak.framework.workflow.engine.scheduler.WorkflowScheduler;
 import io.yak.framework.workflow.engine.spi.ExecutionLock;
+import io.yak.framework.workflow.engine.spi.ExecutionMailbox;
 import io.yak.framework.workflow.engine.spi.ExecutionRepository;
 import io.yak.framework.workflow.engine.spi.IdGenerator;
 import io.yak.framework.workflow.engine.spi.NodeCancellation;
@@ -39,6 +41,7 @@ import io.yak.framework.workflow.engine.state.WorkflowExecutionStatus;
 import io.yak.framework.workflow.engine.support.InMemoryExecutionRepository;
 import io.yak.framework.workflow.engine.support.InMemoryWorkflowDefinitionRepository;
 import io.yak.framework.workflow.engine.support.LocalExecutionLock;
+import io.yak.framework.workflow.engine.support.LocalExecutionMailbox;
 import io.yak.framework.workflow.engine.support.UuidIdGenerator;
 import java.time.Clock;
 import java.time.Instant;
@@ -48,6 +51,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -56,7 +60,7 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     private final WorkflowDefinitionRepository definitionRepository;
     private final ExecutionRepository executionRepository;
     private final NodeExecutor nodeExecutor;
-    private final ExecutionLock executionLock;
+    private final ExecutionMailbox executionMailbox;
     private final IdGenerator idGenerator;
     private final Clock clock;
     private final WorkflowEventListener eventListener;
@@ -68,6 +72,7 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     private final FailurePropagationPolicy failurePropagationPolicy;
     private final NodeInputResolver nodeInputResolver;
 
+    /** Backward-compatible constructor that adapts the existing execution lock into a local mailbox. */
     public DefaultWorkflowEngine(
             WorkflowDefinitionRepository definitionRepository,
             ExecutionRepository executionRepository,
@@ -76,13 +81,32 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
             IdGenerator idGenerator,
             Clock clock,
             WorkflowEventListener eventListener) {
-        this.definitionRepository = definitionRepository;
-        this.executionRepository = executionRepository;
-        this.nodeExecutor = nodeExecutor;
-        this.executionLock = executionLock;
-        this.idGenerator = idGenerator;
-        this.clock = clock;
-        this.eventListener = eventListener;
+        this(
+                definitionRepository,
+                executionRepository,
+                nodeExecutor,
+                new LocalExecutionMailbox(executionLock),
+                idGenerator,
+                clock,
+                eventListener);
+    }
+
+    /** Constructor for hosts that want to provide a custom command mailbox implementation. */
+    public DefaultWorkflowEngine(
+            WorkflowDefinitionRepository definitionRepository,
+            ExecutionRepository executionRepository,
+            NodeExecutor nodeExecutor,
+            ExecutionMailbox executionMailbox,
+            IdGenerator idGenerator,
+            Clock clock,
+            WorkflowEventListener eventListener) {
+        this.definitionRepository = Objects.requireNonNull(definitionRepository, "definitionRepository");
+        this.executionRepository = Objects.requireNonNull(executionRepository, "executionRepository");
+        this.nodeExecutor = Objects.requireNonNull(nodeExecutor, "nodeExecutor");
+        this.executionMailbox = Objects.requireNonNull(executionMailbox, "executionMailbox");
+        this.idGenerator = Objects.requireNonNull(idGenerator, "idGenerator");
+        this.clock = Objects.requireNonNull(clock, "clock");
+        this.eventListener = Objects.requireNonNull(eventListener, "eventListener");
         this.validator = new WorkflowDefinitionValidator();
         this.graphBuilder = new WorkflowGraphBuilder();
         this.scheduler = new DefaultWorkflowScheduler(
@@ -130,254 +154,269 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     }
 
     @Override
-    public WorkflowExecution acknowledgeNodeStarted(
-            String executionId, String nodeId, String attemptId) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            NodeExecution node = execution.node(nodeId);
-            if (!shouldApplyStartCallback(node, attemptId)) {
-                return execution.copy();
-            }
-            ensureCallbackLifecycle(execution);
-            node.markRunning(now());
-            execution.touch(now());
-            save(execution);
-            publish(WorkflowEvent.Type.NODE_STARTED, executionId, nodeId, attemptId, null);
-            return execution.copy();
-        });
+    public WorkflowExecution submit(WorkflowCommand command) {
+        Objects.requireNonNull(command, "command");
+        return executionMailbox.submit(command, this::handleCommand);
     }
 
     @Override
-    public WorkflowExecution pause(String executionId, String reason) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            if (execution.status() == WorkflowExecutionStatus.PAUSING
-                    || execution.status() == WorkflowExecutionStatus.PAUSED) {
-                return execution.copy();
-            }
-            if (execution.status() != WorkflowExecutionStatus.RUNNING) {
-                throw new IllegalStateException(
-                        "Only a running workflow can pause: " + execution.status());
-            }
+    public Optional<WorkflowExecution> findExecution(String executionId) {
+        return executionRepository.findById(executionId);
+    }
 
-            String pauseReason = reason == null || reason.isBlank() ? "Workflow pause requested" : reason;
-            execution.transitionTo(WorkflowExecutionStatus.PAUSING, now());
-            publish(
-                    WorkflowEvent.Type.WORKFLOW_PAUSE_REQUESTED,
+    private WorkflowExecution handleCommand(WorkflowCommand command) {
+        return switch (command) {
+            case WorkflowCommand.NodeStarted value -> handleNodeStarted(value);
+            case WorkflowCommand.NodeSucceeded value -> handleNodeSucceeded(value);
+            case WorkflowCommand.NodeFailed value -> handleNodeFailed(value);
+            case WorkflowCommand.NodePaused value -> handleNodePaused(value);
+            case WorkflowCommand.NodeResumed value -> handleNodeResumed(value);
+            case WorkflowCommand.CheckTimeouts value -> handleCheckTimeouts(value);
+            case WorkflowCommand.PauseWorkflow value -> handlePauseWorkflow(value);
+            case WorkflowCommand.ResumeWorkflow value -> handleResumeWorkflow(value);
+            case WorkflowCommand.CancelWorkflow value -> handleCancelWorkflow(value);
+            case WorkflowCommand.ContinueAfterFailure value -> handleContinueAfterFailure(value);
+            case WorkflowCommand.RetryFailedNode value -> handleRetryFailedNode(value);
+            case WorkflowCommand.RetryFailedNodes value -> handleRetryFailedNodes(value);
+            case WorkflowCommand.RestartWorkflow value -> handleRestartWorkflow(value);
+            case WorkflowCommand.RerunFromNode value -> handleRerunFromNode(value);
+        };
+    }
+
+    private WorkflowExecution handleNodeStarted(WorkflowCommand.NodeStarted command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        NodeExecution node = execution.node(command.nodeId());
+        if (!shouldApplyStartCallback(node, command.attemptId())) {
+            return execution.copy();
+        }
+        ensureCallbackLifecycle(execution);
+        node.markRunning(now());
+        execution.touch(now());
+        save(execution);
+        publish(
+                WorkflowEvent.Type.NODE_STARTED,
+                command.executionId(),
+                command.nodeId(),
+                command.attemptId(),
+                null);
+        return execution.copy();
+    }
+
+    private WorkflowExecution handlePauseWorkflow(WorkflowCommand.PauseWorkflow command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        if (execution.status() == WorkflowExecutionStatus.PAUSING
+                || execution.status() == WorkflowExecutionStatus.PAUSED) {
+            return execution.copy();
+        }
+        if (execution.status() != WorkflowExecutionStatus.RUNNING) {
+            throw new IllegalStateException(
+                    "Only a running workflow can pause: " + execution.status());
+        }
+
+        String pauseReason = command.reason() == null || command.reason().isBlank()
+                ? "Workflow pause requested"
+                : command.reason();
+        execution.transitionTo(WorkflowExecutionStatus.PAUSING, now());
+        publish(
+                WorkflowEvent.Type.WORKFLOW_PAUSE_REQUESTED,
+                execution.id(),
+                null,
+                null,
+                pauseReason);
+
+        for (NodeExecution node : execution.nodes().values()) {
+            if (node.status() != NodeExecutionStatus.SUBMITTED
+                    && node.status() != NodeExecutionStatus.RUNNING) {
+                continue;
+            }
+            NodePauseRequest request = new NodePauseRequest(
                     execution.id(),
-                    null,
-                    null,
+                    node.id(),
+                    node.nodeId(),
+                    node.currentAttemptId(),
                     pauseReason);
-
-            for (NodeExecution node : execution.nodes().values()) {
-                if (node.status() != NodeExecutionStatus.SUBMITTED
-                        && node.status() != NodeExecutionStatus.RUNNING) {
-                    continue;
-                }
-                NodePauseRequest request = new NodePauseRequest(
+            if (nodeExecutor.pause(request) == NodeControlResult.ACCEPTED) {
+                node.markPausing();
+                publish(
+                        WorkflowEvent.Type.NODE_PAUSE_REQUESTED,
                         execution.id(),
-                        node.id(),
                         node.nodeId(),
                         node.currentAttemptId(),
                         pauseReason);
-                if (nodeExecutor.pause(request) == NodeControlResult.ACCEPTED) {
-                    node.markPausing();
-                    publish(
-                            WorkflowEvent.Type.NODE_PAUSE_REQUESTED,
-                            execution.id(),
-                            node.nodeId(),
-                            node.currentAttemptId(),
-                            pauseReason);
-                }
             }
+        }
 
-            settlePauseIfPossible(execution);
-            save(execution);
-            return execution.copy();
-        });
+        settlePauseIfPossible(execution);
+        save(execution);
+        return execution.copy();
     }
 
-    @Override
-    public WorkflowExecution acknowledgeNodePaused(
-            String executionId, String nodeId, String attemptId) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            NodeExecution node = execution.node(nodeId);
-            if (execution.status() != WorkflowExecutionStatus.PAUSING
-                    || !node.isCurrentAttempt(attemptId)
-                    || node.currentAttemptStatus() != NodeAttemptStatus.PAUSING) {
-                return execution.copy();
-            }
-
-            node.markPaused(now());
-            execution.touch(now());
-            publish(WorkflowEvent.Type.NODE_PAUSED, executionId, nodeId, attemptId, null);
-            settlePauseIfPossible(execution);
-            save(execution);
+    private WorkflowExecution handleNodePaused(WorkflowCommand.NodePaused command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        NodeExecution node = execution.node(command.nodeId());
+        if (execution.status() != WorkflowExecutionStatus.PAUSING
+                || !node.isCurrentAttempt(command.attemptId())
+                || node.currentAttemptStatus() != NodeAttemptStatus.PAUSING) {
             return execution.copy();
-        });
+        }
+
+        node.markPaused(now());
+        execution.touch(now());
+        publish(
+                WorkflowEvent.Type.NODE_PAUSED,
+                command.executionId(),
+                command.nodeId(),
+                command.attemptId(),
+                null);
+        settlePauseIfPossible(execution);
+        save(execution);
+        return execution.copy();
     }
 
-    @Override
-    public WorkflowExecution resume(String executionId) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            if (execution.status() == WorkflowExecutionStatus.RUNNING
-                    || execution.status() == WorkflowExecutionStatus.RESUMING) {
-                return execution.copy();
-            }
-            if (execution.status() == WorkflowExecutionStatus.PAUSING) {
-                throw new IllegalStateException(
-                        "Workflow is still pausing; wait until PAUSED before resume");
-            }
-            if (execution.status() != WorkflowExecutionStatus.PAUSED) {
-                throw new IllegalStateException(
-                        "Only a paused workflow can resume: " + execution.status());
-            }
+    private WorkflowExecution handleResumeWorkflow(WorkflowCommand.ResumeWorkflow command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        if (execution.status() == WorkflowExecutionStatus.RUNNING
+                || execution.status() == WorkflowExecutionStatus.RESUMING) {
+            return execution.copy();
+        }
+        if (execution.status() == WorkflowExecutionStatus.PAUSING) {
+            throw new IllegalStateException(
+                    "Workflow is still pausing; wait until PAUSED before resume");
+        }
+        if (execution.status() != WorkflowExecutionStatus.PAUSED) {
+            throw new IllegalStateException(
+                    "Only a paused workflow can resume: " + execution.status());
+        }
 
-            execution.transitionTo(WorkflowExecutionStatus.RESUMING, now());
-            publish(
-                    WorkflowEvent.Type.WORKFLOW_RESUME_REQUESTED,
+        execution.transitionTo(WorkflowExecutionStatus.RESUMING, now());
+        publish(
+                WorkflowEvent.Type.WORKFLOW_RESUME_REQUESTED,
+                execution.id(),
+                null,
+                null,
+                null);
+
+        for (NodeExecution node : execution.nodes().values()) {
+            if (node.status() != NodeExecutionStatus.PAUSED) {
+                continue;
+            }
+            node.markResuming();
+            nodeExecutor.resume(new NodeResumeRequest(
                     execution.id(),
-                    null,
-                    null,
+                    node.id(),
+                    node.nodeId(),
+                    node.currentAttemptId()));
+            publish(
+                    WorkflowEvent.Type.NODE_RESUME_REQUESTED,
+                    execution.id(),
+                    node.nodeId(),
+                    node.currentAttemptId(),
                     null);
+        }
 
-            for (NodeExecution node : execution.nodes().values()) {
-                if (node.status() != NodeExecutionStatus.PAUSED) {
-                    continue;
-                }
-                node.markResuming();
-                nodeExecutor.resume(new NodeResumeRequest(
-                        execution.id(),
-                        node.id(),
-                        node.nodeId(),
-                        node.currentAttemptId()));
-                publish(
-                        WorkflowEvent.Type.NODE_RESUME_REQUESTED,
-                        execution.id(),
-                        node.nodeId(),
-                        node.currentAttemptId(),
-                        null);
-            }
-
-            completeResumeIfPossible(execution);
-            save(execution);
-            return execution.copy();
-        });
+        completeResumeIfPossible(execution);
+        save(execution);
+        return execution.copy();
     }
 
-    @Override
-    public WorkflowExecution acknowledgeNodeResumed(
-            String executionId, String nodeId, String attemptId) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            NodeExecution node = execution.node(nodeId);
-            if (execution.status() != WorkflowExecutionStatus.RESUMING
-                    || !node.isCurrentAttempt(attemptId)
-                    || node.currentAttemptStatus() != NodeAttemptStatus.RESUMING) {
-                return execution.copy();
-            }
-
-            node.markResumed(now());
-            execution.touch(now());
-            publish(WorkflowEvent.Type.NODE_RESUMED, executionId, nodeId, attemptId, null);
-            completeResumeIfPossible(execution);
-            save(execution);
+    private WorkflowExecution handleNodeResumed(WorkflowCommand.NodeResumed command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        NodeExecution node = execution.node(command.nodeId());
+        if (execution.status() != WorkflowExecutionStatus.RESUMING
+                || !node.isCurrentAttempt(command.attemptId())
+                || node.currentAttemptStatus() != NodeAttemptStatus.RESUMING) {
             return execution.copy();
-        });
+        }
+
+        node.markResumed(now());
+        execution.touch(now());
+        publish(
+                WorkflowEvent.Type.NODE_RESUMED,
+                command.executionId(),
+                command.nodeId(),
+                command.attemptId(),
+                null);
+        completeResumeIfPossible(execution);
+        save(execution);
+        return execution.copy();
     }
 
-    @Override
-    public WorkflowExecution completeNode(
-            String executionId,
-            String nodeId,
-            String attemptId,
-            Map<String, Object> output) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            NodeExecution node = execution.node(nodeId);
-            if (!shouldApplyTerminalCallback(node, attemptId)) {
-                return execution.copy();
-            }
-            ensureCallbackLifecycle(execution);
-            WorkflowDefinition definition = requireDefinition(execution.definitionId());
-            WorkflowGraph graph = graphBuilder.build(definition);
-            node.markSuccess(output, now());
-            publish(WorkflowEvent.Type.NODE_SUCCEEDED, executionId, nodeId, attemptId, null);
-            if (execution.status() == WorkflowExecutionStatus.RUNNING) {
-                List<NodeExecution> ready = scheduler.advance(
-                        definition, graph, execution, graph.successors(nodeId));
-                dispatchReady(definition, execution, ready);
-            }
-            finishIfPossible(execution);
-            settleLifecycleIfPossible(execution);
-            save(execution);
+    private WorkflowExecution handleNodeSucceeded(WorkflowCommand.NodeSucceeded command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        NodeExecution node = execution.node(command.nodeId());
+        if (!shouldApplyTerminalCallback(node, command.attemptId())) {
             return execution.copy();
-        });
+        }
+        ensureCallbackLifecycle(execution);
+        WorkflowDefinition definition = requireDefinition(execution.definitionId());
+        WorkflowGraph graph = graphBuilder.build(definition);
+        node.markSuccess(command.output(), now());
+        publish(
+                WorkflowEvent.Type.NODE_SUCCEEDED,
+                command.executionId(),
+                command.nodeId(),
+                command.attemptId(),
+                null);
+        if (execution.status() == WorkflowExecutionStatus.RUNNING) {
+            List<NodeExecution> ready = scheduler.advance(
+                    definition, graph, execution, graph.successors(command.nodeId()));
+            dispatchReady(definition, execution, ready);
+        }
+        finishIfPossible(execution);
+        settleLifecycleIfPossible(execution);
+        save(execution);
+        return execution.copy();
     }
 
-    @Override
-    public WorkflowExecution failNode(
-            String executionId,
-            String nodeId,
-            String attemptId,
-            String errorMessage) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            NodeExecution node = execution.node(nodeId);
-            if (!shouldApplyTerminalCallback(node, attemptId)) {
-                return execution.copy();
-            }
-            ensureCallbackLifecycle(execution);
-            WorkflowDefinition definition = requireDefinition(execution.definitionId());
-            WorkflowGraph graph = graphBuilder.build(definition);
-            failCurrentAttempt(
-                    definition,
-                    graph,
-                    execution,
-                    node,
-                    NodeAttemptFailureReason.EXECUTOR_FAILURE,
-                    WorkflowEvent.Type.NODE_FAILED,
-                    errorMessage);
-            finishIfPossible(execution);
-            settleLifecycleIfPossible(execution);
-            save(execution);
+    private WorkflowExecution handleNodeFailed(WorkflowCommand.NodeFailed command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        NodeExecution node = execution.node(command.nodeId());
+        if (!shouldApplyTerminalCallback(node, command.attemptId())) {
             return execution.copy();
-        });
+        }
+        ensureCallbackLifecycle(execution);
+        WorkflowDefinition definition = requireDefinition(execution.definitionId());
+        WorkflowGraph graph = graphBuilder.build(definition);
+        failCurrentAttempt(
+                definition,
+                graph,
+                execution,
+                node,
+                NodeAttemptFailureReason.EXECUTOR_FAILURE,
+                WorkflowEvent.Type.NODE_FAILED,
+                command.errorMessage());
+        finishIfPossible(execution);
+        settleLifecycleIfPossible(execution);
+        save(execution);
+        return execution.copy();
     }
 
-    @Override
-    public WorkflowExecution checkTimeouts(String executionId) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            if (execution.status() != WorkflowExecutionStatus.RUNNING
-                    && execution.status() != WorkflowExecutionStatus.PAUSING) {
-                return execution.copy();
-            }
+    private WorkflowExecution handleCheckTimeouts(WorkflowCommand.CheckTimeouts command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        if (execution.status() != WorkflowExecutionStatus.RUNNING
+                && execution.status() != WorkflowExecutionStatus.PAUSING) {
+            return execution.copy();
+        }
 
-            WorkflowDefinition definition = requireDefinition(execution.definitionId());
-            Instant currentTime = now();
-            if (isWorkflowTimedOut(definition, execution, currentTime)) {
-                timeoutWorkflow(definition, execution, currentTime);
-                return execution.copy();
-            }
+        WorkflowDefinition definition = requireDefinition(execution.definitionId());
+        Instant currentTime = now();
+        if (isWorkflowTimedOut(definition, execution, currentTime)) {
+            timeoutWorkflow(definition, execution, currentTime);
+            return execution.copy();
+        }
 
-            WorkflowGraph graph = graphBuilder.build(definition);
-            for (NodeExecution node : new ArrayList<>(execution.nodes().values())) {
-                if (execution.status().isTerminal()) {
-                    break;
-                }
-                NodeDefinition nodeDefinition = definition.node(node.nodeId());
-                NodeTimeoutPolicy timeoutPolicy = nodeDefinition.timeoutPolicy();
+        WorkflowGraph graph = graphBuilder.build(definition);
+        for (NodeExecution node : new ArrayList<>(execution.nodes().values())) {
+            if (execution.status().isTerminal()) {
+                break;
+            }
+            NodeDefinition nodeDefinition = definition.node(node.nodeId());
+            NodeTimeoutPolicy timeoutPolicy = nodeDefinition.timeoutPolicy();
+            if (node.status() == NodeExecutionStatus.SUBMITTED
+                    && timeoutPolicy.hasDispatchTimeout()) {
                 Instant dispatchDeadline = node.currentAttemptDispatchDeadline(
                         timeoutPolicy.dispatchTimeout());
-                Instant executionDeadline = node.currentAttemptExecutionDeadline(
-                        timeoutPolicy.executionTimeout());
-                if (node.status() == NodeExecutionStatus.SUBMITTED
-                        && timeoutPolicy.hasDispatchTimeout()
-                        && dispatchDeadline != null
-                        && hasReached(currentTime, dispatchDeadline)) {
+                if (dispatchDeadline != null && hasReached(currentTime, dispatchDeadline)) {
                     timeoutCurrentAttempt(
                             definition,
                             graph,
@@ -386,10 +425,12 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
                             NodeAttemptFailureReason.DISPATCH_TIMEOUT,
                             WorkflowEvent.Type.NODE_DISPATCH_TIMED_OUT,
                             "Node dispatch timed out after " + timeoutPolicy.dispatchTimeout());
-                } else if (node.status() == NodeExecutionStatus.RUNNING
-                        && timeoutPolicy.hasExecutionTimeout()
-                        && executionDeadline != null
-                        && hasReached(currentTime, executionDeadline)) {
+                }
+            } else if (node.status() == NodeExecutionStatus.RUNNING
+                    && timeoutPolicy.hasExecutionTimeout()) {
+                Instant executionDeadline = node.currentAttemptExecutionDeadline(
+                        timeoutPolicy.executionTimeout());
+                if (executionDeadline != null && hasReached(currentTime, executionDeadline)) {
                     timeoutCurrentAttempt(
                             definition,
                             graph,
@@ -400,179 +441,172 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
                             "Node execution timed out after " + timeoutPolicy.executionTimeout());
                 }
             }
+        }
 
-            finishIfPossible(execution);
-            settleLifecycleIfPossible(execution);
-            save(execution);
-            return execution.copy();
-        });
+        finishIfPossible(execution);
+        settleLifecycleIfPossible(execution);
+        save(execution);
+        return execution.copy();
     }
 
-    @Override
-    public WorkflowExecution continueAfterFailure(String executionId, String nodeId) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            ensureNotPauseLifecycle(execution);
-            WorkflowDefinition definition = requireDefinition(execution.definitionId());
-            WorkflowGraph graph = graphBuilder.build(definition);
-            NodeExecution failedNode = execution.node(nodeId);
-            if (failedNode.status() != NodeExecutionStatus.FAILED) {
-                throw new IllegalStateException(
-                        "Only a failed node can continue downstream: " + nodeId);
-            }
-            if (failedNode.downstreamContinuationAllowed()) {
-                return execution.copy();
-            }
-
-            if (execution.status() == WorkflowExecutionStatus.SUCCESS) {
-                throw new IllegalStateException(
-                        "A successful workflow has no failed node to continue");
-            }
-            if (execution.status().isTerminal()) {
-                execution.transitionTo(WorkflowExecutionStatus.RUNNING, now());
-            }
-            execution.resumeScheduling();
-            failedNode.allowDownstreamContinuation();
-
-            for (String descendantId : graph.descendants(nodeId)) {
-                NodeExecution descendant = execution.node(descendantId);
-                if (descendant.status() == NodeExecutionStatus.UPSTREAM_FAILED) {
-                    descendant.resetSyntheticState();
-                }
-            }
-
-            List<NodeExecution> ready = scheduler.advance(
-                    definition, graph, execution, graph.successors(nodeId));
-            dispatchReady(definition, execution, ready);
-            finishIfPossible(execution);
-            save(execution);
+    private WorkflowExecution handleContinueAfterFailure(
+            WorkflowCommand.ContinueAfterFailure command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        ensureNotPauseLifecycle(execution);
+        WorkflowDefinition definition = requireDefinition(execution.definitionId());
+        WorkflowGraph graph = graphBuilder.build(definition);
+        NodeExecution failedNode = execution.node(command.nodeId());
+        if (failedNode.status() != NodeExecutionStatus.FAILED) {
+            throw new IllegalStateException(
+                    "Only a failed node can continue downstream: " + command.nodeId());
+        }
+        if (failedNode.downstreamContinuationAllowed()) {
             return execution.copy();
-        });
-    }
+        }
 
-    @Override
-    public WorkflowExecution retryFailedNode(String executionId, String nodeId) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            ensureNotPauseLifecycle(execution);
-            WorkflowDefinition definition = requireDefinition(execution.definitionId());
-            WorkflowGraph graph = graphBuilder.build(definition);
-            NodeExecution failedNode = execution.node(nodeId);
-            if (failedNode.status() != NodeExecutionStatus.FAILED) {
-                throw new IllegalStateException(
-                        "Only a failed node can be retried: " + nodeId);
-            }
-            if (failedNode.downstreamContinuationAllowed()) {
-                throw new IllegalStateException(
-                        "Cannot retry a failed node after its downstream branch was continued: " + nodeId);
-            }
-            if (execution.status() == WorkflowExecutionStatus.SUCCESS) {
-                throw new IllegalStateException(
-                        "A successful workflow has no failed node to retry");
-            }
-            if (execution.status() == WorkflowExecutionStatus.CANCELED) {
-                throw new IllegalStateException(
-                        "A canceled workflow cannot retry a single failed node");
-            }
-            if (execution.status().isTerminal()) {
-                execution.transitionTo(WorkflowExecutionStatus.RUNNING, now());
-            }
-            execution.resumeScheduling();
-
-            failedNode.resetForManualRetry();
-            for (String descendantId : graph.descendants(nodeId)) {
-                NodeExecution descendant = execution.node(descendantId);
-                if (descendant.status() == NodeExecutionStatus.UPSTREAM_FAILED) {
-                    descendant.resetSyntheticState();
-                }
-            }
-
-            List<NodeExecution> ready = scheduler.advance(
-                    definition, graph, execution, List.of(nodeId));
-            dispatchReady(definition, execution, ready);
-            finishIfPossible(execution);
-            save(execution);
-            return execution.copy();
-        });
-    }
-
-    @Override
-    public WorkflowExecution cancel(String executionId, String reason) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            if (execution.status().isTerminal()) {
-                return execution.copy();
-            }
-            execution.stopScheduling();
-            cancelNonTerminalNodes(execution, reason);
-            execution.transitionTo(WorkflowExecutionStatus.CANCELED, now());
-            save(execution);
-            publish(WorkflowEvent.Type.WORKFLOW_CANCELED, executionId, null, null, reason);
-            return execution.copy();
-        });
-    }
-
-    @Override
-    public WorkflowExecution retryFailedNodes(String executionId) {
-        return executionLock.execute(executionId, () -> {
-            WorkflowExecution execution = requireExecution(executionId);
-            if (!execution.status().isTerminal()
-                    || execution.status() == WorkflowExecutionStatus.SUCCESS) {
-                throw new IllegalStateException(
-                        "Only a failed, canceled, warning, or timed out workflow can be retried");
-            }
-            WorkflowDefinition definition = requireDefinition(execution.definitionId());
-            WorkflowGraph graph = graphBuilder.build(definition);
-            Set<String> resetNodes = new LinkedHashSet<>();
-            for (NodeExecution node : execution.nodes().values()) {
-                if (node.status() == NodeExecutionStatus.FAILED) {
-                    node.resetForManualRetry();
-                    resetNodes.add(node.nodeId());
-                } else if (node.status() == NodeExecutionStatus.UPSTREAM_FAILED
-                        || node.status() == NodeExecutionStatus.SKIPPED
-                        || node.status() == NodeExecutionStatus.CANCELED) {
-                    node.resetSyntheticState();
-                    resetNodes.add(node.nodeId());
-                }
-            }
-            if (resetNodes.isEmpty()) {
-                throw new IllegalStateException("Workflow has no retryable nodes");
-            }
-            execution.resumeScheduling();
+        if (execution.status() == WorkflowExecutionStatus.SUCCESS) {
+            throw new IllegalStateException(
+                    "A successful workflow has no failed node to continue");
+        }
+        if (execution.status().isTerminal()) {
             execution.transitionTo(WorkflowExecutionStatus.RUNNING, now());
-            List<NodeExecution> ready = scheduler.advance(
-                    definition, graph, execution, resetNodes);
-            dispatchReady(definition, execution, ready);
-            finishIfPossible(execution);
-            save(execution);
+        }
+        execution.resumeScheduling();
+        failedNode.allowDownstreamContinuation();
+
+        for (String descendantId : graph.descendants(command.nodeId())) {
+            NodeExecution descendant = execution.node(descendantId);
+            if (descendant.status() == NodeExecutionStatus.UPSTREAM_FAILED) {
+                descendant.resetSyntheticState();
+            }
+        }
+
+        List<NodeExecution> ready = scheduler.advance(
+                definition, graph, execution, graph.successors(command.nodeId()));
+        dispatchReady(definition, execution, ready);
+        finishIfPossible(execution);
+        save(execution);
+        return execution.copy();
+    }
+
+    private WorkflowExecution handleRetryFailedNode(WorkflowCommand.RetryFailedNode command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        ensureNotPauseLifecycle(execution);
+        WorkflowDefinition definition = requireDefinition(execution.definitionId());
+        WorkflowGraph graph = graphBuilder.build(definition);
+        NodeExecution failedNode = execution.node(command.nodeId());
+        if (failedNode.status() != NodeExecutionStatus.FAILED) {
+            throw new IllegalStateException(
+                    "Only a failed node can be retried: " + command.nodeId());
+        }
+        if (failedNode.downstreamContinuationAllowed()) {
+            throw new IllegalStateException(
+                    "Cannot retry a failed node after its downstream branch was continued: "
+                            + command.nodeId());
+        }
+        if (execution.status() == WorkflowExecutionStatus.SUCCESS) {
+            throw new IllegalStateException(
+                    "A successful workflow has no failed node to retry");
+        }
+        if (execution.status() == WorkflowExecutionStatus.CANCELED) {
+            throw new IllegalStateException(
+                    "A canceled workflow cannot retry a single failed node");
+        }
+        if (execution.status().isTerminal()) {
+            execution.transitionTo(WorkflowExecutionStatus.RUNNING, now());
+        }
+        execution.resumeScheduling();
+
+        failedNode.resetForManualRetry();
+        for (String descendantId : graph.descendants(command.nodeId())) {
+            NodeExecution descendant = execution.node(descendantId);
+            if (descendant.status() == NodeExecutionStatus.UPSTREAM_FAILED) {
+                descendant.resetSyntheticState();
+            }
+        }
+
+        List<NodeExecution> ready = scheduler.advance(
+                definition, graph, execution, List.of(command.nodeId()));
+        dispatchReady(definition, execution, ready);
+        finishIfPossible(execution);
+        save(execution);
+        return execution.copy();
+    }
+
+    private WorkflowExecution handleCancelWorkflow(WorkflowCommand.CancelWorkflow command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        if (execution.status().isTerminal()) {
             return execution.copy();
-        });
+        }
+        execution.stopScheduling();
+        cancelNonTerminalNodes(execution, command.reason());
+        execution.transitionTo(WorkflowExecutionStatus.CANCELED, now());
+        save(execution);
+        publish(
+                WorkflowEvent.Type.WORKFLOW_CANCELED,
+                command.executionId(),
+                null,
+                null,
+                command.reason());
+        return execution.copy();
     }
 
-    @Override
-    public WorkflowExecution restart(String sourceExecutionId) {
-        WorkflowExecution source = requireExecution(sourceExecutionId);
+    private WorkflowExecution handleRetryFailedNodes(WorkflowCommand.RetryFailedNodes command) {
+        WorkflowExecution execution = requireExecution(command.executionId());
+        if (!execution.status().isTerminal()
+                || execution.status() == WorkflowExecutionStatus.SUCCESS) {
+            throw new IllegalStateException(
+                    "Only a failed, canceled, warning, or timed out workflow can be retried");
+        }
+        WorkflowDefinition definition = requireDefinition(execution.definitionId());
+        WorkflowGraph graph = graphBuilder.build(definition);
+        Set<String> resetNodes = new LinkedHashSet<>();
+        for (NodeExecution node : execution.nodes().values()) {
+            if (node.status() == NodeExecutionStatus.FAILED) {
+                node.resetForManualRetry();
+                resetNodes.add(node.nodeId());
+            } else if (node.status() == NodeExecutionStatus.UPSTREAM_FAILED
+                    || node.status() == NodeExecutionStatus.SKIPPED
+                    || node.status() == NodeExecutionStatus.CANCELED) {
+                node.resetSyntheticState();
+                resetNodes.add(node.nodeId());
+            }
+        }
+        if (resetNodes.isEmpty()) {
+            throw new IllegalStateException("Workflow has no retryable nodes");
+        }
+        execution.resumeScheduling();
+        execution.transitionTo(WorkflowExecutionStatus.RUNNING, now());
+        List<NodeExecution> ready = scheduler.advance(
+                definition, graph, execution, resetNodes);
+        dispatchReady(definition, execution, ready);
+        finishIfPossible(execution);
+        save(execution);
+        return execution.copy();
+    }
+
+    private WorkflowExecution handleRestartWorkflow(WorkflowCommand.RestartWorkflow command) {
+        WorkflowExecution source = requireExecution(command.executionId());
         WorkflowDefinition definition = requireDefinition(source.definitionId());
-        return createAndStartExecution(definition, source.input(), sourceExecutionId, null);
+        return createAndStartExecution(definition, source.input(), command.executionId(), null);
     }
 
-    @Override
-    public WorkflowExecution rerunFromNode(String sourceExecutionId, String nodeId) {
-        WorkflowExecution source = requireExecution(sourceExecutionId);
+    private WorkflowExecution handleRerunFromNode(WorkflowCommand.RerunFromNode command) {
+        WorkflowExecution source = requireExecution(command.executionId());
         WorkflowDefinition definition = requireDefinition(source.definitionId());
         WorkflowGraph graph = graphBuilder.build(definition);
-        if (!definition.nodes().containsKey(nodeId)) {
-            throw new IllegalArgumentException("Unknown node: " + nodeId);
+        if (!definition.nodes().containsKey(command.nodeId())) {
+            throw new IllegalArgumentException("Unknown node: " + command.nodeId());
         }
-        return createAndStartExecution(definition, source.input(), sourceExecutionId, rerun -> {
-            Set<String> ancestors = graph.ancestors(nodeId);
-            Set<String> descendants = new LinkedHashSet<>(graph.descendants(nodeId));
-            descendants.add(nodeId);
+        return createAndStartExecution(definition, source.input(), command.executionId(), rerun -> {
+            Set<String> ancestors = graph.ancestors(command.nodeId());
+            Set<String> descendants = new LinkedHashSet<>(graph.descendants(command.nodeId()));
+            descendants.add(command.nodeId());
             for (String ancestor : ancestors) {
                 NodeExecution previous = source.node(ancestor);
                 if (!previous.isEffectiveSuccess()) {
                     throw new IllegalStateException(
-                            "Cannot rerun from " + nodeId + ": ancestor " + ancestor
+                            "Cannot rerun from " + command.nodeId() + ": ancestor " + ancestor
                                     + " was not successful");
                 }
                 rerun.node(ancestor).markCopiedSuccess(previous.output());
@@ -582,13 +616,8 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
                     rerun.node(candidate).transitionTo(NodeExecutionStatus.SKIPPED);
                 }
             }
-            return Set.of(nodeId);
+            return Set.of(command.nodeId());
         });
-    }
-
-    @Override
-    public Optional<WorkflowExecution> findExecution(String executionId) {
-        return executionRepository.findById(executionId);
     }
 
     private WorkflowExecution createAndStartExecution(
