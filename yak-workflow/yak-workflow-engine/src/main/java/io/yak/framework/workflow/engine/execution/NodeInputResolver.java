@@ -1,19 +1,16 @@
 package io.yak.framework.workflow.engine.execution;
 
 import io.yak.framework.workflow.engine.definition.NodeInputMapping;
+import io.yak.framework.workflow.engine.definition.NodeInputReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /** Resolves a node's explicit input bindings against workflow input and direct predecessor output. */
 public final class NodeInputResolver {
-
-    private static final String WORKFLOW = "$workflow";
-    private static final String PREDECESSOR = "$predecessor.";
 
     public Map<String, Object> resolve(
             NodeInputMapping inputMapping,
@@ -33,57 +30,21 @@ public final class NodeInputResolver {
         return Collections.unmodifiableMap(resolved);
     }
 
-    public static boolean isValidReference(String reference, Set<String> directPredecessors) {
-        if (reference == null || reference.isBlank()) {
-            return false;
-        }
-        if (reference.equals(WORKFLOW) || reference.startsWith(WORKFLOW + ".")) {
-            return true;
-        }
-        if (reference.startsWith("$") && !reference.startsWith(PREDECESSOR)) {
-            return false;
-        }
-        String predecessorReference = reference.startsWith(PREDECESSOR)
-                ? reference.substring(PREDECESSOR.length())
-                : reference;
-        return matchPredecessor(predecessorReference, directPredecessors) != null;
-    }
-
     private Object resolveReference(
             String reference,
             Map<String, Object> workflowInput,
             Map<String, Map<String, Object>> predecessorOutputs) {
-        if (reference.equals(WORKFLOW)) {
-            return workflowInput;
-        }
-        if (reference.startsWith(WORKFLOW + ".")) {
-            return readPath(workflowInput, reference.substring(WORKFLOW.length() + 1));
+        if (NodeInputReference.isWorkflowReference(reference)) {
+            return readPath(workflowInput, NodeInputReference.workflowPath(reference));
         }
 
-        String predecessorReference = reference.startsWith(PREDECESSOR)
-                ? reference.substring(PREDECESSOR.length())
-                : reference;
-        String predecessorId = matchPredecessor(predecessorReference, predecessorOutputs.keySet());
+        String predecessorId = NodeInputReference.matchPredecessor(
+                reference, predecessorOutputs.keySet());
         if (predecessorId == null) {
             return null;
         }
         Map<String, Object> output = predecessorOutputs.get(predecessorId);
-        if (predecessorReference.equals(predecessorId)) {
-            return output;
-        }
-        return readPath(output, predecessorReference.substring(predecessorId.length() + 1));
-    }
-
-    private static String matchPredecessor(String reference, Set<String> predecessorIds) {
-        String bestMatch = null;
-        for (String predecessorId : predecessorIds) {
-            if (reference.equals(predecessorId) || reference.startsWith(predecessorId + ".")) {
-                if (bestMatch == null || predecessorId.length() > bestMatch.length()) {
-                    bestMatch = predecessorId;
-                }
-            }
-        }
-        return bestMatch;
+        return readPath(output, NodeInputReference.predecessorPath(reference, predecessorId));
     }
 
     private Object readPath(Object root, String path) {
