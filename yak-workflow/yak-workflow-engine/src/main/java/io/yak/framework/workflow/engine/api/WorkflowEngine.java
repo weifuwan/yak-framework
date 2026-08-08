@@ -11,12 +11,20 @@ public interface WorkflowEngine {
 
     WorkflowExecution start(String definitionId, Map<String, Object> input);
 
-    WorkflowExecution acknowledgeNodeStarted(String executionId, String nodeId);
+    WorkflowExecution acknowledgeNodeStarted(
+            String executionId, String nodeId, String attemptId);
 
     WorkflowExecution completeNode(
-            String executionId, String nodeId, Map<String, Object> output);
+            String executionId,
+            String nodeId,
+            String attemptId,
+            Map<String, Object> output);
 
-    WorkflowExecution failNode(String executionId, String nodeId, String errorMessage);
+    WorkflowExecution failNode(
+            String executionId,
+            String nodeId,
+            String attemptId,
+            String errorMessage);
 
     WorkflowExecution continueAfterFailure(String executionId, String nodeId);
 
