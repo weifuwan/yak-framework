@@ -6,7 +6,8 @@ public enum WorkflowExecutionStatus {
     SUCCESS(true),
     SUCCESS_WITH_WARNINGS(true),
     FAILED(true),
-    CANCELED(true);
+    CANCELED(true),
+    TIMED_OUT(true);
 
     private final boolean terminal;
 
