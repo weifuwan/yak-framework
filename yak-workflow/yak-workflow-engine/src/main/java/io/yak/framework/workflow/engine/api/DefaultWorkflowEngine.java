@@ -7,6 +7,7 @@ import io.yak.framework.workflow.engine.event.WorkflowEvent;
 import io.yak.framework.workflow.engine.event.WorkflowEventListener;
 import io.yak.framework.workflow.engine.execution.NodeAttempt;
 import io.yak.framework.workflow.engine.execution.NodeExecution;
+import io.yak.framework.workflow.engine.execution.NodeInputResolver;
 import io.yak.framework.workflow.engine.execution.WorkflowExecution;
 import io.yak.framework.workflow.engine.graph.WorkflowDefinitionValidator;
 import io.yak.framework.workflow.engine.graph.WorkflowGraph;
@@ -62,6 +63,7 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     private final WorkflowCompletionResolver completionResolver;
     private final RetryDecider retryDecider;
     private final FailurePropagationPolicy failurePropagationPolicy;
+    private final NodeInputResolver nodeInputResolver;
 
     public DefaultWorkflowEngine(
             WorkflowDefinitionRepository definitionRepository,
@@ -85,6 +87,7 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
         this.completionResolver = new WorkflowCompletionResolver();
         this.retryDecider = new DefaultRetryDecider();
         this.failurePropagationPolicy = new DefaultFailurePropagationPolicy();
+        this.nodeInputResolver = new NodeInputResolver();
     }
 
     public static DefaultWorkflowEngine inMemory(NodeExecutor nodeExecutor) {
@@ -570,12 +573,20 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
             WorkflowDefinition definition,
             WorkflowExecution execution,
             Collection<NodeExecution> readyNodes) {
+        WorkflowGraph graph = graphBuilder.build(definition);
         for (NodeExecution node : readyNodes) {
             NodeDefinition nodeDefinition = definition.node(node.nodeId());
             Instant availableAt = node.attempts().isEmpty()
                     ? now()
                     : now().plus(nodeDefinition.retryPolicy().delay());
             NodeAttempt attempt = node.beginAttempt(idGenerator.nextId(), availableAt);
+            Map<String, Map<String, Object>> predecessorOutputs = collectPredecessorOutputs(
+                    execution, graph.predecessors(node.nodeId()));
+            Map<String, Object> nodeInput = nodeInputResolver.resolve(
+                    nodeDefinition.inputMapping(), execution.input(), predecessorOutputs);
+            Instant dispatchDeadline = nodeDefinition.timeoutPolicy().hasDispatchTimeout()
+                    ? attempt.availableAt().plus(nodeDefinition.timeoutPolicy().dispatchTimeout())
+                    : null;
             save(execution);
             nodeExecutor.submit(new NodeDispatch(
                     execution.id(),
@@ -585,7 +596,11 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
                     attempt.attemptNumber(),
                     attempt.availableAt(),
                     execution.input(),
-                    nodeDefinition.configuration()));
+                    nodeDefinition.configuration(),
+                    predecessorOutputs,
+                    nodeInput,
+                    dispatchDeadline,
+                    nodeDefinition.timeoutPolicy().executionTimeout()));
             publish(
                     WorkflowEvent.Type.NODE_SUBMITTED,
                     execution.id(),
@@ -593,6 +608,19 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
                     attempt.id(),
                     null);
         }
+    }
+
+    private Map<String, Map<String, Object>> collectPredecessorOutputs(
+            WorkflowExecution execution,
+            Set<String> predecessorIds) {
+        if (predecessorIds.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Map<String, Object>> outputs = new LinkedHashMap<>();
+        for (String predecessorId : predecessorIds) {
+            outputs.put(predecessorId, execution.node(predecessorId).output());
+        }
+        return outputs;
     }
 
     private void cancelNonTerminalNodes(WorkflowExecution execution, String reason) {
