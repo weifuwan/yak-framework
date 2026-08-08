@@ -11,6 +11,7 @@ import io.yak.framework.workflow.engine.definition.RetryPolicy;
 import io.yak.framework.workflow.engine.definition.TriggerRule;
 import io.yak.framework.workflow.engine.definition.WorkflowDefinition;
 import io.yak.framework.workflow.engine.definition.WorkflowFailureStrategy;
+import io.yak.framework.workflow.engine.event.WorkflowEvent;
 import io.yak.framework.workflow.engine.execution.WorkflowExecution;
 import io.yak.framework.workflow.engine.spi.NodeCancellation;
 import io.yak.framework.workflow.engine.spi.NodeDispatch;
@@ -27,12 +28,142 @@ import org.junit.jupiter.api.Test;
 class DefaultWorkflowEngineTest {
 
     private RecordingNodeExecutor executor;
+    private List<WorkflowEvent> events;
     private DefaultWorkflowEngine engine;
 
     @BeforeEach
     void setUp() {
         executor = new RecordingNodeExecutor();
-        engine = DefaultWorkflowEngine.inMemory(executor);
+        events = new ArrayList<>();
+        engine = DefaultWorkflowEngine.inMemory(executor, events::add);
+    }
+
+    @Test
+    void dispatchCarriesAttemptIdentity() {
+        WorkflowDefinition definition = new WorkflowDefinition(
+                "attempt-dispatch",
+                "attempt-dispatch",
+                WorkflowFailureStrategy.FAIL_FAST,
+                List.of(NodeDefinition.task("a")),
+                List.of());
+        engine.registerDefinition(definition);
+
+        WorkflowExecution execution = engine.start("attempt-dispatch", Map.of());
+        NodeDispatch dispatch = executor.submissions.get(0);
+
+        assertEquals(execution.id(), dispatch.workflowExecutionId());
+        assertEquals("a", dispatch.nodeId());
+        assertEquals(execution.node("a").currentAttemptId(), dispatch.attemptId());
+        assertEquals(1, dispatch.attemptNumber());
+        assertEquals(dispatch.attemptId(), firstEvent(WorkflowEvent.Type.NODE_SUBMITTED).attemptId());
+    }
+
+    @Test
+    void duplicateCallbacksAreIdempotentAndFirstTerminalResultWins() {
+        WorkflowDefinition definition = new WorkflowDefinition(
+                "idempotent-callback",
+                "idempotent-callback",
+                WorkflowFailureStrategy.FAIL_FAST,
+                List.of(NodeDefinition.task("a")),
+                List.of());
+        engine.registerDefinition(definition);
+        WorkflowExecution execution = engine.start("idempotent-callback", Map.of());
+        String attemptId = currentAttemptId(execution.id(), "a");
+
+        engine.acknowledgeNodeStarted(execution.id(), "a", attemptId);
+        engine.acknowledgeNodeStarted(execution.id(), "a", attemptId);
+        assertEquals(1, eventCount(WorkflowEvent.Type.NODE_STARTED));
+
+        WorkflowExecution completed = engine.completeNode(
+                execution.id(), "a", attemptId, Map.of("value", 1));
+        WorkflowExecution duplicateSuccess = engine.completeNode(
+                execution.id(), "a", attemptId, Map.of("value", 2));
+        WorkflowExecution lateFailure = engine.failNode(
+                execution.id(), "a", attemptId, "late failure");
+
+        assertEquals(WorkflowExecutionStatus.SUCCESS, completed.status());
+        assertEquals(WorkflowExecutionStatus.SUCCESS, duplicateSuccess.status());
+        assertEquals(WorkflowExecutionStatus.SUCCESS, lateFailure.status());
+        assertEquals(Map.of("value", 1), lateFailure.node("a").output());
+        assertEquals(1, lateFailure.node("a").attempts().size());
+        assertEquals(1, eventCount(WorkflowEvent.Type.NODE_SUCCEEDED));
+        assertEquals(0, eventCount(WorkflowEvent.Type.NODE_FAILED));
+        assertEquals(1, eventCount(WorkflowEvent.Type.WORKFLOW_COMPLETED));
+    }
+
+    @Test
+    void staleAttemptCallbacksCannotCorruptNewerRetryAttempt() {
+        NodeDefinition retrying = new NodeDefinition(
+                "a",
+                "a",
+                TriggerRule.ALL_SUCCESS,
+                RetryPolicy.fixed(2, Duration.ZERO),
+                NodeFailurePolicy.FAIL_WORKFLOW,
+                Map.of());
+        WorkflowDefinition definition = new WorkflowDefinition(
+                "stale-callback",
+                "stale-callback",
+                WorkflowFailureStrategy.FAIL_FAST,
+                List.of(retrying),
+                List.of());
+        engine.registerDefinition(definition);
+        WorkflowExecution execution = engine.start("stale-callback", Map.of());
+        NodeDispatch firstDispatch = executor.submissions.get(0);
+
+        engine.failNode(
+                execution.id(), "a", firstDispatch.attemptId(), "first attempt failed");
+        NodeDispatch secondDispatch = executor.submissions.get(1);
+        assertNotEquals(firstDispatch.attemptId(), secondDispatch.attemptId());
+
+        WorkflowExecution staleSuccess = engine.completeNode(
+                execution.id(),
+                "a",
+                firstDispatch.attemptId(),
+                Map.of("stale", true));
+        WorkflowExecution staleFailure = engine.failNode(
+                execution.id(),
+                "a",
+                firstDispatch.attemptId(),
+                "stale failure");
+
+        assertEquals(NodeExecutionStatus.SUBMITTED, staleSuccess.node("a").status());
+        assertEquals(NodeExecutionStatus.SUBMITTED, staleFailure.node("a").status());
+        assertEquals(secondDispatch.attemptId(), staleFailure.node("a").currentAttemptId());
+        assertEquals(Map.of(), staleFailure.node("a").output());
+        assertEquals(2, staleFailure.node("a").attempts().size());
+        assertEquals(1, eventCount(WorkflowEvent.Type.NODE_FAILED));
+        assertEquals(0, eventCount(WorkflowEvent.Type.NODE_SUCCEEDED));
+
+        engine.acknowledgeNodeStarted(execution.id(), "a", secondDispatch.attemptId());
+        WorkflowExecution completed = engine.completeNode(
+                execution.id(), "a", secondDispatch.attemptId(), Map.of("fresh", true));
+
+        assertEquals(WorkflowExecutionStatus.SUCCESS, completed.status());
+        assertEquals(Map.of("fresh", true), completed.node("a").output());
+    }
+
+    @Test
+    void duplicateFailureCallbackIsIdempotentAfterWorkflowFinished() {
+        WorkflowDefinition definition = new WorkflowDefinition(
+                "duplicate-failure",
+                "duplicate-failure",
+                WorkflowFailureStrategy.FAIL_FAST,
+                List.of(NodeDefinition.task("a")),
+                List.of());
+        engine.registerDefinition(definition);
+        WorkflowExecution execution = engine.start("duplicate-failure", Map.of());
+        String attemptId = currentAttemptId(execution.id(), "a");
+
+        WorkflowExecution failed = engine.failNode(
+                execution.id(), "a", attemptId, "boom");
+        WorkflowExecution duplicate = engine.failNode(
+                execution.id(), "a", attemptId, "boom again");
+
+        assertEquals(WorkflowExecutionStatus.FAILED, failed.status());
+        assertEquals(WorkflowExecutionStatus.FAILED, duplicate.status());
+        assertEquals("boom", duplicate.node("a").errorMessage());
+        assertEquals(1, eventCount(WorkflowEvent.Type.NODE_FAILED));
+        assertEquals(1, eventCount(WorkflowEvent.Type.WORKFLOW_COMPLETED));
     }
 
     @Test
@@ -42,17 +173,17 @@ class DefaultWorkflowEngineTest {
         WorkflowExecution execution = engine.start("parallel", Map.of());
         assertEquals(List.of("a"), executor.submittedNodeIds());
 
-        engine.completeNode(execution.id(), "a", Map.of());
+        complete(execution.id(), "a");
         assertEquals(List.of("a", "b", "c"), executor.submittedNodeIds());
 
-        engine.failNode(execution.id(), "b", "boom");
+        fail(execution.id(), "b", "boom");
         WorkflowExecution afterFailure = engine.findExecution(execution.id()).orElseThrow();
         assertEquals(NodeExecutionStatus.UPSTREAM_FAILED, afterFailure.node("d").status());
         assertEquals(NodeExecutionStatus.SUBMITTED, afterFailure.node("c").status());
 
-        engine.completeNode(execution.id(), "c", Map.of());
+        complete(execution.id(), "c");
         assertEquals(List.of("a", "b", "c", "e"), executor.submittedNodeIds());
-        WorkflowExecution completed = engine.completeNode(execution.id(), "e", Map.of());
+        WorkflowExecution completed = complete(execution.id(), "e");
 
         assertEquals(WorkflowExecutionStatus.FAILED, completed.status());
     }
@@ -70,11 +201,11 @@ class DefaultWorkflowEngineTest {
                 List.of(new EdgeDefinition("a", "b"), new EdgeDefinition("b", "c")));
         engine.registerDefinition(definition);
         WorkflowExecution execution = engine.start("ignore", Map.of());
-        engine.completeNode(execution.id(), "a", Map.of());
+        complete(execution.id(), "a");
 
-        engine.failNode(execution.id(), "b", "ignored");
+        fail(execution.id(), "b", "ignored");
         assertEquals(List.of("a", "b", "c"), executor.submittedNodeIds());
-        WorkflowExecution completed = engine.completeNode(execution.id(), "c", Map.of());
+        WorkflowExecution completed = complete(execution.id(), "c");
 
         assertEquals(WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS, completed.status());
     }
@@ -91,13 +222,16 @@ class DefaultWorkflowEngineTest {
         engine.registerDefinition(definition);
         WorkflowExecution execution = engine.start("retry", Map.of());
 
-        WorkflowExecution retried = engine.failNode(execution.id(), "a", "first");
+        WorkflowExecution retried = fail(execution.id(), "a", "first");
         assertEquals(2, retried.node("a").attempts().size());
         assertEquals(2, executor.submissions.size());
         assertTrue(executor.submissions.get(1).availableAt()
                 .isAfter(executor.submissions.get(0).availableAt()));
+        assertNotEquals(
+                executor.submissions.get(0).attemptId(),
+                executor.submissions.get(1).attemptId());
 
-        WorkflowExecution failed = engine.failNode(execution.id(), "a", "second");
+        WorkflowExecution failed = fail(execution.id(), "a", "second");
         assertEquals(WorkflowExecutionStatus.FAILED, failed.status());
         assertEquals(2, failed.node("a").attempts().size());
     }
@@ -107,7 +241,7 @@ class DefaultWorkflowEngineTest {
         engine.registerDefinition(parallelDefinition(
                 WorkflowFailureStrategy.CONTINUE_INDEPENDENT_BRANCHES));
         WorkflowExecution execution = engine.start("parallel", Map.of());
-        engine.completeNode(execution.id(), "a", Map.of());
+        complete(execution.id(), "a");
 
         WorkflowExecution canceled = engine.cancel(execution.id(), "manual");
 
@@ -115,6 +249,9 @@ class DefaultWorkflowEngineTest {
         assertEquals(2, executor.cancellations.size());
         assertEquals(NodeExecutionStatus.CANCELED, canceled.node("b").status());
         assertEquals(NodeExecutionStatus.CANCELED, canceled.node("c").status());
+        assertEquals(
+                canceled.node("b").currentAttemptId(),
+                executor.cancellationFor("b").attemptId());
     }
 
     @Test
@@ -125,14 +262,14 @@ class DefaultWorkflowEngineTest {
                 List.of(new EdgeDefinition("a", "b")));
         engine.registerDefinition(definition);
         WorkflowExecution execution = engine.start("manual-retry", Map.of());
-        engine.failNode(execution.id(), "a", "failed");
+        fail(execution.id(), "a", "failed");
 
         WorkflowExecution retried = engine.retryFailedNodes(execution.id());
         assertEquals(WorkflowExecutionStatus.RUNNING, retried.status());
         assertEquals(2, retried.node("a").attempts().size());
 
-        engine.completeNode(execution.id(), "a", Map.of());
-        WorkflowExecution completed = engine.completeNode(execution.id(), "b", Map.of());
+        complete(execution.id(), "a");
+        WorkflowExecution completed = complete(execution.id(), "b");
         assertEquals(WorkflowExecutionStatus.SUCCESS, completed.status());
     }
 
@@ -141,10 +278,10 @@ class DefaultWorkflowEngineTest {
         engine.registerDefinition(parallelDefinition(
                 WorkflowFailureStrategy.CONTINUE_INDEPENDENT_BRANCHES));
         WorkflowExecution execution = engine.start("parallel", Map.of());
-        engine.completeNode(execution.id(), "a", Map.of());
-        engine.failNode(execution.id(), "b", "boom");
-        engine.completeNode(execution.id(), "c", Map.of());
-        WorkflowExecution failed = engine.completeNode(execution.id(), "e", Map.of());
+        complete(execution.id(), "a");
+        fail(execution.id(), "b", "boom");
+        complete(execution.id(), "c");
+        WorkflowExecution failed = complete(execution.id(), "e");
 
         assertEquals(WorkflowExecutionStatus.FAILED, failed.status());
         assertEquals(NodeExecutionStatus.UPSTREAM_FAILED, failed.node("d").status());
@@ -160,11 +297,11 @@ class DefaultWorkflowEngineTest {
         assertEquals(1, retried.node("e").attempts().size());
         assertEquals(List.of("a", "b", "c", "e", "b"), executor.submittedNodeIds());
 
-        WorkflowExecution afterRetrySuccess = engine.completeNode(execution.id(), "b", Map.of());
+        WorkflowExecution afterRetrySuccess = complete(execution.id(), "b");
         assertEquals(NodeExecutionStatus.SUBMITTED, afterRetrySuccess.node("d").status());
         assertEquals(List.of("a", "b", "c", "e", "b", "d"), executor.submittedNodeIds());
 
-        WorkflowExecution completed = engine.completeNode(execution.id(), "d", Map.of());
+        WorkflowExecution completed = complete(execution.id(), "d");
         assertEquals(WorkflowExecutionStatus.SUCCESS, completed.status());
     }
 
@@ -173,10 +310,10 @@ class DefaultWorkflowEngineTest {
         engine.registerDefinition(parallelDefinition(
                 WorkflowFailureStrategy.CONTINUE_INDEPENDENT_BRANCHES));
         WorkflowExecution execution = engine.start("parallel", Map.of());
-        engine.completeNode(execution.id(), "a", Map.of());
-        engine.failNode(execution.id(), "b", "boom");
-        engine.completeNode(execution.id(), "c", Map.of());
-        WorkflowExecution failed = engine.completeNode(execution.id(), "e", Map.of());
+        complete(execution.id(), "a");
+        fail(execution.id(), "b", "boom");
+        complete(execution.id(), "c");
+        WorkflowExecution failed = complete(execution.id(), "e");
 
         assertEquals(WorkflowExecutionStatus.FAILED, failed.status());
         assertEquals(NodeExecutionStatus.UPSTREAM_FAILED, failed.node("d").status());
@@ -191,7 +328,7 @@ class DefaultWorkflowEngineTest {
         assertEquals(NodeExecutionStatus.SUBMITTED, continued.node("d").status());
         assertEquals(List.of("a", "b", "c", "e", "d"), executor.submittedNodeIds());
 
-        WorkflowExecution completed = engine.completeNode(execution.id(), "d", Map.of());
+        WorkflowExecution completed = complete(execution.id(), "d");
         assertEquals(WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS, completed.status());
         assertEquals(NodeExecutionStatus.FAILED, completed.node("b").status());
         assertEquals(NodeExecutionStatus.SUCCESS, completed.node("d").status());
@@ -215,9 +352,9 @@ class DefaultWorkflowEngineTest {
                         new EdgeDefinition("c", "join")));
         engine.registerDefinition(definition);
         WorkflowExecution execution = engine.start("join-continue", Map.of());
-        engine.completeNode(execution.id(), "a", Map.of());
-        engine.failNode(execution.id(), "b", "boom");
-        WorkflowExecution failed = engine.completeNode(execution.id(), "c", Map.of());
+        complete(execution.id(), "a");
+        fail(execution.id(), "b", "boom");
+        WorkflowExecution failed = complete(execution.id(), "c");
 
         assertEquals(WorkflowExecutionStatus.FAILED, failed.status());
         assertEquals(NodeExecutionStatus.UPSTREAM_FAILED, failed.node("join").status());
@@ -225,7 +362,7 @@ class DefaultWorkflowEngineTest {
         WorkflowExecution continued = engine.continueAfterFailure(execution.id(), "b");
         assertEquals(NodeExecutionStatus.SUBMITTED, continued.node("join").status());
 
-        WorkflowExecution completed = engine.completeNode(execution.id(), "join", Map.of());
+        WorkflowExecution completed = complete(execution.id(), "join");
         assertEquals(WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS, completed.status());
     }
 
@@ -236,7 +373,7 @@ class DefaultWorkflowEngineTest {
                 List.of(NodeDefinition.task("a")), List.of());
         engine.registerDefinition(definition);
         WorkflowExecution first = engine.start("restart", Map.of("key", "value"));
-        engine.failNode(first.id(), "a", "failed");
+        fail(first.id(), "a", "failed");
 
         WorkflowExecution restarted = engine.restart(first.id());
 
@@ -257,8 +394,8 @@ class DefaultWorkflowEngineTest {
                 List.of(new EdgeDefinition("a", "b"), new EdgeDefinition("b", "c")));
         engine.registerDefinition(definition);
         WorkflowExecution first = engine.start("rerun", Map.of());
-        engine.completeNode(first.id(), "a", Map.of("value", 1));
-        engine.failNode(first.id(), "b", "failed");
+        complete(first.id(), "a", Map.of("value", 1));
+        fail(first.id(), "b", "failed");
 
         WorkflowExecution rerun = engine.rerunFromNode(first.id(), "b");
 
@@ -266,6 +403,47 @@ class DefaultWorkflowEngineTest {
         assertEquals(Map.of("value", 1), rerun.node("a").output());
         assertEquals(NodeExecutionStatus.SUBMITTED, rerun.node("b").status());
         assertEquals(NodeExecutionStatus.WAITING, rerun.node("c").status());
+    }
+
+    private WorkflowExecution complete(String executionId, String nodeId) {
+        return complete(executionId, nodeId, Map.of());
+    }
+
+    private WorkflowExecution complete(
+            String executionId,
+            String nodeId,
+            Map<String, Object> output) {
+        return engine.completeNode(
+                executionId,
+                nodeId,
+                currentAttemptId(executionId, nodeId),
+                output);
+    }
+
+    private WorkflowExecution fail(String executionId, String nodeId, String errorMessage) {
+        return engine.failNode(
+                executionId,
+                nodeId,
+                currentAttemptId(executionId, nodeId),
+                errorMessage);
+    }
+
+    private String currentAttemptId(String executionId, String nodeId) {
+        return engine.findExecution(executionId)
+                .orElseThrow()
+                .node(nodeId)
+                .currentAttemptId();
+    }
+
+    private long eventCount(WorkflowEvent.Type type) {
+        return events.stream().filter(event -> event.type() == type).count();
+    }
+
+    private WorkflowEvent firstEvent(WorkflowEvent.Type type) {
+        return events.stream()
+                .filter(event -> event.type() == type)
+                .findFirst()
+                .orElseThrow();
     }
 
     private WorkflowDefinition parallelDefinition(WorkflowFailureStrategy strategy) {
@@ -303,6 +481,13 @@ class DefaultWorkflowEngineTest {
 
         private List<String> submittedNodeIds() {
             return submissions.stream().map(NodeDispatch::nodeId).toList();
+        }
+
+        private NodeCancellation cancellationFor(String nodeId) {
+            return cancellations.stream()
+                    .filter(cancellation -> cancellation.nodeId().equals(nodeId))
+                    .findFirst()
+                    .orElseThrow();
         }
     }
 }
