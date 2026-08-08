@@ -1,6 +1,7 @@
 package io.yak.framework.workflow.engine.execution;
 
 import io.yak.framework.workflow.engine.definition.NodeFailurePolicy;
+import io.yak.framework.workflow.engine.state.NodeAttemptFailureReason;
 import io.yak.framework.workflow.engine.state.NodeAttemptStatus;
 import io.yak.framework.workflow.engine.state.NodeExecutionStatus;
 import io.yak.framework.workflow.engine.state.NodeStateMachine;
@@ -100,6 +101,14 @@ public final class NodeExecution {
         return currentAttempt().status();
     }
 
+    public Instant currentAttemptAvailableAt() {
+        return currentAttempt().availableAt();
+    }
+
+    public Instant currentAttemptStartedAt() {
+        return currentAttempt().startedAt();
+    }
+
     public boolean isCurrentAttempt(String attemptId) {
         return !attempts.isEmpty() && Objects.equals(currentAttempt().id(), attemptId);
     }
@@ -151,7 +160,14 @@ public final class NodeExecution {
     }
 
     public void markFailure(String errorMessage, Instant now) {
-        currentAttempt().markFailure(errorMessage, now);
+        markFailure(NodeAttemptFailureReason.EXECUTOR_FAILURE, errorMessage, now);
+    }
+
+    public void markFailure(
+            NodeAttemptFailureReason failureReason,
+            String errorMessage,
+            Instant now) {
+        currentAttempt().markFailure(failureReason, errorMessage, now);
         this.errorMessage = errorMessage;
         this.downstreamContinuationAllowed = false;
         transitionTo(NodeExecutionStatus.FAILED);
