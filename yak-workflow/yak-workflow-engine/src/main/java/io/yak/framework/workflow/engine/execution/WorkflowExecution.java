@@ -32,9 +32,7 @@ public final class WorkflowExecution {
         this.id = Objects.requireNonNull(id, "id");
         this.definitionId = Objects.requireNonNull(definitionId, "definitionId");
         this.sourceExecutionId = sourceExecutionId;
-        this.input = input == null
-                ? Map.of()
-                : Collections.unmodifiableMap(new LinkedHashMap<>(input));
+        this.input = ExecutionValueSnapshot.immutableMap(input);
         this.nodes = new LinkedHashMap<>(Objects.requireNonNull(nodes, "nodes"));
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
         this.updatedAt = createdAt;
@@ -45,7 +43,7 @@ public final class WorkflowExecution {
         this.id = source.id;
         this.definitionId = source.definitionId;
         this.sourceExecutionId = source.sourceExecutionId;
-        this.input = Collections.unmodifiableMap(new LinkedHashMap<>(source.input));
+        this.input = source.input;
         this.nodes = new LinkedHashMap<>();
         source.nodes.forEach((nodeId, execution) -> this.nodes.put(nodeId, execution.copy()));
         this.createdAt = source.createdAt;
