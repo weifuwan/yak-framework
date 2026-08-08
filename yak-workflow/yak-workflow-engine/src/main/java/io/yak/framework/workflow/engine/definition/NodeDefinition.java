@@ -12,6 +12,7 @@ public record NodeDefinition(
         RetryPolicy retryPolicy,
         NodeFailurePolicy failurePolicy,
         NodeTimeoutPolicy timeoutPolicy,
+        NodeInputMapping inputMapping,
         Map<String, Object> configuration) {
 
     public NodeDefinition {
@@ -21,12 +22,33 @@ public record NodeDefinition(
         retryPolicy = Objects.requireNonNullElseGet(retryPolicy, RetryPolicy::none);
         failurePolicy = Objects.requireNonNullElse(failurePolicy, NodeFailurePolicy.FAIL_WORKFLOW);
         timeoutPolicy = Objects.requireNonNullElseGet(timeoutPolicy, NodeTimeoutPolicy::none);
+        inputMapping = Objects.requireNonNullElseGet(inputMapping, NodeInputMapping::none);
         configuration = configuration == null
                 ? Map.of()
                 : Collections.unmodifiableMap(new LinkedHashMap<>(configuration));
     }
 
-    /** Backward-compatible constructor for nodes without timeout configuration. */
+    /** Backward-compatible constructor for nodes without explicit input mapping. */
+    public NodeDefinition(
+            String id,
+            String name,
+            TriggerRule triggerRule,
+            RetryPolicy retryPolicy,
+            NodeFailurePolicy failurePolicy,
+            NodeTimeoutPolicy timeoutPolicy,
+            Map<String, Object> configuration) {
+        this(
+                id,
+                name,
+                triggerRule,
+                retryPolicy,
+                failurePolicy,
+                timeoutPolicy,
+                NodeInputMapping.none(),
+                configuration);
+    }
+
+    /** Backward-compatible constructor for nodes without timeout or input configuration. */
     public NodeDefinition(
             String id,
             String name,
@@ -41,6 +63,7 @@ public record NodeDefinition(
                 retryPolicy,
                 failurePolicy,
                 NodeTimeoutPolicy.none(),
+                NodeInputMapping.none(),
                 configuration);
     }
 
@@ -52,6 +75,7 @@ public record NodeDefinition(
                 RetryPolicy.none(),
                 NodeFailurePolicy.FAIL_WORKFLOW,
                 NodeTimeoutPolicy.none(),
+                NodeInputMapping.none(),
                 Map.of());
     }
 
