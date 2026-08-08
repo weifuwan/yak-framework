@@ -18,6 +18,20 @@ public interface WorkflowEngine {
     WorkflowExecution acknowledgeNodeStarted(
             String executionId, String nodeId, String attemptId);
 
+    /** Request workflow pause. Active attempts are paused when supported by their executor. */
+    WorkflowExecution pause(String executionId, String reason);
+
+    /** Acknowledge that one concrete attempt accepted earlier has reached PAUSED. */
+    WorkflowExecution acknowledgeNodePaused(
+            String executionId, String nodeId, String attemptId);
+
+    /** Resume a fully paused workflow. */
+    WorkflowExecution resume(String executionId);
+
+    /** Acknowledge that one concrete paused attempt has resumed its pre-pause state. */
+    WorkflowExecution acknowledgeNodeResumed(
+            String executionId, String nodeId, String attemptId);
+
     /**
      * Complete one concrete node attempt successfully.
      * Only the current active attempt may mutate workflow state; duplicate, stale, or conflicting
