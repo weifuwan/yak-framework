@@ -1,6 +1,7 @@
 package io.yak.framework.workflow.engine.api;
 
 import io.yak.framework.workflow.engine.definition.NodeDefinition;
+import io.yak.framework.workflow.engine.definition.NodeTimeoutPolicy;
 import io.yak.framework.workflow.engine.definition.WorkflowDefinition;
 import io.yak.framework.workflow.engine.event.WorkflowEvent;
 import io.yak.framework.workflow.engine.event.WorkflowEventListener;
@@ -27,6 +28,7 @@ import io.yak.framework.workflow.engine.spi.NodeCancellation;
 import io.yak.framework.workflow.engine.spi.NodeDispatch;
 import io.yak.framework.workflow.engine.spi.NodeExecutor;
 import io.yak.framework.workflow.engine.spi.WorkflowDefinitionRepository;
+import io.yak.framework.workflow.engine.state.NodeAttemptFailureReason;
 import io.yak.framework.workflow.engine.state.NodeAttemptStatus;
 import io.yak.framework.workflow.engine.state.NodeExecutionStatus;
 import io.yak.framework.workflow.engine.state.WorkflowExecutionStatus;
@@ -92,13 +94,20 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     public static DefaultWorkflowEngine inMemory(
             NodeExecutor nodeExecutor,
             WorkflowEventListener eventListener) {
+        return inMemory(nodeExecutor, eventListener, Clock.systemUTC());
+    }
+
+    public static DefaultWorkflowEngine inMemory(
+            NodeExecutor nodeExecutor,
+            WorkflowEventListener eventListener,
+            Clock clock) {
         return new DefaultWorkflowEngine(
                 new InMemoryWorkflowDefinitionRepository(),
                 new InMemoryExecutionRepository(),
                 nodeExecutor,
                 new LocalExecutionLock(),
                 new UuidIdGenerator(),
-                Clock.systemUTC(),
+                clock,
                 eventListener);
     }
 
@@ -173,20 +182,74 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
             ensureRunning(execution);
             WorkflowDefinition definition = requireDefinition(execution.definitionId());
             WorkflowGraph graph = graphBuilder.build(definition);
-            node.markFailure(errorMessage, now());
-            publish(WorkflowEvent.Type.NODE_FAILED, executionId, nodeId, attemptId, errorMessage);
-            if (retryDecider.shouldRetry(definition.node(nodeId), node)) {
-                node.transitionTo(NodeExecutionStatus.READY);
-                publish(
-                        WorkflowEvent.Type.NODE_RETRY_SCHEDULED,
-                        executionId,
-                        nodeId,
-                        attemptId,
-                        errorMessage);
-                dispatchReady(definition, execution, List.of(node));
-            } else {
-                handleFinalFailure(definition, graph, execution, node);
+            failCurrentAttempt(
+                    definition,
+                    graph,
+                    execution,
+                    node,
+                    NodeAttemptFailureReason.EXECUTOR_FAILURE,
+                    WorkflowEvent.Type.NODE_FAILED,
+                    errorMessage);
+            finishIfPossible(execution);
+            save(execution);
+            return execution.copy();
+        });
+    }
+
+    @Override
+    public WorkflowExecution checkTimeouts(String executionId) {
+        return executionLock.execute(executionId, () -> {
+            WorkflowExecution execution = requireExecution(executionId);
+            if (execution.status() != WorkflowExecutionStatus.RUNNING) {
+                return execution.copy();
             }
+
+            WorkflowDefinition definition = requireDefinition(execution.definitionId());
+            Instant currentTime = now();
+            if (isWorkflowTimedOut(definition, execution, currentTime)) {
+                timeoutWorkflow(definition, execution, currentTime);
+                return execution.copy();
+            }
+
+            WorkflowGraph graph = graphBuilder.build(definition);
+            for (NodeExecution node : new ArrayList<>(execution.nodes().values())) {
+                if (execution.status() != WorkflowExecutionStatus.RUNNING) {
+                    break;
+                }
+                NodeDefinition nodeDefinition = definition.node(node.nodeId());
+                NodeTimeoutPolicy timeoutPolicy = nodeDefinition.timeoutPolicy();
+                if (node.status() == NodeExecutionStatus.SUBMITTED
+                        && timeoutPolicy.hasDispatchTimeout()
+                        && hasReached(
+                                currentTime,
+                                node.currentAttemptAvailableAt()
+                                        .plus(timeoutPolicy.dispatchTimeout()))) {
+                    timeoutCurrentAttempt(
+                            definition,
+                            graph,
+                            execution,
+                            node,
+                            NodeAttemptFailureReason.DISPATCH_TIMEOUT,
+                            WorkflowEvent.Type.NODE_DISPATCH_TIMED_OUT,
+                            "Node dispatch timed out after " + timeoutPolicy.dispatchTimeout());
+                } else if (node.status() == NodeExecutionStatus.RUNNING
+                        && timeoutPolicy.hasExecutionTimeout()
+                        && node.currentAttemptStartedAt() != null
+                        && hasReached(
+                                currentTime,
+                                node.currentAttemptStartedAt()
+                                        .plus(timeoutPolicy.executionTimeout()))) {
+                    timeoutCurrentAttempt(
+                            definition,
+                            graph,
+                            execution,
+                            node,
+                            NodeAttemptFailureReason.EXECUTION_TIMEOUT,
+                            WorkflowEvent.Type.NODE_EXECUTION_TIMED_OUT,
+                            "Node execution timed out after " + timeoutPolicy.executionTimeout());
+                }
+            }
+
             finishIfPossible(execution);
             save(execution);
             return execution.copy();
@@ -302,7 +365,7 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
             if (!execution.status().isTerminal()
                     || execution.status() == WorkflowExecutionStatus.SUCCESS) {
                 throw new IllegalStateException(
-                        "Only a failed, canceled, or warning workflow can be retried");
+                        "Only a failed, canceled, warning, or timed out workflow can be retried");
             }
             WorkflowDefinition definition = requireDefinition(execution.definitionId());
             WorkflowGraph graph = graphBuilder.build(definition);
@@ -405,6 +468,82 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
         return execution.copy();
     }
 
+    private void failCurrentAttempt(
+            WorkflowDefinition definition,
+            WorkflowGraph graph,
+            WorkflowExecution execution,
+            NodeExecution node,
+            NodeAttemptFailureReason failureReason,
+            WorkflowEvent.Type failureEventType,
+            String errorMessage) {
+        String attemptId = node.currentAttemptId();
+        node.markFailure(failureReason, errorMessage, now());
+        publish(failureEventType, execution.id(), node.nodeId(), attemptId, errorMessage);
+        if (retryDecider.shouldRetry(definition.node(node.nodeId()), node)) {
+            node.transitionTo(NodeExecutionStatus.READY);
+            publish(
+                    WorkflowEvent.Type.NODE_RETRY_SCHEDULED,
+                    execution.id(),
+                    node.nodeId(),
+                    attemptId,
+                    errorMessage);
+            dispatchReady(definition, execution, List.of(node));
+        } else {
+            handleFinalFailure(definition, graph, execution, node);
+        }
+    }
+
+    private void timeoutCurrentAttempt(
+            WorkflowDefinition definition,
+            WorkflowGraph graph,
+            WorkflowExecution execution,
+            NodeExecution node,
+            NodeAttemptFailureReason failureReason,
+            WorkflowEvent.Type timeoutEventType,
+            String errorMessage) {
+        nodeExecutor.cancel(new NodeCancellation(
+                execution.id(),
+                node.id(),
+                node.nodeId(),
+                node.currentAttemptId(),
+                errorMessage));
+        failCurrentAttempt(
+                definition,
+                graph,
+                execution,
+                node,
+                failureReason,
+                timeoutEventType,
+                errorMessage);
+    }
+
+    private boolean isWorkflowTimedOut(
+            WorkflowDefinition definition,
+            WorkflowExecution execution,
+            Instant currentTime) {
+        return definition.timeoutPolicy().enabled()
+                && execution.runStartedAt() != null
+                && hasReached(
+                        currentTime,
+                        execution.runStartedAt().plus(definition.timeoutPolicy().timeout()));
+    }
+
+    private void timeoutWorkflow(
+            WorkflowDefinition definition,
+            WorkflowExecution execution,
+            Instant currentTime) {
+        String message = "Workflow timed out after " + definition.timeoutPolicy().timeout();
+        execution.stopScheduling();
+        cancelNonTerminalNodes(execution, message);
+        execution.transitionTo(WorkflowExecutionStatus.TIMED_OUT, currentTime);
+        save(execution);
+        publish(WorkflowEvent.Type.WORKFLOW_TIMED_OUT, execution.id(), null, null, message);
+    }
+
+    private boolean hasReached(Instant currentTime, Instant deadline) {
+        return !currentTime.isBefore(deadline);
+    }
+
     private void handleFinalFailure(
             WorkflowDefinition definition,
             WorkflowGraph graph,
@@ -476,7 +615,8 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     }
 
     private void finishIfPossible(WorkflowExecution execution) {
-        if (execution.status() == WorkflowExecutionStatus.CANCELED) {
+        if (execution.status() == WorkflowExecutionStatus.CANCELED
+                || execution.status() == WorkflowExecutionStatus.TIMED_OUT) {
             return;
         }
         completionResolver.resolve(execution).ifPresent(status -> {

@@ -16,8 +16,11 @@ public record WorkflowEvent(
         NODE_STARTED,
         NODE_SUCCEEDED,
         NODE_FAILED,
+        NODE_DISPATCH_TIMED_OUT,
+        NODE_EXECUTION_TIMED_OUT,
         NODE_RETRY_SCHEDULED,
         WORKFLOW_COMPLETED,
-        WORKFLOW_CANCELED
+        WORKFLOW_CANCELED,
+        WORKFLOW_TIMED_OUT
     }
 }
