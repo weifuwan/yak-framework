@@ -23,10 +23,26 @@ public final class NodeStateMachine {
                 NodeExecutionStatus.CANCELED);
         allow(NodeExecutionStatus.SUBMITTED,
                 NodeExecutionStatus.RUNNING,
+                NodeExecutionStatus.PAUSING,
                 NodeExecutionStatus.SUCCESS,
                 NodeExecutionStatus.FAILED,
                 NodeExecutionStatus.CANCELED);
         allow(NodeExecutionStatus.RUNNING,
+                NodeExecutionStatus.PAUSING,
+                NodeExecutionStatus.SUCCESS,
+                NodeExecutionStatus.FAILED,
+                NodeExecutionStatus.CANCELED);
+        allow(NodeExecutionStatus.PAUSING,
+                NodeExecutionStatus.PAUSED,
+                NodeExecutionStatus.SUCCESS,
+                NodeExecutionStatus.FAILED,
+                NodeExecutionStatus.CANCELED);
+        allow(NodeExecutionStatus.PAUSED,
+                NodeExecutionStatus.RESUMING,
+                NodeExecutionStatus.CANCELED);
+        allow(NodeExecutionStatus.RESUMING,
+                NodeExecutionStatus.SUBMITTED,
+                NodeExecutionStatus.RUNNING,
                 NodeExecutionStatus.SUCCESS,
                 NodeExecutionStatus.FAILED,
                 NodeExecutionStatus.CANCELED);

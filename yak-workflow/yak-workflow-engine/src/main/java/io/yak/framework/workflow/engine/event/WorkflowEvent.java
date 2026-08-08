@@ -12,6 +12,14 @@ public record WorkflowEvent(
 
     public enum Type {
         WORKFLOW_STARTED,
+        WORKFLOW_PAUSE_REQUESTED,
+        NODE_PAUSE_REQUESTED,
+        NODE_PAUSED,
+        WORKFLOW_PAUSED,
+        WORKFLOW_RESUME_REQUESTED,
+        NODE_RESUME_REQUESTED,
+        NODE_RESUMED,
+        WORKFLOW_RESUMED,
         NODE_SUBMITTED,
         NODE_STARTED,
         NODE_SUCCEEDED,

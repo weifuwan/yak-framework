@@ -16,6 +16,25 @@ public final class WorkflowStateMachine {
                 WorkflowExecutionStatus.CANCELED,
                 WorkflowExecutionStatus.TIMED_OUT);
         allow(WorkflowExecutionStatus.RUNNING,
+                WorkflowExecutionStatus.PAUSING,
+                WorkflowExecutionStatus.SUCCESS,
+                WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS,
+                WorkflowExecutionStatus.FAILED,
+                WorkflowExecutionStatus.CANCELED,
+                WorkflowExecutionStatus.TIMED_OUT);
+        allow(WorkflowExecutionStatus.PAUSING,
+                WorkflowExecutionStatus.PAUSED,
+                WorkflowExecutionStatus.SUCCESS,
+                WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS,
+                WorkflowExecutionStatus.FAILED,
+                WorkflowExecutionStatus.CANCELED,
+                WorkflowExecutionStatus.TIMED_OUT);
+        allow(WorkflowExecutionStatus.PAUSED,
+                WorkflowExecutionStatus.RESUMING,
+                WorkflowExecutionStatus.CANCELED,
+                WorkflowExecutionStatus.TIMED_OUT);
+        allow(WorkflowExecutionStatus.RESUMING,
+                WorkflowExecutionStatus.RUNNING,
                 WorkflowExecutionStatus.SUCCESS,
                 WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS,
                 WorkflowExecutionStatus.FAILED,

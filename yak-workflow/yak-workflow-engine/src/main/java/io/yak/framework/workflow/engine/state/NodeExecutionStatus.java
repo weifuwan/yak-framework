@@ -5,6 +5,9 @@ public enum NodeExecutionStatus {
     READY(false),
     SUBMITTED(false),
     RUNNING(false),
+    PAUSING(false),
+    PAUSED(false),
+    RESUMING(false),
     SUCCESS(true),
     FAILED(true),
     UPSTREAM_FAILED(true),
@@ -22,6 +25,11 @@ public enum NodeExecutionStatus {
     }
 
     public boolean isActive() {
-        return this == READY || this == SUBMITTED || this == RUNNING;
+        return this == READY
+                || this == SUBMITTED
+                || this == RUNNING
+                || this == PAUSING
+                || this == PAUSED
+                || this == RESUMING;
     }
 }
