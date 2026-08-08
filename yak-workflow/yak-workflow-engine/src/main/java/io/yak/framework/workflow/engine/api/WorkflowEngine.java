@@ -40,6 +40,12 @@ public interface WorkflowEngine {
             String attemptId,
             String errorMessage);
 
+    /**
+     * Evaluate workflow, dispatch, and running-node timeouts against the engine clock.
+     * Hosts should call this periodically for active executions; the engine itself owns no timer thread.
+     */
+    WorkflowExecution checkTimeouts(String executionId);
+
     WorkflowExecution continueAfterFailure(String executionId, String nodeId);
 
     WorkflowExecution retryFailedNode(String executionId, String nodeId);
