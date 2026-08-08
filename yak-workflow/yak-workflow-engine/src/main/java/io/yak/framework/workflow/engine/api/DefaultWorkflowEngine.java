@@ -206,6 +206,51 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     }
 
     @Override
+    public WorkflowExecution retryFailedNode(String executionId, String nodeId) {
+        return executionLock.execute(executionId, () -> {
+            WorkflowExecution execution = requireExecution(executionId);
+            WorkflowDefinition definition = requireDefinition(execution.definitionId());
+            WorkflowGraph graph = graphBuilder.build(definition);
+            NodeExecution failedNode = execution.node(nodeId);
+            if (failedNode.status() != NodeExecutionStatus.FAILED) {
+                throw new IllegalStateException(
+                        "Only a failed node can be retried: " + nodeId);
+            }
+            if (failedNode.downstreamContinuationAllowed()) {
+                throw new IllegalStateException(
+                        "Cannot retry a failed node after its downstream branch was continued: " + nodeId);
+            }
+            if (execution.status() == WorkflowExecutionStatus.SUCCESS) {
+                throw new IllegalStateException(
+                        "A successful workflow has no failed node to retry");
+            }
+            if (execution.status() == WorkflowExecutionStatus.CANCELED) {
+                throw new IllegalStateException(
+                        "A canceled workflow cannot retry a single failed node");
+            }
+            if (execution.status().isTerminal()) {
+                execution.transitionTo(WorkflowExecutionStatus.RUNNING, now());
+            }
+            execution.resumeScheduling();
+
+            failedNode.resetForManualRetry();
+            for (String descendantId : graph.descendants(nodeId)) {
+                NodeExecution descendant = execution.node(descendantId);
+                if (descendant.status() == NodeExecutionStatus.UPSTREAM_FAILED) {
+                    descendant.resetSyntheticState();
+                }
+            }
+
+            List<NodeExecution> ready = scheduler.advance(
+                    definition, graph, execution, List.of(nodeId));
+            dispatchReady(definition, execution, ready);
+            finishIfPossible(execution);
+            save(execution);
+            return execution.copy();
+        });
+    }
+
+    @Override
     public WorkflowExecution cancel(String executionId, String reason) {
         return executionLock.execute(executionId, () -> {
             WorkflowExecution execution = requireExecution(executionId);

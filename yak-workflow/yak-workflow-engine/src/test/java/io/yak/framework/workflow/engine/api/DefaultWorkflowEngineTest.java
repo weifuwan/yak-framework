@@ -137,6 +137,38 @@ class DefaultWorkflowEngineTest {
     }
 
     @Test
+    void retrySelectedFailedNodeDoesNotRerunIndependentBranch() {
+        engine.registerDefinition(parallelDefinition(
+                WorkflowFailureStrategy.CONTINUE_INDEPENDENT_BRANCHES));
+        WorkflowExecution execution = engine.start("parallel", Map.of());
+        engine.completeNode(execution.id(), "a", Map.of());
+        engine.failNode(execution.id(), "b", "boom");
+        engine.completeNode(execution.id(), "c", Map.of());
+        WorkflowExecution failed = engine.completeNode(execution.id(), "e", Map.of());
+
+        assertEquals(WorkflowExecutionStatus.FAILED, failed.status());
+        assertEquals(NodeExecutionStatus.UPSTREAM_FAILED, failed.node("d").status());
+        assertEquals(1, failed.node("b").attempts().size());
+        assertEquals(1, failed.node("e").attempts().size());
+
+        WorkflowExecution retried = engine.retryFailedNode(execution.id(), "b");
+
+        assertEquals(WorkflowExecutionStatus.RUNNING, retried.status());
+        assertEquals(NodeExecutionStatus.SUBMITTED, retried.node("b").status());
+        assertEquals(NodeExecutionStatus.WAITING, retried.node("d").status());
+        assertEquals(2, retried.node("b").attempts().size());
+        assertEquals(1, retried.node("e").attempts().size());
+        assertEquals(List.of("a", "b", "c", "e", "b"), executor.submittedNodeIds());
+
+        WorkflowExecution afterRetrySuccess = engine.completeNode(execution.id(), "b", Map.of());
+        assertEquals(NodeExecutionStatus.SUBMITTED, afterRetrySuccess.node("d").status());
+        assertEquals(List.of("a", "b", "c", "e", "b", "d"), executor.submittedNodeIds());
+
+        WorkflowExecution completed = engine.completeNode(execution.id(), "d", Map.of());
+        assertEquals(WorkflowExecutionStatus.SUCCESS, completed.status());
+    }
+
+    @Test
     void manualContinueReleasesBlockedDescendantsWithoutRetryingFailedNode() {
         engine.registerDefinition(parallelDefinition(
                 WorkflowFailureStrategy.CONTINUE_INDEPENDENT_BRANCHES));
