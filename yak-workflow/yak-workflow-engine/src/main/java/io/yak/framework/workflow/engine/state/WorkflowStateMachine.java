@@ -13,15 +13,18 @@ public final class WorkflowStateMachine {
     static {
         allow(WorkflowExecutionStatus.CREATED,
                 WorkflowExecutionStatus.RUNNING,
-                WorkflowExecutionStatus.CANCELED);
+                WorkflowExecutionStatus.CANCELED,
+                WorkflowExecutionStatus.TIMED_OUT);
         allow(WorkflowExecutionStatus.RUNNING,
                 WorkflowExecutionStatus.SUCCESS,
                 WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS,
                 WorkflowExecutionStatus.FAILED,
-                WorkflowExecutionStatus.CANCELED);
+                WorkflowExecutionStatus.CANCELED,
+                WorkflowExecutionStatus.TIMED_OUT);
         allow(WorkflowExecutionStatus.FAILED, WorkflowExecutionStatus.RUNNING);
         allow(WorkflowExecutionStatus.SUCCESS_WITH_WARNINGS, WorkflowExecutionStatus.RUNNING);
         allow(WorkflowExecutionStatus.CANCELED, WorkflowExecutionStatus.RUNNING);
+        allow(WorkflowExecutionStatus.TIMED_OUT, WorkflowExecutionStatus.RUNNING);
     }
 
     private WorkflowStateMachine() {
