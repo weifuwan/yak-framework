@@ -1,5 +1,6 @@
 package io.yak.framework.workflow.engine.execution;
 
+import io.yak.framework.workflow.engine.state.NodeAttemptFailureReason;
 import io.yak.framework.workflow.engine.state.NodeAttemptStatus;
 import java.time.Instant;
 import java.util.Objects;
@@ -13,6 +14,7 @@ public final class NodeAttempt {
     private Instant startedAt;
     private Instant endedAt;
     private String errorMessage;
+    private NodeAttemptFailureReason failureReason;
 
     public NodeAttempt(String id, int attemptNumber, Instant availableAt) {
         this.id = Objects.requireNonNull(id, "id");
@@ -29,6 +31,7 @@ public final class NodeAttempt {
         this.startedAt = source.startedAt;
         this.endedAt = source.endedAt;
         this.errorMessage = source.errorMessage;
+        this.failureReason = source.failureReason;
     }
 
     public String id() {
@@ -59,6 +62,10 @@ public final class NodeAttempt {
         return errorMessage;
     }
 
+    public NodeAttemptFailureReason failureReason() {
+        return failureReason;
+    }
+
     public void markRunning(Instant now) {
         if (status != NodeAttemptStatus.SUBMITTED) {
             throw new IllegalStateException("Only a submitted attempt can start");
@@ -74,8 +81,16 @@ public final class NodeAttempt {
     }
 
     public void markFailure(String errorMessage, Instant now) {
+        markFailure(NodeAttemptFailureReason.EXECUTOR_FAILURE, errorMessage, now);
+    }
+
+    public void markFailure(
+            NodeAttemptFailureReason failureReason,
+            String errorMessage,
+            Instant now) {
         requireActive();
         status = NodeAttemptStatus.FAILED;
+        this.failureReason = Objects.requireNonNull(failureReason, "failureReason");
         this.errorMessage = errorMessage;
         endedAt = now;
     }
