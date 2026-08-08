@@ -19,6 +19,27 @@ public record NodeDispatch(
         Instant dispatchDeadline,
         Duration executionTimeout) {
 
+    public NodeDispatch {
+        NodeExecutionContext context = new NodeExecutionContext(
+                workflowExecutionId,
+                nodeExecutionId,
+                nodeId,
+                attemptId,
+                attemptNumber,
+                availableAt,
+                dispatchDeadline,
+                executionTimeout,
+                workflowInput,
+                predecessorOutputs,
+                nodeInput,
+                nodeConfiguration);
+        workflowInput = context.workflowInput();
+        nodeConfiguration = context.nodeConfiguration();
+        predecessorOutputs = context.predecessorOutputs();
+        nodeInput = context.nodeInput();
+        executionTimeout = context.executionTimeout();
+    }
+
     /** Backward-compatible constructor for executors/tests that only use the original dispatch fields. */
     public NodeDispatch(
             String workflowExecutionId,
