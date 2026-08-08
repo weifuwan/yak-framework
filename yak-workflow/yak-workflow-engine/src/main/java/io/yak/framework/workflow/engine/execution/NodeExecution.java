@@ -110,11 +110,11 @@ public final class NodeExecution {
     }
 
     public Instant currentAttemptDispatchDeadline(Duration dispatchTimeout) {
-        return currentAttempt().dispatchDeadline(dispatchTimeout);
+        return attempts.isEmpty() ? null : currentAttempt().dispatchDeadline(dispatchTimeout);
     }
 
     public Instant currentAttemptExecutionDeadline(Duration executionTimeout) {
-        return currentAttempt().executionDeadline(executionTimeout);
+        return attempts.isEmpty() ? null : currentAttempt().executionDeadline(executionTimeout);
     }
 
     public boolean isCurrentAttempt(String attemptId) {
