@@ -11,6 +11,7 @@ public record NodeDefinition(
         TriggerRule triggerRule,
         RetryPolicy retryPolicy,
         NodeFailurePolicy failurePolicy,
+        NodeTimeoutPolicy timeoutPolicy,
         Map<String, Object> configuration) {
 
     public NodeDefinition {
@@ -19,9 +20,28 @@ public record NodeDefinition(
         triggerRule = Objects.requireNonNullElse(triggerRule, TriggerRule.ALL_SUCCESS);
         retryPolicy = Objects.requireNonNullElseGet(retryPolicy, RetryPolicy::none);
         failurePolicy = Objects.requireNonNullElse(failurePolicy, NodeFailurePolicy.FAIL_WORKFLOW);
+        timeoutPolicy = Objects.requireNonNullElseGet(timeoutPolicy, NodeTimeoutPolicy::none);
         configuration = configuration == null
                 ? Map.of()
                 : Collections.unmodifiableMap(new LinkedHashMap<>(configuration));
+    }
+
+    /** Backward-compatible constructor for nodes without timeout configuration. */
+    public NodeDefinition(
+            String id,
+            String name,
+            TriggerRule triggerRule,
+            RetryPolicy retryPolicy,
+            NodeFailurePolicy failurePolicy,
+            Map<String, Object> configuration) {
+        this(
+                id,
+                name,
+                triggerRule,
+                retryPolicy,
+                failurePolicy,
+                NodeTimeoutPolicy.none(),
+                configuration);
     }
 
     public static NodeDefinition task(String id) {
@@ -31,6 +51,7 @@ public record NodeDefinition(
                 TriggerRule.ALL_SUCCESS,
                 RetryPolicy.none(),
                 NodeFailurePolicy.FAIL_WORKFLOW,
+                NodeTimeoutPolicy.none(),
                 Map.of());
     }
 
