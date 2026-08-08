@@ -11,12 +11,34 @@ public interface WorkflowEngine {
 
     WorkflowExecution start(String definitionId, Map<String, Object> input);
 
-    WorkflowExecution acknowledgeNodeStarted(String executionId, String nodeId);
+    /**
+     * Acknowledge that one concrete node attempt started running.
+     * Stale or duplicate callbacks are ignored and return the current execution snapshot.
+     */
+    WorkflowExecution acknowledgeNodeStarted(
+            String executionId, String nodeId, String attemptId);
 
+    /**
+     * Complete one concrete node attempt successfully.
+     * Only the current active attempt may mutate workflow state; duplicate, stale, or conflicting
+     * callbacks are idempotent no-ops.
+     */
     WorkflowExecution completeNode(
-            String executionId, String nodeId, Map<String, Object> output);
+            String executionId,
+            String nodeId,
+            String attemptId,
+            Map<String, Object> output);
 
-    WorkflowExecution failNode(String executionId, String nodeId, String errorMessage);
+    /**
+     * Complete one concrete node attempt with failure.
+     * Only the current active attempt may mutate workflow state; duplicate, stale, or conflicting
+     * callbacks are idempotent no-ops.
+     */
+    WorkflowExecution failNode(
+            String executionId,
+            String nodeId,
+            String attemptId,
+            String errorMessage);
 
     WorkflowExecution continueAfterFailure(String executionId, String nodeId);
 

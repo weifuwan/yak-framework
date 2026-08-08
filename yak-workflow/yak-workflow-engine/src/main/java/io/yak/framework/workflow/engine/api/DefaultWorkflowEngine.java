@@ -12,6 +12,7 @@ import io.yak.framework.workflow.engine.graph.WorkflowGraph;
 import io.yak.framework.workflow.engine.graph.WorkflowGraphBuilder;
 import io.yak.framework.workflow.engine.policy.DefaultFailurePropagationPolicy;
 import io.yak.framework.workflow.engine.policy.DefaultRetryDecider;
+import io.yak.framework.workflow.engine.policy.DefaultTriggerRuleEvaluator;
 import io.yak.framework.workflow.engine.policy.FailureHandlingResult;
 import io.yak.framework.workflow.engine.policy.FailurePropagationPolicy;
 import io.yak.framework.workflow.engine.policy.RetryDecider;
@@ -19,7 +20,6 @@ import io.yak.framework.workflow.engine.scheduler.DefaultReadyNodeResolver;
 import io.yak.framework.workflow.engine.scheduler.DefaultWorkflowScheduler;
 import io.yak.framework.workflow.engine.scheduler.WorkflowCompletionResolver;
 import io.yak.framework.workflow.engine.scheduler.WorkflowScheduler;
-import io.yak.framework.workflow.engine.policy.DefaultTriggerRuleEvaluator;
 import io.yak.framework.workflow.engine.spi.ExecutionLock;
 import io.yak.framework.workflow.engine.spi.ExecutionRepository;
 import io.yak.framework.workflow.engine.spi.IdGenerator;
@@ -27,6 +27,7 @@ import io.yak.framework.workflow.engine.spi.NodeCancellation;
 import io.yak.framework.workflow.engine.spi.NodeDispatch;
 import io.yak.framework.workflow.engine.spi.NodeExecutor;
 import io.yak.framework.workflow.engine.spi.WorkflowDefinitionRepository;
+import io.yak.framework.workflow.engine.state.NodeAttemptStatus;
 import io.yak.framework.workflow.engine.state.NodeExecutionStatus;
 import io.yak.framework.workflow.engine.state.WorkflowExecutionStatus;
 import io.yak.framework.workflow.engine.support.InMemoryExecutionRepository;
@@ -85,6 +86,12 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     }
 
     public static DefaultWorkflowEngine inMemory(NodeExecutor nodeExecutor) {
+        return inMemory(nodeExecutor, WorkflowEventListener.noop());
+    }
+
+    public static DefaultWorkflowEngine inMemory(
+            NodeExecutor nodeExecutor,
+            WorkflowEventListener eventListener) {
         return new DefaultWorkflowEngine(
                 new InMemoryWorkflowDefinitionRepository(),
                 new InMemoryExecutionRepository(),
@@ -92,7 +99,7 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
                 new LocalExecutionLock(),
                 new UuidIdGenerator(),
                 Clock.systemUTC(),
-                WorkflowEventListener.noop());
+                eventListener);
     }
 
     @Override
@@ -108,30 +115,40 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     }
 
     @Override
-    public WorkflowExecution acknowledgeNodeStarted(String executionId, String nodeId) {
+    public WorkflowExecution acknowledgeNodeStarted(
+            String executionId, String nodeId, String attemptId) {
         return executionLock.execute(executionId, () -> {
             WorkflowExecution execution = requireExecution(executionId);
-            ensureRunning(execution);
             NodeExecution node = execution.node(nodeId);
+            if (!shouldApplyStartCallback(node, attemptId)) {
+                return execution.copy();
+            }
+            ensureRunning(execution);
             node.markRunning(now());
             execution.touch(now());
             save(execution);
-            publish(WorkflowEvent.Type.NODE_STARTED, executionId, nodeId, null);
+            publish(WorkflowEvent.Type.NODE_STARTED, executionId, nodeId, attemptId, null);
             return execution.copy();
         });
     }
 
     @Override
     public WorkflowExecution completeNode(
-            String executionId, String nodeId, Map<String, Object> output) {
+            String executionId,
+            String nodeId,
+            String attemptId,
+            Map<String, Object> output) {
         return executionLock.execute(executionId, () -> {
             WorkflowExecution execution = requireExecution(executionId);
+            NodeExecution node = execution.node(nodeId);
+            if (!shouldApplyTerminalCallback(node, attemptId)) {
+                return execution.copy();
+            }
             ensureRunning(execution);
             WorkflowDefinition definition = requireDefinition(execution.definitionId());
             WorkflowGraph graph = graphBuilder.build(definition);
-            NodeExecution node = execution.node(nodeId);
             node.markSuccess(output, now());
-            publish(WorkflowEvent.Type.NODE_SUCCEEDED, executionId, nodeId, null);
+            publish(WorkflowEvent.Type.NODE_SUCCEEDED, executionId, nodeId, attemptId, null);
             List<NodeExecution> ready = scheduler.advance(
                     definition, graph, execution, graph.successors(nodeId));
             dispatchReady(definition, execution, ready);
@@ -142,18 +159,30 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
     }
 
     @Override
-    public WorkflowExecution failNode(String executionId, String nodeId, String errorMessage) {
+    public WorkflowExecution failNode(
+            String executionId,
+            String nodeId,
+            String attemptId,
+            String errorMessage) {
         return executionLock.execute(executionId, () -> {
             WorkflowExecution execution = requireExecution(executionId);
+            NodeExecution node = execution.node(nodeId);
+            if (!shouldApplyTerminalCallback(node, attemptId)) {
+                return execution.copy();
+            }
             ensureRunning(execution);
             WorkflowDefinition definition = requireDefinition(execution.definitionId());
             WorkflowGraph graph = graphBuilder.build(definition);
-            NodeExecution node = execution.node(nodeId);
             node.markFailure(errorMessage, now());
-            publish(WorkflowEvent.Type.NODE_FAILED, executionId, nodeId, errorMessage);
+            publish(WorkflowEvent.Type.NODE_FAILED, executionId, nodeId, attemptId, errorMessage);
             if (retryDecider.shouldRetry(definition.node(nodeId), node)) {
                 node.transitionTo(NodeExecutionStatus.READY);
-                publish(WorkflowEvent.Type.NODE_RETRY_SCHEDULED, executionId, nodeId, errorMessage);
+                publish(
+                        WorkflowEvent.Type.NODE_RETRY_SCHEDULED,
+                        executionId,
+                        nodeId,
+                        attemptId,
+                        errorMessage);
                 dispatchReady(definition, execution, List.of(node));
             } else {
                 handleFinalFailure(definition, graph, execution, node);
@@ -261,7 +290,7 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
             cancelNonTerminalNodes(execution, reason);
             execution.transitionTo(WorkflowExecutionStatus.CANCELED, now());
             save(execution);
-            publish(WorkflowEvent.Type.WORKFLOW_CANCELED, executionId, null, reason);
+            publish(WorkflowEvent.Type.WORKFLOW_CANCELED, executionId, null, null, reason);
             return execution.copy();
         });
     }
@@ -368,7 +397,7 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
         }
         execution.transitionTo(WorkflowExecutionStatus.RUNNING, now());
         save(execution);
-        publish(WorkflowEvent.Type.WORKFLOW_STARTED, executionId, null, null);
+        publish(WorkflowEvent.Type.WORKFLOW_STARTED, executionId, null, null, null);
         List<NodeExecution> ready = scheduler.advance(definition, graph, execution, candidates);
         dispatchReady(definition, execution, ready);
         finishIfPossible(execution);
@@ -413,11 +442,17 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
                     execution.id(),
                     node.id(),
                     node.nodeId(),
+                    attempt.id(),
                     attempt.attemptNumber(),
                     attempt.availableAt(),
                     execution.input(),
                     nodeDefinition.configuration()));
-            publish(WorkflowEvent.Type.NODE_SUBMITTED, execution.id(), node.nodeId(), null);
+            publish(
+                    WorkflowEvent.Type.NODE_SUBMITTED,
+                    execution.id(),
+                    node.nodeId(),
+                    attempt.id(),
+                    null);
         }
     }
 
@@ -430,7 +465,11 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
             if (node.status() == NodeExecutionStatus.SUBMITTED
                     || node.status() == NodeExecutionStatus.RUNNING) {
                 nodeExecutor.cancel(new NodeCancellation(
-                        execution.id(), node.id(), node.nodeId(), reason));
+                        execution.id(),
+                        node.id(),
+                        node.nodeId(),
+                        node.currentAttemptId(),
+                        reason));
             }
             node.markCanceled(now());
         }
@@ -442,9 +481,26 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
         }
         completionResolver.resolve(execution).ifPresent(status -> {
             execution.transitionTo(status, now());
-            publish(WorkflowEvent.Type.WORKFLOW_COMPLETED,
-                    execution.id(), null, status.name());
+            publish(
+                    WorkflowEvent.Type.WORKFLOW_COMPLETED,
+                    execution.id(),
+                    null,
+                    null,
+                    status.name());
         });
+    }
+
+    private boolean shouldApplyStartCallback(NodeExecution node, String attemptId) {
+        return node.isCurrentAttempt(attemptId)
+                && node.currentAttemptStatus() == NodeAttemptStatus.SUBMITTED;
+    }
+
+    private boolean shouldApplyTerminalCallback(NodeExecution node, String attemptId) {
+        if (!node.isCurrentAttempt(attemptId)) {
+            return false;
+        }
+        NodeAttemptStatus status = node.currentAttemptStatus();
+        return status == NodeAttemptStatus.SUBMITTED || status == NodeAttemptStatus.RUNNING;
     }
 
     private Set<String> waitingNodeIds(WorkflowExecution execution) {
@@ -488,8 +544,10 @@ public final class DefaultWorkflowEngine implements WorkflowEngine {
             WorkflowEvent.Type type,
             String executionId,
             String nodeId,
+            String attemptId,
             String message) {
-        eventListener.onEvent(new WorkflowEvent(type, executionId, nodeId, message, now()));
+        eventListener.onEvent(new WorkflowEvent(
+                type, executionId, nodeId, attemptId, message, now()));
     }
 
     @FunctionalInterface

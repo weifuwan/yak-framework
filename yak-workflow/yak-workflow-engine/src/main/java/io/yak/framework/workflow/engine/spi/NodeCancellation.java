@@ -4,5 +4,6 @@ public record NodeCancellation(
         String workflowExecutionId,
         String nodeExecutionId,
         String nodeId,
+        String attemptId,
         String reason) {
 }

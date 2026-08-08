@@ -6,6 +6,7 @@ public record WorkflowEvent(
         Type type,
         String workflowExecutionId,
         String nodeId,
+        String attemptId,
         String message,
         Instant occurredAt) {
 

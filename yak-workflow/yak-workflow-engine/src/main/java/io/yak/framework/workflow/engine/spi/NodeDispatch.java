@@ -7,6 +7,7 @@ public record NodeDispatch(
         String workflowExecutionId,
         String nodeExecutionId,
         String nodeId,
+        String attemptId,
         int attemptNumber,
         Instant availableAt,
         Map<String, Object> workflowInput,

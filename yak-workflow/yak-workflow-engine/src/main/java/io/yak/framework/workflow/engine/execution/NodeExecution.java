@@ -1,6 +1,7 @@
 package io.yak.framework.workflow.engine.execution;
 
 import io.yak.framework.workflow.engine.definition.NodeFailurePolicy;
+import io.yak.framework.workflow.engine.state.NodeAttemptStatus;
 import io.yak.framework.workflow.engine.state.NodeExecutionStatus;
 import io.yak.framework.workflow.engine.state.NodeStateMachine;
 import java.time.Instant;
@@ -89,6 +90,18 @@ public final class NodeExecution {
 
     public boolean downstreamContinuationAllowed() {
         return downstreamContinuationAllowed;
+    }
+
+    public String currentAttemptId() {
+        return currentAttempt().id();
+    }
+
+    public NodeAttemptStatus currentAttemptStatus() {
+        return currentAttempt().status();
+    }
+
+    public boolean isCurrentAttempt(String attemptId) {
+        return !attempts.isEmpty() && Objects.equals(currentAttempt().id(), attemptId);
     }
 
     public boolean isEffectiveSuccess() {
