@@ -41,6 +41,21 @@ public final class NodeAttempt {
         this.failureReason = source.failureReason;
     }
 
+    public static NodeAttempt restore(NodeAttemptSnapshot snapshot) {
+        Objects.requireNonNull(snapshot, "snapshot");
+        NodeAttempt attempt = new NodeAttempt(
+                snapshot.id(), snapshot.attemptNumber(), snapshot.availableAt());
+        attempt.status = snapshot.status();
+        attempt.resumeTargetStatus = snapshot.resumeTargetStatus();
+        attempt.startedAt = snapshot.startedAt();
+        attempt.pausedAt = snapshot.pausedAt();
+        attempt.pausedDuration = snapshot.pausedDuration();
+        attempt.endedAt = snapshot.endedAt();
+        attempt.errorMessage = snapshot.errorMessage();
+        attempt.failureReason = snapshot.failureReason();
+        return attempt;
+    }
+
     public String id() {
         return id;
     }
@@ -170,6 +185,21 @@ public final class NodeAttempt {
         requireNonTerminal();
         status = NodeAttemptStatus.CANCELED;
         endedAt = now;
+    }
+
+    public NodeAttemptSnapshot snapshot() {
+        return new NodeAttemptSnapshot(
+                id,
+                attemptNumber,
+                availableAt,
+                status,
+                resumeTargetStatus,
+                startedAt,
+                pausedAt,
+                pausedDuration,
+                endedAt,
+                errorMessage,
+                failureReason);
     }
 
     public NodeAttempt copy() {
