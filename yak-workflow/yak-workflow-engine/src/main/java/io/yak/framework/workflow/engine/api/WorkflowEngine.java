@@ -17,19 +17,10 @@ public interface WorkflowEngine {
      *
      * <p>The default keeps source compatibility for third-party engine implementations that only
      * implement the legacy convenience methods. The built-in engine overrides this and routes commands
-     * through its execution mailbox.</p>
+     * through its execution mailbox.
      */
     default WorkflowExecution submit(WorkflowCommand command) {
         throw new UnsupportedOperationException("This workflow engine does not expose command submission");
-    }
-
-    /**
-     * Reconcile one already persisted execution after host restart.
-     * Existing attempts keep their identities; recovery never creates a replacement attempt merely
-     * because the host process restarted.
-     */
-    default WorkflowExecution recover(String executionId) {
-        return submit(new WorkflowCommand.RecoverWorkflow(executionId));
     }
 
     /**
