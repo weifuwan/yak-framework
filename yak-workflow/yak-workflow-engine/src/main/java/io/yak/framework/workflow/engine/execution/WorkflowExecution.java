@@ -59,6 +59,39 @@ public final class WorkflowExecution {
         this.endedAt = source.endedAt;
     }
 
+    public static WorkflowExecution restore(WorkflowExecutionSnapshot snapshot) {
+        Objects.requireNonNull(snapshot, "snapshot");
+        Map<String, NodeExecution> nodes = new LinkedHashMap<>();
+        for (NodeExecutionSnapshot nodeSnapshot : snapshot.nodes()) {
+            if (!snapshot.id().equals(nodeSnapshot.workflowExecutionId())) {
+                throw new IllegalArgumentException(
+                        "Node execution belongs to a different workflow execution: "
+                                + nodeSnapshot.nodeId());
+            }
+            NodeExecution node = NodeExecution.restore(nodeSnapshot);
+            NodeExecution previous = nodes.putIfAbsent(node.nodeId(), node);
+            if (previous != null) {
+                throw new IllegalArgumentException(
+                        "Duplicate node execution in snapshot: " + node.nodeId());
+            }
+        }
+        WorkflowExecution execution = new WorkflowExecution(
+                snapshot.id(),
+                snapshot.definitionId(),
+                snapshot.sourceExecutionId(),
+                snapshot.input(),
+                nodes,
+                snapshot.createdAt());
+        execution.status = snapshot.status();
+        execution.schedulingStopped = snapshot.schedulingStopped();
+        execution.runStartedAt = snapshot.runStartedAt();
+        execution.pausedAt = snapshot.pausedAt();
+        execution.pausedDuration = snapshot.pausedDuration();
+        execution.updatedAt = snapshot.updatedAt();
+        execution.endedAt = snapshot.endedAt();
+        return execution;
+    }
+
     public String id() {
         return id;
     }
@@ -163,6 +196,23 @@ public final class WorkflowExecution {
 
     public void resumeScheduling() {
         schedulingStopped = false;
+    }
+
+    public WorkflowExecutionSnapshot snapshot() {
+        return new WorkflowExecutionSnapshot(
+                id,
+                definitionId,
+                sourceExecutionId,
+                input,
+                nodes.values().stream().map(NodeExecution::snapshot).toList(),
+                createdAt,
+                status,
+                schedulingStopped,
+                runStartedAt,
+                pausedAt,
+                pausedDuration,
+                updatedAt,
+                endedAt);
     }
 
     public WorkflowExecution copy() {
