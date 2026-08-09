@@ -1,5 +1,7 @@
 package io.yak.framework.workflow.engine.spi;
 
+import io.yak.framework.workflow.engine.state.NodeAttemptStatus;
+
 public interface NodeExecutor {
 
     /**
@@ -11,6 +13,20 @@ public interface NodeExecutor {
      * terminal callback is processed.
      */
     void submit(NodeDispatch dispatch);
+
+    /**
+     * Reconcile an already persisted attempt after host restart.
+     *
+     * <p>The default only re-submits SUBMITTED attempts with the original attempt id. This is safe for
+     * idempotent executors and closes the crash window between persistence and remote submission.
+     * RUNNING/PAUSED attempts are deliberately left to host-specific reconciliation so recovery never
+     * creates a second remote execution accidentally.</p>
+     */
+    default void recover(NodeRecovery recovery) {
+        if (recovery.attemptStatus() == NodeAttemptStatus.SUBMITTED) {
+            submit(recovery.dispatch());
+        }
+    }
 
     default void cancel(NodeCancellation cancellation) {
         // Implement when the underlying executor supports cancellation.
