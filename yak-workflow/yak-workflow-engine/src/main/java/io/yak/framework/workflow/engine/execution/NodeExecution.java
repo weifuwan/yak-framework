@@ -53,6 +53,25 @@ public final class NodeExecution {
         this.downstreamContinuationAllowed = source.downstreamContinuationAllowed;
     }
 
+    public static NodeExecution restore(NodeExecutionSnapshot snapshot) {
+        Objects.requireNonNull(snapshot, "snapshot");
+        NodeExecution execution = new NodeExecution(
+                snapshot.id(),
+                snapshot.workflowExecutionId(),
+                snapshot.nodeId(),
+                snapshot.failurePolicy());
+        execution.status = snapshot.status();
+        execution.attempts.clear();
+        snapshot.attempts().stream()
+                .map(NodeAttempt::restore)
+                .forEach(execution.attempts::add);
+        execution.output = ExecutionValueSnapshot.immutableMap(snapshot.output());
+        execution.errorMessage = snapshot.errorMessage();
+        execution.failureHandled = snapshot.failureHandled();
+        execution.downstreamContinuationAllowed = snapshot.downstreamContinuationAllowed();
+        return execution;
+    }
+
     public String id() {
         return id;
     }
@@ -246,6 +265,20 @@ public final class NodeExecution {
     public void markCopiedSuccess(Map<String, Object> copiedOutput) {
         this.output = ExecutionValueSnapshot.immutableMap(copiedOutput);
         transitionTo(NodeExecutionStatus.SUCCESS);
+    }
+
+    public NodeExecutionSnapshot snapshot() {
+        return new NodeExecutionSnapshot(
+                id,
+                workflowExecutionId,
+                nodeId,
+                failurePolicy,
+                status,
+                attempts.stream().map(NodeAttempt::snapshot).toList(),
+                output,
+                errorMessage,
+                failureHandled,
+                downstreamContinuationAllowed);
     }
 
     public NodeExecution copy() {
