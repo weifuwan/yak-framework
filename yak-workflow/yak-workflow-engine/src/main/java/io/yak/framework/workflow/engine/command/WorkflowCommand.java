@@ -7,8 +7,8 @@ import java.util.Objects;
 /**
  * Immutable input messages for one existing workflow execution.
  *
- * <p>All executor callbacks, timeout ticks, recovery, and manual execution controls are represented as
- * commands before they are allowed to mutate workflow state.</p>
+ * <p>All executor callbacks, timeout ticks, and manual execution controls are represented as
+ * commands before they are allowed to mutate workflow state.
  */
 public sealed interface WorkflowCommand
         permits WorkflowCommand.NodeStarted,
@@ -17,7 +17,6 @@ public sealed interface WorkflowCommand
                 WorkflowCommand.NodePaused,
                 WorkflowCommand.NodeResumed,
                 WorkflowCommand.CheckTimeouts,
-                WorkflowCommand.RecoverWorkflow,
                 WorkflowCommand.PauseWorkflow,
                 WorkflowCommand.ResumeWorkflow,
                 WorkflowCommand.CancelWorkflow,
@@ -85,13 +84,6 @@ public sealed interface WorkflowCommand
 
     record CheckTimeouts(String executionId) implements WorkflowCommand {
         public CheckTimeouts {
-            executionId = requireText(executionId, "executionId");
-        }
-    }
-
-    /** Reconcile one already persisted non-terminal workflow after host restart. */
-    record RecoverWorkflow(String executionId) implements WorkflowCommand {
-        public RecoverWorkflow {
             executionId = requireText(executionId, "executionId");
         }
     }
