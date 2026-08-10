@@ -34,3 +34,19 @@ D:\baize-works\baize-tools\apache-maven-3.9.16\bin\mvn clean install -DskipTests
 ```shell
 D:\baize-works\baize-tools\apache-maven-3.9.16\bin\mvn clean deploy -DskipTests -Dspotless.check.skip=true
 ```
+
+## 正式版本混淆
+
+普通构建和 Snapshot 发布默认不启用 ProGuard。只有显式启用 `release-obfuscated` Profile 时，才会在 `package` 阶段对各个 JAR 模块执行混淆：
+
+```shell
+D:\baize-works\baize-tools\apache-maven-3.9.16\bin\mvn clean package -Prelease-obfuscated -DskipTests -Dspotless.check.skip=true
+```
+
+正式 Release 发布示例：
+
+```shell
+D:\baize-works\baize-tools\apache-maven-3.9.16\bin\mvn clean deploy -Prelease-obfuscated -Drevision=1.0.0 -DskipTests -Dspotless.check.skip=true
+```
+
+第一版混淆策略只进行名称混淆，不执行 shrink/optimize，并保留公共 API 与 Spring/Jackson 等运行时反射所需的元数据。各模块会在 `target/` 下生成 `proguard-mapping.txt` 和 `proguard-seeds.txt`，用于问题排查和堆栈反混淆；这些文件属于内部发布元数据，不应作为 Maven 制品发布或对外提供。
