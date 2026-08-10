@@ -1,6 +1,7 @@
 package io.yak.framework.security.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.yak.framework.common.PageData;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.security.common.dto.message.MessageDTO;
 import io.yak.framework.security.common.dto.oplog.OplogDTO;
@@ -236,7 +237,7 @@ public class RoleServiceImpl implements RoleService {
             rolePage.getRecords();
 
     if (CollectionUtils.isEmpty(roleList)) {
-      return new PagingData<>(
+      return toPagingData(
               new ArrayList<>(),
               rolePage);
     }
@@ -337,7 +338,7 @@ public class RoleServiceImpl implements RoleService {
       roleVOList.add(roleVO);
     }
 
-    return new PagingData<>(
+    return toPagingData(
             roleVOList,
             rolePage);
   }
@@ -517,7 +518,6 @@ public class RoleServiceImpl implements RoleService {
     Role currentRole =
             roleDao.selectByRoleId(
                     roleSaveDTO.getId());
-
     if (currentRole == null) {
       throw new YakSecurityException(
               ResultCode.ROLE_NOT_EXISTS);
@@ -1333,6 +1333,21 @@ public class RoleServiceImpl implements RoleService {
     if (StringUtils.hasText(operator)) {
       role.setLastReviser(operator);
     }
+  }
+
+  /**
+   * 将持久化分页元数据转换为统一 HTTP 分页数据。
+   */
+  private static <T> PagingData<T> toPagingData(
+          List<T> records,
+          IPage<?> page) {
+    return PagingData.from(
+            new PageData<>(
+                    records,
+                    page.getTotal(),
+                    page.getPages(),
+                    page.getCurrent(),
+                    page.getSize()));
   }
 
   /**
