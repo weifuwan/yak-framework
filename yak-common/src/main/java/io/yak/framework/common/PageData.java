@@ -5,17 +5,17 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * 与具体持久化框架无关的分页数据。
+ * 与具体持久化框架无关的统一分页数据。
  *
  * <p>该类型用于 Repository / Service 等内部业务边界，避免 MyBatis {@code IPage} 等基础设施类型向上泄漏。
- * HTTP 输出仍由 {@link PagingData} 负责，以保持现有接口 JSON 结构稳定。</p>
+ * HTTP 输出由 {@link PagingData} 负责，以保持现有接口 JSON 结构稳定。</p>
  *
- * <p>第一阶段保持可继承，便于已有模块分页类型以兼容别名方式平滑迁移；新代码仍应直接使用本类型。</p>
+ * <p>普通业务模块应直接使用本类型，不应通过继承再次创建 {@code XxxPage<T>} 兼容包装。</p>
  *
  * @param <T> 业务数据类型
  * @author weifuwan
  */
-public class PageData<T> {
+public final class PageData<T> {
 
     private final List<T> records;
     private final long total;
