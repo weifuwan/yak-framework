@@ -1,6 +1,7 @@
 package io.yak.framework.security.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.yak.framework.common.PageData;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.security.common.dto.oplog.OplogDTO;
 import io.yak.framework.security.common.dto.oplog.OplogQueryDTO;
@@ -67,7 +68,7 @@ public class OplogServiceImpl implements OplogService {
 
         List<Oplog> oplogList = oplogPage.getRecords();
         if (CollectionUtils.isEmpty(oplogList)) {
-            return new PagingData<>(
+            return toPagingData(
                     new ArrayList<>(),
                     oplogPage);
         }
@@ -82,7 +83,7 @@ public class OplogServiceImpl implements OplogService {
             }
         }
 
-        return new PagingData<>(
+        return toPagingData(
                 oplogVOList,
                 oplogPage);
     }
@@ -229,6 +230,18 @@ public class OplogServiceImpl implements OplogService {
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    private static <T> PagingData<T> toPagingData(
+            List<T> records,
+            IPage<?> page) {
+        return PagingData.from(
+                new PageData<>(
+                        records,
+                        page.getTotal(),
+                        page.getPages(),
+                        page.getCurrent(),
+                        page.getSize()));
     }
 
     private static String defaultIfBlank(

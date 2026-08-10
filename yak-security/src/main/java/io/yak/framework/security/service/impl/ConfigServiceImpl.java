@@ -1,6 +1,7 @@
 package io.yak.framework.security.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.yak.framework.common.PageData;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.config.ConfigDTO;
@@ -298,7 +299,13 @@ public class ConfigServiceImpl implements ConfigService {
                     configPage.getRecords(),
                     ConfigVO.class);
 
-    return new PagingData<>(configList, configPage);
+    return PagingData.from(
+            new PageData<>(
+                    configList,
+                    configPage.getTotal(),
+                    configPage.getPages(),
+                    configPage.getCurrent(),
+                    configPage.getSize()));
   }
 
   /**
