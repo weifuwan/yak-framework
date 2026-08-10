@@ -3,7 +3,6 @@ package io.yak.framework.security.controller.v1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.common.PagingData;
-import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.dto.resource.AssignToManyUserDTO;
@@ -148,24 +147,24 @@ public class ResourceController {
 
   @Operation(summary = "分页查询按资源管理的权限信息")
   @PostMapping({"/mbr/page", "/by-resource/page"})
-  public PagingResult<MByRVO> byResourcePage(
+  public Result<PagingData<MByRVO>> byResourcePage(
           @RequestBody(required = false)
           MByRQueryDTO queryDTO) {
     MByRQueryDTO query = normalize(queryDTO);
     PagingData<MByRVO> pagingData =
             userResourceService.getManageByResourcePage(query);
-    return PagingResult.success(pagingData);
+    return Result.success(pagingData);
   }
 
   @Operation(summary = "分页查询按用户管理的权限信息")
   @PostMapping({"/mbu/page", "/by-user/page"})
-  public PagingResult<MByUVO> byUserPage(
+  public Result<PagingData<MByUVO>> byUserPage(
           @RequestBody(required = false)
           MByUQueryDTO queryDTO) {
     MByUQueryDTO query = normalize(queryDTO);
     PagingData<MByUVO> pagingData =
             userResourceService.getManageByUserPage(query);
-    return PagingResult.success(pagingData);
+    return Result.success(pagingData);
   }
 
   @Operation(summary = "为单个用户分配资源权限")

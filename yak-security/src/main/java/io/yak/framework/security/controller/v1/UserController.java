@@ -3,7 +3,6 @@ package io.yak.framework.security.controller.v1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.common.PagingData;
-import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.constant.SecurityPermissionCode;
@@ -102,13 +101,13 @@ public class UserController {
 
   @Operation(summary = "分页查询用户")
   @PostMapping("/page")
-  public PagingResult<UserVO> page(
+  public Result<PagingData<UserVO>> page(
           @RequestBody UserQueryDTO queryDTO) {
 
     PagingData<UserVO> pagingData =
             userService.getUserPage(queryDTO);
 
-    return PagingResult.success(pagingData);
+    return Result.success(pagingData);
   }
 
   @Operation(summary = "根据部门 ID 查询用户")
