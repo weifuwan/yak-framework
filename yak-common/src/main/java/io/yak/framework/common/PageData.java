@@ -57,6 +57,27 @@ public final class PageData<T> {
     }
 
     /**
+     * 根据记录、总条数、当前页和每页大小创建分页数据，并计算总页数。
+     *
+     * <p>适用于使用 limit/offset 或其他非 MyBatis 分页查询的 Repository Adapter。</p>
+     *
+     * @param records 当前页记录
+     * @param total 数据总条数
+     * @param pageNo 当前页码
+     * @param pageSize 每页条数
+     * @param <T> 业务数据类型
+     * @return 分页数据
+     */
+    public static <T> PageData<T> of(
+            List<T> records,
+            long total,
+            long pageNo,
+            long pageSize) {
+        long pages = pageSize <= 0L ? 0L : (total + pageSize - 1L) / pageSize;
+        return new PageData<>(records, total, pages, pageNo, pageSize);
+    }
+
+    /**
      * 映射当前页记录，并保持分页元数据不变。
      *
      * @param mapper 记录转换函数
@@ -82,7 +103,7 @@ public final class PageData<T> {
      * @return 空分页数据
      */
     public static <T> PageData<T> empty(long pageNo, long pageSize) {
-        return new PageData<>(List.of(), 0L, 0L, pageNo, pageSize);
+        return of(List.of(), 0L, pageNo, pageSize);
     }
 
     @Override
