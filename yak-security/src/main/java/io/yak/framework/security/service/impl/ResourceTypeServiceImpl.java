@@ -1,6 +1,7 @@
 package io.yak.framework.security.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.yak.framework.common.PageData;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.security.common.dto.resource.type.ResourceTypeQueryDTO;
 import io.yak.framework.security.common.entity.ResourceType;
@@ -114,9 +115,13 @@ public class ResourceTypeServiceImpl
       resourceTypeList = new ArrayList<>();
     }
 
-    return new PagingData<>(
-            resourceTypeList,
-            resourceTypePage);
+    return PagingData.from(
+            new PageData<>(
+                    resourceTypeList,
+                    resourceTypePage.getTotal(),
+                    resourceTypePage.getPages(),
+                    resourceTypePage.getCurrent(),
+                    resourceTypePage.getSize()));
   }
 
   /**
