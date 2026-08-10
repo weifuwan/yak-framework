@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.common.PagingData;
-import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.project.ProjectQueryDTO;
 import io.yak.framework.security.common.dto.project.ProjectSaveDTO;
@@ -239,14 +238,14 @@ public class ProjectController {
    */
   @Operation(summary = "分页查询项目")
   @PostMapping("/page")
-  public PagingResult<ProjectVO> page(
+  public Result<PagingData<ProjectVO>> page(
           @RequestBody ProjectQueryDTO queryDTO) {
 
     PagingData<ProjectVO> pagingData =
             projectService.getProjectPage(
                     queryDTO);
 
-    return PagingResult.success(pagingData);
+    return Result.success(pagingData);
   }
 
   /**
