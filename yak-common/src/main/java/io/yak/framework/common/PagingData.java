@@ -1,7 +1,13 @@
 package io.yak.framework.common;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +15,8 @@ import java.util.List;
 /**
  * HTTP 分页数据封装对象。
  *
- * <p>该类型保留现有 {@code bizData + pagination} JSON 契约。Repository / Service 内部分页应优先使用
- * {@link PageData}，在 HTTP 输出边界转换为本类型。</p>
+ * <p>该类型只负责现有 {@code bizData + pagination} HTTP JSON 契约。
+ * Repository / Service 内部分页统一使用 {@link PageData}，并在 HTTP 输出边界转换为本类型。</p>
  *
  * @param <T> 业务数据类型
  * @author weifuwan
@@ -67,46 +73,6 @@ public class PagingData<T> {
      */
     public static <T> PagingData<T> from(PageData<T> pageData) {
         return new PagingData<>(pageData);
-    }
-
-    /**
-     * 根据业务数据和 MyBatis-Plus 分页对象创建分页数据。
-     *
-     * <p>仅为第一阶段源码兼容保留。新代码不得在 Service / Repository 使用 MyBatis {@code IPage}，
-     * 应先转换为 {@link PageData}。</p>
-     *
-     * @param bizData  业务数据列表
-     * @param pageInfo MyBatis-Plus 分页对象
-     * @deprecated 使用 {@link PageData} 和 {@link #from(PageData)}，后续阶段移除 MyBatis 兼容构造器
-     */
-    @Deprecated(since = "1.0.0", forRemoval = false)
-    public PagingData(List<T> bizData, IPage<?> pageInfo) {
-        this.pagination = Pagination.builder()
-                .total(pageInfo.getTotal())
-                .pages(pageInfo.getPages())
-                .pageNo(pageInfo.getCurrent())
-                .pageSize(pageInfo.getSize())
-                .build();
-        this.bizData = bizData;
-    }
-
-    /**
-     * 根据 MyBatis-Plus 分页对象创建分页数据。
-     *
-     * <p>仅为第一阶段源码兼容保留。业务数据列表初始化为空列表。</p>
-     *
-     * @param pageInfo MyBatis-Plus 分页对象
-     * @deprecated 使用 {@link PageData} 和 {@link #from(PageData)}，后续阶段移除 MyBatis 兼容构造器
-     */
-    @Deprecated(since = "1.0.0", forRemoval = false)
-    public PagingData(IPage<?> pageInfo) {
-        this.pagination = Pagination.builder()
-                .total(pageInfo.getTotal())
-                .pages(pageInfo.getPages())
-                .pageNo(pageInfo.getCurrent())
-                .pageSize(pageInfo.getSize())
-                .build();
-        this.bizData = new ArrayList<>();
     }
 
     /**
