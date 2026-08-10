@@ -1,9 +1,12 @@
 package io.yak.framework.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -43,5 +46,21 @@ class PageDataTest {
         assertEquals(3L, pagingData.getPagination().getPages());
         assertEquals(2L, pagingData.getPagination().getPageNo());
         assertEquals(10L, pagingData.getPagination().getPageSize());
+    }
+
+    @Test
+    void pagingDataPublicConstructorsShouldNotDependOnPersistenceFrameworks() {
+        for (Constructor<?> constructor : PagingData.class.getConstructors()) {
+            boolean hasPersistenceType =
+                    Arrays.stream(constructor.getParameterTypes())
+                            .map(Class::getName)
+                            .anyMatch(name ->
+                                    name.startsWith("com.baomidou.")
+                                            || name.startsWith("org.springframework.jdbc.")
+                                            || name.startsWith("jakarta.persistence."));
+            assertFalse(
+                    hasPersistenceType,
+                    () -> "PagingData constructor must stay persistence-framework neutral: " + constructor);
+        }
     }
 }
