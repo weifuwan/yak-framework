@@ -80,6 +80,9 @@ public final class PageData<T> {
     /**
      * 映射当前页记录，并保持分页元数据不变。
      *
+     * <p>显式指定 {@code Stream.map} 的目标类型为外层 {@code R}，避免
+     * {@code Function<? super T, ? extends R>} 被推断为独立 capture type。</p>
+     *
      * @param mapper 记录转换函数
      * @param <R> 目标记录类型
      * @return 映射后的分页数据
@@ -87,7 +90,7 @@ public final class PageData<T> {
     public <R> PageData<R> map(Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper");
         return new PageData<>(
-                records.stream().map(mapper).toList(),
+                records.stream().<R>map(mapper).toList(),
                 total,
                 pages,
                 pageNo,

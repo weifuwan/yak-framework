@@ -10,6 +10,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
 class PageDataTest {
@@ -49,6 +50,23 @@ class PageDataTest {
         assertEquals(6L, mapped.pages());
         assertEquals(3L, mapped.pageNo());
         assertEquals(2L, mapped.pageSize());
+    }
+
+    @Test
+    void shouldMapCovariantFunctionWithoutWildcardCaptureLeak() {
+        PageData<Integer> page = PageData.of(List.of(1, 2), 2L, 1L, 20L);
+        Function<Number, StringBuilder> mapper =
+                value -> new StringBuilder(String.valueOf(value));
+
+        PageData<CharSequence> mapped = page.map(mapper);
+
+        assertEquals(
+                List.of("1", "2"),
+                mapped.records().stream().map(CharSequence::toString).toList());
+        assertEquals(2L, mapped.total());
+        assertEquals(1L, mapped.pages());
+        assertEquals(1L, mapped.pageNo());
+        assertEquals(20L, mapped.pageSize());
     }
 
     @Test
