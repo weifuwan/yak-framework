@@ -1,6 +1,7 @@
 package io.yak.framework.security.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.yak.framework.common.PageData;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.oplog.OplogDTO;
@@ -297,7 +298,6 @@ public class ProjectServiceImpl
     List<String> resourceList =
             listResourceOfProject(
                     projectId);
-
     if (!CollectionUtils.isEmpty(resourceList)) {
       throw new YakSecurityException(
               ResultCode
@@ -636,7 +636,7 @@ public class ProjectServiceImpl
       projectList = new ArrayList<>();
     }
 
-    return new PagingData<>(
+    return toPagingData(
             projectList,
             projectPage);
   }
@@ -860,7 +860,7 @@ public class ProjectServiceImpl
             buildProjectVOList(
                     projectPage.getRecords());
 
-    return new PagingData<>(
+    return toPagingData(
             projectList,
             projectPage);
   }
@@ -1324,6 +1324,21 @@ public class ProjectServiceImpl
       throw new YakSecurityException(
               ResultCode.USER_ID_CANNOT_BE_NULL);
     }
+  }
+
+  /**
+   * 将持久化分页元数据转换为统一 HTTP 分页数据。
+   */
+  private static <T> PagingData<T> toPagingData(
+          List<T> records,
+          IPage<?> page) {
+    return PagingData.from(
+            new PageData<>(
+                    records,
+                    page.getTotal(),
+                    page.getPages(),
+                    page.getCurrent(),
+                    page.getSize()));
   }
 
   /**
