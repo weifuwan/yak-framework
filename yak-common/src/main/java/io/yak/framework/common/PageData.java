@@ -10,23 +10,50 @@ import java.util.function.Function;
  * <p>该类型用于 Repository / Service 等内部业务边界，避免 MyBatis {@code IPage} 等基础设施类型向上泄漏。
  * HTTP 输出仍由 {@link PagingData} 负责，以保持现有接口 JSON 结构稳定。</p>
  *
- * @param records 当前页记录
- * @param total 数据总条数
- * @param pages 总页数
- * @param pageNo 当前页码
- * @param pageSize 每页数据条数
+ * <p>第一阶段保持可继承，便于已有模块分页类型以兼容别名方式平滑迁移；新代码仍应直接使用本类型。</p>
+ *
  * @param <T> 业务数据类型
  * @author weifuwan
  */
-public record PageData<T>(
-        List<T> records,
-        long total,
-        long pages,
-        long pageNo,
-        long pageSize) {
+public class PageData<T> {
 
-    public PageData {
-        records = records == null ? List.of() : List.copyOf(records);
+    private final List<T> records;
+    private final long total;
+    private final long pages;
+    private final long pageNo;
+    private final long pageSize;
+
+    public PageData(
+            List<T> records,
+            long total,
+            long pages,
+            long pageNo,
+            long pageSize) {
+        this.records = records == null ? List.of() : List.copyOf(records);
+        this.total = total;
+        this.pages = pages;
+        this.pageNo = pageNo;
+        this.pageSize = pageSize;
+    }
+
+    public List<T> records() {
+        return records;
+    }
+
+    public long total() {
+        return total;
+    }
+
+    public long pages() {
+        return pages;
+    }
+
+    public long pageNo() {
+        return pageNo;
+    }
+
+    public long pageSize() {
+        return pageSize;
     }
 
     /**
@@ -56,5 +83,32 @@ public record PageData<T>(
      */
     public static <T> PageData<T> empty(long pageNo, long pageSize) {
         return new PageData<>(List.of(), 0L, 0L, pageNo, pageSize);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof PageData<?> that)) return false;
+        return total == that.total
+                && pages == that.pages
+                && pageNo == that.pageNo
+                && pageSize == that.pageSize
+                && records.equals(that.records);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(records, total, pages, pageNo, pageSize);
+    }
+
+    @Override
+    public String toString() {
+        return "PageData{" +
+                "records=" + records +
+                ", total=" + total +
+                ", pages=" + pages +
+                ", pageNo=" + pageNo +
+                ", pageSize=" + pageSize +
+                '}';
     }
 }
