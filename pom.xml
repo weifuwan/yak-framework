@@ -36,6 +36,7 @@
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
+        <proguard-maven-plugin.version>2.7.0</proguard-maven-plugin.version>
         <spotless-maven-plugin.version>2.44.3</spotless-maven-plugin.version>
     </properties>
 
@@ -193,4 +194,42 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release-obfuscated</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.wvengen</groupId>
+                        <artifactId>proguard-maven-plugin</artifactId>
+                        <version>${proguard-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>obfuscate-release-artifact</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>proguard</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <injarNotExistsSkip>true</injarNotExistsSkip>
+                            <obfuscate>true</obfuscate>
+                            <proguardInclude>${maven.multiModuleProjectDirectory}/proguard-release.pro</proguardInclude>
+                            <libs>
+                                <lib>${java.home}/jmods</lib>
+                            </libs>
+                            <generateTemporaryConfigurationFile>true</generateTemporaryConfigurationFile>
+                            <putLibraryJarsInTempDir>true</putLibraryJarsInTempDir>
+                            <mappingFileName>proguard-mapping.txt</mappingFileName>
+                            <seedFileName>proguard-seeds.txt</seedFileName>
+                            <attachMap>false</attachMap>
+                            <attachSeed>false</attachSeed>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
