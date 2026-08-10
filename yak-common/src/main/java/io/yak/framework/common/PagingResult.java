@@ -5,11 +5,14 @@ import lombok.*;
 /**
  * 分页接口统一返回结果。
  *
- * <p>封装接口执行状态、提示信息和分页业务数据。</p>
+ * <p>第一阶段为兼容现有调用保留。新接口统一使用 {@code Result<PagingData<T>>}，避免与 {@link Result}
+ * 重复维护 success/fail 等响应语义。该调整不会改变现有分页 JSON 结构。</p>
  *
  * @param <T> 分页记录的数据类型
  * @author weifuwan
+ * @deprecated 新代码使用 {@code Result<PagingData<T>>}
  */
+@Deprecated(since = "1.0.0", forRemoval = false)
 @Getter
 @Setter
 @NoArgsConstructor
