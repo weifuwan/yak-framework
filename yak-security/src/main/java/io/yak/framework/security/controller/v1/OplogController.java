@@ -3,7 +3,6 @@ package io.yak.framework.security.controller.v1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.common.PagingData;
-import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.dto.oplog.OplogQueryDTO;
@@ -39,13 +38,13 @@ public class OplogController {
   /** 分页查询操作日志。 */
   @Operation(summary = "分页查询操作日志")
   @PostMapping("/page")
-  public PagingResult<OplogVO> page(
+  public Result<PagingData<OplogVO>> page(
           @RequestBody(required = false)
                   OplogQueryDTO queryDTO) {
 
     PagingData<OplogVO> pagingData =
             oplogService.getOplogPage(queryDTO);
-    return PagingResult.success(pagingData);
+    return Result.success(pagingData);
   }
 
   /** 查询操作日志筛选选项。 */
