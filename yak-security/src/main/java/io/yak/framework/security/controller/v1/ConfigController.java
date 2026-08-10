@@ -3,7 +3,6 @@ package io.yak.framework.security.controller.v1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.common.PagingData;
-import io.yak.framework.common.PagingResult;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.dto.config.ConfigDTO;
@@ -55,13 +54,13 @@ public class ConfigController {
 
     @Operation(summary = "分页查询配置")
     @PostMapping("/page")
-    public PagingResult<ConfigVO> page(
+    public Result<PagingData<ConfigVO>> page(
             @RequestBody(required = false) ConfigQueryDTO queryDTO) {
 
         ConfigQueryDTO query = normalizeQuery(queryDTO);
         PagingData<ConfigVO> pagingData =
                 configService.pagingConfig(query);
-        return PagingResult.success(pagingData);
+        return Result.success(pagingData);
     }
 
     @Operation(summary = "查询全部配置分组")

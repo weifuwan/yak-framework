@@ -29,3 +29,8 @@ Yak Framework 使用小型 Maven 模块保持能力边界清晰：
 ```shell
 D:\baize-works\baize-tools\apache-maven-3.9.16\bin\mvn clean install -DskipTests -Dspotless.check.skip=true
 ```
+
+## 上传到阿里云
+```shell
+D:\baize-works\baize-tools\apache-maven-3.9.16\bin\mvn clean deploy -DskipTests -Dspotless.check.skip=true
+```
