@@ -349,14 +349,14 @@ DAO
 
 Repository 是**领域仓储 / 聚合适配器**，不是 DAO 的同义词。
 
-它的接口应该使用 Domain：
+它的接口应该使用 Domain 和框架无关的公共契约：
 
 ```java
 public interface ResourceRepository {
     Optional<ResourceNode> findById(Long id);
     boolean insert(ResourceNode resource);
     boolean update(ResourceNode resource);
-    ResourcePage<ResourceNode> page(ResourceQuery query);
+    PageData<ResourceNode> page(ResourceQuery query);
 }
 ```
 
@@ -367,7 +367,7 @@ DTO
 VO
 PO
 IPage
-Page<T>
+MyBatis Page<T>
 LambdaQueryWrapper
 Mapper
 ResultSet
@@ -392,7 +392,8 @@ Adapter 的典型职责：
 - 多表组装；
 - JSON 编解码；
 - Framework Repository SPI 适配；
-- MyBatis 生成 ID 后回填 Domain。
+- MyBatis 生成 ID 后回填 Domain；
+- `IPage<PO> → PageData<Domain>` 分页边界转换。
 
 如果一个模块没有真正的领域仓储需求，可以不创建 Repository。
 
@@ -575,6 +576,7 @@ Domain
 Aggregate
 Snapshot
 Domain Query
+PageData
 ```
 
 例如 Workflow：
@@ -599,31 +601,55 @@ WorkflowNodeAttemptDao
 
 ## 11. 分页模型边界
 
-MyBatis `IPage` 属于持久化层。
-
-复杂模块中推荐在 Repository 边界转换为框架无关分页：
-
-```java
-public record ResourcePage<T>(
-    List<T> records,
-    long total,
-    long pages,
-    long pageNo,
-    long pageSize) {
-}
-```
-
-调用链：
+分页统一使用三种明确的边界模型：
 
 ```text
-IPage<ResourcePO>
-       ↓ Adapter
-ResourcePage<ResourceNode>
-       ↓ Service
-PagingData<ResourceVO>
+DAO / Mapper
+    IPage<PO>
+        ↓ Repository Adapter
+Repository / Service
+    PageData<Domain>
+        ↓ ViewMapper / Service
+HTTP
+    Result<PagingData<VO>>
 ```
 
-这样 Service / Domain 不依赖 MyBatis。
+规则：
+
+- MyBatis `IPage` 只属于持久化层；
+- Repository Adapter 负责 `IPage<PO> → PageData<Domain>`；
+- Repository / Service / 跨模块调用统一使用 `PageData<T>`；
+- HTTP 分页数据使用 `PagingData<T>`，保持现有 `bizData + pagination` JSON；
+- HTTP Envelope 统一使用 `Result<T>`，不再维护独立 `PagingResult<T>`；
+- 普通业务模块不得重新创建 `OfflinePage`、`ResourcePage`、`DataSourcePage`、`QualityDomain.Page` 等等价包装。
+
+例如：
+
+```java
+IPage<ResourcePO> page = resourceDao.selectPage(query);
+
+PageData<ResourceNode> domainPage = new PageData<>(
+    page.getRecords().stream().map(this::toDomain).toList(),
+    page.getTotal(),
+    page.getPages(),
+    page.getCurrent(),
+    page.getSize());
+```
+
+HTTP 边界：
+
+```java
+PageData<ResourceVO> viewPage = domainPage.map(viewMapper::node);
+return Result.success(PagingData.from(viewPage));
+```
+
+`yak-common` 必须保持持久化框架无关，不因为分页工具依赖 MyBatis-Plus。
+
+更完整的分页规范见：
+
+```text
+docs/pagination-conventions.md
+```
 
 ---
 
@@ -653,7 +679,7 @@ HTTP VO
 Workflow → OfflineJobDefinitionQueryDTO → OfflineJobDefinitionVO
 
 推荐：
-Workflow → OfflineDefinitionQuery → OfflinePage<OfflineJobDefinition>
+Workflow → OfflineDefinitionQuery → PageData<OfflineJobDefinition>
 ```
 
 HTTP DTO / VO 只应该服务于 HTTP 边界。
@@ -779,13 +805,20 @@ Compiler
 
 推荐关键模块增加轻量架构测试，例如反射检查：
 
-### Repository 不允许 DTO / VO / PO
+### Repository 不允许 DTO / VO / PO / IPage
 
 ```java
 for (Method method : XxxRepository.class.getDeclaredMethods()) {
-    assertNoPackage(method.getGenericReturnType(), ".bean.dto.", ".bean.vo.", ".bean.po.");
+    assertNoPackage(
+        method.getGenericReturnType(),
+        ".bean.dto.",
+        ".bean.vo.",
+        ".bean.po.",
+        "com.baomidou.mybatisplus");
 }
 ```
+
+Repository 分页方法的 raw return type 应为 `PageData.class`。
 
 ### DAO 不允许 DTO / VO
 
@@ -794,13 +827,13 @@ DAO parameter / return type
 不能包含 .bean.dto. / .bean.vo.
 ```
 
-### Service 不允许 DAO / PO
+### Service 不允许 DAO / PO / IPage
 
 复杂模块可检查：
 
 ```text
-Service fields
-不能包含 .dao. / .bean.po.
+Service fields / public signatures
+不能包含 .dao. / .bean.po. / com.baomidou.mybatisplus
 ```
 
 ### Controller 不能绕过 Service
@@ -960,6 +993,28 @@ Repository → Adapter → QueryMapper.xml
 
 ---
 
+### 19.7 业务模块重新包装普通分页
+
+```java
+// 不推荐
+public record ResourcePage<T>(
+    List<T> records,
+    long total,
+    long pages,
+    long pageNo,
+    long pageSize) {}
+```
+
+推荐直接：
+
+```java
+PageData<ResourceNode>
+```
+
+如果只是字段名完全相同，没有新增独立业务语义，就不应再增加一层分页类型。
+
+---
+
 ## 20. Code Review Checklist
 
 新模块或重构模块至少检查以下内容：
@@ -968,7 +1023,9 @@ Repository → Adapter → QueryMapper.xml
 - [ ] DTO 是否只停留在 HTTP / Application 输入边界？
 - [ ] VO 是否只作为输出模型？
 - [ ] Service 是否泄漏 Mapper / PO / IPage？
-- [ ] Repository 是否只暴露 Domain？
+- [ ] Repository 是否只暴露 Domain / `PageData` 等框架无关契约？
+- [ ] Repository 分页是否避免 `IPage` / MyBatis `Page`？
+- [ ] 是否避免创建无业务语义的 `XxxPage<T>`？
 - [ ] DAO 是否避免 DTO / VO？
 - [ ] PO 是否忠实对应数据库表？
 - [ ] 聚合 SQL 是否使用持久化 Row，而不是 VO？
