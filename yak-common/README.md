@@ -3,12 +3,26 @@
 `yak-common` 只承载各业务模块都需要的统一契约，避免业务代码依赖
 `yak-security` 的包名：
 
-- `Result`、`PagingResult`、`PagingData`：统一 API 返回与分页结构；
+- `Result`：统一 API 返回 Envelope；
+- `PageData`：Repository / Service 使用的框架无关分页数据；
+- `PagingData`：HTTP 分页输出结构，继续保持 `bizData + pagination` JSON 契约；
+- `PagingResult`：第一阶段兼容保留并已废弃，新接口使用 `Result<PagingData<T>>`；
 - `ErrorCode`：业务模块错误码的最小接口；
 - `BusinessException`：携带结构化错误码的通用业务异常；
 - `Assert`：基于 `BusinessException` 的轻量前置条件校验。
 
-业务错误枚举、DTO、实体和领域工具应留在各自模块，不应放入本模块。 业务模块只需实现 `ErrorCode`：
+分页默认遵循：
+
+```text
+DAO / Mapper                  Repository / Service             HTTP
+IPage<PO>  -- Adapter -->     PageData<Domain>  -- View -->    Result<PagingData<VO>>
+```
+
+第一阶段为了兼容现有调用，`PagingData(IPage<?>)` 相关构造器暂时保留并标记为 `Deprecated`；新代码不得继续使用。业务模块也不再创建 `OfflinePage`、`DataSourcePage`、`ResourcePage` 等模块私有分页容器。
+
+完整规范见 `docs/pagination-conventions.md`。
+
+业务错误枚举、DTO、实体和领域工具应留在各自模块，不应放入本模块。业务模块只需实现 `ErrorCode`：
 
 ```java
 public enum OpsErrorCode implements ErrorCode {
