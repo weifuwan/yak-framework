@@ -3,8 +3,10 @@ package io.yak.framework.common;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +48,11 @@ class PageDataTest {
         assertEquals(3L, pagingData.getPagination().getPages());
         assertEquals(2L, pagingData.getPagination().getPageNo());
         assertEquals(10L, pagingData.getPagination().getPageSize());
+    }
+
+    @Test
+    void sharedPageDataShouldNotBeExtendedIntoBusinessSpecificAliases() {
+        assertTrue(Modifier.isFinal(PageData.class.getModifiers()));
     }
 
     @Test
