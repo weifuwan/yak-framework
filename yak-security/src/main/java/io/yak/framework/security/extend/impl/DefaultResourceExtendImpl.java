@@ -1,6 +1,6 @@
 package io.yak.framework.security.extend.impl;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.yak.framework.common.PageData;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.security.common.dto.resource.ResourceDTO;
 import io.yak.framework.security.extend.ResourceExtend;
@@ -52,15 +52,8 @@ public class DefaultResourceExtendImpl
     long pageSize =
             size > 0 ? size : DEFAULT_SIZE;
 
-    Page<ResourceDTO> pageInfo =
-            new Page<>(currentPage, pageSize);
-
-    pageInfo.setTotal(0L);
-    pageInfo.setRecords(Collections.emptyList());
-
-    return new PagingData<>(
-            Collections.emptyList(),
-            pageInfo);
+    return PagingData.from(
+            PageData.empty(currentPage, pageSize));
   }
 
   /**
