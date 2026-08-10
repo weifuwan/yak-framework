@@ -1,7 +1,7 @@
 package io.yak.framework.security.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.yak.framework.common.PageData;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.user.UserBriefQueryDTO;
@@ -272,14 +272,10 @@ public class UserServiceImpl implements UserService {
                       queryDTO.getRoleId());
 
       if (CollectionUtils.isEmpty(userIdList)) {
-        Page<User> emptyPage =
-                new Page<>(
+        return PagingData.from(
+                PageData.empty(
                         queryDTO.getPage(),
-                        queryDTO.getSize());
-
-        return new PagingData<>(
-                new ArrayList<>(),
-                emptyPage);
+                        queryDTO.getSize()));
       }
     }
 
@@ -292,7 +288,7 @@ public class UserServiceImpl implements UserService {
             userPage.getRecords();
 
     if (CollectionUtils.isEmpty(userList)) {
-      return new PagingData<>(
+      return toPagingData(
               new ArrayList<>(),
               userPage);
     }
@@ -350,7 +346,7 @@ public class UserServiceImpl implements UserService {
       userVOList.add(userVO);
     }
 
-    return new PagingData<>(
+    return toPagingData(
             userVOList,
             userPage);
   }
@@ -386,7 +382,7 @@ public class UserServiceImpl implements UserService {
                     userPage.getRecords(),
                     UserBriefVO.class);
 
-    return new PagingData<>(
+    return toPagingData(
             userList,
             userPage);
   }
@@ -597,7 +593,6 @@ public class UserServiceImpl implements UserService {
             user,
             UserBriefVO.class);
   }
-
   /**
    * 根据用户名查询用户实体。
    *
@@ -897,7 +892,6 @@ public class UserServiceImpl implements UserService {
     if (checkResult.failed()) {
       return checkResult;
     }
-
     if (userDao.selectByUsername(
             userDTO.getUserName()) != null) {
 
@@ -1188,6 +1182,21 @@ public class UserServiceImpl implements UserService {
             userVO.getPhone().replaceAll(
                     "(\\d{3})\\d{4}(\\d{4})",
                     "$1****$2"));
+  }
+
+  /**
+   * 将持久化分页元数据转换为统一 HTTP 分页数据。
+   */
+  private static <T> PagingData<T> toPagingData(
+          List<T> records,
+          IPage<?> page) {
+    return PagingData.from(
+            new PageData<>(
+                    records,
+                    page.getTotal(),
+                    page.getPages(),
+                    page.getCurrent(),
+                    page.getSize()));
   }
 
   /**
