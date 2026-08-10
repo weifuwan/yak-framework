@@ -26,6 +26,19 @@ class PageDataTest {
     }
 
     @Test
+    void shouldCalculatePagesWithoutPersistenceFrameworkTypes() {
+        PageData<String> page = PageData.of(List.of("a"), 21L, 2L, 10L);
+
+        assertEquals(21L, page.total());
+        assertEquals(3L, page.pages());
+        assertEquals(2L, page.pageNo());
+        assertEquals(10L, page.pageSize());
+
+        assertEquals(0L, PageData.of(List.of(), 0L, 1L, 20L).pages());
+        assertEquals(0L, PageData.of(List.of(), 10L, 1L, 0L).pages());
+    }
+
+    @Test
     void shouldMapRecordsAndKeepPaginationMetadata() {
         PageData<Integer> page = new PageData<>(List.of(1, 2), 12L, 6L, 3L, 2L);
 
