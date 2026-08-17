@@ -28,4 +28,19 @@ public record ScheduleDefinition(
                 ? Map.of()
                 : Map.copyOf(new LinkedHashMap<>(metadata));
     }
+
+    /** 返回只变更启停状态的新定义，供统一生命周期操作保持定义仓库与引擎状态一致。 */
+    public ScheduleDefinition withEnabled(boolean enabled) {
+        if (this.enabled == enabled) {
+            return this;
+        }
+        return new ScheduleDefinition(
+                key,
+                description,
+                trigger,
+                target,
+                policy,
+                enabled,
+                metadata);
+    }
 }
