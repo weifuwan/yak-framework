@@ -59,12 +59,13 @@ public record ScheduleTrigger(
         if (time == null) {
             throw new IllegalArgumentException("time must not be null");
         }
+        String quartzDay = dayOfWeek.name().substring(0, 3);
         return cron(String.format(
                 "%d %d %d ? * %s",
                 time.getSecond(),
                 time.getMinute(),
                 time.getHour(),
-                dayOfWeek.name()), zoneId);
+                quartzDay), zoneId);
     }
 
     public static ScheduleTrigger oneTime(Instant executeAt) {
