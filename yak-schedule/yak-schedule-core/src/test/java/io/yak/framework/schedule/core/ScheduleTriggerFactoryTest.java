@@ -31,7 +31,7 @@ class ScheduleTriggerFactoryTest {
                 ZONE);
 
         assertThat(trigger.type()).isEqualTo(TriggerType.CRON);
-        assertThat(trigger.expression()).isEqualTo("0 5 3 ? * MONDAY");
+        assertThat(trigger.expression()).isEqualTo("0 5 3 ? * MON");
         assertThat(trigger.zoneId()).isEqualTo(ZONE);
     }
 }
