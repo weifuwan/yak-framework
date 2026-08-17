@@ -42,6 +42,10 @@ public final class DefaultScheduleManager implements ScheduleManager {
     public ScheduleSnapshot save(ScheduleDefinition definition) {
         ScheduleEngine engine = engine();
         validateCapabilities(engine.capabilities(), definition);
+        if (definitionRepository.find(definition.key()).isEmpty()
+                && !engine.capabilities().dynamicCreate()) {
+            throw unsupported("dynamic schedule creation");
+        }
         ScheduleSnapshot snapshot = engine.save(definition);
         definitionRepository.save(definition);
         audit(definition.key(), "SAVE");
@@ -50,13 +54,19 @@ public final class DefaultScheduleManager implements ScheduleManager {
 
     @Override
     public void pause(ScheduleKey key) {
-        engine().pause(key);
+        ScheduleEngine engine = engine();
+        requirePauseResume(engine);
+        engine.pause(key);
+        updateEnabled(key, false);
         audit(key, "PAUSE");
     }
 
     @Override
     public void resume(ScheduleKey key) {
-        engine().resume(key);
+        ScheduleEngine engine = engine();
+        requirePauseResume(engine);
+        engine.resume(key);
+        updateEnabled(key, true);
         audit(key, "RESUME");
     }
 
@@ -69,7 +79,11 @@ public final class DefaultScheduleManager implements ScheduleManager {
 
     @Override
     public ScheduleTriggerResult runNow(ScheduleKey key) {
-        ScheduleTriggerResult result = engine().runNow(key);
+        ScheduleEngine engine = engine();
+        if (!engine.capabilities().runNow()) {
+            throw unsupported("run now");
+        }
+        ScheduleTriggerResult result = engine.runNow(key);
         audit(key, "RUN_NOW");
         return result;
     }
@@ -126,6 +140,24 @@ public final class DefaultScheduleManager implements ScheduleManager {
                     "Engine '" + properties.getEngine()
                             + "' cannot create a disabled schedule");
         }
+    }
+
+    private void requirePauseResume(ScheduleEngine engine) {
+        if (!engine.capabilities().pauseResume()) {
+            throw unsupported("pause/resume");
+        }
+    }
+
+    private UnsupportedScheduleCapabilityException unsupported(String capability) {
+        return new UnsupportedScheduleCapabilityException(
+                "Engine '" + properties.getEngine()
+                        + "' does not support " + capability);
+    }
+
+    private void updateEnabled(ScheduleKey key, boolean enabled) {
+        definitionRepository.find(key)
+                .map(definition -> definition.withEnabled(enabled))
+                .ifPresent(definitionRepository::save);
     }
 
     private void audit(ScheduleKey key, String operation) {
