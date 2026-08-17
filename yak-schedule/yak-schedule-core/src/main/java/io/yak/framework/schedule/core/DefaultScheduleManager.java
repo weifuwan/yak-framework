@@ -9,6 +9,7 @@ import io.yak.framework.schedule.api.ScheduleManager;
 import io.yak.framework.schedule.api.ScheduleOperationAudit;
 import io.yak.framework.schedule.api.ScheduleOperationAuditRepository;
 import io.yak.framework.schedule.api.ScheduleSnapshot;
+import io.yak.framework.schedule.api.ScheduleStatus;
 import io.yak.framework.schedule.api.ScheduleTriggerResult;
 import io.yak.framework.schedule.api.TriggerType;
 import io.yak.framework.schedule.api.UnsupportedScheduleCapabilityException;
@@ -49,7 +50,7 @@ public final class DefaultScheduleManager implements ScheduleManager {
         ScheduleSnapshot snapshot = engine.save(definition);
         definitionRepository.save(definition);
         audit(definition.key(), "SAVE");
-        return snapshot;
+        return normalize(snapshot);
     }
 
     @Override
@@ -90,7 +91,7 @@ public final class DefaultScheduleManager implements ScheduleManager {
 
     @Override
     public Optional<ScheduleSnapshot> get(ScheduleKey key) {
-        return engine().get(key);
+        return engine().get(key).map(this::normalize);
     }
 
     @Override
@@ -98,7 +99,9 @@ public final class DefaultScheduleManager implements ScheduleManager {
         if (namespace == null || namespace.isBlank()) {
             throw new IllegalArgumentException("namespace must not be blank");
         }
-        return engine().list(namespace.trim());
+        return engine().list(namespace.trim()).stream()
+                .map(this::normalize)
+                .toList();
     }
 
     private ScheduleEngine engine() {
@@ -158,6 +161,26 @@ public final class DefaultScheduleManager implements ScheduleManager {
         definitionRepository.find(key)
                 .map(definition -> definition.withEnabled(enabled))
                 .ifPresent(definitionRepository::save);
+    }
+
+    private ScheduleSnapshot normalize(ScheduleSnapshot snapshot) {
+        if (snapshot == null || snapshot.definition() == null) {
+            return snapshot;
+        }
+        boolean enabled = snapshot.definition().enabled();
+        if (snapshot.status() == ScheduleStatus.PAUSED) {
+            enabled = false;
+        } else if (snapshot.status() == ScheduleStatus.ENABLED) {
+            enabled = true;
+        }
+        ScheduleDefinition definition = snapshot.definition().withEnabled(enabled);
+        return new ScheduleSnapshot(
+                definition,
+                snapshot.engineType(),
+                snapshot.externalId(),
+                snapshot.status(),
+                snapshot.nextFireTime(),
+                snapshot.lastFireTime());
     }
 
     private void audit(ScheduleKey key, String operation) {
