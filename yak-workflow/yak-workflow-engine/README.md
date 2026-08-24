@@ -2,6 +2,35 @@
 
 `yak-workflow-engine` 是一个不依赖 Spring、数据库和具体任务实现的纯 Java DAG 工作流内核。
 
+## Read First
+
+| Document | Answers |
+| --- | --- |
+| [`REQUIREMENTS.md`](./REQUIREMENTS.md) | Engine 必须保持哪些行为 |
+| [`DOMAIN.md`](./DOMAIN.md) | Definition / Execution / Node / Attempt 的 truth 与 identity |
+| [`ARCHITECTURE.md`](./ARCHITECTURE.md) | public API 与 internal runtime 如何组织 |
+| [`DEPENDENCIES.md`](./DEPENDENCIES.md) | package 依赖方向与 corridor |
+| [`REVIEW.md`](./REVIEW.md) | Workflow Engine PR 如何评审 |
+
+## Package Shape
+
+```text
+api        -> stable host facade
+runtime    -> normal command/execution orchestration
+recovery   -> persisted execution restart reconciliation
+command    -> immutable state-change commands
+definition -> executable DAG values
+execution  -> WorkflowExecution / NodeExecution / NodeAttempt
+graph      -> validation/topology
+scheduler  -> ready/completion resolution
+policy     -> trigger/retry/failure decisions
+state      -> typed state machines
+spi        -> host capability ports
+support    -> local/in-memory default SPI implementations
+```
+
+宿主系统应依赖 `api / spi / definition / execution / command / event` 等稳定 contract，不直接依赖 `runtime / recovery` 内部实现。
+
 ## 功能列表
 
 ### DAG 与调度
