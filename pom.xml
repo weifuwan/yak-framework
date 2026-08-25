@@ -30,6 +30,7 @@
         <druid.version>1.2.28</druid.version>
         <springdoc.version>2.6.0</springdoc.version>
         <checker-qual.version>3.37.0</checker-qual.version>
+        <sa-token.version>1.45.0</sa-token.version>
 
         <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
@@ -43,6 +44,7 @@
     <modules>
         <module>yak-common</module>
         <module>yak-security</module>
+        <module>yak-security-redis</module>
         <module>yak-schedule</module>
         <module>yak-workflow</module>
         <module>yak-file</module>

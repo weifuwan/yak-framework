@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.yak.framework</groupId>
+        <artifactId>yak-framework-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>yak-security-redis-spring-boot-starter</artifactId>
+    <packaging>jar</packaging>
+
+    <name>yak-security-redis</name>
+    <description>Yak Security Redis-backed Sa-Token session persistence starter</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.yak.framework</groupId>
+            <artifactId>yak-security-spring-boot-starter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Official Sa-Token Redis DAO. Token/session state is shared through Spring Data Redis. -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-jackson</artifactId>
+            <version>${sa-token.version}</version>
+        </dependency>
+    </dependencies>
+</project>
