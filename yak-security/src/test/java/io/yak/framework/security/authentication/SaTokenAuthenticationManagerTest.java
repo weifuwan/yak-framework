@@ -32,15 +32,20 @@ class SaTokenAuthenticationManagerTest {
     assertThat(manager.getLoginUserId()).isEqualTo(42L);
 
     manager.logout();
+    manager.logoutUser(42L);
 
     verify(stpLogic).login(42L);
     verify(stpLogic).logout();
+    verify(stpLogic).logout(42L);
   }
 
   @Test
-  void shouldKeepYakIdentityMetadataInCurrentTokenSession() {
+  void shouldKeepYakIdentityMetadataAndHonorGlobalGovernance() {
     StpLogic stpLogic = mock(StpLogic.class);
-    SaTokenConfig config = new SaTokenConfig();
+    SaTokenConfig config = new SaTokenConfig()
+            .setIsConcurrent(false)
+            .setIsShare(true)
+            .setMaxLoginCount(2);
     SaSession tokenSession = mock(SaSession.class);
     when(stpLogic.getConfigOrGlobal()).thenReturn(config);
     when(stpLogic.createSaLoginParameter())
@@ -68,11 +73,11 @@ class SaTokenAuthenticationManagerTest {
     assertThat(loginParameter.getIsLastingCookie())
             .isFalse();
     assertThat(loginParameter.getIsConcurrent())
-            .isTrue();
-    assertThat(loginParameter.getIsShare())
             .isFalse();
+    assertThat(loginParameter.getIsShare())
+            .isTrue();
     assertThat(loginParameter.getMaxLoginCount())
-            .isEqualTo(-1);
+            .isEqualTo(2);
     verify(tokenSession).set(
             "yak-security:username",
             "yak");
