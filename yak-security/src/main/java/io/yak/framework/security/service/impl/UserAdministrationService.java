@@ -1,6 +1,7 @@
 package io.yak.framework.security.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import io.yak.framework.security.authentication.AuthenticationManager;
 import io.yak.framework.security.common.dto.user.UserPasswordResetDTO;
 import io.yak.framework.security.common.entity.user.User;
 import io.yak.framework.security.common.enums.ResultCode;
@@ -11,6 +12,7 @@ import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.extend.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -37,15 +39,19 @@ public class UserAdministrationService {
   private final UserDao userDao;
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
+  private final ObjectProvider<AuthenticationManager>
+          authenticationManagerProvider;
 
   public UserAdministrationService(
           UserDao userDao,
           UserMapper userMapper,
-          PasswordEncoder passwordEncoder) {
+          PasswordEncoder passwordEncoder,
+          ObjectProvider<AuthenticationManager> authenticationManagerProvider) {
 
     this.userDao = userDao;
     this.userMapper = userMapper;
     this.passwordEncoder = passwordEncoder;
+    this.authenticationManagerProvider = authenticationManagerProvider;
   }
 
   /**
@@ -93,6 +99,9 @@ public class UserAdministrationService {
 
   /**
    * 管理员重置指定用户密码。
+   *
+   * <p>密码写入成功后立即注销该账号的所有登录态。Sa-Token 模式下这是主动、
+   * 跨设备的账号级注销；旧 Session 模式仍由原有凭证版本校验完成兼容失效。</p>
    *
    * @param userId 用户 ID
    * @param request 重置密码请求
@@ -148,6 +157,12 @@ public class UserAdministrationService {
     if (affectedRows != 1) {
       throw new YakSecurityException(
               ResultCode.USER_ACCOUNT_UPDATE_FAIL);
+    }
+
+    AuthenticationManager authenticationManager =
+            authenticationManagerProvider.getIfAvailable();
+    if (authenticationManager != null) {
+      authenticationManager.logoutUser(userId);
     }
 
     LOGGER.info(
