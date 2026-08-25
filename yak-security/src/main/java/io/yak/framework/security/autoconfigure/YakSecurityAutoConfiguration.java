@@ -8,21 +8,27 @@ import io.yak.framework.security.context.DefaultCurrentUser;
 import io.yak.framework.security.context.YakSecurityContextFilter;
 import io.yak.framework.security.dao.PermissionDao;
 import io.yak.framework.security.dao.UserRoleDao;
-import io.yak.framework.security.extend.*;
-import io.yak.framework.security.extend.impl.*;
+import io.yak.framework.security.extend.OperationLogExtend;
+import io.yak.framework.security.extend.PasswordEncoder;
+import io.yak.framework.security.extend.PermissionExtend;
+import io.yak.framework.security.extend.ResourceExtend;
+import io.yak.framework.security.extend.impl.DefaultPasswordEncoder;
+import io.yak.framework.security.extend.impl.DefaultPermissionExtend;
+import io.yak.framework.security.extend.impl.DefaultResourceExtendImpl;
+import io.yak.framework.security.extend.impl.NoOpOperationLogExtend;
 import io.yak.framework.security.permission.PermissionRegistrationInitializer;
 import io.yak.framework.security.permission.PermissionRegistrationService;
 import io.yak.framework.security.service.RolePermissionService;
 import io.yak.framework.security.service.RoleService;
 import io.yak.framework.security.service.UserService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 
 @org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(YakSecurityProperties.class)
@@ -66,14 +72,6 @@ public class YakSecurityAutoConfiguration {
     PasswordEncoder passwordEncoder() { return new DefaultPasswordEncoder(); }
     @Bean @ConditionalOnMissingBean
     PermissionExtend permissionExtend() { return new DefaultPermissionExtend(); }
-    @Bean
-    @ConditionalOnMissingBean(CurrentUserProvider.class)
-    @ConditionalOnProperty(
-            prefix = "yak.security.authentication",
-            name = "mode",
-            havingValue = "session",
-            matchIfMissing = true)
-    CurrentUserProvider currentUserProvider() { return new DefaultCurrentUserProvider(); }
     @Bean @ConditionalOnMissingBean(CurrentUser.class)
     CurrentUser currentUser() { return new DefaultCurrentUser(); }
     @Bean
@@ -81,15 +79,11 @@ public class YakSecurityAutoConfiguration {
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     YakSecurityContextFilter yakSecurityContextFilter(
             ObjectProvider<UserRoleDao> userRoleDaoProvider,
-            ObjectProvider<AuthenticationManager> authenticationManagerProvider,
-            YakSecurityProperties properties) {
+            ObjectProvider<AuthenticationManager> authenticationManagerProvider) {
       return new YakSecurityContextFilter(
               userRoleDaoProvider,
-              authenticationManagerProvider,
-              properties);
+              authenticationManagerProvider);
     }
-    @Bean @ConditionalOnMissingBean
-    TokenSessionStore tokenSessionStore() { return new InMemoryTokenSessionStore(); }
     @Bean @ConditionalOnMissingBean
     OperationLogExtend operationLogExtend() { return new NoOpOperationLogExtend(); }
     @Bean @ConditionalOnMissingBean

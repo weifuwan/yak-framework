@@ -1,29 +1,28 @@
 package io.yak.framework.security.extend.impl;
 
-import io.yak.framework.security.util.SecuritySessionAttributes;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import io.yak.framework.security.authentication.AuthenticationManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 class DefaultCurrentUserProviderTest {
 
-  private final DefaultCurrentUserProvider provider = new DefaultCurrentUserProvider();
-
   @Test
-  void ignoresClientSuppliedIdentityHeaders() {
+  void ignoresClientIdentityAndUsesAuthenticationManager() {
+    AuthenticationManager manager = mock(AuthenticationManager.class);
+    DefaultCurrentUserProvider provider = new DefaultCurrentUserProvider(manager);
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.addHeader("X-SSO-USER", "attacker");
 
+    when(manager.isLogin()).thenReturn(false);
     assertNull(provider.getCurrentUser(request));
-  }
 
-  @Test
-  void returnsAuthenticatedSessionIdentity() {
-    MockHttpServletRequest request = new MockHttpServletRequest();
-    request.getSession().setAttribute(SecuritySessionAttributes.USER_NAME, "yak");
-
+    when(manager.isLogin()).thenReturn(true);
+    when(manager.getLoginUsername()).thenReturn("yak");
     assertEquals("yak", provider.getCurrentUser(request));
   }
 }
