@@ -31,6 +31,13 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Sa-Token Spring Boot 3 认证底座；阶段一仅引入适配能力，不替换现有 HttpSession 登录链路 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot3-starter</artifactId>
+            <version>1.45.0</version>
+        </dependency>
+
         <!-- 单体部署的用户权限本地缓存 -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
