@@ -39,6 +39,18 @@ public interface AuthenticationManager {
   void logout();
 
   /**
+   * 清理指定账号的全部登录态。
+   *
+   * <p>用于密码变更、管理员强制下线等账号级安全事件。默认实现为空，
+   * 便于仍使用旧 Session 认证模式的应用继续通过凭证版本校验完成兼容失效。</p>
+   *
+   * @param userId 用户 ID
+   */
+  default void logoutUser(Long userId) {
+    // Compatibility backend may invalidate the session through another mechanism.
+  }
+
+  /**
    * 判断当前请求是否已登录。
    *
    * @return 已登录返回 {@code true}
