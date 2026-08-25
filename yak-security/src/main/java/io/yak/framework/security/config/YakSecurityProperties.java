@@ -1,15 +1,14 @@
 package io.yak.framework.security.config;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.time.Duration;
 
 /**
  * Yak Security 模块配置。
@@ -105,12 +104,45 @@ public class YakSecurityProperties {
     SATOKEN
   }
 
+  /** Sa-Token login-state persistence. */
+  public enum AuthenticationStorage {
+    MEMORY,
+    REDIS
+  }
+
   @Getter
   @Setter
   @ToString
   public static class AuthenticationProperties {
     /** Authentication backend. Defaults to the legacy HTTP Session implementation. */
     private AuthenticationMode mode = AuthenticationMode.SESSION;
+
+    /**
+     * Sa-Token login-state storage. Memory keeps local development dependency-free;
+     * Redis should be used for multi-instance deployments.
+     */
+    private AuthenticationStorage storage = AuthenticationStorage.MEMORY;
+
+    /** Redis settings used only when storage=redis. */
+    private final RedisStorageProperties redis =
+            new RedisStorageProperties();
+  }
+
+  @Getter
+  @Setter
+  @ToString
+  public static class RedisStorageProperties {
+    /** Redis host. */
+    private String host = "127.0.0.1";
+    /** Redis port. */
+    private int port = 6379;
+    /** Redis password. */
+    @ToString.Exclude
+    private String password;
+    /** Redis database index. */
+    private int database = 0;
+    /** Maximum Redis connections maintained by the client. */
+    private int maxTotal = 64;
   }
 
   @Getter
