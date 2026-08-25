@@ -41,6 +41,9 @@ public class SaTokenAuthenticationManager
   /**
    * 创建 Sa-Token 登录态管理器，并把 Yak Security 的 Session 空闲超时映射为 Sa-Token activeTimeout。
    *
+   * <p>并发登录、共享 Token、最大登录数量等会话治理策略由 Sa-Token 全局配置负责，
+   * 这里不再覆盖全局策略。</p>
+   *
    * @param stpLogic Sa-Token 登录逻辑
    * @param activeTimeout 登录态无操作超时；为 {@code null} 时使用 Sa-Token 全局配置
    */
@@ -89,11 +92,12 @@ public class SaTokenAuthenticationManager
     SaLoginParameter loginParameter =
             stpLogic.createSaLoginParameter()
                     .setActiveTimeout(activeTimeoutSeconds)
-                    .setIsLastingCookie(false)
-                    .setIsConcurrent(true)
-                    .setIsShare(false)
-                    .setMaxLoginCount(-1);
+                    .setIsLastingCookie(false);
 
+    /*
+     * 不在单次登录参数中写死 isConcurrent/isShare/maxLoginCount。
+     * 这些值由 sa-token 全局配置统一治理，才能按部署环境调整策略。
+     */
     stpLogic.login(userId, loginParameter);
   }
 
@@ -125,6 +129,14 @@ public class SaTokenAuthenticationManager
   @Override
   public void logout() {
     stpLogic.logout();
+  }
+
+  @Override
+  public void logoutUser(Long userId) {
+    Objects.requireNonNull(
+            userId,
+            "userId must not be null");
+    stpLogic.logout(userId);
   }
 
   @Override
