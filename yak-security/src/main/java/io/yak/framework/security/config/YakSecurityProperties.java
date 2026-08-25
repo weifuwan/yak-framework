@@ -75,6 +75,10 @@ public class YakSecurityProperties {
   private final DataSourceProperties datasource =
           new DataSourceProperties();
 
+  /** Authentication backend settings. */
+  private final AuthenticationProperties authentication =
+          new AuthenticationProperties();
+
   /** First-user administrator bootstrap settings. */
   private final BootstrapProperties bootstrap =
           new BootstrapProperties();
@@ -94,6 +98,20 @@ public class YakSecurityProperties {
   /** HTTP session security settings. */
   private final SessionSecurityProperties session =
           new SessionSecurityProperties();
+
+  /** Authentication backend mode. */
+  public enum AuthenticationMode {
+    SESSION,
+    SATOKEN
+  }
+
+  @Getter
+  @Setter
+  @ToString
+  public static class AuthenticationProperties {
+    /** Authentication backend. Defaults to the legacy HTTP Session implementation. */
+    private AuthenticationMode mode = AuthenticationMode.SESSION;
+  }
 
   @Getter
   @Setter
