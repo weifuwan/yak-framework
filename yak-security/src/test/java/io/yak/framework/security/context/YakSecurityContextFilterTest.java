@@ -39,6 +39,8 @@ class YakSecurityContextFilterTest {
       assertEquals(1001L, YakSecurityContext.getCurrentProjectId());
       assertEquals(List.of(7L, 9L), YakSecurityContext.getCurrentRoleIds());
       assertTrue(YakSecurityContext.isAuthenticated());
+      assertEquals("yak", HttpRequestUtil.getOperator(request));
+      assertEquals(42L, HttpRequestUtil.getOperatorId(request));
     });
 
     verify(userRoleDao).selectRoleIdListByUserId(42L);
