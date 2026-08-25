@@ -30,7 +30,8 @@ import java.util.Objects;
 /**
  * 默认登录认证扩展实现。
  *
- * <p>使用用户名、密码和服务端 Session 完成登录认证。</p>
+ * <p>使用用户名、密码和服务端 Session 完成登录认证。子类可以只覆盖登录态的建立、读取和清理逻辑，
+ * 复用本类的账号密码校验、账户状态校验、白名单和未登录响应逻辑。</p>
  *
  * @author weifuwan
  */
@@ -245,10 +246,10 @@ public class DefaultLoginExtendImpl
       return true;
     }
 
-    HttpSession session =
-            request.getSession(false);
+    LoginIdentity identity =
+            resolveLoginIdentity(request);
 
-    if (session == null) {
+    if (identity == null) {
       handleUnauthorized(
               request,
               response);
@@ -256,14 +257,11 @@ public class DefaultLoginExtendImpl
       return false;
     }
 
-    String operator =
-            getSessionUserName(session);
-
-    Long sessionUserId =
-            getSessionUserId(session);
+    String operator = identity.userName();
+    Long loginUserId = identity.userId();
 
     if (!StringUtils.hasText(operator)
-            || sessionUserId == null) {
+            || loginUserId == null) {
 
       handleUnauthorized(
               request,
@@ -279,16 +277,16 @@ public class DefaultLoginExtendImpl
             || USER_DISABLED_STATUS.equals(
             user.getStatus())
             || !Objects.equals(
-            sessionUserId,
+            loginUserId,
             user.getId())
             || !Objects.equals(
-            session.getAttribute(SecuritySessionAttributes.CREDENTIAL_VERSION),
+            identity.credentialVersion(),
             user.getPw())) {
 
       LOGGER.warn(
-              "登录会话失效，operator={}, sessionUserId={}",
+              "登录会话失效，operator={}, loginUserId={}",
               operator,
-              sessionUserId);
+              loginUserId);
 
       handleUnauthorized(
               request,
@@ -301,9 +299,36 @@ public class DefaultLoginExtendImpl
   }
 
   /**
+   * 解析当前已验证登录态中的用户标识。
+   *
+   * <p>默认实现读取 Servlet Session；其他认证后端只需要覆盖该方法和登录态建立、清理 hook。</p>
+   */
+  protected LoginIdentity resolveLoginIdentity(
+          HttpServletRequest request) {
+
+    HttpSession session =
+            request.getSession(false);
+
+    if (session == null) {
+      return null;
+    }
+
+    Object credentialVersion =
+            session.getAttribute(
+                    SecuritySessionAttributes.CREDENTIAL_VERSION);
+
+    return new LoginIdentity(
+            getSessionUserId(session),
+            getSessionUserName(session),
+            credentialVersion instanceof String
+                    ? (String) credentialVersion
+                    : null);
+  }
+
+  /**
    * 初始化登录上下文。
    */
-  private void initLoginContext(
+  protected void initLoginContext(
           HttpServletRequest request,
           String userName,
           Long userId,
@@ -338,7 +363,7 @@ public class DefaultLoginExtendImpl
   /**
    * 清理登录上下文。
    */
-  private void clearLoginContext(
+  protected void clearLoginContext(
           HttpServletRequest request) {
 
     HttpSession session =
@@ -455,5 +480,14 @@ public class DefaultLoginExtendImpl
       throw new YakSecurityException(
               ResultCode.PARAM_NOT_VALID);
     }
+  }
+
+  /**
+   * 登录态中仅用于服务端校验的身份快照。
+   */
+  protected record LoginIdentity(
+          Long userId,
+          String userName,
+          String credentialVersion) {
   }
 }

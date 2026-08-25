@@ -2,12 +2,18 @@ package io.yak.framework.security.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import cn.dev33.satoken.config.SaTokenConfig;
+import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpLogic;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 class SaTokenAuthenticationManagerTest {
 
@@ -32,6 +38,62 @@ class SaTokenAuthenticationManagerTest {
   }
 
   @Test
+  void shouldKeepYakIdentityMetadataInCurrentTokenSession() {
+    StpLogic stpLogic = mock(StpLogic.class);
+    SaTokenConfig config = new SaTokenConfig();
+    SaSession tokenSession = mock(SaSession.class);
+    when(stpLogic.getConfigOrGlobal()).thenReturn(config);
+    when(stpLogic.createSaLoginParameter())
+            .thenAnswer(ignored -> new SaLoginParameter(config));
+    when(stpLogic.getTokenSession(true)).thenReturn(tokenSession);
+
+    SaTokenAuthenticationManager manager =
+            new SaTokenAuthenticationManager(
+                    stpLogic,
+                    Duration.ofMinutes(30));
+
+    assertThat(config.getDynamicActiveTimeout()).isTrue();
+
+    manager.login(42L, "yak", "hash-v1");
+
+    ArgumentCaptor<SaLoginParameter> parameterCaptor =
+            ArgumentCaptor.forClass(SaLoginParameter.class);
+    verify(stpLogic).login(
+            eq(42L),
+            parameterCaptor.capture());
+    SaLoginParameter loginParameter =
+            parameterCaptor.getValue();
+    assertThat(loginParameter.getActiveTimeout())
+            .isEqualTo(1800L);
+    assertThat(loginParameter.getIsLastingCookie())
+            .isFalse();
+    assertThat(loginParameter.getIsConcurrent())
+            .isTrue();
+    assertThat(loginParameter.getIsShare())
+            .isFalse();
+    assertThat(loginParameter.getMaxLoginCount())
+            .isEqualTo(-1);
+    verify(tokenSession).set(
+            "yak-security:username",
+            "yak");
+    verify(tokenSession).set(
+            "yak-security:credential-version",
+            "hash-v1");
+
+    when(stpLogic.isLogin()).thenReturn(true);
+    when(stpLogic.getTokenSession(false)).thenReturn(tokenSession);
+    when(tokenSession.get("yak-security:username"))
+            .thenReturn("yak");
+    when(tokenSession.get("yak-security:credential-version"))
+            .thenReturn("hash-v1");
+
+    assertThat(manager.getLoginUsername())
+            .isEqualTo("yak");
+    assertThat(manager.getCredentialVersion())
+            .isEqualTo("hash-v1");
+  }
+
+  @Test
   void shouldConvertStringLoginIdToLong() {
     StpLogic stpLogic = mock(StpLogic.class);
     SaTokenAuthenticationManager manager =
@@ -51,6 +113,7 @@ class SaTokenAuthenticationManagerTest {
     when(stpLogic.getLoginIdDefaultNull()).thenReturn(null);
 
     assertThat(manager.getLoginUserId()).isNull();
+    assertThat(manager.getLoginUsername()).isNull();
   }
 
   @Test

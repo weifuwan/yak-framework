@@ -2,7 +2,6 @@ package io.yak.framework.security.autoconfigure;
 
 import io.yak.framework.security.config.DataSourceConfig;
 import io.yak.framework.security.dao.impl.*;
-import io.yak.framework.security.extend.impl.DefaultLoginExtendImpl;
 import io.yak.framework.security.service.impl.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -27,5 +26,5 @@ import org.springframework.context.annotation.Import;
     RolePermissionServiceImpl.class, RoleServiceImpl.class, UserProjectServiceImpl.class,
     UserAdministrationService.class, UserResourceServiceImpl.class,
     UserRoleServiceImpl.class, UserServiceImpl.class,
-    DefaultLoginExtendImpl.class})
+    YakSecurityAuthenticationConfiguration.class})
 class YakSecurityDatabaseConfiguration {}

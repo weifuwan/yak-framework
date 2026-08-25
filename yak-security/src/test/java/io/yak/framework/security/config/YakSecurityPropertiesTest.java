@@ -13,4 +13,13 @@ class YakSecurityPropertiesTest {
     assertThat(properties.getDatasource().getDriverClassName())
         .isEqualTo("com.mysql.cj.jdbc.Driver");
   }
+
+  @Test
+  void shouldKeepLegacySessionAuthenticationAsDefault() {
+    YakSecurityProperties properties = new YakSecurityProperties();
+
+    assertThat(properties.getAuthentication().getMode())
+            .isEqualTo(
+                    YakSecurityProperties.AuthenticationMode.SESSION);
+  }
 }
