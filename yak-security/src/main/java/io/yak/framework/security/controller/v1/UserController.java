@@ -21,6 +21,8 @@ import io.yak.framework.security.util.HttpRequestUtil;
 import io.yak.framework.security.util.JsonUtils;
 import io.yak.framework.security.web.RequiresPermission;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,8 +32,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * 用户管理接口。
@@ -156,7 +156,7 @@ public class UserController {
   /**
    * 新增用户。
    *
-   * <p>保留原有 PUT 请求方式，避免影响现有前端调用。
+   * <p>保留原有 PUT 请求方式，避免影响现有前端调用。</p>
    */
   @Operation(summary = "新增用户")
   @PutMapping("/add")
@@ -189,16 +189,29 @@ public class UserController {
           HttpServletRequest request,
           @RequestBody UserDTO userDTO) {
 
-    return userService.editUser(
-            userDTO,
-            HttpRequestUtil.getOperator(request));
+    String operator = HttpRequestUtil.getOperator(request);
+    Result<Void> result =
+            userService.editUser(
+                    userDTO,
+                    operator);
+
+    if (!result.failed()
+            && userDTO != null
+            && StringUtils.hasText(userDTO.getPw())) {
+      userAdministrationService
+              .invalidateSessionsAfterPasswordChange(
+                      userDTO.getUserName(),
+                      operator);
+    }
+
+    return result;
   }
 
   /**
    * 管理员重置用户密码。
    *
    * <p>该接口仅更新密码字段，不再通过完整用户编辑接口间接重置，
-   * 避免覆盖并发发生的资料及角色变更。
+   * 避免覆盖并发发生的资料及角色变更。</p>
    */
   @Operation(summary = "管理员重置用户密码")
   @PutMapping("/{id}/password")
@@ -218,6 +231,20 @@ public class UserController {
     userAdministrationService.resetPassword(
             userId,
             resetDTO,
+            HttpRequestUtil.getOperator(request));
+
+    return Result.success();
+  }
+
+  @Operation(summary = "管理员强制下线用户")
+  @PostMapping("/{id}/logout")
+  @RequiresPermission(SecurityPermissionCode.User.UPDATE)
+  public Result<Void> forceLogout(
+          HttpServletRequest request,
+          @PathVariable("id") Long userId) {
+
+    userAdministrationService.forceLogout(
+            userId,
             HttpRequestUtil.getOperator(request));
 
     return Result.success();

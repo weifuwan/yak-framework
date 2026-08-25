@@ -31,10 +31,17 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Sa-Token Spring Boot 3 认证底座；阶段一仅引入适配能力，不替换现有 HttpSession 登录链路 -->
+        <!-- Sa-Token Spring Boot 3 认证底座 -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot3-starter</artifactId>
+            <version>1.45.0</version>
+        </dependency>
+
+        <!-- 可选的 Redis 登录态持久化；只有 storage=redis 时才会实例化 Redis DAO -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redisx</artifactId>
             <version>1.45.0</version>
         </dependency>
 
