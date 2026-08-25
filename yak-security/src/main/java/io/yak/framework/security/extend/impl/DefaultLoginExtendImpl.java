@@ -1,6 +1,7 @@
 package io.yak.framework.security.extend.impl;
 
 import io.yak.framework.common.Result;
+import io.yak.framework.security.authentication.AuthenticationManager;
 import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.entity.user.User;
 import io.yak.framework.security.common.enums.ResultCode;
@@ -12,126 +13,56 @@ import io.yak.framework.security.extend.PasswordEncoder;
 import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.util.CopyBeanUtil;
 import io.yak.framework.security.util.JsonUtils;
-import io.yak.framework.security.util.SecuritySessionAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+/** 默认登录认证扩展。账号校验属于 Yak Security，登录态统一交给 AuthenticationManager。 */
+public class DefaultLoginExtendImpl implements LoginExtend {
 
-/**
- * 默认登录认证扩展实现。
- *
- * <p>使用用户名、密码和服务端 Session 完成登录认证。子类可以只覆盖登录态的建立、读取和清理逻辑，
- * 复用本类的账号密码校验、账户状态校验、白名单和未登录响应逻辑。</p>
- *
- * @author weifuwan
- */
-public class DefaultLoginExtendImpl
-        implements LoginExtend {
-
-  private static final Logger LOGGER =
-          LoggerFactory.getLogger(
-                  DefaultLoginExtendImpl.class);
-
-  /**
-   * 用户禁用状态。
-   *
-   * <p>后续建议替换为明确的用户状态枚举。</p>
-   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLoginExtendImpl.class);
   private static final Integer USER_DISABLED_STATUS = 2;
-
-  /**
-   * 路径匹配器。
-   */
-  private static final AntPathMatcher PATH_MATCHER =
-          new AntPathMatcher();
+  private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
   private final UserService userService;
-
   private final PasswordEncoder passwordEncoder;
+  private final AuthenticationManager authenticationManager;
   private final LoginAttemptGuard loginAttemptGuard;
   private final YakSecurityProperties.LoginSecurityProperties loginProperties;
-  private final int sessionTimeoutSeconds;
 
-  /**
-   * 创建默认登录扩展。
-   *
-   * @param userService 用户服务
-   * @param passwordEncoder 密码编码器
-   */
-  public DefaultLoginExtendImpl(
-          UserService userService,
-          PasswordEncoder passwordEncoder) {
-
-    this(userService, passwordEncoder, new YakSecurityProperties());
-  }
-
-  @Autowired
   public DefaultLoginExtendImpl(
           UserService userService,
           PasswordEncoder passwordEncoder,
-          YakSecurityProperties properties) {
-
-    this.userService =
-            Objects.requireNonNull(
-                    userService,
-                    "userService must not be null");
-
-    this.passwordEncoder =
-            Objects.requireNonNull(
-                    passwordEncoder,
-                    "passwordEncoder must not be null");
+          YakSecurityProperties properties,
+          AuthenticationManager authenticationManager) {
+    this.userService = Objects.requireNonNull(userService, "userService must not be null");
+    this.passwordEncoder = Objects.requireNonNull(passwordEncoder, "passwordEncoder must not be null");
+    this.authenticationManager = Objects.requireNonNull(authenticationManager, "authenticationManager must not be null");
     Objects.requireNonNull(properties, "properties must not be null");
     this.loginProperties = properties.getLogin();
     this.loginAttemptGuard = new LoginAttemptGuard(loginProperties);
-    long timeout = properties.getSession().getTimeout().getSeconds();
-    if (timeout < 1 || timeout > Integer.MAX_VALUE) {
-      throw new IllegalArgumentException(
-              "session.timeout must be between 1 second and 2147483647 seconds");
-    }
-    this.sessionTimeoutSeconds = (int) timeout;
   }
 
-  /**
-   * 校验账号密码并初始化登录会话。
-   *
-   * @param loginDTO 登录参数
-   * @param request HTTP 请求
-   * @param response HTTP 响应
-   * @return 登录用户简要信息
-   */
   @Override
   public UserBriefVO verifyLogin(
           AccountLoginDTO loginDTO,
           HttpServletRequest request,
-          HttpServletResponse response)
-          throws YakSecurityException {
-
-    validateLoginParam(
-            loginDTO,
-            request,
-            response);
-
-    String userName =
-            loginDTO.getUserName().trim();
-
+          HttpServletResponse response) throws YakSecurityException {
+    validateLoginParam(loginDTO, request, response);
+    String userName = loginDTO.getUserName().trim();
     String remoteAddress = request.getRemoteAddr();
     if (loginAttemptGuard.isBlocked(userName, remoteAddress)) {
       throw new YakSecurityException(ResultCode.USER_ACCOUNT_LOCKED);
     }
 
-    User user =
-            userService.getUserByUsername(userName);
-
+    User user = userService.getUserByUsername(userName);
     if (user == null) {
       loginAttemptGuard.recordFailure(userName, remoteAddress);
       throw new YakSecurityException(
@@ -139,355 +70,101 @@ public class DefaultLoginExtendImpl
                       ? ResultCode.USER_CREDENTIALS_ERROR
                       : ResultCode.USER_NOT_EXISTS);
     }
-
-    if (USER_DISABLED_STATUS.equals(
-            user.getStatus())) {
-
-      throw new YakSecurityException(
-              ResultCode.USER_ACCOUNT_DISABLE);
+    if (USER_DISABLED_STATUS.equals(user.getStatus())) {
+      throw new YakSecurityException(ResultCode.USER_ACCOUNT_DISABLE);
     }
-
-    if (!passwordEncoder.matches(
-            loginDTO.getPw(),
-            user.getPw())) {
-
+    if (!passwordEncoder.matches(loginDTO.getPw(), user.getPw())) {
       loginAttemptGuard.recordFailure(userName, remoteAddress);
-      throw new YakSecurityException(
-              ResultCode.USER_CREDENTIALS_ERROR);
+      throw new YakSecurityException(ResultCode.USER_CREDENTIALS_ERROR);
     }
-
     if (user.getId() == null) {
-      LOGGER.error(
-              "登录用户缺少用户 ID，userName={}",
-              userName);
-
-      throw new IllegalStateException(
-              "Login user id must not be null");
+      LOGGER.error("登录用户缺少用户 ID，userName={}", userName);
+      throw new IllegalStateException("Login user id must not be null");
     }
 
-    initLoginContext(
-            request,
-            userName,
-            user.getId(),
-            user.getPw());
-
+    authenticationManager.login(user.getId(), userName);
     loginAttemptGuard.recordSuccess(userName, remoteAddress);
-
-    return CopyBeanUtil.copy(
-            user,
-            UserBriefVO.class);
+    return CopyBeanUtil.copy(user, UserBriefVO.class);
   }
 
-  /**
-   * 退出登录。
-   *
-   * @param request HTTP 请求
-   * @param response HTTP 响应
-   * @return 退出结果
-   */
   @Override
   public Result<Boolean> logout(
           HttpServletRequest request,
           HttpServletResponse response) {
-
-    Objects.requireNonNull(
-            request,
-            "request must not be null");
-
-    Objects.requireNonNull(
-            response,
-            "response must not be null");
-
-    clearLoginContext(request);
-
+    Objects.requireNonNull(request, "request must not be null");
+    Objects.requireNonNull(response, "response must not be null");
+    authenticationManager.logout();
     return Result.success(Boolean.TRUE);
   }
 
-  /**
-   * 检查请求登录状态。
-   *
-   * @param request HTTP 请求
-   * @param response HTTP 响应
-   * @param requestPath 请求路径
-   * @param whiteListPatterns 白名单表达式
-   * @return 是否允许继续访问
-   */
   @Override
   public boolean interceptorCheck(
           HttpServletRequest request,
           HttpServletResponse response,
           String requestPath,
-          List<String> whiteListPatterns)
-          throws IOException {
-
-    Objects.requireNonNull(
-            request,
-            "request must not be null");
-
-    Objects.requireNonNull(
-            response,
-            "response must not be null");
+          List<String> whiteListPatterns) throws IOException {
+    Objects.requireNonNull(request, "request must not be null");
+    Objects.requireNonNull(response, "response must not be null");
 
     if (!StringUtils.hasText(requestPath)) {
-      LOGGER.error(
-              "请求路径为空，requestUri={}",
-              request.getRequestURI());
-
-      response.setStatus(
-              HttpServletResponse.SC_BAD_REQUEST);
-
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return false;
     }
-
-    if (isWhiteListPath(
-            requestPath,
-            whiteListPatterns)) {
-
+    if (isWhiteListPath(requestPath, whiteListPatterns)) {
       return true;
     }
-
-    LoginIdentity identity =
-            resolveLoginIdentity(request);
-
-    if (identity == null) {
-      handleUnauthorized(
-              request,
-              response);
-
-      return false;
+    if (!authenticationManager.isLogin()) {
+      return handleUnauthorized(response);
     }
 
-    String operator = identity.userName();
-    Long loginUserId = identity.userId();
-
-    if (!StringUtils.hasText(operator)
-            || loginUserId == null) {
-
-      handleUnauthorized(
-              request,
-              response);
-
-      return false;
+    Long loginUserId = authenticationManager.getLoginUserId();
+    String operator = authenticationManager.getLoginUsername();
+    if (loginUserId == null || !StringUtils.hasText(operator)) {
+      authenticationManager.logout();
+      return handleUnauthorized(response);
     }
 
-    User user =
-            userService.getUserByUsername(operator);
-
+    User user = userService.getUserByUsername(operator);
     if (user == null
-            || USER_DISABLED_STATUS.equals(
-            user.getStatus())
-            || !Objects.equals(
-            loginUserId,
-            user.getId())
-            || !Objects.equals(
-            identity.credentialVersion(),
-            user.getPw())) {
-
-      LOGGER.warn(
-              "登录会话失效，operator={}, loginUserId={}",
-              operator,
-              loginUserId);
-
-      handleUnauthorized(
-              request,
-              response);
-
-      return false;
+            || USER_DISABLED_STATUS.equals(user.getStatus())
+            || !Objects.equals(loginUserId, user.getId())) {
+      LOGGER.warn("登录态失效，operator={}, loginUserId={}", operator, loginUserId);
+      authenticationManager.logout();
+      return handleUnauthorized(response);
     }
-
     return true;
   }
 
-  /**
-   * 解析当前已验证登录态中的用户标识。
-   *
-   * <p>默认实现读取 Servlet Session；其他认证后端只需要覆盖该方法和登录态建立、清理 hook。</p>
-   */
-  protected LoginIdentity resolveLoginIdentity(
-          HttpServletRequest request) {
-
-    HttpSession session =
-            request.getSession(false);
-
-    if (session == null) {
-      return null;
-    }
-
-    Object credentialVersion =
-            session.getAttribute(
-                    SecuritySessionAttributes.CREDENTIAL_VERSION);
-
-    return new LoginIdentity(
-            getSessionUserId(session),
-            getSessionUserName(session),
-            credentialVersion instanceof String
-                    ? (String) credentialVersion
-                    : null);
-  }
-
-  /**
-   * 初始化登录上下文。
-   */
-  protected void initLoginContext(
-          HttpServletRequest request,
-          String userName,
-          Long userId,
-          String credentialVersion) {
-
-    HttpSession existingSession =
-            request.getSession(false);
-
-    if (existingSession != null) {
-      request.changeSessionId();
-    }
-
-    HttpSession session =
-            request.getSession(true);
-
-    session.setMaxInactiveInterval(
-            sessionTimeoutSeconds);
-
-    session.setAttribute(
-            SecuritySessionAttributes.USER_NAME,
-            userName);
-
-    session.setAttribute(
-            SecuritySessionAttributes.USER_ID,
-            userId);
-
-    session.setAttribute(
-            SecuritySessionAttributes.CREDENTIAL_VERSION,
-            credentialVersion);
-  }
-
-  /**
-   * 清理登录上下文。
-   */
-  protected void clearLoginContext(
-          HttpServletRequest request) {
-
-    HttpSession session =
-            request.getSession(false);
-
-    if (session != null) {
-      try {
-        session.invalidate();
-      } catch (IllegalStateException exception) {
-        LOGGER.debug(
-                "Session 已失效，无需重复清理");
-      }
-    }
-
-  }
-
-  /**
-   * 处理未登录请求。
-   */
-  private void handleUnauthorized(
-          HttpServletRequest request,
-          HttpServletResponse response) throws IOException {
-
-    clearLoginContext(request);
-
-    response.setStatus(
-            HttpServletResponse.SC_UNAUTHORIZED);
+  private boolean handleUnauthorized(HttpServletResponse response) throws IOException {
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json");
-    response.getWriter().write(JsonUtils.toJson(
-            Result.fail(ResultCode.USER_NOT_LOGIN)));
-  }
-
-  /**
-   * 判断是否为白名单路径。
-   */
-  private boolean isWhiteListPath(
-          String requestPath,
-          List<String> whiteListPatterns) {
-
-    if (CollectionUtils.isEmpty(
-            whiteListPatterns)) {
-
-      return false;
-    }
-
-    for (String pattern : whiteListPatterns) {
-      if (!StringUtils.hasText(pattern)) {
-        continue;
-      }
-
-      if (PATH_MATCHER.match(
-              pattern.trim(),
-              requestPath)) {
-
-        return true;
-      }
-    }
-
+    response.getWriter().write(JsonUtils.toJson(Result.fail(ResultCode.USER_NOT_LOGIN)));
     return false;
   }
 
-  /**
-   * 获取 Session 用户名。
-   */
-  private String getSessionUserName(
-          HttpSession session) {
-
-    Object value =
-            session.getAttribute(SecuritySessionAttributes.USER_NAME);
-
-    return value instanceof String
-            ? (String) value
-            : null;
+  private boolean isWhiteListPath(String requestPath, List<String> whiteListPatterns) {
+    if (CollectionUtils.isEmpty(whiteListPatterns)) {
+      return false;
+    }
+    for (String pattern : whiteListPatterns) {
+      if (StringUtils.hasText(pattern) && PATH_MATCHER.match(pattern.trim(), requestPath)) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  /**
-   * 获取 Session 用户 ID。
-   */
-  private Long getSessionUserId(
-          HttpSession session) {
-
-    Object value =
-            session.getAttribute(SecuritySessionAttributes.USER_ID);
-
-    if (value instanceof Long) {
-      return (Long) value;
-    }
-
-    if (value instanceof Number) {
-      return ((Number) value).longValue();
-    }
-
-    return null;
-  }
-
-  /**
-   * 校验登录参数。
-   */
   private void validateLoginParam(
           AccountLoginDTO loginDTO,
           HttpServletRequest request,
-          HttpServletResponse response)
-          throws YakSecurityException {
-
+          HttpServletResponse response) {
     if (loginDTO == null
             || request == null
             || response == null
-            || !StringUtils.hasText(
-            loginDTO.getUserName())
-            || !StringUtils.hasText(
-            loginDTO.getPw())) {
-
-      throw new YakSecurityException(
-              ResultCode.PARAM_NOT_VALID);
+            || !StringUtils.hasText(loginDTO.getUserName())
+            || !StringUtils.hasText(loginDTO.getPw())) {
+      throw new YakSecurityException(ResultCode.PARAM_NOT_VALID);
     }
-  }
-
-  /**
-   * 登录态中仅用于服务端校验的身份快照。
-   */
-  protected record LoginIdentity(
-          Long userId,
-          String userName,
-          String credentialVersion) {
   }
 }
