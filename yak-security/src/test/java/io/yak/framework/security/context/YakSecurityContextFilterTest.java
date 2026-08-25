@@ -9,6 +9,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.yak.framework.security.authentication.AuthenticationManager;
+import io.yak.framework.security.config.YakSecurityProperties;
 import io.yak.framework.security.dao.UserRoleDao;
 import io.yak.framework.security.util.HttpRequestUtil;
 import io.yak.framework.security.util.SecuritySessionAttributes;
@@ -47,6 +49,39 @@ class YakSecurityContextFilterTest {
   }
 
   @Test
+  void exposesSaTokenIdentityWithoutReadingServletSession() throws Exception {
+    UserRoleDao userRoleDao = mock(UserRoleDao.class);
+    when(userRoleDao.selectRoleIdListByUserId(42L)).thenReturn(List.of(7L));
+    AuthenticationManager authenticationManager =
+            mock(AuthenticationManager.class);
+    when(authenticationManager.isLogin()).thenReturn(true);
+    when(authenticationManager.getLoginUserId()).thenReturn(42L);
+    when(authenticationManager.getLoginUsername()).thenReturn("yak");
+
+    YakSecurityProperties properties = new YakSecurityProperties();
+    properties.getAuthentication().setMode(
+            YakSecurityProperties.AuthenticationMode.SATOKEN);
+
+    YakSecurityContextFilter filter =
+            new YakSecurityContextFilter(
+                    provider(userRoleDao),
+                    authenticationProvider(authenticationManager),
+                    properties);
+
+    filter.doFilter(
+            new MockHttpServletRequest(),
+            new MockHttpServletResponse(),
+            (request, response) -> {
+              assertEquals(42L, YakSecurityContext.getCurrentUserId());
+              assertEquals("yak", YakSecurityContext.getCurrentUsername());
+              assertEquals(List.of(7L), YakSecurityContext.getCurrentRoleIds());
+              assertTrue(YakSecurityContext.isAuthenticated());
+            });
+
+    verify(userRoleDao).selectRoleIdListByUserId(42L);
+  }
+
+  @Test
   void anonymousRequestHasSafeEmptyContext() throws Exception {
     YakSecurityContextFilter filter = new YakSecurityContextFilter(provider(null));
 
@@ -62,6 +97,14 @@ class YakSecurityContextFilterTest {
   private ObjectProvider<UserRoleDao> provider(UserRoleDao userRoleDao) {
     ObjectProvider<UserRoleDao> provider = mock(ObjectProvider.class);
     when(provider.getIfAvailable()).thenReturn(userRoleDao);
+    return provider;
+  }
+
+  @SuppressWarnings("unchecked")
+  private ObjectProvider<AuthenticationManager> authenticationProvider(
+          AuthenticationManager authenticationManager) {
+    ObjectProvider<AuthenticationManager> provider = mock(ObjectProvider.class);
+    when(provider.getIfAvailable()).thenReturn(authenticationManager);
     return provider;
   }
 }

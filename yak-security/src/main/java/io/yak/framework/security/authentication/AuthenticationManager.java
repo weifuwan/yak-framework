@@ -18,6 +18,22 @@ public interface AuthenticationManager {
   void login(Long userId);
 
   /**
+   * 为指定用户建立登录态，并保存 Yak Security 校验请求所需的服务端认证元数据。
+   *
+   * <p>默认实现仅建立登录态，支持认证元数据的实现应覆盖此方法。</p>
+   *
+   * @param userId 用户 ID
+   * @param userName 用户名
+   * @param credentialVersion 凭证版本
+   */
+  default void login(
+          Long userId,
+          String userName,
+          String credentialVersion) {
+    login(userId);
+  }
+
+  /**
    * 清理当前请求上下文中的登录态。
    */
   void logout();
@@ -35,4 +51,22 @@ public interface AuthenticationManager {
    * @return 未登录时返回 {@code null}
    */
   Long getLoginUserId();
+
+  /**
+   * 获取当前登录用户名。
+   *
+   * @return 未提供该元数据时返回 {@code null}
+   */
+  default String getLoginUsername() {
+    return null;
+  }
+
+  /**
+   * 获取建立登录态时记录的凭证版本。
+   *
+   * @return 未提供该元数据时返回 {@code null}
+   */
+  default String getCredentialVersion() {
+    return null;
+  }
 }
