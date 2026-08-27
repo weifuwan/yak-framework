@@ -7,6 +7,7 @@ import io.yak.framework.security.extend.CurrentUserProvider;
 import io.yak.framework.security.service.LoginService;
 import io.yak.framework.security.service.RbacPermissionService;
 import io.yak.framework.security.util.JsonUtils;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -42,6 +43,12 @@ public class YakAuthenticationInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) throws Exception {
+        // ERROR dispatch 只负责渲染已经失败的原始请求，不应重新建立认证边界。
+        // 此时 Sa-Token 的请求上下文可能已清理，重复认证会覆盖真正的业务异常。
+        if (request.getDispatcherType() == DispatcherType.ERROR) {
+            return true;
+        }
+
         if (!properties.isAuthenticationEnabled()
                 || "OPTIONS".equalsIgnoreCase(request.getMethod())
                 || isPublicEndpoint(handler)) {

@@ -4,6 +4,7 @@ import io.yak.framework.security.config.YakSecurityProperties;
 import io.yak.framework.security.service.LoginService;
 import io.yak.framework.security.service.RbacPermissionService;
 import io.yak.framework.security.extend.CurrentUserProvider;
+import jakarta.servlet.DispatcherType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -20,6 +21,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class YakAuthenticationInterceptorTest {
@@ -52,6 +54,19 @@ class YakAuthenticationInterceptorTest {
     assertFalse(interceptor.preHandle(request, response, new Object()));
     verify(loginService).interceptorCheck(
             request, response, "/api/private", properties.getPublicPaths());
+  }
+
+  @Test
+  void errorDispatchSkipsAuthenticationAndPermissionChecks() throws Exception {
+    HandlerMethod handler = new HandlerMethod(
+            new TestController(), TestController.class.getMethod("protectedApi"));
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", "/error");
+    request.setDispatcherType(DispatcherType.ERROR);
+
+    assertTrue(interceptor.preHandle(
+            request, new MockHttpServletResponse(), handler));
+    verify(loginService, never()).interceptorCheck(any(), any(), any(), any());
+    verifyNoInteractions(permissionService, currentUserProvider);
   }
 
   @Test
