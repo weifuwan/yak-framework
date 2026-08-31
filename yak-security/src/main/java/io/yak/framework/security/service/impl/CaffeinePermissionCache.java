@@ -3,6 +3,7 @@ package io.yak.framework.security.service.impl;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.yak.framework.security.config.YakSecurityProperties;
+import io.yak.framework.security.context.AuthorizationSnapshot;
 import io.yak.framework.security.dao.UserRoleDao;
 import io.yak.framework.security.service.PermissionCache;
 import java.time.Duration;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 /**
  * 基于 Caffeine 实现的权限缓存。
  *
- * <p>该缓存仅在当前应用实例内生效，主要用于缓存用户拥有的权限标识，
+ * <p>该缓存仅在当前应用实例内生效，主要用于缓存用户拥有的权限标识和授权快照，
  * 减少权限校验过程中对数据库的重复查询。</p>
  *
  * <p>缓存键由应用名称和用户 ID 组成，用于隔离不同应用下的用户权限数据。</p>
@@ -44,6 +45,11 @@ public class CaffeinePermissionCache implements PermissionCache {
   private final Cache<Key, Set<String>> cache;
 
   /**
+   * 用户统一授权快照缓存。
+   */
+  private final Cache<Key, AuthorizationSnapshot> authorizationCache;
+
+  /**
    * 用户角色数据访问对象。
    */
   private final UserRoleDao userRoleDao;
@@ -60,14 +66,22 @@ public class CaffeinePermissionCache implements PermissionCache {
 
     YakSecurityProperties.PermissionCacheProperties settings =
             properties.getPermissionCache();
+    long maximumSize =
+            Math.max(1, settings.getMaximumSize());
+    Duration ttl =
+            Duration.ofMinutes(
+                    Math.max(1, settings.getTtlMinutes()));
 
     this.applicationName = properties.getApplicationName();
     this.enabled = settings.isEnabled();
     this.userRoleDao = userRoleDao;
     this.cache = Caffeine.newBuilder()
-            .maximumSize(Math.max(1, settings.getMaximumSize()))
-            .expireAfterWrite(Duration.ofMinutes(
-                    Math.max(1, settings.getTtlMinutes())))
+            .maximumSize(maximumSize)
+            .expireAfterWrite(ttl)
+            .build();
+    this.authorizationCache = Caffeine.newBuilder()
+            .maximumSize(maximumSize)
+            .expireAfterWrite(ttl)
             .build();
   }
 
@@ -102,6 +116,33 @@ public class CaffeinePermissionCache implements PermissionCache {
   }
 
   /**
+   * 获取指定用户的统一授权快照。
+   *
+   * @param userId 用户 ID
+   * @param loader 授权快照加载器
+   * @return 授权快照
+   */
+  @Override
+  public AuthorizationSnapshot getAuthorizationSnapshot(
+          Long userId,
+          Supplier<AuthorizationSnapshot> loader) {
+
+    if (userId == null) {
+      return AuthorizationSnapshot.empty();
+    }
+
+    if (!enabled) {
+      return safeSnapshot(loader.get());
+    }
+
+    Key key = new Key(applicationName, userId);
+
+    return authorizationCache.get(
+            key,
+            ignored -> safeSnapshot(loader.get()));
+  }
+
+  /**
    * 清除指定用户的权限缓存。
    *
    * @param userId 用户 ID
@@ -112,7 +153,9 @@ public class CaffeinePermissionCache implements PermissionCache {
       return;
     }
 
-    cache.invalidate(new Key(applicationName, userId));
+    Key key = new Key(applicationName, userId);
+    cache.invalidate(key);
+    authorizationCache.invalidate(key);
   }
 
   /**
@@ -139,6 +182,7 @@ public class CaffeinePermissionCache implements PermissionCache {
   @Override
   public void invalidateAll() {
     cache.invalidateAll();
+    authorizationCache.invalidateAll();
   }
 
   /**
@@ -156,6 +200,13 @@ public class CaffeinePermissionCache implements PermissionCache {
 
     return Collections.unmodifiableSet(
             new HashSet<>(values));
+  }
+
+  private static AuthorizationSnapshot safeSnapshot(
+          AuthorizationSnapshot snapshot) {
+    return snapshot == null
+            ? AuthorizationSnapshot.empty()
+            : snapshot;
   }
 
   /**

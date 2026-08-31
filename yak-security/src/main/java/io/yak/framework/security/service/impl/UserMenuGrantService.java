@@ -59,7 +59,21 @@ public class UserMenuGrantService {
 
     List<Long> roleIds = normalizeIds(
         userRoleService.getRoleIdListByUserId(userId));
-    if (roleIds.isEmpty()) {
+    List<Long> permissionIds = rolePermissionService
+        .getPermissionIdListByRoleIdList(roleIds);
+    return resolve(roleIds, permissionIds);
+  }
+
+  /**
+   * 基于已加载的角色和权限解析菜单授权。
+   *
+   * <p>授权快照构建时使用本入口，避免再次查询用户角色和角色权限关系。</p>
+   */
+  MenuGrant resolve(
+      Collection<Long> roleIds,
+      Collection<Long> permissionIds) {
+    List<Long> normalizedRoleIds = normalizeIds(roleIds);
+    if (normalizedRoleIds.isEmpty()) {
       return MenuGrant.empty();
     }
 
@@ -95,7 +109,7 @@ public class UserMenuGrantService {
     Set<Long> selectedMenuIds = new LinkedHashSet<>();
     List<RoleMenuPO> relations = roleMenuMapper.selectList(
         Wrappers.<RoleMenuPO>lambdaQuery()
-            .in(RoleMenuPO::getRoleId, roleIds));
+            .in(RoleMenuPO::getRoleId, normalizedRoleIds));
     if (!CollectionUtils.isEmpty(relations)) {
       relations.stream()
           .map(RoleMenuPO::getMenuId)
@@ -105,8 +119,6 @@ public class UserMenuGrantService {
     }
 
     // 运行时兜底：按钮权限本身即可推导所属菜单，不依赖角色菜单关系是否完整。
-    List<Long> permissionIds =
-        rolePermissionService.getPermissionIdListByRoleIdList(roleIds);
     selectedMenuIds.addAll(
         permissionMenuRelationService.inferMenuIds(permissionIds));
 

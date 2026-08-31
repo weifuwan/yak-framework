@@ -2,8 +2,8 @@ package io.yak.framework.security.controller.v1;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.common.Result;
+import io.yak.framework.security.common.constant.Constants;
 import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.vo.user.CurrentUserVO;
@@ -20,10 +20,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 登录账户管理接口。
@@ -63,14 +65,6 @@ public class LoginController {
             currentUserProjectResolver;
   }
 
-  /**
-   * 用户登录。
-   *
-   * @param request HTTP 请求
-   * @param response HTTP 响应
-   * @param loginDTO 登录信息
-   * @return 当前登录用户
-   */
   @Operation(summary = "用户登录")
   @PostMapping("/login")
   @PublicEndpoint
@@ -84,9 +78,7 @@ public class LoginController {
                     loginDTO,
                     request,
                     response);
-
     return Result.success(currentUser);
-
   }
 
   @Operation(summary = "获取当前登录用户")
@@ -98,15 +90,14 @@ public class LoginController {
               ResultCode.USER_NOT_LOGIN);
     }
 
-    CurrentUserVO user =
-            userService.getCurrentUserByUsername(
-                    currentUser.getUsername());
-
-    if (user == null) {
+    UserBriefVO brief = userService.getUserBriefByUsername(
+            currentUser.getUsername());
+    if (brief == null) {
       throw new YakSecurityException(
               ResultCode.USER_NOT_EXISTS);
     }
 
+    CurrentUserVO user = toCurrentUser(brief);
     user.setRoleList(
             roleService.getRoleBriefListByUserId(
                     user.getId()));
@@ -114,38 +105,20 @@ public class LoginController {
       user.setRoleList(new ArrayList<>());
     }
 
-    UserMenuGrantService userMenuGrantService =
-            userMenuGrantServiceProvider.getIfAvailable();
-    if (userMenuGrantService != null) {
-      UserMenuGrantService.MenuGrant menuGrant =
-              userMenuGrantService.resolve(user.getId());
-      user.setMenuCodes(menuGrant.getMenuCodes());
-
-      Set<String> effectivePermissionCodes =
-              new LinkedHashSet<>();
-      if (user.getPermissionCodes() != null) {
-        effectivePermissionCodes.addAll(
-                user.getPermissionCodes());
-      }
-      effectivePermissionCodes.addAll(
-              menuGrant.getPermissionCodes());
-      user.setPermissionCodes(
-              new ArrayList<>(effectivePermissionCodes));
-    }
-
+    user.setPermissionCodes(
+            new ArrayList<>(
+                    currentUser.getPermissionCodes()));
+    user.setMenuCodes(
+            new ArrayList<>(
+                    currentUser.getMenuCodes()));
     user.setProjectList(
-            currentUserProjectResolver.resolve(user));
+            currentUserProjectResolver.resolve(
+                    user,
+                    currentUser.getProjectIds()));
 
     return Result.success(user);
   }
 
-  /**
-   * 用户退出登录。
-   *
-   * @param request HTTP 请求
-   * @param response HTTP 响应
-   * @return 退出结果
-   */
   @Operation(summary = "用户退出登录")
   @PostMapping("/logout")
   public Result<Boolean> logout(
@@ -155,5 +128,17 @@ public class LoginController {
     return loginService.logout(
             request,
             response);
+  }
+
+  private CurrentUserVO toCurrentUser(
+          UserBriefVO brief) {
+    CurrentUserVO user = new CurrentUserVO();
+    user.setId(brief.getId());
+    user.setUserName(brief.getUserName());
+    user.setRealName(brief.getRealName());
+    user.setDeptId(brief.getDeptId());
+    user.setPhone(brief.getPhone());
+    user.setEmail(brief.getEmail());
+    return user;
   }
 }

@@ -21,6 +21,7 @@ import io.yak.framework.security.permission.PermissionRegistrationService;
 import io.yak.framework.security.service.RolePermissionService;
 import io.yak.framework.security.service.RoleService;
 import io.yak.framework.security.service.UserService;
+import io.yak.framework.security.service.impl.AuthorizationSnapshotService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -79,10 +80,13 @@ public class YakSecurityAutoConfiguration {
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     YakSecurityContextFilter yakSecurityContextFilter(
             ObjectProvider<UserRoleDao> userRoleDaoProvider,
-            ObjectProvider<AuthenticationManager> authenticationManagerProvider) {
+            ObjectProvider<AuthenticationManager> authenticationManagerProvider,
+            ObjectProvider<AuthorizationSnapshotService>
+                    authorizationSnapshotServiceProvider) {
       return new YakSecurityContextFilter(
               userRoleDaoProvider,
-              authenticationManagerProvider);
+              authenticationManagerProvider,
+              authorizationSnapshotServiceProvider);
     }
     @Bean @ConditionalOnMissingBean
     OperationLogExtend operationLogExtend() { return new NoOpOperationLogExtend(); }

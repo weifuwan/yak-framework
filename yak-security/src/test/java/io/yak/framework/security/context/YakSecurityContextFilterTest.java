@@ -6,12 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.yak.framework.security.authentication.AuthenticationManager;
 import io.yak.framework.security.dao.UserRoleDao;
+import io.yak.framework.security.service.impl.AuthorizationSnapshotService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -23,10 +26,7 @@ class YakSecurityContextFilterTest {
   void exposesAuthenticatedIdentityAndClearsContextAfterwards() throws Exception {
     UserRoleDao userRoleDao = mock(UserRoleDao.class);
     when(userRoleDao.selectRoleIdListByUserId(42L)).thenReturn(List.of(7L, 9L));
-    AuthenticationManager manager = mock(AuthenticationManager.class);
-    when(manager.isLogin()).thenReturn(true);
-    when(manager.getLoginUserId()).thenReturn(42L);
-    when(manager.getLoginUsername()).thenReturn("yak");
+    AuthenticationManager manager = authenticatedManager();
 
     YakSecurityContextFilter filter = new YakSecurityContextFilter(
             provider(userRoleDao), authenticationProvider(manager));
@@ -49,6 +49,36 @@ class YakSecurityContextFilterTest {
   }
 
   @Test
+  void reusesAuthorizationSnapshotInsteadOfQueryingRolesPerRequest() throws Exception {
+    UserRoleDao userRoleDao = mock(UserRoleDao.class);
+    AuthorizationSnapshotService snapshotService =
+            mock(AuthorizationSnapshotService.class);
+    when(snapshotService.get(42L)).thenReturn(
+            new AuthorizationSnapshot(
+                    List.of(7L, 9L),
+                    Set.of("dataset:read"),
+                    List.of("datasets"),
+                    Set.of(1001L)));
+
+    YakSecurityContextFilter filter = new YakSecurityContextFilter(
+            provider(userRoleDao),
+            authenticationProvider(authenticatedManager()),
+            snapshotProvider(snapshotService));
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    request.addHeader(HttpRequestUtil.PROJECT_ID, "1001");
+
+    filter.doFilter(request, new MockHttpServletResponse(), (servletRequest, response) -> {
+      assertEquals(List.of(7L, 9L), YakSecurityContext.getCurrentRoleIds());
+      assertTrue(YakSecurityContext.hasPermission("dataset:read"));
+      assertEquals(List.of("datasets"), YakSecurityContext.getCurrentMenuCodes());
+      assertTrue(YakSecurityContext.canAccessProject(1001L));
+    });
+
+    verify(snapshotService).get(42L);
+    verifyNoInteractions(userRoleDao);
+  }
+
+  @Test
   void anonymousRequestHasSafeEmptyContext() throws Exception {
     AuthenticationManager manager = mock(AuthenticationManager.class);
     when(manager.isLogin()).thenReturn(false);
@@ -60,7 +90,17 @@ class YakSecurityContextFilterTest {
               assertFalse(YakSecurityContext.isAuthenticated());
               assertNull(YakSecurityContext.getCurrentUsername());
               assertTrue(YakSecurityContext.getCurrentRoleIds().isEmpty());
+              assertTrue(YakSecurityContext.getCurrentPermissionCodes().isEmpty());
+              assertTrue(YakSecurityContext.getCurrentProjectIds().isEmpty());
             });
+  }
+
+  private AuthenticationManager authenticatedManager() {
+    AuthenticationManager manager = mock(AuthenticationManager.class);
+    when(manager.isLogin()).thenReturn(true);
+    when(manager.getLoginUserId()).thenReturn(42L);
+    when(manager.getLoginUsername()).thenReturn("yak");
+    return manager;
   }
 
   @SuppressWarnings("unchecked")
@@ -75,6 +115,14 @@ class YakSecurityContextFilterTest {
           AuthenticationManager authenticationManager) {
     ObjectProvider<AuthenticationManager> provider = mock(ObjectProvider.class);
     when(provider.getIfAvailable()).thenReturn(authenticationManager);
+    return provider;
+  }
+
+  @SuppressWarnings("unchecked")
+  private ObjectProvider<AuthorizationSnapshotService> snapshotProvider(
+          AuthorizationSnapshotService snapshotService) {
+    ObjectProvider<AuthorizationSnapshotService> provider = mock(ObjectProvider.class);
+    when(provider.getIfAvailable()).thenReturn(snapshotService);
     return provider;
   }
 }

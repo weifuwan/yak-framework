@@ -1,7 +1,7 @@
 package io.yak.framework.security.context;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Yak Security 当前用户上下文的静态访问入口。
@@ -12,7 +12,12 @@ import java.util.List;
 public final class YakSecurityContext {
 
   private static final CurrentUser ANONYMOUS =
-          new ImmutableCurrentUser(null, null, null, Collections.emptyList(), false);
+          new ImmutableCurrentUser(
+                  null,
+                  null,
+                  null,
+                  AuthorizationSnapshot.empty(),
+                  false);
 
   private static final ThreadLocal<CurrentUser> HOLDER = new ThreadLocal<>();
 
@@ -36,6 +41,26 @@ public final class YakSecurityContext {
     return currentUser().getRoleIds();
   }
 
+  public static Set<String> getCurrentPermissionCodes() {
+    return currentUser().getPermissionCodes();
+  }
+
+  public static List<String> getCurrentMenuCodes() {
+    return currentUser().getMenuCodes();
+  }
+
+  public static Set<Long> getCurrentProjectIds() {
+    return currentUser().getProjectIds();
+  }
+
+  public static boolean hasPermission(String permissionCode) {
+    return currentUser().hasPermission(permissionCode);
+  }
+
+  public static boolean canAccessProject(Long projectId) {
+    return currentUser().canAccessProject(projectId);
+  }
+
   public static boolean isAuthenticated() {
     return currentUser().isAuthenticated();
   }
@@ -57,22 +82,86 @@ public final class YakSecurityContext {
     private final Long userId;
     private final String username;
     private final Long projectId;
-    private final List<Long> roleIds;
+    private final AuthorizationSnapshot authorizationSnapshot;
     private final boolean authenticated;
 
-    ImmutableCurrentUser(Long userId, String username, Long projectId,
-                         List<Long> roleIds, boolean authenticated) {
+    ImmutableCurrentUser(
+            Long userId,
+            String username,
+            Long projectId,
+            List<Long> roleIds,
+            boolean authenticated) {
+      this(
+              userId,
+              username,
+              projectId,
+              AuthorizationSnapshot.forRoleIds(roleIds),
+              authenticated);
+    }
+
+    ImmutableCurrentUser(
+            Long userId,
+            String username,
+            Long projectId,
+            AuthorizationSnapshot authorizationSnapshot,
+            boolean authenticated) {
       this.userId = userId;
       this.username = username;
       this.projectId = projectId;
-      this.roleIds = roleIds == null ? Collections.emptyList() : List.copyOf(roleIds);
+      this.authorizationSnapshot = authorizationSnapshot == null
+              ? AuthorizationSnapshot.empty()
+              : authorizationSnapshot;
       this.authenticated = authenticated;
     }
 
-    public Long getUserId() { return userId; }
-    public String getUsername() { return username; }
-    public Long getProjectId() { return projectId; }
-    public List<Long> getRoleIds() { return roleIds; }
-    public boolean isAuthenticated() { return authenticated; }
+    @Override
+    public Long getUserId() {
+      return userId;
+    }
+
+    @Override
+    public String getUsername() {
+      return username;
+    }
+
+    @Override
+    public Long getProjectId() {
+      return projectId;
+    }
+
+    @Override
+    public List<Long> getRoleIds() {
+      return authorizationSnapshot.getRoleIds();
+    }
+
+    @Override
+    public Set<String> getPermissionCodes() {
+      return authorizationSnapshot.getPermissionCodes();
+    }
+
+    @Override
+    public List<String> getMenuCodes() {
+      return authorizationSnapshot.getMenuCodes();
+    }
+
+    @Override
+    public Set<Long> getProjectIds() {
+      return authorizationSnapshot.getProjectIds();
+    }
+
+    @Override
+    public boolean hasPermission(String permissionCode) {
+      return authorizationSnapshot.hasPermission(permissionCode);
+    }
+
+    @Override
+    public boolean canAccessProject(Long projectId) {
+      return authorizationSnapshot.canAccessProject(projectId);
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+      return authenticated;
+    }
   }
 }

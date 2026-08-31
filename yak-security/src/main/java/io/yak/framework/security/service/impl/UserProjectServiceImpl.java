@@ -4,6 +4,7 @@ import io.yak.framework.security.common.dto.user.UserProjectDTO;
 import io.yak.framework.security.common.entity.UserProject;
 import io.yak.framework.security.common.enums.project.ProjectUserCode;
 import io.yak.framework.security.dao.UserProjectDao;
+import io.yak.framework.security.service.PermissionCache;
 import io.yak.framework.security.service.UserProjectService;
 
 import java.util.ArrayList;
@@ -39,15 +40,20 @@ public class UserProjectServiceImpl
 
   private final UserProjectDao userProjectDao;
 
+  private final PermissionCache permissionCache;
+
   /**
    * 创建用户项目关系服务。
    *
    * @param userProjectDao 用户项目关系数据访问对象
+   * @param permissionCache 用户授权缓存
    */
   public UserProjectServiceImpl(
-          UserProjectDao userProjectDao) {
+          UserProjectDao userProjectDao,
+          PermissionCache permissionCache) {
 
     this.userProjectDao = userProjectDao;
+    this.permissionCache = permissionCache;
   }
 
   /**
@@ -295,10 +301,18 @@ public class UserProjectServiceImpl
       return;
     }
 
+    List<Long> affectedUserIds =
+            userProjectDao
+                    .selectUserIdListByProjectId(
+                            projectId,
+                            NORMAL_USER_TYPE);
+
     userProjectDao
             .deleteByProjectIdAndUserType(
                     projectId,
                     NORMAL_USER_TYPE);
+
+    invalidateUsers(affectedUserIds);
   }
 
   /**
@@ -318,10 +332,18 @@ public class UserProjectServiceImpl
       return;
     }
 
+    List<Long> affectedUserIds =
+            userProjectDao
+                    .selectUserIdListByProjectId(
+                            projectId,
+                            OWNER_USER_TYPE);
+
     userProjectDao
             .deleteByProjectIdAndUserType(
                     projectId,
                     OWNER_USER_TYPE);
+
+    invalidateUsers(affectedUserIds);
   }
 
   /**
@@ -405,6 +427,8 @@ public class UserProjectServiceImpl
 
     userProjectDao.insertBatch(
             userProjectList);
+
+    invalidateUsers(validUserIds);
   }
 
   /**
@@ -435,6 +459,8 @@ public class UserProjectServiceImpl
                     projectId,
                     validUserIds,
                     userType));
+
+    invalidateUsers(validUserIds);
   }
 
   /**
@@ -518,6 +544,18 @@ public class UserProjectServiceImpl
     }
 
     return userProjectList;
+  }
+
+  /**
+   * 失效指定用户的授权快照。
+   *
+   * @param userIds 用户 ID 列表
+   */
+  private void invalidateUsers(
+          List<Long> userIds) {
+
+    normalizeIds(userIds)
+            .forEach(permissionCache::invalidateUser);
   }
 
   /**

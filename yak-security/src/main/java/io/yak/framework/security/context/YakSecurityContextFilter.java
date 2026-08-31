@@ -2,6 +2,7 @@ package io.yak.framework.security.context;
 
 import io.yak.framework.security.authentication.AuthenticationManager;
 import io.yak.framework.security.dao.UserRoleDao;
+import io.yak.framework.security.service.impl.AuthorizationSnapshotService;
 import io.yak.framework.security.util.HttpRequestUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,12 +20,27 @@ public final class YakSecurityContextFilter extends OncePerRequestFilter {
 
   private final ObjectProvider<UserRoleDao> userRoleDaoProvider;
   private final ObjectProvider<AuthenticationManager> authenticationManagerProvider;
+  private final ObjectProvider<AuthorizationSnapshotService>
+          authorizationSnapshotServiceProvider;
 
   public YakSecurityContextFilter(
           ObjectProvider<UserRoleDao> userRoleDaoProvider,
           ObjectProvider<AuthenticationManager> authenticationManagerProvider) {
+    this(
+            userRoleDaoProvider,
+            authenticationManagerProvider,
+            null);
+  }
+
+  public YakSecurityContextFilter(
+          ObjectProvider<UserRoleDao> userRoleDaoProvider,
+          ObjectProvider<AuthenticationManager> authenticationManagerProvider,
+          ObjectProvider<AuthorizationSnapshotService>
+                  authorizationSnapshotServiceProvider) {
     this.userRoleDaoProvider = userRoleDaoProvider;
     this.authenticationManagerProvider = authenticationManagerProvider;
+    this.authorizationSnapshotServiceProvider =
+            authorizationSnapshotServiceProvider;
   }
 
   @Override
@@ -61,19 +77,35 @@ public final class YakSecurityContextFilter extends OncePerRequestFilter {
           Long userId,
           String username) {
     boolean authenticated = userId != null && StringUtils.hasText(username);
-    List<Long> roleIds = authenticated
-            ? findRoleIds(userId)
-            : Collections.emptyList();
+    AuthorizationSnapshot snapshot = authenticated
+            ? findAuthorizationSnapshot(userId)
+            : AuthorizationSnapshot.empty();
     return new YakSecurityContext.ImmutableCurrentUser(
             userId,
             username,
             HttpRequestUtil.getProjectId(request),
-            roleIds,
+            snapshot,
             authenticated);
   }
 
+  private AuthorizationSnapshot findAuthorizationSnapshot(
+          Long userId) {
+    AuthorizationSnapshotService snapshotService =
+            authorizationSnapshotServiceProvider == null
+                    ? null
+                    : authorizationSnapshotServiceProvider.getIfAvailable();
+    if (snapshotService != null) {
+      return snapshotService.get(userId);
+    }
+
+    return AuthorizationSnapshot.forRoleIds(
+            findRoleIds(userId));
+  }
+
   private List<Long> findRoleIds(Long userId) {
-    UserRoleDao userRoleDao = userRoleDaoProvider.getIfAvailable();
+    UserRoleDao userRoleDao = userRoleDaoProvider == null
+            ? null
+            : userRoleDaoProvider.getIfAvailable();
     if (userRoleDao == null) {
       return Collections.emptyList();
     }
