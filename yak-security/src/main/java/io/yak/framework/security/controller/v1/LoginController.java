@@ -12,6 +12,7 @@ import io.yak.framework.security.context.CurrentUser;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.LoginService;
 import io.yak.framework.security.service.UserService;
+import io.yak.framework.security.service.impl.CurrentUserProjectResolver;
 import io.yak.framework.security.service.impl.UserMenuGrantService;
 import io.yak.framework.security.web.PublicEndpoint;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,18 +39,24 @@ public class LoginController {
   private final CurrentUser currentUser;
   private final ObjectProvider<UserMenuGrantService>
           userMenuGrantServiceProvider;
+  private final CurrentUserProjectResolver
+          currentUserProjectResolver;
 
   public LoginController(
           LoginService loginService,
           UserService userService,
           CurrentUser currentUser,
           ObjectProvider<UserMenuGrantService>
-                  userMenuGrantServiceProvider) {
+                  userMenuGrantServiceProvider,
+          CurrentUserProjectResolver
+                  currentUserProjectResolver) {
     this.loginService = loginService;
     this.userService = userService;
     this.currentUser = currentUser;
     this.userMenuGrantServiceProvider =
             userMenuGrantServiceProvider;
+    this.currentUserProjectResolver =
+            currentUserProjectResolver;
   }
 
   /**
@@ -114,6 +121,9 @@ public class LoginController {
       user.setPermissionCodes(
               new ArrayList<>(effectivePermissionCodes));
     }
+
+    user.setProjectList(
+            currentUserProjectResolver.resolve(user));
 
     return Result.success(user);
   }
