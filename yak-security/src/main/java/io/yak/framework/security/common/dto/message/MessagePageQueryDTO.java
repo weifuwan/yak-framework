@@ -1,8 +1,6 @@
 package io.yak.framework.security.common.dto.message;
 
-import java.util.Date;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /** 当前用户消息分页查询条件。 */
 @Data
@@ -17,10 +15,8 @@ public class MessagePageQueryDTO {
   private String type;
   /** 当前项目；传入后同时返回 SYSTEM 消息与该项目消息。 */
   private Long projectId;
-  /** 创建时间起点。 */
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private Date startTime;
-  /** 创建时间终点。 */
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private Date endTime;
+  /** 创建时间起点，Unix epoch milliseconds。 */
+  private Long startTime;
+  /** 创建时间终点，Unix epoch milliseconds。 */
+  private Long endTime;
 }
