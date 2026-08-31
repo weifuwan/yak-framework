@@ -38,9 +38,15 @@ A message can carry:
 
 When `projectId` is supplied to the page query, the result contains system messages plus messages for that project. Omitting `projectId` returns all messages owned by the current user.
 
-## Publishing defaults
+## Publishing
 
-`MessageService.saveMessage(s)` remains the framework publishing boundary. Missing metadata is normalized as follows:
+Business modules should depend on `NotificationPublisher`, not the message DAO. The default publisher delegates to `MessageService`, so persistence and defaulting remain owned by `yak-security`.
+
+```java
+notificationPublisher.publish(messageDTO);
+```
+
+Missing metadata is normalized as follows:
 
 - `type`: `SECURITY` when an operation log is linked, otherwise `SYSTEM`
 - `level`: `INFO`
