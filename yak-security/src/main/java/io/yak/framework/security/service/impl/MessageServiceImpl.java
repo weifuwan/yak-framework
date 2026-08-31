@@ -1,6 +1,7 @@
 package io.yak.framework.security.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.yak.framework.security.common.constant.SecurityPermissionCode;
 import io.yak.framework.security.common.dto.message.MessageDTO;
 import io.yak.framework.security.common.dto.message.MessagePageQueryDTO;
 import io.yak.framework.security.common.entity.Message;
@@ -8,6 +9,7 @@ import io.yak.framework.security.common.entity.user.User;
 import io.yak.framework.security.common.enums.ResultCode;
 import io.yak.framework.security.common.vo.message.MessagePageVO;
 import io.yak.framework.security.common.vo.message.MessageVO;
+import io.yak.framework.security.context.AuthorizationSnapshot;
 import io.yak.framework.security.dao.MessageDao;
 import io.yak.framework.security.dao.UserDao;
 import io.yak.framework.security.exception.YakSecurityException;
@@ -16,7 +18,9 @@ import io.yak.framework.security.util.CopyBeanUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,17 +33,25 @@ public class MessageServiceImpl implements MessageService {
 
   private static final String STATUS_READ = "READ";
   private static final String STATUS_UNREAD = "UNREAD";
+  private static final String SCOPE_SYSTEM = "SYSTEM";
+  private static final String SCOPE_PROJECT = "PROJECT";
+  private static final String LEVEL_INFO = "INFO";
+  private static final Set<String> MESSAGE_LEVELS =
+          Set.of("INFO", "SUCCESS", "WARNING", "ERROR");
   private static final int DEFAULT_PAGE_SIZE = 10;
   private static final int MAX_PAGE_SIZE = 100;
 
   private final MessageDao messageDao;
   private final UserDao userDao;
+  private final AuthorizationSnapshotService authorizationSnapshotService;
 
   public MessageServiceImpl(
           MessageDao messageDao,
-          UserDao userDao) {
+          UserDao userDao,
+          AuthorizationSnapshotService authorizationSnapshotService) {
     this.messageDao = messageDao;
     this.userDao = userDao;
+    this.authorizationSnapshotService = authorizationSnapshotService;
   }
 
   @Override
@@ -51,7 +63,7 @@ public class MessageServiceImpl implements MessageService {
       return;
     }
     Message message = convertToEntity(messageDTO);
-    applyDefaults(message);
+    normalizeMessage(message);
     messageDao.insert(message);
   }
 
@@ -61,8 +73,13 @@ public class MessageServiceImpl implements MessageService {
           Boolean readTag) {
 
     User user = requireUser(username);
+    AuthorizationSnapshot authorization = authorization(user);
+    ProjectVisibility visibility = resolveVisibility(authorization, null);
     List<Message> messages = messageDao.selectListByUserIdAndReadTag(
-            user.getId(), readTag);
+            user.getId(),
+            readTag,
+            visibility.projectIds(),
+            visibility.restrictProjects());
     return convertToVOList(messages);
   }
 
@@ -84,8 +101,10 @@ public class MessageServiceImpl implements MessageService {
           List<Long> messageIdList) {
 
     User user = requireUser(username);
-    toggleMessages(messageDao.selectListByMessageIdListAndUserId(
-            normalizeIds(messageIdList), user.getId()));
+    AuthorizationSnapshot authorization = authorization(user);
+    List<Message> messages = messageDao.selectListByMessageIdListAndUserId(
+            normalizeIds(messageIdList), user.getId());
+    toggleMessages(filterVisibleMessages(messages, authorization));
   }
 
   @Override
@@ -100,7 +119,7 @@ public class MessageServiceImpl implements MessageService {
     List<Message> messages = messageDTOList.stream()
             .filter(Objects::nonNull)
             .map(this::convertToEntity)
-            .peek(this::applyDefaults)
+            .peek(this::normalizeMessage)
             .collect(Collectors.toList());
 
     if (!messages.isEmpty()) {
@@ -114,9 +133,12 @@ public class MessageServiceImpl implements MessageService {
           MessagePageQueryDTO queryDTO) {
 
     User user = requireUser(username);
+    AuthorizationSnapshot authorization = authorization(user);
     MessagePageQueryDTO query = queryDTO == null
             ? new MessagePageQueryDTO()
             : queryDTO;
+
+    validateTimeRange(query.getStartTime(), query.getEndTime());
 
     int pageNum = query.getPageNum() == null
             ? 1
@@ -124,14 +146,18 @@ public class MessageServiceImpl implements MessageService {
     int pageSize = query.getPageSize() == null
             ? DEFAULT_PAGE_SIZE
             : Math.max(1, Math.min(MAX_PAGE_SIZE, query.getPageSize()));
+    ProjectVisibility visibility = resolveVisibility(
+            authorization,
+            query.getProjectId());
 
     IPage<Message> page = messageDao.selectPageByUserId(
             user.getId(),
             parseReadTag(query.getStatus()),
             normalizeText(query.getType()),
-            query.getProjectId(),
-            query.getStartTime(),
-            query.getEndTime(),
+            visibility.projectIds(),
+            visibility.restrictProjects(),
+            toDate(query.getStartTime()),
+            toDate(query.getEndTime()),
             pageNum,
             pageSize);
 
@@ -146,8 +172,12 @@ public class MessageServiceImpl implements MessageService {
           Long messageId) {
 
     User user = requireUser(username);
-    return convertToVO(messageDao.selectByMessageIdAndUserId(
-            messageId, user.getId()));
+    Message message = messageDao.selectByMessageIdAndUserId(
+            messageId, user.getId());
+    if (!canAccessMessage(authorization(user), message)) {
+      return null;
+    }
+    return convertToVO(message);
   }
 
   @Override
@@ -164,7 +194,9 @@ public class MessageServiceImpl implements MessageService {
     User user = requireUser(username);
     Message message = messageDao.selectByMessageIdAndUserId(
             messageId, user.getId());
-    markRead(message);
+    if (canAccessMessage(authorization(user), message)) {
+      markRead(message);
+    }
   }
 
   @Override
@@ -180,14 +212,21 @@ public class MessageServiceImpl implements MessageService {
       return;
     }
     User user = requireUser(username);
-    messageDao.selectListByMessageIdListAndUserId(ids, user.getId())
+    AuthorizationSnapshot authorization = authorization(user);
+    filterVisibleMessages(
+            messageDao.selectListByMessageIdListAndUserId(ids, user.getId()),
+            authorization)
             .forEach(this::markRead);
   }
 
   @Override
   public int getUnreadMessageCount(String username) {
     User user = requireUser(username);
-    return Math.toIntExact(messageDao.countUnreadByUserId(user.getId()));
+    ProjectVisibility visibility = resolveVisibility(authorization(user), null);
+    return Math.toIntExact(messageDao.countUnreadByUserId(
+            user.getId(),
+            visibility.projectIds(),
+            visibility.restrictProjects()));
   }
 
   private void toggleMessages(List<Message> messages) {
@@ -225,6 +264,57 @@ public class MessageServiceImpl implements MessageService {
     return user;
   }
 
+  private AuthorizationSnapshot authorization(User user) {
+    return authorizationSnapshotService.get(user == null ? null : user.getId());
+  }
+
+  private ProjectVisibility resolveVisibility(
+          AuthorizationSnapshot authorization,
+          Long requestedProjectId) {
+
+    if (requestedProjectId != null) {
+      if (requestedProjectId <= 0L) {
+        throw new YakSecurityException(ResultCode.PARAM_ERROR);
+      }
+      if (!authorization.canAccessProject(requestedProjectId)) {
+        throw new YakSecurityException(ResultCode.NO_PERMISSION);
+      }
+      return new ProjectVisibility(List.of(requestedProjectId), true);
+    }
+
+    if (authorization.hasPermission(SecurityPermissionCode.ROOT)) {
+      return new ProjectVisibility(List.of(), false);
+    }
+    return new ProjectVisibility(
+            new ArrayList<>(authorization.getProjectIds()),
+            true);
+  }
+
+  /**
+   * A non-null project_id always makes a message project-owned for authorization,
+   * regardless of the stored scope label.
+   */
+  private boolean canAccessMessage(
+          AuthorizationSnapshot authorization,
+          Message message) {
+
+    return message != null
+            && (message.getProjectId() == null
+            || authorization.canAccessProject(message.getProjectId()));
+  }
+
+  private List<Message> filterVisibleMessages(
+          List<Message> messages,
+          AuthorizationSnapshot authorization) {
+
+    if (CollectionUtils.isEmpty(messages)) {
+      return new ArrayList<>();
+    }
+    return messages.stream()
+            .filter(message -> canAccessMessage(authorization, message))
+            .collect(Collectors.toList());
+  }
+
   private Boolean parseReadTag(String status) {
     if (!StringUtils.hasText(status)) {
       return null;
@@ -235,11 +325,25 @@ public class MessageServiceImpl implements MessageService {
     if (STATUS_UNREAD.equalsIgnoreCase(status)) {
       return false;
     }
-    throw new IllegalArgumentException("消息状态仅支持 READ 或 UNREAD");
+    throw new YakSecurityException(ResultCode.PARAM_ERROR);
   }
 
   private String normalizeText(String value) {
-    return StringUtils.hasText(value) ? value.trim() : null;
+    return StringUtils.hasText(value)
+            ? value.trim().toUpperCase(Locale.ROOT)
+            : null;
+  }
+
+  private Date toDate(Long epochMillis) {
+    return epochMillis == null ? null : new Date(epochMillis);
+  }
+
+  private void validateTimeRange(Long startTime, Long endTime) {
+    if ((startTime != null && startTime < 0L)
+            || (endTime != null && endTime < 0L)
+            || (startTime != null && endTime != null && startTime > endTime)) {
+      throw new YakSecurityException(ResultCode.PARAM_ERROR);
+    }
   }
 
   private Message convertToEntity(MessageDTO messageDTO) {
@@ -250,16 +354,33 @@ public class MessageServiceImpl implements MessageService {
     return message;
   }
 
-  private void applyDefaults(Message message) {
+  /**
+   * Normalizes the publishing contract before persistence.
+   *
+   * <p>scope is derived exclusively from projectId. Callers cannot persist a
+   * SYSTEM message with a project owner, or a PROJECT message without one.</p>
+   */
+  private void normalizeMessage(Message message) {
+    if (message.getProjectId() != null && message.getProjectId() <= 0L) {
+      throw new YakSecurityException(ResultCode.PARAM_ERROR);
+    }
     if (!StringUtils.hasText(message.getType())) {
       message.setType(message.getOplogId() == null ? "SYSTEM" : "SECURITY");
+    } else {
+      message.setType(message.getType().trim().toUpperCase(Locale.ROOT));
     }
-    if (!StringUtils.hasText(message.getLevel())) {
-      message.setLevel("INFO");
+
+    String level = StringUtils.hasText(message.getLevel())
+            ? message.getLevel().trim().toUpperCase(Locale.ROOT)
+            : LEVEL_INFO;
+    if (!MESSAGE_LEVELS.contains(level)) {
+      throw new YakSecurityException(ResultCode.PARAM_ERROR);
     }
-    if (!StringUtils.hasText(message.getScope())) {
-      message.setScope(message.getProjectId() == null ? "SYSTEM" : "PROJECT");
-    }
+    message.setLevel(level);
+    message.setScope(message.getProjectId() == null
+            ? SCOPE_SYSTEM
+            : SCOPE_PROJECT);
+
     if (message.getReadTag() == null) {
       message.setReadTag(false);
     }
@@ -320,5 +441,10 @@ public class MessageServiceImpl implements MessageService {
             .filter(Objects::nonNull)
             .distinct()
             .collect(Collectors.toList());
+  }
+
+  private record ProjectVisibility(
+          List<Long> projectIds,
+          boolean restrictProjects) {
   }
 }
