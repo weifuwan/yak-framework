@@ -11,6 +11,7 @@ import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.context.CurrentUser;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.LoginService;
+import io.yak.framework.security.service.RoleService;
 import io.yak.framework.security.service.UserService;
 import io.yak.framework.security.service.impl.CurrentUserProjectResolver;
 import io.yak.framework.security.service.impl.UserMenuGrantService;
@@ -36,6 +37,7 @@ public class LoginController {
 
   private final LoginService loginService;
   private final UserService userService;
+  private final RoleService roleService;
   private final CurrentUser currentUser;
   private final ObjectProvider<UserMenuGrantService>
           userMenuGrantServiceProvider;
@@ -45,6 +47,7 @@ public class LoginController {
   public LoginController(
           LoginService loginService,
           UserService userService,
+          RoleService roleService,
           CurrentUser currentUser,
           ObjectProvider<UserMenuGrantService>
                   userMenuGrantServiceProvider,
@@ -52,6 +55,7 @@ public class LoginController {
                   currentUserProjectResolver) {
     this.loginService = loginService;
     this.userService = userService;
+    this.roleService = roleService;
     this.currentUser = currentUser;
     this.userMenuGrantServiceProvider =
             userMenuGrantServiceProvider;
@@ -101,6 +105,13 @@ public class LoginController {
     if (user == null) {
       throw new YakSecurityException(
               ResultCode.USER_NOT_EXISTS);
+    }
+
+    user.setRoleList(
+            roleService.getRoleBriefListByUserId(
+                    user.getId()));
+    if (user.getRoleList() == null) {
+      user.setRoleList(new ArrayList<>());
     }
 
     UserMenuGrantService userMenuGrantService =

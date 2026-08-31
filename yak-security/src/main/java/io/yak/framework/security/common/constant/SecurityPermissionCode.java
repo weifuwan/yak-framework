@@ -64,6 +64,7 @@ public final class SecurityPermissionCode {
 
   /** 安全项目管理权限。 */
   public static final class Project {
+    public static final String MENU_CODE = "system-security-projects";
     public static final String READ = "security:project:read";
 
     private Project() {

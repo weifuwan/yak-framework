@@ -47,7 +47,8 @@ import org.springframework.web.bind.annotation.RestController;
         name = "查看授权项目",
         group = SecurityPermissionCode.GROUP_NAME,
         groupCode = SecurityPermissionCode.GROUP_CODE,
-        menuCode = "system-security-projects")
+        menuCode = SecurityPermissionCode.Project.MENU_CODE,
+        description = "查看工作空间列表及详情")
 public class ProjectController {
 
   private final ProjectService projectService;
@@ -450,6 +451,7 @@ public class ProjectController {
    */
   @Operation(summary = "查询项目未分配用户")
   @GetMapping("/unassigned")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<List<UserBriefVO>> unassigned(
           @RequestParam("id") Long projectId) {
 

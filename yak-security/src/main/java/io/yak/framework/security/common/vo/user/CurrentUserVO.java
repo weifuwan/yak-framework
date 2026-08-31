@@ -1,6 +1,7 @@
 package io.yak.framework.security.common.vo.user;
 
 import io.yak.framework.security.common.vo.project.ProjectBriefVO;
+import io.yak.framework.security.common.vo.role.RoleBriefVO;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -26,7 +27,8 @@ public class CurrentUserVO {
 
     private String email;
 
-    private List<String> roleList =
+    /** 当前用户拥有的角色。 */
+    private List<RoleBriefVO> roleList =
             new ArrayList<>();
 
     /**
