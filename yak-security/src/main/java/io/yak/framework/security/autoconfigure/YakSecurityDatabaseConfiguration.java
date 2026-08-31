@@ -2,6 +2,7 @@ package io.yak.framework.security.autoconfigure;
 
 import io.yak.framework.security.config.DataSourceConfig;
 import io.yak.framework.security.dao.impl.*;
+import io.yak.framework.security.notification.DefaultNotificationPublisher;
 import io.yak.framework.security.service.impl.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,8 @@ import org.springframework.context.annotation.Import;
     PermissionMenuRelationService.class,
     MenuAwarePermissionService.class, MenuAwareRolePermissionService.class,
     UserMenuGrantService.class, CurrentUserProjectResolver.class,
-    MessageServiceImpl.class, OplogExtraServiceImpl.class, OplogServiceImpl.class,
+    MessageServiceImpl.class, DefaultNotificationPublisher.class,
+    OplogExtraServiceImpl.class, OplogServiceImpl.class,
     PermissionAdministrationService.class, PermissionServiceImpl.class,
     ProjectServiceImpl.class, AuthorizationSnapshotService.class,
     RbacPermissionServiceImpl.class, ResourceTypeServiceImpl.class,
