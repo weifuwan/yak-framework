@@ -28,4 +28,16 @@ class DataSourceConfigTest {
         assertThat(flyway.getConfiguration().getBaselineVersion())
                 .isEqualTo(MigrationVersion.fromVersion("0"));
     }
+
+    @Test
+    void flywayAllowsLateSecurityMigrationsWhenSharedHistoryHasHigherVersions() {
+        YakSecurityProperties properties = new YakSecurityProperties();
+        properties.setApplicationName("test-app");
+
+        Flyway flyway = new DataSourceConfig().yakSecurityFlyway(
+                mock(DataSource.class), properties);
+
+        assertThat(flyway.getConfiguration().isOutOfOrder())
+                .isTrue();
+    }
 }
