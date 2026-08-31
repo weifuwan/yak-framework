@@ -3,6 +3,7 @@ package io.yak.framework.security.controller.v1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.security.common.constant.Constants;
+import io.yak.framework.security.common.constant.SecurityPermissionCode;
 import io.yak.framework.common.PagingData;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.project.ProjectQueryDTO;
@@ -13,8 +14,10 @@ import io.yak.framework.security.common.vo.project.ProjectBriefVO;
 import io.yak.framework.security.common.vo.project.ProjectDeleteCheckVO;
 import io.yak.framework.security.common.vo.project.ProjectVO;
 import io.yak.framework.security.common.vo.user.UserBriefVO;
+import io.yak.framework.security.permission.YakPermission;
 import io.yak.framework.security.service.ProjectService;
 import io.yak.framework.security.util.HttpRequestUtil;
+import io.yak.framework.security.web.RequiresPermission;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
@@ -38,6 +41,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = Constants.SWAGGER_API_TAG_PREFIX + "项目管理接口")
 @RestController
 @RequestMapping("/yak-security/api/v1/project")
+@RequiresPermission(SecurityPermissionCode.Project.READ)
+@YakPermission(
+        code = SecurityPermissionCode.Project.READ,
+        name = "查看授权项目",
+        group = SecurityPermissionCode.GROUP_NAME,
+        groupCode = SecurityPermissionCode.GROUP_CODE,
+        menuCode = "system-security-projects")
 public class ProjectController {
 
   private final ProjectService projectService;
@@ -96,6 +106,7 @@ public class ProjectController {
    */
   @Operation(summary = "切换项目状态")
   @PutMapping("/switch/{id}")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> switchStatus(
           HttpServletRequest request,
           @PathVariable("id") Long projectId) {
@@ -120,6 +131,7 @@ public class ProjectController {
    */
   @Operation(summary = "按目标值更新项目状态")
   @PutMapping("/{id}/status")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> updateStatus(
           HttpServletRequest request,
           @PathVariable("id") Long projectId,
@@ -158,6 +170,7 @@ public class ProjectController {
    */
   @Operation(summary = "更新项目")
   @PutMapping
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> update(
           HttpServletRequest request,
           @RequestBody
@@ -180,6 +193,7 @@ public class ProjectController {
    */
   @Operation(summary = "创建项目")
   @PostMapping
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<ProjectVO> create(
           HttpServletRequest request,
           @RequestBody
@@ -201,6 +215,7 @@ public class ProjectController {
    */
   @Operation(summary = "执行项目删除前校验")
   @GetMapping("/delete/check/{id}")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<ProjectDeleteCheckVO> deleteCheck(
           @PathVariable("id") Long projectId) {
 
@@ -218,6 +233,7 @@ public class ProjectController {
    */
   @Operation(summary = "根据项目 ID 删除项目")
   @DeleteMapping("/{id}")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> delete(
           HttpServletRequest request,
           @PathVariable("id") Long projectId) {
@@ -272,6 +288,7 @@ public class ProjectController {
    */
   @Operation(summary = "全量更新项目负责人")
   @PutMapping("/{id}/owners")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> replaceProjectOwners(
           HttpServletRequest request,
           @PathVariable("id") Long projectId,
@@ -304,6 +321,7 @@ public class ProjectController {
    */
   @Operation(summary = "全量更新项目成员")
   @PutMapping("/{id}/users")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> replaceProjectUsers(
           HttpServletRequest request,
           @PathVariable("id") Long projectId,
@@ -334,6 +352,7 @@ public class ProjectController {
    */
   @Operation(summary = "添加项目负责人")
   @PutMapping("/{id}/owner/{ownerId}")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> addProjectOwner(
           HttpServletRequest request,
           @PathVariable("id") Long projectId,
@@ -358,6 +377,7 @@ public class ProjectController {
    */
   @Operation(summary = "删除项目负责人")
   @DeleteMapping("/{id}/owner/{ownerId}")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> deleteProjectOwner(
           HttpServletRequest request,
           @PathVariable("id") Long projectId,
@@ -382,6 +402,7 @@ public class ProjectController {
    */
   @Operation(summary = "添加项目用户")
   @PutMapping("/{id}/user/{userId}")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> addProjectUser(
           HttpServletRequest request,
           @PathVariable("id") Long projectId,
@@ -406,6 +427,7 @@ public class ProjectController {
    */
   @Operation(summary = "删除项目用户")
   @DeleteMapping("/{id}/user/{userId}")
+  @RequiresPermission(SecurityPermissionCode.ROOT)
   public Result<Void> deleteProjectUser(
           HttpServletRequest request,
           @PathVariable("id") Long projectId,

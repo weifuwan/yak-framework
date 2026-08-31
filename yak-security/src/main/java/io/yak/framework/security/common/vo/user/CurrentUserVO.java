@@ -1,5 +1,6 @@
 package io.yak.framework.security.common.vo.user;
 
+import io.yak.framework.security.common.vo.project.ProjectBriefVO;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -40,4 +41,12 @@ public class CurrentUserVO {
      * <p>null 表示当前部署未启用菜单授权能力；空列表表示已启用但用户没有菜单。
      */
     private List<String> menuCodes;
+
+    /**
+     * 当前身份可进入的启用项目。
+     *
+     * <p>超级管理员可进入当前应用全部启用项目；普通用户仅返回其负责人或成员关系下的启用项目。
+     */
+    private List<ProjectBriefVO> projectList =
+            new ArrayList<>();
 }
