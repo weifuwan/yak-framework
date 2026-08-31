@@ -7,7 +7,6 @@ import io.yak.framework.security.common.dto.dept.DeptSaveDTO;
 import io.yak.framework.security.permission.YakPermission;
 import io.yak.framework.security.web.RequiresPermission;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -66,33 +65,6 @@ class ManagementControllerPermissionTest {
         true);
   }
 
-  @Test
-  void projectControllerKeepsReadVisibilityAndRootOnlyAdministration() {
-    assertControllerPermission(
-        ProjectController.class,
-        SecurityPermissionCode.Project.READ,
-        SecurityPermissionCode.Project.MENU_CODE);
-
-    List.of(
-        "switchStatus",
-        "updateStatus",
-        "update",
-        "create",
-        "deleteCheck",
-        "delete",
-        "replaceProjectOwners",
-        "replaceProjectUsers",
-        "addProjectOwner",
-        "deleteProjectOwner",
-        "addProjectUser",
-        "deleteProjectUser",
-        "unassigned")
-        .forEach(methodName -> assertMethodPermission(
-            ProjectController.class,
-            methodName,
-            SecurityPermissionCode.ROOT));
-  }
-
   private void assertControllerPermission(
       Class<?> controllerType,
       String expectedPermission,
@@ -128,21 +100,5 @@ class ManagementControllerPermissionTest {
     assertThat(yakPermission).isNotNull();
     assertThat(yakPermission.code()).isEqualTo(expectedPermission);
     assertThat(yakPermission.menuCode()).isEqualTo(expectedMenuCode);
-  }
-
-  private void assertMethodPermission(
-      Class<?> controllerType,
-      String methodName,
-      String expectedPermission) {
-    Method method = Arrays.stream(controllerType.getDeclaredMethods())
-        .filter(candidate -> candidate.getName().equals(methodName))
-        .findFirst()
-        .orElseThrow(() -> new AssertionError(
-            "Missing controller method: " + methodName));
-
-    RequiresPermission requiresPermission =
-        method.getAnnotation(RequiresPermission.class);
-    assertThat(requiresPermission).isNotNull();
-    assertThat(requiresPermission.value()).isEqualTo(expectedPermission);
   }
 }

@@ -3,7 +3,6 @@ package io.yak.framework.security.controller.v1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.yak.framework.security.common.constant.Constants;
-import io.yak.framework.security.common.constant.SecurityPermissionCode;
 import io.yak.framework.common.Result;
 import io.yak.framework.security.common.dto.account.AccountLoginDTO;
 import io.yak.framework.security.common.enums.ResultCode;
@@ -12,9 +11,9 @@ import io.yak.framework.security.common.vo.user.UserBriefVO;
 import io.yak.framework.security.context.CurrentUser;
 import io.yak.framework.security.exception.YakSecurityException;
 import io.yak.framework.security.service.LoginService;
-import io.yak.framework.security.service.ProjectAccessService;
 import io.yak.framework.security.service.RoleService;
 import io.yak.framework.security.service.UserService;
+import io.yak.framework.security.service.impl.CurrentUserProjectResolver;
 import io.yak.framework.security.service.impl.UserMenuGrantService;
 import io.yak.framework.security.web.PublicEndpoint;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,26 +38,29 @@ public class LoginController {
   private final LoginService loginService;
   private final UserService userService;
   private final RoleService roleService;
-  private final ProjectAccessService projectAccessService;
   private final CurrentUser currentUser;
   private final ObjectProvider<UserMenuGrantService>
           userMenuGrantServiceProvider;
+  private final CurrentUserProjectResolver
+          currentUserProjectResolver;
 
   public LoginController(
           LoginService loginService,
           UserService userService,
           RoleService roleService,
-          ProjectAccessService projectAccessService,
           CurrentUser currentUser,
           ObjectProvider<UserMenuGrantService>
-                  userMenuGrantServiceProvider) {
+                  userMenuGrantServiceProvider,
+          CurrentUserProjectResolver
+                  currentUserProjectResolver) {
     this.loginService = loginService;
     this.userService = userService;
     this.roleService = roleService;
-    this.projectAccessService = projectAccessService;
     this.currentUser = currentUser;
     this.userMenuGrantServiceProvider =
             userMenuGrantServiceProvider;
+    this.currentUserProjectResolver =
+            currentUserProjectResolver;
   }
 
   /**
@@ -131,17 +133,8 @@ public class LoginController {
               new ArrayList<>(effectivePermissionCodes));
     }
 
-    boolean root =
-            user.getPermissionCodes() != null
-                    && user.getPermissionCodes().contains(
-                    SecurityPermissionCode.ROOT);
     user.setProjectList(
-            projectAccessService.getSwitchableProjects(
-                    user.getId(),
-                    root));
-    if (user.getProjectList() == null) {
-      user.setProjectList(new ArrayList<>());
-    }
+            currentUserProjectResolver.resolve(user));
 
     return Result.success(user);
   }

@@ -6,9 +6,9 @@ import io.yak.framework.security.common.vo.role.RoleBriefVO;
 import io.yak.framework.security.common.vo.user.CurrentUserVO;
 import io.yak.framework.security.context.CurrentUser;
 import io.yak.framework.security.service.LoginService;
-import io.yak.framework.security.service.ProjectAccessService;
 import io.yak.framework.security.service.RoleService;
 import io.yak.framework.security.service.UserService;
+import io.yak.framework.security.service.impl.CurrentUserProjectResolver;
 import io.yak.framework.security.service.impl.UserMenuGrantService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
@@ -23,12 +23,12 @@ import static org.mockito.Mockito.when;
 class LoginControllerCurrentUserTest {
 
   @Test
-  void rootCurrentIdentityIncludesRolesAndAllSwitchableWorkspaces() {
+  void rootCurrentIdentityIncludesRolesAndSwitchableWorkspaces() {
     LoginService loginService = mock(LoginService.class);
     UserService userService = mock(UserService.class);
     RoleService roleService = mock(RoleService.class);
-    ProjectAccessService projectAccessService =
-            mock(ProjectAccessService.class);
+    CurrentUserProjectResolver projectResolver =
+            mock(CurrentUserProjectResolver.class);
     CurrentUser currentUser = mock(CurrentUser.class);
     @SuppressWarnings("unchecked")
     ObjectProvider<UserMenuGrantService> menuGrantProvider =
@@ -55,7 +55,7 @@ class LoginControllerCurrentUserTest {
             .thenReturn(identity);
     when(roleService.getRoleBriefListByUserId(7L))
             .thenReturn(List.of(role));
-    when(projectAccessService.getSwitchableProjects(7L, true))
+    when(projectResolver.resolve(identity))
             .thenReturn(List.of(project));
     when(menuGrantProvider.getIfAvailable()).thenReturn(null);
 
@@ -63,9 +63,9 @@ class LoginControllerCurrentUserTest {
             loginService,
             userService,
             roleService,
-            projectAccessService,
             currentUser,
-            menuGrantProvider);
+            menuGrantProvider,
+            projectResolver);
 
     controller.current();
 
@@ -75,7 +75,6 @@ class LoginControllerCurrentUserTest {
     assertThat(identity.getProjectList())
             .extracting(ProjectBriefVO::getProjectName)
             .containsExactly("默认空间");
-    verify(projectAccessService)
-            .getSwitchableProjects(7L, true);
+    verify(projectResolver).resolve(identity);
   }
 }

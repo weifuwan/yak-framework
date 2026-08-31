@@ -45,10 +45,9 @@ public class CurrentUserVO {
     private List<String> menuCodes;
 
     /**
-     * 当前身份可以切换进入的启用工作空间。
+     * 当前身份可进入的启用项目。
      *
-     * <p>超级管理员返回当前应用全部启用工作空间；普通用户仅返回其作为负责人或成员关联的
-     * 启用工作空间。
+     * <p>超级管理员可进入当前应用全部启用项目；普通用户仅返回其负责人或成员关系下的启用项目。
      */
     private List<ProjectBriefVO> projectList =
             new ArrayList<>();
