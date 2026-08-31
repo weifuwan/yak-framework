@@ -45,6 +45,8 @@ import org.springframework.web.bind.annotation.RestController;
 @YakPermission(
         code = SecurityPermissionCode.Project.READ,
         name = "查看授权项目",
+        group = SecurityPermissionCode.GROUP_NAME,
+        groupCode = SecurityPermissionCode.GROUP_CODE,
         menuCode = "system-security-projects")
 public class ProjectController {
 
