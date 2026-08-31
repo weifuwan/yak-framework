@@ -10,6 +10,7 @@ import io.yak.framework.security.dao.ProjectDao;
 import io.yak.framework.security.service.UserProjectService;
 import io.yak.framework.security.util.CopyBeanUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,7 +42,30 @@ public class CurrentUserProjectResolver {
             : new LinkedHashSet<>(
                     userProjectService.getProjectIdListByUserIdList(
                             Collections.singletonList(user.getId())));
+    return resolveProjectIds(projectIds);
+  }
 
+  /**
+   * 使用已经进入当前授权快照的项目 ID，避免 /account/current 再查一次用户项目关系。
+   */
+  public List<ProjectBriefVO> resolve(
+          CurrentUserVO user,
+          Collection<Long> authorizedProjectIds) {
+    if (user == null || user.getId() == null) {
+      return Collections.emptyList();
+    }
+
+    Set<Long> projectIds = isRoot(user)
+            ? allProjectIds()
+            : new LinkedHashSet<>(
+                    authorizedProjectIds == null
+                            ? Collections.emptySet()
+                            : authorizedProjectIds);
+    return resolveProjectIds(projectIds);
+  }
+
+  private List<ProjectBriefVO> resolveProjectIds(
+          Set<Long> projectIds) {
     projectIds.remove(null);
     if (projectIds.isEmpty()) {
       return Collections.emptyList();

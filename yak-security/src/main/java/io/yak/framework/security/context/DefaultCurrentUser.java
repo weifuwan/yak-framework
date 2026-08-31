@@ -1,6 +1,7 @@
 package io.yak.framework.security.context;
 
 import java.util.List;
+import java.util.Set;
 
 /** Spring 可注入的当前用户实现。 */
 public final class DefaultCurrentUser implements CurrentUser {
@@ -23,6 +24,31 @@ public final class DefaultCurrentUser implements CurrentUser {
   @Override
   public List<Long> getRoleIds() {
     return YakSecurityContext.getCurrentRoleIds();
+  }
+
+  @Override
+  public Set<String> getPermissionCodes() {
+    return YakSecurityContext.getCurrentPermissionCodes();
+  }
+
+  @Override
+  public List<String> getMenuCodes() {
+    return YakSecurityContext.getCurrentMenuCodes();
+  }
+
+  @Override
+  public Set<Long> getProjectIds() {
+    return YakSecurityContext.getCurrentProjectIds();
+  }
+
+  @Override
+  public boolean hasPermission(String permissionCode) {
+    return YakSecurityContext.hasPermission(permissionCode);
+  }
+
+  @Override
+  public boolean canAccessProject(Long projectId) {
+    return YakSecurityContext.canAccessProject(projectId);
   }
 
   @Override
