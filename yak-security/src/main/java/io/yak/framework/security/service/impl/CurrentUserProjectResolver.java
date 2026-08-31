@@ -1,6 +1,7 @@
 package io.yak.framework.security.service.impl;
 
 import io.yak.framework.security.common.constant.SecurityPermissionCode;
+import io.yak.framework.security.common.dto.project.ProjectQueryDTO;
 import io.yak.framework.security.common.entity.project.Project;
 import io.yak.framework.security.common.entity.project.ProjectBrief;
 import io.yak.framework.security.common.vo.project.ProjectBriefVO;
@@ -41,25 +42,26 @@ public class CurrentUserProjectResolver {
                     userProjectService.getProjectIdListByUserIdList(
                             Collections.singletonList(user.getId())));
 
+    projectIds.remove(null);
     if (projectIds.isEmpty()) {
       return Collections.emptyList();
     }
 
-    List<ProjectBriefVO> projects = new ArrayList<>();
-    for (Long projectId : projectIds) {
-      if (projectId == null) {
-        continue;
-      }
-      Project project = projectDao.selectByProjectId(projectId);
-      if (project == null || !Boolean.TRUE.equals(project.getRunning())) {
-        continue;
-      }
-      ProjectBriefVO brief = CopyBeanUtil.copy(project, ProjectBriefVO.class);
-      if (brief != null) {
-        projects.add(brief);
-      }
-    }
-    return projects;
+    ProjectQueryDTO query = new ProjectQueryDTO();
+    query.setPage(1);
+    query.setSize(projectIds.size());
+    query.setRunning(true);
+
+    List<Project> projects = projectDao
+            .selectPageByDeptIdListAndProjectIdList(
+                    query,
+                    null,
+                    new ArrayList<>(projectIds))
+            .getRecords();
+
+    return CopyBeanUtil.copyList(
+            projects,
+            ProjectBriefVO.class);
   }
 
   private boolean isRoot(CurrentUserVO user) {
