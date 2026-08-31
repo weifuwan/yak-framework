@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 /**
  * 消息数据传输对象。
  *
- * <p>业务模块只需要描述通知本身，不需要了解消息表结构。</p>
+ * <p>业务模块只需要描述通知本身，不需要了解消息表结构。Project 归属以
+ * {@code projectId} 为唯一事实来源；{@code scope} 仅为兼容字段，持久化前会由
+ * MessageService 根据 projectId 重新推导。</p>
  *
  * @author weifuwan
  */
@@ -21,11 +23,11 @@ public class MessageDTO {
   private String content;
   /** 消息类型。 */
   private String type;
-  /** 消息级别。 */
+  /** 消息级别：INFO/SUCCESS/WARNING/ERROR。 */
   private String level;
-  /** 消息范围。 */
+  /** 兼容字段；最终 scope 由 projectId 推导。 */
   private String scope;
-  /** 项目标识。 */
+  /** 项目标识；为空表示 SYSTEM，非空表示 PROJECT。 */
   private Long projectId;
   /** 业务来源类型。 */
   private String sourceType;

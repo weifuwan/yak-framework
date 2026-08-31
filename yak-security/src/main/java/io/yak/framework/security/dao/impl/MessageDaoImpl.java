@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /** 用户消息数据访问实现。 */
@@ -47,15 +48,20 @@ public class MessageDaoImpl implements MessageDao {
   @Override
   public List<Message> selectListByUserIdAndReadTag(
           Long userId,
-          Boolean readTag) {
+          Boolean readTag,
+          List<Long> visibleProjectIds,
+          boolean restrictProjects) {
 
-    List<MessagePO> messagePOList = messageMapper.selectList(
-            Wrappers.<MessagePO>lambdaQuery()
-                    .eq(userId != null, MessagePO::getUserId, userId)
-                    .eq(readTag != null, MessagePO::getReadTag, readTag)
-                    .orderByDesc(MessagePO::getCreateTime));
+    LambdaQueryWrapper<MessagePO> wrapper = Wrappers.<MessagePO>lambdaQuery()
+            .eq(userId != null, MessagePO::getUserId, userId)
+            .eq(readTag != null, MessagePO::getReadTag, readTag);
+    applyProjectVisibility(wrapper, visibleProjectIds, restrictProjects);
+    wrapper.orderByDesc(MessagePO::getCreateTime)
+            .orderByDesc(MessagePO::getId);
 
-    return CopyBeanUtil.copyList(messagePOList, Message.class);
+    return CopyBeanUtil.copyList(
+            messageMapper.selectList(wrapper),
+            Message.class);
   }
 
   @Override
@@ -112,7 +118,8 @@ public class MessageDaoImpl implements MessageDao {
           Long userId,
           Boolean readTag,
           String type,
-          Long projectId,
+          List<Long> visibleProjectIds,
+          boolean restrictProjects,
           Date startTime,
           Date endTime,
           int pageNum,
@@ -124,14 +131,9 @@ public class MessageDaoImpl implements MessageDao {
             .eq(readTag != null, MessagePO::getReadTag, readTag)
             .eq(StringUtils.hasText(type), MessagePO::getType, type)
             .ge(startTime != null, MessagePO::getCreateTime, startTime)
-            .le(endTime != null, MessagePO::getCreateTime, endTime)
-            .and(
-                    projectId != null,
-                    nested -> nested
-                            .eq(MessagePO::getScope, "SYSTEM")
-                            .or()
-                            .eq(MessagePO::getProjectId, projectId))
-            .orderByDesc(MessagePO::getCreateTime)
+            .le(endTime != null, MessagePO::getCreateTime, endTime);
+    applyProjectVisibility(wrapper, visibleProjectIds, restrictProjects);
+    wrapper.orderByDesc(MessagePO::getCreateTime)
             .orderByDesc(MessagePO::getId);
 
     IPage<MessagePO> result = messageMapper.selectPage(page, wrapper);
@@ -139,13 +141,41 @@ public class MessageDaoImpl implements MessageDao {
   }
 
   @Override
-  public long countUnreadByUserId(Long userId) {
+  public long countUnreadByUserId(
+          Long userId,
+          List<Long> visibleProjectIds,
+          boolean restrictProjects) {
+
     if (userId == null) {
       return 0L;
     }
-    return messageMapper.selectCount(
-            Wrappers.<MessagePO>lambdaQuery()
-                    .eq(MessagePO::getUserId, userId)
-                    .eq(MessagePO::getReadTag, false));
+    LambdaQueryWrapper<MessagePO> wrapper = Wrappers.<MessagePO>lambdaQuery()
+            .eq(MessagePO::getUserId, userId)
+            .eq(MessagePO::getReadTag, false);
+    applyProjectVisibility(wrapper, visibleProjectIds, restrictProjects);
+    return messageMapper.selectCount(wrapper);
+  }
+
+  /**
+   * Project security is derived from project_id, not message_scope.
+   *
+   * <p>A null project_id is a system message. A non-null project_id is project-owned
+   * even if historical or malformed data carries an incorrect message_scope value.</p>
+   */
+  private void applyProjectVisibility(
+          LambdaQueryWrapper<MessagePO> wrapper,
+          List<Long> visibleProjectIds,
+          boolean restrictProjects) {
+
+    if (!restrictProjects) {
+      return;
+    }
+
+    wrapper.and(nested -> {
+      nested.isNull(MessagePO::getProjectId);
+      if (!CollectionUtils.isEmpty(visibleProjectIds)) {
+        nested.or().in(MessagePO::getProjectId, visibleProjectIds);
+      }
+    });
   }
 }

@@ -13,7 +13,11 @@ public interface MessageDao {
 
   void insertBatch(List<Message> messages);
 
-  List<Message> selectListByUserIdAndReadTag(Long userId, Boolean readTag);
+  List<Message> selectListByUserIdAndReadTag(
+          Long userId,
+          Boolean readTag,
+          List<Long> visibleProjectIds,
+          boolean restrictProjects);
 
   List<Message> selectListByMessageIdList(List<Long> messageIds);
 
@@ -27,11 +31,15 @@ public interface MessageDao {
           Long userId,
           Boolean readTag,
           String type,
-          Long projectId,
+          List<Long> visibleProjectIds,
+          boolean restrictProjects,
           Date startTime,
           Date endTime,
           int pageNum,
           int pageSize);
 
-  long countUnreadByUserId(Long userId);
+  long countUnreadByUserId(
+          Long userId,
+          List<Long> visibleProjectIds,
+          boolean restrictProjects);
 }
