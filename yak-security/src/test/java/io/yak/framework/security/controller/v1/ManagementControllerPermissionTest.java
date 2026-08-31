@@ -40,6 +40,11 @@ class ManagementControllerPermissionTest {
         SecurityPermissionCode.Department.DELETE,
         SecurityPermissionCode.Department.MENU_CODE,
         true);
+    assertActionPermission(
+        DeptController.class.getDeclaredMethod("importDept", List.class),
+        SecurityPermissionCode.Department.IMPORT,
+        SecurityPermissionCode.Department.MENU_CODE,
+        true);
   }
 
   @Test
