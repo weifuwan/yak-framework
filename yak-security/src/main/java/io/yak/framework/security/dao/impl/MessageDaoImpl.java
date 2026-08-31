@@ -1,133 +1,151 @@
 package io.yak.framework.security.dao.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.yak.framework.security.common.entity.Message;
 import io.yak.framework.security.common.po.MessagePO;
 import io.yak.framework.security.dao.MessageDao;
 import io.yak.framework.security.dao.mapper.MessageMapper;
 import io.yak.framework.security.util.CopyBeanUtil;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
-import java.util.List;
-
-/**
- * 用户消息数据访问实现。
- */
+/** 用户消息数据访问实现。 */
 @Repository
 @RequiredArgsConstructor
-public class MessageDaoImpl
-        implements MessageDao {
+public class MessageDaoImpl implements MessageDao {
 
-    private final MessageMapper messageMapper;
+  private final MessageMapper messageMapper;
 
-    /**
-     * 新增消息，并回填消息主键。
-     *
-     * @param message 消息信息
-     */
-    @Override
-    public void insert(Message message) {
-        MessagePO messagePO =
-                CopyBeanUtil.copy(message, MessagePO.class);
+  @Override
+  public void insert(Message message) {
+    MessagePO messagePO = CopyBeanUtil.copy(message, MessagePO.class);
+    messageMapper.insert(messagePO);
+    message.setId(messagePO.getId());
+  }
 
-        messageMapper.insert(messagePO);
+  @Override
+  public void update(Message message) {
+    messageMapper.updateById(CopyBeanUtil.copy(message, MessagePO.class));
+  }
 
-        // MyBatis-Plus 插入成功后会自动回填自增主键。
-        message.setId(messagePO.getId());
+  @Override
+  public void insertBatch(List<Message> messageList) {
+    if (messageList == null || messageList.isEmpty()) {
+      return;
+    }
+    CopyBeanUtil.copyList(messageList, MessagePO.class)
+            .forEach(messageMapper::insert);
+  }
+
+  @Override
+  public List<Message> selectListByUserIdAndReadTag(
+          Long userId,
+          Boolean readTag) {
+
+    List<MessagePO> messagePOList = messageMapper.selectList(
+            Wrappers.<MessagePO>lambdaQuery()
+                    .eq(userId != null, MessagePO::getUserId, userId)
+                    .eq(readTag != null, MessagePO::getReadTag, readTag)
+                    .orderByDesc(MessagePO::getCreateTime));
+
+    return CopyBeanUtil.copyList(messagePOList, Message.class);
+  }
+
+  @Override
+  public List<Message> selectListByMessageIdList(
+          List<Long> messageIdList) {
+
+    if (messageIdList == null || messageIdList.isEmpty()) {
+      return Collections.emptyList();
     }
 
-    /**
-     * 根据主键更新消息。
-     *
-     * @param message 消息信息
-     */
-    @Override
-    public void update(Message message) {
-        messageMapper.updateById(
-                CopyBeanUtil.copy(message, MessagePO.class)
-        );
+    List<MessagePO> messagePOList = messageMapper.selectList(
+            Wrappers.<MessagePO>lambdaQuery()
+                    .in(MessagePO::getId, messageIdList));
+
+    return CopyBeanUtil.copyList(messagePOList, Message.class);
+  }
+
+  @Override
+  public List<Message> selectListByMessageIdListAndUserId(
+          List<Long> messageIdList,
+          Long userId) {
+
+    if (messageIdList == null || messageIdList.isEmpty() || userId == null) {
+      return Collections.emptyList();
     }
 
-    /**
-     * 批量新增消息。
-     *
-     * <p>当前采用循环插入，适合消息数量较少的场景。</p>
-     *
-     * @param messageList 消息列表
-     */
-    @Override
-    public void insertBatch(List<Message> messageList) {
-        if (messageList == null || messageList.isEmpty()) {
-            return;
-        }
+    List<MessagePO> messagePOList = messageMapper.selectList(
+            Wrappers.<MessagePO>lambdaQuery()
+                    .eq(MessagePO::getUserId, userId)
+                    .in(MessagePO::getId, messageIdList));
 
-        CopyBeanUtil.copyList(messageList, MessagePO.class)
-                .forEach(messageMapper::insert);
+    return CopyBeanUtil.copyList(messagePOList, Message.class);
+  }
+
+  @Override
+  public Message selectByMessageIdAndUserId(
+          Long messageId,
+          Long userId) {
+
+    if (messageId == null || userId == null) {
+      return null;
     }
 
-    /**
-     * 根据接收用户和已读状态查询消息。
-     *
-     * @param userId  接收用户标识，可为空
-     * @param readTag 已读状态，可为空
-     * @return 消息列表
-     */
-    @Override
-    public List<Message> selectListByUserIdAndReadTag(
-            Long userId,
-            Boolean readTag) {
+    MessagePO messagePO = messageMapper.selectOne(
+            Wrappers.<MessagePO>lambdaQuery()
+                    .eq(MessagePO::getId, messageId)
+                    .eq(MessagePO::getUserId, userId));
 
-        List<MessagePO> messagePOList =
-                messageMapper.selectList(
-                        Wrappers.<MessagePO>lambdaQuery()
-                                .eq(
-                                        userId != null,
-                                        MessagePO::getUserId,
-                                        userId
-                                )
-                                .eq(
-                                        readTag != null,
-                                        MessagePO::getReadTag,
-                                        readTag
-                                )
-                                .orderByDesc(
-                                        MessagePO::getCreateTime
-                                )
-                );
+    return CopyBeanUtil.copy(messagePO, Message.class);
+  }
 
-        return CopyBeanUtil.copyList(
-                messagePOList,
-                Message.class
-        );
+  @Override
+  public IPage<Message> selectPageByUserId(
+          Long userId,
+          Boolean readTag,
+          String type,
+          Long projectId,
+          Date startTime,
+          Date endTime,
+          int pageNum,
+          int pageSize) {
+
+    Page<MessagePO> page = Page.of(pageNum, pageSize);
+    LambdaQueryWrapper<MessagePO> wrapper = Wrappers.<MessagePO>lambdaQuery()
+            .eq(MessagePO::getUserId, userId)
+            .eq(readTag != null, MessagePO::getReadTag, readTag)
+            .eq(StringUtils.hasText(type), MessagePO::getType, type)
+            .ge(startTime != null, MessagePO::getCreateTime, startTime)
+            .le(endTime != null, MessagePO::getCreateTime, endTime)
+            .and(
+                    projectId != null,
+                    nested -> nested
+                            .eq(MessagePO::getScope, "SYSTEM")
+                            .or()
+                            .eq(MessagePO::getProjectId, projectId))
+            .orderByDesc(MessagePO::getCreateTime)
+            .orderByDesc(MessagePO::getId);
+
+    IPage<MessagePO> result = messageMapper.selectPage(page, wrapper);
+    return CopyBeanUtil.copyPage(result, Message.class);
+  }
+
+  @Override
+  public long countUnreadByUserId(Long userId) {
+    if (userId == null) {
+      return 0L;
     }
-
-    /**
-     * 根据消息主键集合查询消息。
-     *
-     * @param messageIdList 消息主键集合
-     * @return 消息列表
-     */
-    @Override
-    public List<Message> selectListByMessageIdList(
-            List<Long> messageIdList) {
-
-        if (messageIdList == null || messageIdList.isEmpty()) {
-            return java.util.Collections.emptyList();
-        }
-
-        List<MessagePO> messagePOList =
-                messageMapper.selectList(
-                        Wrappers.<MessagePO>lambdaQuery()
-                                .in(
-                                        MessagePO::getId,
-                                        messageIdList
-                                )
-                );
-
-        return CopyBeanUtil.copyList(
-                messagePOList,
-                Message.class
-        );
-    }
+    return messageMapper.selectCount(
+            Wrappers.<MessagePO>lambdaQuery()
+                    .eq(MessagePO::getUserId, userId)
+                    .eq(MessagePO::getReadTag, false));
+  }
 }
