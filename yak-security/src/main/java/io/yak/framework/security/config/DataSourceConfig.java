@@ -248,6 +248,12 @@ public class DataSourceConfig {
                  */
                 .baselineOnMigrate(true)
                 .baselineVersion(MigrationVersion.fromVersion("0"))
+                /*
+                 * 安全模块可能与宿主应用共享 Flyway history table。
+                 * 当宿主已经记录了更高版本时，后续新增的安全模块迁移会被视为迟到版本。
+                 * 允许 out-of-order 执行，确保合法的安全模块迁移不会阻塞应用启动。
+                 */
+                .outOfOrder(true)
                 .load();
     }
 
