@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.yak.framework</groupId>
+        <groupId>io.github.weifuwan</groupId>
         <artifactId>yak-framework-parent</artifactId>
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
@@ -26,7 +26,7 @@
 
         <!-- 跨模块统一返回、分页和异常契约 -->
         <dependency>
-            <groupId>io.yak.framework</groupId>
+            <groupId>io.github.weifuwan</groupId>
             <artifactId>yak-common</artifactId>
             <version>${project.version}</version>
         </dependency>

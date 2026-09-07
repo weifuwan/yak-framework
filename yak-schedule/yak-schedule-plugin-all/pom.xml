@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.yak.framework</groupId>
+        <groupId>io.github.weifuwan</groupId>
         <artifactId>yak-schedule-parent</artifactId>
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
@@ -14,11 +14,11 @@
     <description>聚合全部内置调度引擎插件</description>
     <dependencies>
         <dependency>
-            <groupId>io.yak.framework</groupId>
+            <groupId>io.github.weifuwan</groupId>
             <artifactId>yak-schedule-plugin-quartz</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.yak.framework</groupId>
+            <groupId>io.github.weifuwan</groupId>
             <artifactId>yak-schedule-plugin-xxl-job</artifactId>
         </dependency>
     </dependencies>
