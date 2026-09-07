@@ -13,13 +13,15 @@ Yak Framework 使用小型 Maven 模块保持能力边界清晰：
 
 当前首个公开发布版本为 `0.1.0`，Git Tag 建议使用 `v0.1.0`。
 
+Maven Central 发布坐标统一使用 GitHub Namespace `io.github.weifuwan`。Java 源码包名仍保持 `io.yak.framework.*`，Maven `groupId` 的调整不会要求业务代码修改 import。
+
 ## 作为父 POM 使用
 
 新增模块应继承统一父 POM，而不是直接继承 Spring Boot Parent：
 
 ```xml
 <parent>
-    <groupId>io.yak.framework</groupId>
+    <groupId>io.github.weifuwan</groupId>
     <artifactId>yak-framework-parent</artifactId>
     <version>0.1.0</version>
 </parent>
@@ -37,7 +39,7 @@ D:\baize-works\baize-tools\apache-maven-3.9.16\bin\mvn clean install -DskipTests
 
 发布前需要完成两项本地配置：
 
-1. 在 Central Portal 中验证 `io.yak.framework` 对应的 Namespace，并生成 User Token。
+1. 在 Central Portal 中注册并验证 `io.github.weifuwan` Namespace，并生成 User Token。
 2. 本机安装可用的 GPG Key，并将公钥发布到公开 Key Server。
 
 将 Central Portal 的 User Token 写入 Maven `settings.xml`：
@@ -64,7 +66,7 @@ D:\baize-works\baize-tools\apache-maven-3.9.16\bin\mvn clean deploy -Pcentral-re
 
 ```xml
 <dependency>
-    <groupId>io.yak.framework</groupId>
+    <groupId>io.github.weifuwan</groupId>
     <artifactId>yak-file</artifactId>
     <version>0.1.0</version>
 </dependency>
